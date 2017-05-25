@@ -7,6 +7,7 @@
 
 #ifndef ENC28J60_ENC28J60_H_
 #define ENC28J60_ENC28J60_H_
+#include <inttypes.h>
 
 // ENC28J60 Packet Control Byte Bit Definitions
 // Nie wiem jeszcze co to jest ??
@@ -15,7 +16,7 @@
 #define PKTCTRL_PCRCEN   0x02
 #define PKTCTRL_POVERRIDE 0x01
 
-// Kody poleceñ (s. 26)
+// Kody rozkazów (s. 26)
 #define ENC28J60_READ_CTRL_REG       0x00
 #define ENC28J60_READ_BUF_MEM        0x3A
 #define ENC28J60_WRITE_CTRL_REG      0x40
@@ -27,11 +28,12 @@
 // SPOSÓB DOSTÊPU DO REJESTRÓW KONTROLNYCH
 // Adres rejestru: 				bity 0-4
 // Numer banku:	   				bity 5-6
-// Znacznik typu (ETH/MAC/PHY): bit 7
+// Znacznik typu (ETH lub MAC i MII): bit 7
 
 #define ADR_MASKA 		 0x1F
 #define BANK_MASKA 		 0x60
-#define SPRD_MASKA 		 0x80
+// patrz s. 27
+#define MAC_MII_MASKA 	 0x80
 // -------------------------------------------------
 // Rejestry wystêpuj¹ce w ka¿dym banku (s. 12):
 #define EIE              0x1B
@@ -95,7 +97,7 @@
 
 // Rejestry w banku 2
 #define MACON1           (0x00|0x40|0x80)
-#define MACON2           (0x01|0x40|0x80)
+//#define MACON2           (0x01|0x40|0x80)
 #define MACON3           (0x02|0x40|0x80)
 #define MACON4           (0x03|0x40|0x80)
 #define MABBIPG          (0x04|0x40|0x80)
@@ -239,19 +241,19 @@
 #define PHCON2_HDLDIS    0x0100
 
 // Funkcje
-extern uint8_t enc28j60_CzytajKod(uint8_t op, uint8_t address);
-extern void enc28j60_ZapiszKod(uint8_t op, uint8_t address, uint8_t data);
-extern void enc28j60_CzytajBufor(uint16_t len, uint8_t* data);
-extern void enc28j60_ZapiszBufor(uint16_t len, uint8_t* data);
-extern void enc28j60_UstawBank(uint8_t address);
-extern uint8_t enc28j60_Czytaj(uint8_t address);
-extern void enc28j60_Zapisz(uint8_t address, uint8_t data);
-extern void enc28j60_ZapiszPhy(uint8_t address, uint16_t data);
+extern uint8_t enc28j60_CzytajKod(uint8_t rozkaz, uint8_t adres);
+extern void enc28j60_ZapiszKod(uint8_t rozkaz, uint8_t adres, uint8_t dane);
+extern void enc28j60_CzytajBufor(uint16_t dl, uint8_t* dane);
+extern void enc28j60_ZapiszBufor(uint16_t dl, uint8_t* dane);
+extern void enc28j60_UstawBank(uint8_t adres);
+extern uint8_t enc28j60_Czytaj(uint8_t adres);
+extern void enc28j60_Zapisz(uint8_t adres, uint8_t dane);
+extern void enc28j60_ZapiszPhy(uint8_t adres, uint16_t dane);
 //extern void enc28j60clkout(uint8_t clk);
-extern void enc28j60_Init(uint8_t* macaddr);
-extern void enc28j60_WyslijPakiet(uint16_t len, uint8_t* packet);
+extern void enc28j60_Init(uint8_t* macadr);
+extern void enc28j60_WyslijPakiet(uint16_t dl, uint8_t* pakiet);
 extern uint8_t enc28j60_JestPakiet(void);
-extern uint16_t enc28j60_OdbierajPakiet(uint16_t maxlen, uint8_t* packet);
+extern uint16_t enc28j60_OdbierajPakiet(uint16_t maxdl, uint8_t* pakiet);
 //extern uint8_t enc28j60getrev(void);
 #ifdef ENC28J60_BROADCAST
 extern void enc28j60EnableBroadcast(void);
