@@ -5,6 +5,12 @@
  *      Author: tomek
  */
 
+/* UWAGI PRZY URUCHAMIANIU:
+1. Jesli adres MAC bedzie zle przypisany to poprawic definicje rejestrow!!
+bo sa ewidentnie zle
+2. Do obslugi maszyny stanow wykorzystac artykul z EP na preprocesorze
+
+*/
 #ifndef ENC28J60_ENC28J60_H_
 #define ENC28J60_ENC28J60_H_
 #include <inttypes.h>
@@ -17,13 +23,13 @@
 #define PKTCTRL_POVERRIDE 0x01
 
 // Kody rozkazów (s. 26)
-#define ENC28J60_READ_CTRL_REG       0x00
-#define ENC28J60_READ_BUF_MEM        0x3A
-#define ENC28J60_WRITE_CTRL_REG      0x40
-#define ENC28J60_WRITE_BUF_MEM       0x7A
-#define ENC28J60_BIT_FIELD_SET       0x80
-#define ENC28J60_BIT_FIELD_CLR       0xA0
-#define ENC28J60_SOFT_RESET          0xFF
+#define ENC28J60_CZYTAJ_REJ_KONTR    0x00
+#define ENC28J60_CZYTAJ_BUFOR		 0x3A
+#define ENC28J60_ZAPISZ_REJ_KONTR    0x40
+#define ENC28J60_ZAPISZ_BUFOR		 0x7A
+#define ENC28J60_USTAW_BITY       	 0x80
+#define ENC28J60_KASUJ_BITY       	 0xA0
+#define ENC28J60_RESET          	 0xFF
 
 // SPOSÓB DOSTÊPU DO REJESTRÓW KONTROLNYCH
 // Adres rejestru: 				bity 0-4
@@ -189,12 +195,14 @@
 #define MACON1_PASSALL   0x02
 #define MACON1_MARXEN    0x01
 // ENC28J60 MACON2
+/*
 #define MACON2_MARST     0x80
 #define MACON2_RNDRST    0x40
 #define MACON2_MARXRST   0x08
 #define MACON2_RFUNRST   0x04
 #define MACON2_MATXRST   0x02
 #define MACON2_TFUNRST   0x01
+*/
 // ENC28J60 MACON3
 #define MACON3_PADCFG2   0x80
 #define MACON3_PADCFG1   0x40
@@ -240,15 +248,33 @@
 #define PHCON2_JABBER    0x0400
 #define PHCON2_HDLDIS    0x0100
 
+// Wewnetrzny bufor nadawczy i odbiorczy
+// Poczatek odbiorczego
+#define RXSTART_INIT     0x00
+// Koniec odbiorczego
+#define RXSTOP_INIT      (0x1FFF-0x0600)
+// Poczatek nadawczego (1536 bajtow)
+#define TXSTART_INIT     (0x1FFF-0x0600+1)
+// Koniec nadawczego = koniec pamieci
+#define TXSTOP_INIT      0x1FFF
+
+#define        MAX_ROZMIAR_PAKIETU        1500
+
 // Funkcje
 extern uint8_t enc28j60_CzytajKod(uint8_t rozkaz, uint8_t adres);
 extern void enc28j60_ZapiszKod(uint8_t rozkaz, uint8_t adres, uint8_t dane);
+
 extern void enc28j60_CzytajBufor(uint16_t dl, uint8_t* dane);
 extern void enc28j60_ZapiszBufor(uint16_t dl, uint8_t* dane);
+
 extern void enc28j60_UstawBank(uint8_t adres);
+
 extern uint8_t enc28j60_Czytaj(uint8_t adres);
 extern void enc28j60_Zapisz(uint8_t adres, uint8_t dane);
+
+extern uint16_t enc28j60_CzytajPhy(uint8_t adres);
 extern void enc28j60_ZapiszPhy(uint8_t adres, uint16_t dane);
+
 //extern void enc28j60clkout(uint8_t clk);
 extern void enc28j60_Init(uint8_t* macadr);
 extern void enc28j60_WyslijPakiet(uint16_t dl, uint8_t* pakiet);
