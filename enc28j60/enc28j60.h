@@ -278,7 +278,7 @@ extern void enc28j60_ZapiszPhy(uint8_t adres, uint16_t dane);
 //extern void enc28j60clkout(uint8_t clk);
 extern void enc28j60_Init(uint8_t* macadr);
 extern void enc28j60_WyslijPakiet(uint16_t dl, uint8_t* pakiet);
-extern uint8_t enc28j60_JestPakiet(void);
+extern uint8_t enc28j60_JestPakiet();
 extern uint16_t enc28j60_OdbierajPakiet(uint16_t maxdl, uint8_t* pakiet);
 //extern uint8_t enc28j60getrev(void);
 #ifdef ENC28J60_BROADCAST

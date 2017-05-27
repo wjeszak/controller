@@ -243,3 +243,68 @@ void enc28j60_WyslijPakiet(uint16_t dl, uint8_t* pakiet)
 		enc28j60_ZapiszKod(ENC28J60_USTAW_BITY, ECON1, ECON1_TXRTS);
 }
 
+// Czy jest nowy pakiet w buforze odbiorczym ?
+uint8_t enc28j60_JestPakiet()
+{
+	if(enc28j60_Czytaj(EPKTCNT) == 0)
+	{
+		return 0;
+	}
+	return 1;
+}
+
+// patrz s. 43
+uint16_t enc28j60_OdbierajPakiet(uint16_t maxdl, uint8_t* pakiet)
+{
+	// Nie ma pakietu
+	if(!enc28j60_JestPakiet()) return 0;
+
+	uint16_t status;
+	uint16_t dl;
+
+	// Ustaw wskaznik czytania na poczatku pakietu
+	// W przypadku pierwszego pakietu WskNastepnyPakiet = RXSTART_INIT
+	enc28j60_Zapisz(ERDPTL, (WskNastepnyPakiet & 0xFF));
+	enc28j60_Zapisz(ERDPTH, (WskNastepnyPakiet) >> 8);
+
+	// Ustaw wskaznik na nowy pakiet
+	WskNastepnyPakiet  = enc28j60_CzytajKod(ENC28J60_CZYTAJ_BUFOR, 0);
+	WskNastepnyPakiet |= enc28j60_CzytajKod(ENC28J60_CZYTAJ_BUFOR, 0) << 8;
+
+	// Dlugosc pakietu
+	dl  = enc28j60_CzytajKod(ENC28J60_CZYTAJ_BUFOR, 0);
+	dl |= enc28j60_CzytajKod(ENC28J60_CZYTAJ_BUFOR, 0) << 8;
+	// Odjac dlugosc sumy kontrolnej, 4 bajty
+	dl -= 4;
+
+	// Status ramki
+	status  = enc28j60_CzytajKod(ENC28J60_CZYTAJ_BUFOR, 0);
+	status |= ((uint16_t)enc28j60_CzytajKod(ENC28J60_CZYTAJ_BUFOR, 0)) << 8;
+
+	if(dl > maxdl - 1) dl = maxdl - 1;
+	// bit 23 w tabeli na s. 44
+	if((status & 0x80) == 0)
+	{
+		// niepoprawna ramka
+		dl = 0;
+	}
+	else
+	{
+		enc28j60_CzytajBufor(dl, pakiet);
+	}
+	// Nie wiem co robi ta czesc kodu
+	if(WskNastepnyPakiet - 1 > RXSTOP_INIT)
+	{ // RXSTART_INIT is zero, no test for gNextPacketPtr less than RXSTART_INIT.
+		enc28j60_Zapisz(ERXRDPTL, (RXSTOP_INIT) & 0xFF);
+		enc28j60_Zapisz(ERXRDPTH, (RXSTOP_INIT) >> 8);
+	}
+	else
+	{
+		enc28j60_Zapisz(ERXRDPTL, (WskNastepnyPakiet - 1) & 0xFF);
+		enc28j60_Zapisz(ERXRDPTH, (WskNastepnyPakiet - 1) >> 8);
+	}
+		// decrement the packet counter indicate we are done with this packet
+	enc28j60_ZapiszKod(ENC28J60_USTAW_BITY, ECON2, ECON2_PKTDEC);
+	return dl;
+}
+
