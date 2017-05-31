@@ -8,7 +8,7 @@
 
 static uint8_t adres_MAC[6] = {0x54,0x55,0x58,0x11,0x00,0x29};
 static uint8_t adres_IP[4]  = {192,168,1,170};
-
+/*
 void Stos_Init(uint8_t *moj_adres_MAC, uint8_t *moj_adres_IP, uint16_t port)
 {
 	enc28j60_Init(moj_adres_MAC);
@@ -28,10 +28,10 @@ void Stos_Init(uint8_t *moj_adres_MAC, uint8_t *moj_adres_IP, uint16_t port)
 		i++;
 	}
 }
-
+*/
 void LAN_Start()
 {
-	Stos_Init(adres_MAC, adres_IP, 502);
+//	Stos_Init(adres_MAC, adres_IP, 502);
 }
 
 
