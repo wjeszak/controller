@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <util/delay.h>
 #include "enc28j60.h"
+#include "stos.h"
 #include "../usart/usart.h"
 
 // definicje pinów interfejsu SPI dla Atmega644PA
@@ -49,8 +50,8 @@ static void SPI_Init()
 
 static void SPI_Wyslij(char bajt)
 {
-		SPDR = bajt;
-		spi_czekaj();
+	SPDR = bajt;
+	spi_czekaj();
 }
 
 static uint8_t SPI_Odbierz()
@@ -435,12 +436,6 @@ void enc28j60_Init()
 	while(!(enc28j60_RejCzytaj(ENC_REG_ESTAT) & (1 << ENC_BIT_CLKRDY)));
 	_delay_ms(20);
 
-	Adres_MAC[0] = MYMAC1;
-	Adres_MAC[1] = MYMAC2;
-	Adres_MAC[2] = MYMAC3;
-	Adres_MAC[3] = MYMAC4;
-	Adres_MAC[4] = MYMAC5;
-	Adres_MAC[5] = MYMAC6;
 
 	enc28j60_RejZapisz(ENC_REG_ETXSTL, LO8(ENC_TX_BUFFER_START));
 	enc28j60_RejZapisz(ENC_REG_ETXSTH, HI8(ENC_TX_BUFFER_START));
@@ -490,12 +485,12 @@ void enc28j60_Init()
 		#endif
 
 		// our mac address
-	enc28j60_RejZapisz(ENC_REG_MAADR5, MYMAC1);
-	enc28j60_RejZapisz(ENC_REG_MAADR4, MYMAC2);
-	enc28j60_RejZapisz(ENC_REG_MAADR3, MYMAC3);
-	enc28j60_RejZapisz(ENC_REG_MAADR2, MYMAC4);
-	enc28j60_RejZapisz(ENC_REG_MAADR1, MYMAC5);
-	enc28j60_RejZapisz(ENC_REG_MAADR0, MYMAC6);
+	enc28j60_RejZapisz(ENC_REG_MAADR5, ADR_MAC1);
+	enc28j60_RejZapisz(ENC_REG_MAADR4, ADR_MAC2);
+	enc28j60_RejZapisz(ENC_REG_MAADR3, ADR_MAC3);
+	enc28j60_RejZapisz(ENC_REG_MAADR2, ADR_MAC4);
+	enc28j60_RejZapisz(ENC_REG_MAADR1, ADR_MAC5);
+	enc28j60_RejZapisz(ENC_REG_MAADR0, ADR_MAC6);
 
 		// disable CLKOUT pin
 	enc28j60_RejZapisz(ENC_REG_ECOCON, 0x00);

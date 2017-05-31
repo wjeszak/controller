@@ -293,18 +293,12 @@ bo sa ewidentnie zle
 
 #define MAX_ROZMIAR_PAKIETU 		1500
 
-extern unsigned char Adres_MAC[6];
-#define MYMAC1	0x00
-#define MYMAC2	0x20
-#define MYMAC3	0x18
-#define MYMAC4	0xB1
-#define MYMAC5	0x15
-#define MYMAC6	0x6F
 
 // Funkcje
 void enc28j60_Init();
 uint16_t enc28j60_OdbierzPakiet(uint16_t rozmiar_buf, uint8_t *buf);
 void enc28j60_ZrzutRejestrow();
+extern void enc28j60_WyslijPakiet(uint16_t dl, uint8_t *buf);
 //extern uint8_t enc28j60getrev(void);
 #ifdef ENC28J60_BROADCAST
 extern void enc28j60EnableBroadcast(void);
