@@ -11,16 +11,20 @@
 #include "usart/usart.h"
 #include "enc28j60/enc28j60.h"
 #include "enc28j60/stos.h"
+#include "usart/usart.h"
 static uint8_t port_L = 80;
 static uint8_t port_H = 0;
+
+extern Usart us;
+
 int main()
 {
-	USART_Init(WART_UBRR);
+
 	sei();
-	USART_WyslijRamke("Inicjowanie...\n");
+	us.WyslijRamke("Inicjowanie...\n");
 	//_delay_ms(10000);
 	enc28j60_Init();
-	USART_WyslijRamke("ENC OK\n");
+	//us.WyslijRamke("ENC OK\n");
 	//_delay_ms(100);
 	enc28j60_ZrzutRejestrow();
 	uint8_t buf_eth[1500];
@@ -31,7 +35,7 @@ int main()
 		if(eth_type_is_arp_and_my_ip(buf_eth, dl))
 		{
 			// doprecyzowac typ pakietu
-			USART_WyslijRamke("Nasz pakiet ARP!\n");
+			//USART_WyslijRamke("Nasz pakiet ARP!\n");
 			make_arp_answer_from_request(buf_eth);
 		}
 		//if(eth_type_is_ip_and_my_ip(buf_eth, dl))
@@ -44,7 +48,7 @@ int main()
 		{
 			if (buf_eth[TCP_FLAGS_P] & TCP_FLAGS_SYN_V)
 			{
-				USART_WyslijRamke("Nasz pakiet TCP [SYN]\n");
+				//USART_WyslijRamke("Nasz pakiet TCP [SYN]\n");
 				make_tcp_synack_from_syn(buf_eth);
 			}
 		}

@@ -254,7 +254,7 @@ uint16_t enc28j60_OdbierzPakiet(uint16_t rozmiar_buf, uint8_t *buf)
 	//ENC_DEBUG("enc_receive: EPKTCNT=%i\n", (int) u);
 	// Nie ma nowego pakietu, opusc funkcje
 	if(u == 0) return 0;
-	USART_WyslijRamke("Jest pakiet!\n");
+	//USART_WyslijRamke("Jest pakiet!\n");
 	//Ustaw wskaznik na nastepny pakiet
 	enc28j60_RejZapisz(ENC_REG_ERDPTL, LO8(WskNastepnyPakiet));
 	enc28j60_RejZapisz(ENC_REG_ERDPTH, HI8(WskNastepnyPakiet));
