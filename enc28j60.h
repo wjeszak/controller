@@ -11,8 +11,8 @@ bo sa ewidentnie zle
 2. Do obslugi maszyny stanow wykorzystac artykul z EP na preprocesorze
 
 */
-#ifndef ENC28J60_ENC28J60_H_
-#define ENC28J60_ENC28J60_H_
+#ifndef ENC28J60_H_
+#define ENC28J60_H_
 #include <inttypes.h>
 
 #define FULL_DUPLEX
@@ -308,4 +308,4 @@ extern void enc28j60DisableBroadcast(void);
 extern uint8_t enc28j60linkup(void);
 
 
-#endif /* ENC28J60_ENC28J60_H_ */
+#endif /* ENC28J60_H_ */

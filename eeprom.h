@@ -5,8 +5,8 @@
  *      Author: tomek
  */
 
-#ifndef EEPROM_EEPROM_H_
-#define EEPROM_EEPROM_H_
+#ifndef EEPROM_H_
+#define EEPROM_H_
 
 class Eeprom
 {
@@ -18,4 +18,4 @@ public:
 
 
 
-#endif /* EEPROM_EEPROM_H_ */
+#endif /* EEPROM_H_ */

@@ -4,12 +4,13 @@
  *  Created on: 25 maj 2017
  *      Author: tomek
  */
+#include "enc28j60.h"
+
 #include <avr/io.h>
 #include <stdlib.h>
 #include <util/delay.h>
-#include "enc28j60.h"
+#include "../usart.h"
 #include "stos.h"
-#include "../usart/usart.h"
 
 // definicje pinów interfejsu SPI dla Atmega644PA
 //#if defined(__AVR_ATmega644PA__) || defined(__AVR_ATmega8__)
@@ -394,13 +395,13 @@ void enc28j60_ZrzutRejestrow()
 	//u |= enc_read_reg(ENC_REG_MIWRL);      ENC_DEBUG("MIWR %4x\n", u);
 	//v = enc_read_reg(ENC_REG_MIRDH);       u = (((unsigned)(v & 0x1F)) << 8);
 	//u |= enc_read_reg(ENC_REG_MIRDL);      ENC_DEBUG("MIRD %4x\n", u);
-	v = enc28j60_RejCzytaj(ENC_REG_EREVID);      USART_Debug("\nREV: ", v, 16);
-	v = enc28j60_RejCzytaj(ENC_REG_MAADR5);      USART_Debug("\nMAC5: ", v, 16);
-	v = enc28j60_RejCzytaj(ENC_REG_MAADR4);      USART_Debug("\nMAC4: ", v, 16);
-	v = enc28j60_RejCzytaj(ENC_REG_MAADR3);      USART_Debug("\nMAC3: ", v, 16);
-	v = enc28j60_RejCzytaj(ENC_REG_MAADR2);      USART_Debug("\nMAC2: ", v, 16);
-	v = enc28j60_RejCzytaj(ENC_REG_MAADR1);      USART_Debug("\nMAC1: ", v, 16);
-	v = enc28j60_RejCzytaj(ENC_REG_MAADR0);      USART_Debug("\nMAC0: ", v, 16);
+//	v = enc28j60_RejCzytaj(ENC_REG_EREVID);      USART_Debug("\nREV: ", v, 16);
+//	v = enc28j60_RejCzytaj(ENC_REG_MAADR5);      USART_Debug("\nMAC5: ", v, 16);
+//	v = enc28j60_RejCzytaj(ENC_REG_MAADR4);      USART_Debug("\nMAC4: ", v, 16);
+//	v = enc28j60_RejCzytaj(ENC_REG_MAADR3);      USART_Debug("\nMAC3: ", v, 16);
+//	v = enc28j60_RejCzytaj(ENC_REG_MAADR2);      USART_Debug("\nMAC2: ", v, 16);
+//	v = enc28j60_RejCzytaj(ENC_REG_MAADR1);      USART_Debug("\nMAC1: ", v, 16);
+//	v = enc28j60_RejCzytaj(ENC_REG_MAADR0);      USART_Debug("\nMAC0: ", v, 16);
 
 	//v = enc_read_reg(ENC_REG_EBSTSD);      ENC_DEBUG("EBSTSD %2x\n", (unsigned) v);
 	//v = enc_read_reg(ENC_REG_EBSTCON);     ENC_DEBUG("EBSTCON %2x\n", (unsigned) v);

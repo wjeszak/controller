@@ -4,8 +4,9 @@
  *  Created on: 26 maj 2017
  *      Author: tomek
  */
-#include "enc28j60.h"
 #include "stos.h"
+
+#include "../enc28j60.h"
 
 static uint8_t Adres_MAC[6] = {ADR_MAC1, ADR_MAC2, ADR_MAC3, ADR_MAC4, ADR_MAC5, ADR_MAC6};
 static uint8_t Adres_IP[4]  = {ADR_IP1, ADR_IP2, ADR_IP3, ADR_IP4};

@@ -6,32 +6,37 @@
  */
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include "enc28j60/stos.h"
 #include <util/delay.h>
-#include "usart/usart.h"
-#include "enc28j60/enc28j60.h"
-#include "enc28j60/stos.h"
-#include "usart/usart.h"
-static uint8_t port_L = 80;
-static uint8_t port_H = 0;
+#include "enc28j60.h"
+#include "stos.h"
+#include "stos.h"
+#include "usart.h"
 
-extern Usart us;
+//static uint8_t port_L = 80;
+//static uint8_t port_H = 0;
+
+//extern Usart us;
 
 int main()
 {
 
 	sei();
-	us.WyslijRamke("Inicjowanie...\n");
-	//_delay_ms(10000);
-	enc28j60_Init();
+	Kom_Init(9600);
+	WyslijRamke("Inicjowanie...\n");
+	_delay_ms(5000);
+	Usart us;
+	UsartData dane;
+	dane.znak = 't';
+	//us.OdebranoZnak();
+	//enc28j60_Init();
 	//us.WyslijRamke("ENC OK\n");
 	//_delay_ms(100);
-	enc28j60_ZrzutRejestrow();
-	uint8_t buf_eth[1500];
-	uint16_t dl;
+	//enc28j60_ZrzutRejestrow();
+	//uint8_t buf_eth[1500];
+	//uint16_t dl;
 	while(1)
 	{
-		dl = enc28j60_OdbierzPakiet(1500, buf_eth);
+	/*	dl = enc28j60_OdbierzPakiet(1500, buf_eth);
 		if(eth_type_is_arp_and_my_ip(buf_eth, dl))
 		{
 			// doprecyzowac typ pakietu
@@ -52,6 +57,7 @@ int main()
 				make_tcp_synack_from_syn(buf_eth);
 			}
 		}
+		*/
 	}
 
 }
