@@ -7,7 +7,7 @@
 
 #ifndef STOS_H_
 #define STOS_H_
-
+#include <inttypes.h>
 #define ADR_MAC1	0x00
 #define ADR_MAC2	0x20
 #define ADR_MAC3	0x18

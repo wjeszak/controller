@@ -9,7 +9,7 @@
 #include <avr/io.h>
 #include <stdlib.h>
 #include <util/delay.h>
-#include "../usart.h"
+#include "usart.h"
 #include "stos.h"
 
 // definicje pinów interfejsu SPI dla Atmega644PA
@@ -309,7 +309,7 @@ uint16_t enc28j60_OdbierzPakiet(uint16_t rozmiar_buf, uint8_t *buf)
 
 void enc28j60_ZrzutRejestrow()
 {
-	unsigned char v;
+//	unsigned char v;
 //	unsigned int  u;
 
 //	v = enc28j60_RejCzytaj(ENC_REG_EIE);   USART_WyslijLiczbe((unsigned)v, 2);

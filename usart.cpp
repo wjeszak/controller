@@ -5,12 +5,12 @@
  *      Author: tomek
  */
 
-#include "../usart.h"
-
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <stdarg.h>
 #include <stdlib.h>
+#include <string.h>
+#include "usart.h"
 
 #define USART_KIERUNEK_DDR 		DDRC
 #define USART_KIERUNEK_PORT 	PORTC
@@ -18,120 +18,82 @@
 
 #define USART_KIERUNEK_NAD 	USART_KIERUNEK_PORT |=  (1 << USART_KIERUNEK)
 #define USART_KIERUNEK_ODB 	USART_KIERUNEK_PORT &= ~(1 << USART_KIERUNEK)
-// halt motor external event
-char usart_buf_nad[USART_ROZMIAR_BUFORA];
-uint8_t	poz_buf, index, zajety, flaga = 0;
 
-Usart::Usart() :
-	StateMachine(ST_MAX_STATES),
-	m_currentSpeed(0)
-{
-}
-
-void Usart::OdebranoZnak(void)
-{
-    // given the Halt event, transition to a new state based upon
-    // the current state of the state machine
-    BEGIN_TRANSITION_MAP                      // - Current State -
-        TRANSITION_MAP_ENTRY (ST_ODEBRANY_ZNAK)  // ST_Idle
-        TRANSITION_MAP_ENTRY (CANNOT_HAPPEN)  // ST_OdebranyZnak
-    END_TRANSITION_MAP(NULL)
-}
-/*
-// set motor speed external event
-void Usart::SetSpeed(UsartData* pData)
-{
-    BEGIN_TRANSITION_MAP                      // - Current State -
-        TRANSITION_MAP_ENTRY (ST_START)       // ST_Idle
-        TRANSITION_MAP_ENTRY (CANNOT_HAPPEN)  // ST_Stop
-        TRANSITION_MAP_ENTRY (ST_CHANGE_SPEED)// ST_Start
-        TRANSITION_MAP_ENTRY (ST_CHANGE_SPEED)// ST_ChangeSpeed
-    END_TRANSITION_MAP(pData)
-}
-*/
-// state machine sits here when motor is not running
-void Usart::ST_Idle(const NoEventData*)
-{
-	WyslijRamke("STAN IDLE");
-	//cout << "Motor::ST_Idle" << endl;
-}
-/*
-// stop the motor
-void Usart::ST_Stop(EventData* pData)
-{
-	//cout << "Motor::ST_Stop" << endl;
-
-    // perform the stop motor processing here
-    // transition to ST_Idle via an internal event
-    InternalEvent(ST_IDLE);
-}
-
-// start the motor going
-void Usart::ST_Start(MotorData* pData)
-{
-	//cout << "Motor::ST_Start" << endl;
-    // set initial motor speed processing here
-}
-*/
-// changes the motor speed once the motor is moving
-//void Usart::ST_ChangeSpeed(const UsartData* pData)
-//{
-	//cout << "Motor::ST_ChangeSpeed" << endl;
-    // perform the change motor speed to pData->speed here
-//}
-//Usart us(9600);
-//UsartDane *wUsartDane;
-//UsartDane dane;
-
-//void (*WskPustyBufor)() = PustyBufor;
-
-void Kom_Init(uint16_t Predkosc)
+Uart_Param uart_dane;
+Uart uart(9600);
+uint8_t buf[UART_ROZMIAR_BUFORA];
+uint8_t	volatile poz_buf, index, zajety = 0;
+Uart::Uart(uint16_t Predkosc)
 {
 	uint8_t ubrr = F_CPU / 16 / Predkosc - 1;
 	UBRR0H = (unsigned char)(ubrr >> 8);
 	UBRR0L = (unsigned char)ubrr;
 
 	UCSR0B = (1 << RXEN0) | (1 << RXCIE0) | (1 << TXEN0) | (1 << TXCIE0);
-	UCSR0C = (1 << UCSZ01) | (1 << UCSZ00);
+	//UCSR0C = (1 << UCSZ01) | (1 << UCSZ00);
 
 	USART_KIERUNEK_DDR |= (1 << USART_KIERUNEK);
 	USART_KIERUNEK_ODB;
 
+	//wsk_f[0] = &Uart::ST_Gotowy;
+	//wsk_f[1] = &Uart::ST_OdebranyZnak;
+	//wsk_f[2] = &Uart::ST_Wysylanie;
+	poz_buf = 0;
+	index = 0;
+	zajety = 0;
+	i = 0;
+	//Zdarzenie(ST_GOTOWY);
 	//WskPustyBufor = PustyBufor;
 	//wUsartDane = &dane;
 }
-
-void PustyBufor()
+/*
+void Uart::ZD_NowyZnak(Uart_Param *Dane)
 {
-	if(poz_buf > 0)
+	const uint16_t TAB_PRZEJSC[] =
 	{
-		UDR0 = usart_buf_nad[index++];
-		poz_buf--;
-	}
-	else
-	{
-		UCSR0B &= ~(1 << UDRIE0);
-		index = 0;
-	}
+		ST_ODEBRANY_ZNAK,				// ST_GOTOWY
+		ST_ODEBRANY_ZNAK,				// ST_ODEBRANY_ZNAK
+		//ST_ODEBRANY_ZNAK,				// ST_ODEBRANY_STRING
+		//ST_GOTOWY 						// ST_BLAD
+	};
+	Zdarzenie(TAB_PRZEJSC[StanBiezacy], Dane);
+}
+void Uart::ST_Gotowy(Uart_Param *Dane)
+{
+	//cout << "Stan: Gotowy" << endl;
 }
 
-void KoniecNadawania()
+void Uart::ST_OdebranyZnak(Uart_Param *Dane)
+{
+	//strcpy(Dane->ramka, "Tomeczek");
+	Dane->ramka = "Testowa";
+	ZD_WyslijRamke(Dane);
+	//Zdarzenie(ST_);
+}
+*/
+void Uart::ZD_PustyBufor(Uart_Param *Dane)
+{
+
+}
+
+void Uart::ZD_KoniecNadawania(Uart_Param *Dane)
 {
 	USART_KIERUNEK_ODB;
-	zajety = 0;
+	//zajety = 0;
 }
 
-
-
-void WyslijRamke(const char *ramka)
+void Uart::ZD_WyslijRamke(Uart_Param *Dane)
 {
-	while(zajety);
-	zajety = 1;
-	while(*ramka)
+	//while(zajety);
+	//zajety = 1;
+	//cli();
+	const char *txt = "Dupas";
+	const char *w = txt;
+	while(*w)
 	{
-		usart_buf_nad[poz_buf++] = *ramka++;
+		buf[poz_buf++] = *w++;
 	}
-
+	//sei();
 	USART_KIERUNEK_NAD;
 	UCSR0B |= (1 << UDRIE0);
 }
@@ -149,52 +111,37 @@ void USART_Debug(const char *txt, uint16_t liczba, uint16_t podstawa)
 	USART_WyslijLiczbe(liczba, podstawa);
 }
 
-/*
-void USART_WyslijString(const char *buf)
-{
-	while(*buf)
-	{
-		USART_WyslijZnak(*buf++);
-	}
-}
-*/
-/*
-void USART_DodajDoBufora(const char znak)
-{
-	usart_buf_nad[poz_buf++] = znak;
-	if(poz_buf == 16)
-	{
-		USART_KIERUNEK_NAD;
-		UCSR0B |= (1 << UDRIE0);
-	}
-}
-*/
-
 // --------- Debugowanie
 // http://mckmragowo.pl/mck/pliki/programming/clib/?f=va_start
 
 
 ISR(USART0_RX_vect)
 {
-
 	char znak = UDR0;
-//	us.OdebranoZnak(wUsartDane);
+	//uart_dane.znak = znak;
+	UDR0 = znak;
+	//uart_dane.flaga = 1;
+	//uart.ZD_NowyZnak(&uart_dane);
 }
 
 ISR(USART0_UDRE_vect)
 {
-	PustyBufor();
+	if(poz_buf > 0)
+	{
+		UDR0 = buf[index++];
+		poz_buf--;
+	}
+	else
+	{
+		UCSR0B &= ~(1 << UDRIE0);
+		index = 0;
+	}
+	//uart.ZD_PustyBufor();
 }
 
 ISR(USART0_TX_vect)
 {
-	KoniecNadawania();
+	USART_KIERUNEK_ODB;
+	//uart.ZD_KoniecNadawania();
 }
 
-/*
-void USART_WyslijZnak(uint8_t znak)
-{
-	while(!(UCSR0A & (1 << UDRE0)));
-	UDR0 = znak;
-}
-*/
