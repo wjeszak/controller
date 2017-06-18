@@ -11,7 +11,8 @@
 #include <inttypes.h>
 #include "maszyna.h"
 #define UART_ROZMIAR_BUFORA 			30
-
+extern volatile uint8_t tmp_licznik, flaga;
+extern void tmp_wyslij();
 class Uart_Param : public Param
 {
 public:

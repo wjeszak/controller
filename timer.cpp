@@ -7,10 +7,12 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include "timery.h"
+#include "timer.h"
+
+uint8_t volatile t_flaga, t_licznik, t_flaga_dluga;
+
 void Timer_Init()
 {
-	licznik, t_flaga, t_flaga_licz = 0;
 	TCCR0A |= (1 << WGM01); 		// CTC
 	TCCR0B |= (1 << CS02) | (1 << CS00);
 	OCR0A = 30;
@@ -19,11 +21,11 @@ void Timer_Init()
 
 ISR(TIMER0_COMPA_vect)
 {
-	licznik++;
-	if(licznik == 20)
+	t_licznik++;
+	if(t_licznik == 30)
 	{
-		licznik = 0;
-		t_flaga_licz = 1;
+		t_licznik = 0;
+		t_flaga_dluga = 1;
 	}
 	t_flaga = 1;
 }

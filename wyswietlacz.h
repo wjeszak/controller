@@ -41,16 +41,24 @@
 #define WYSW_ZNAK_DZIEWIEC		0x10
 #define WYSW_ZNAK_WYL			0x7F
 
-struct Wysw
-{
-	volatile uint8_t *ddr;
-	volatile uint8_t *port;
-	uint8_t pin;
-};
-extern Wysw tab[];
-extern uint8_t cyfra[4];
-extern void Wysw_Init();
-void IntToLed(uint16_t liczba);
 
+class Wyswietlacz
+{
+public:
+	Wyswietlacz();
+	void Odswiez();
+	void Wypisz(uint16_t liczba);
+private:
+	struct Wysw
+	{
+		volatile uint8_t *ddr;
+		volatile uint8_t *port;
+		uint8_t pin;
+	};
+	uint8_t nr_wysw;
+	Wysw tab[4];
+	uint8_t tab_cyfry[11];
+	uint8_t cyfra[4];
+};
 
 #endif /* WYSWIETLACZ_H_ */

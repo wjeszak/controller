@@ -11,20 +11,22 @@
 #include <string.h>
 #include "enc28j60.h"
 #include "stos.h"
+#include "timer.h"
 #include "usart.h"
 #include "wyswietlacz.h"
-#include "timery.h"
 //static uint8_t port_L = 80;
 //static uint8_t port_H = 0;
 
-extern Uart uart;
-extern Uart_Param uart_dane;
+//extern Uart uart;
+//extern Uart_Param uart_dane;
+
 int main()
 {
-	Wysw_Init();
+
+	Wyswietlacz wysw;
 	Timer_Init();
-	sei();
-	//uart_dane.ramka = "Kupsko piekne";
+
+//	uart_dane.ramka = "Kupsko piekne";
 	//strcpy(uart_dane.ramka, txt);
 	//uart.ZD_WyslijRamke(&uart_dane);
 
@@ -36,34 +38,27 @@ int main()
 	//enc28j60_ZrzutRejestrow();
 	//uint8_t buf_eth[1500];
 	//uint16_t dl;
-	uart_dane.flaga = 0;
+	//uart_dane.flaga = 0;
 	//uart_dane.ramka = "Jest ramka\n";
-	uint8_t nr_wysw = 0;
-	uint16_t l = 0;
+	sei();
+	//wysw.Wypisz(3975);
+	uint16_t licznik;
 	while(1)
 	{
-		if(t_flaga_licz)
-				{
-					t_flaga_licz = 0;
-					IntToLed(l++);
-					if(l == 5000) l = 0;
-				}
-				if(t_flaga)
-				{
-					t_flaga = 0;
-					WYSW_SEGMENTY_PORT = cyfra[nr_wysw];				// laduj cyfre do portu
-					*(tab[nr_wysw].port) &= ~tab[nr_wysw].pin;			// zaswiec modul
-					if(nr_wysw == 0)
-						*(tab[3].port) |= tab[3].pin;					// zgas modul
-					else
-						*(tab[nr_wysw-1].port) |= tab[nr_wysw-1].pin;	// zgas modul
-					nr_wysw++;
-					if(nr_wysw == 4) nr_wysw = 0;
-				}
-		//if(uart_dane.flaga == 1)
-		//{
-			//_delay_ms(100);
-			//uart_dane.flaga = 0;
+		if(t_flaga)
+		{
+			t_flaga = 0;
+			wysw.Odswiez();
+
+		}
+		if(t_flaga_dluga)
+		{
+			t_flaga_dluga = 0;
+			wysw.Wypisz(licznik++);
+			if(licznik == 9999) licznik = 0;
+
+		}
+
 		//_delay_ms(100);
 		//uart.ZD_WyslijRamke(&uart_dane);
 			//uart.ZD_NowyZnak(&uart_dane);
