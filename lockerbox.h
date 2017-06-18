@@ -8,7 +8,7 @@
 #ifndef LOCKERBOX_H_
 #define LOCKERBOX_H_
 
-#include "maszyna.h"
+//#include "maszyna.h"
 class Lockerbox : public Maszyna
 {
 	uint16_t PrzedstawSie() { return 67; }
