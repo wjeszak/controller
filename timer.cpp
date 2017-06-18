@@ -22,7 +22,7 @@ void Timer_Init()
 ISR(TIMER0_COMPA_vect)
 {
 	t_licznik++;
-	if(t_licznik == 30)
+	if(t_licznik == 200)
 	{
 		t_licznik = 0;
 		t_flaga_dluga = 1;

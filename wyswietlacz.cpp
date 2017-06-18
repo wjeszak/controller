@@ -6,12 +6,14 @@
  */
 
 #include "wyswietlacz.h"
+
 Wyswietlacz::Wyswietlacz()
 {
 	 //tab[0] = {&WYSW1_DDR, &WYSW1_PORT, WYSW1_PIN};
 	 //tab[1] = {&WYSW2_DDR, &WYSW2_PORT, WYSW2_PIN};
 	 //tab[2] = {&WYSW3_DDR, &WYSW3_PORT, WYSW3_PIN};
 	 //tab[3] = {&WYSW4_DDR, &WYSW4_PORT, WYSW4_PIN};
+	// taka inicjalizacja nie dziala
 	tab[0].ddr = &WYSW1_DDR;
 	tab[0].port = &WYSW1_PORT;
 	tab[0].pin = WYSW1_PIN;
@@ -24,6 +26,7 @@ Wyswietlacz::Wyswietlacz()
 	tab[3].ddr = &WYSW4_DDR;
 	tab[3].port = &WYSW4_PORT;
 	tab[3].pin = WYSW4_PIN;
+
 	for(uint8_t i = 0; i < 4; i++)
 		{
 			*(tab[i].ddr) |= tab[i].pin;		// jako wyjscia
@@ -50,24 +53,6 @@ Wyswietlacz::Wyswietlacz()
 		cyfra[3] = tab_cyfry[4];
 }
 
-/*
-uint8_t tab_cyfry[11] = {WYSW_ZNAK_ZERO, WYSW_ZNAK_JEDEN, WYSW_ZNAK_DWA,
-		WYSW__ZNAK_TRZY, WYSW_ZNAK_CZTERY, WYSW_ZNAK_PIEC, WYSW_ZNAK_SZESC,
-		WYSW_ZNAK_SIEDEM, WYSW_ZNAK_OSIEM, WYSW_ZNAK_DZIEWIEC, WYSW_ZNAK_WYL};
-*/
-
-/*
-void Wysw_Init()
-{
-	for(uint8_t i = 0; i < 4; i++)
-		{
-			*(tab[i].ddr) |= tab[i].pin;		// jako wyjscia
-			*(tab[i].port) |= tab[i].pin; 		// gaszenie wszystkich
-		}
-		// jako wyjscia port (za wyjatkiem najstarszego bitu) z segmentami a, b, c...
-		WYSW_SEGMENTY_DDR = 0b01111111;
-}
-*/
 void Wyswietlacz::Odswiez()
 {
 	WYSW_SEGMENTY_PORT = cyfra[nr_wysw];				// laduj cyfre do portu
@@ -88,4 +73,3 @@ void Wyswietlacz::Wypisz(uint16_t liczba)
 	cyfra[3] = tab_cyfry[liczba % 10]; 				// jedn
 
 }
-

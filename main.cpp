@@ -9,20 +9,15 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 #include <string.h>
-#include "enc28j60.h"
-#include "stos.h"
 #include "timer.h"
 #include "usart.h"
 #include "wyswietlacz.h"
+#include "typ_maszyny.h"
 //static uint8_t port_L = 80;
 //static uint8_t port_H = 0;
 
-//extern Uart uart;
-//extern Uart_Param uart_dane;
-
 int main()
 {
-
 	Wyswietlacz wysw;
 	Timer_Init();
 
@@ -41,8 +36,12 @@ int main()
 	//uart_dane.flaga = 0;
 	//uart_dane.ramka = "Jest ramka\n";
 	sei();
-	//wysw.Wypisz(3975);
-	uint16_t licznik;
+	Maszyna *m = WybierzTypMaszyny(TLockerbox);
+	//uint16_t licznik = 0;
+
+	 uint16_t stan = m->PrzedstawSie();
+	wysw.Wypisz(stan);
+
 	while(1)
 	{
 		if(t_flaga)
@@ -53,9 +52,13 @@ int main()
 		}
 		if(t_flaga_dluga)
 		{
+			m = WybierzTypMaszyny(TDynabox);
+			//m->ZmienStan(2);
+			stan = m->PrzedstawSie();
+			wysw.Wypisz(stan);
 			t_flaga_dluga = 0;
-			wysw.Wypisz(licznik++);
-			if(licznik == 9999) licznik = 0;
+			//wysw.Wypisz(licznik++);
+			//if(licznik == 9999) licznik = 0;
 
 		}
 

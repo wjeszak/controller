@@ -7,6 +7,7 @@
 
 #ifndef WYSWIETLACZ_H_
 #define WYSWIETLACZ_H_
+
 #include <avr/io.h>
 #include <inttypes.h>
 
@@ -40,7 +41,6 @@
 #define WYSW_ZNAK_OSIEM			0x00
 #define WYSW_ZNAK_DZIEWIEC		0x10
 #define WYSW_ZNAK_WYL			0x7F
-
 
 class Wyswietlacz
 {
