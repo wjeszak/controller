@@ -4,18 +4,18 @@
  *  Created on: 26 maj 2017
  *      Author: tomek
  */
+
 #include "stos.h"
-
 #include "enc28j60.h"
-
+// Tutaj jest straszny burdel w nazwach i deklaracjach. Uporzadkowac.
 static uint8_t Adres_MAC[6] = {ADR_MAC1, ADR_MAC2, ADR_MAC3, ADR_MAC4, ADR_MAC5, ADR_MAC6};
 static uint8_t Adres_IP[4]  = {ADR_IP1, ADR_IP2, ADR_IP3, ADR_IP4};
 static uint8_t seqnum=0xa; // my initial tcp sequence number
-
+extern Enc28j60 ethernet;
 // Doprecyzowac typ pakietu przychodzacego, zeby ARP odpowiadal tylko na ARP Req
 // a ping na ICMP -> patrz koniec pliku ip_arp_udp_tcp.c
 
-uint8_t eth_type_is_arp_and_my_ip(uint8_t *buf, uint16_t len)
+uint8_t Stos::eth_type_is_arp_and_my_ip(uint8_t *buf, uint16_t len)
 {
 	uint8_t i=0;
         //
@@ -38,7 +38,7 @@ uint8_t eth_type_is_arp_and_my_ip(uint8_t *buf, uint16_t len)
 	return 1;
 }
 
-void make_eth(uint8_t *buf)
+void Stos::make_eth(uint8_t *buf)
 {
 	uint8_t i = 0;
 	//copy the destination mac from the source and fill my mac into src
@@ -50,7 +50,7 @@ void make_eth(uint8_t *buf)
 	}
 }
 
-void make_arp_answer_from_request(uint8_t *buf)
+void Stos::make_arp_answer_from_request(uint8_t *buf)
 {
 	uint8_t i = 0;
 	make_eth(buf);
@@ -69,10 +69,10 @@ void make_arp_answer_from_request(uint8_t *buf)
                 i++;
         }
         // eth+arp is 42 bytes:
-        enc28j60_WyslijPakiet(42,buf);
+        ethernet.WyslijPakiet(42,buf);
 }
 
-uint8_t eth_type_is_ip_and_my_ip(uint8_t *buf, uint16_t len)
+uint8_t Stos::eth_type_is_ip_and_my_ip(uint8_t *buf, uint16_t len)
 {
 	uint8_t i = 0;
 	//eth+ip+udp header is 42
@@ -100,7 +100,7 @@ uint8_t eth_type_is_ip_and_my_ip(uint8_t *buf, uint16_t len)
 	return 1;
 }
 
-uint16_t checksum(uint8_t *buf, uint16_t len,uint8_t type){
+uint16_t Stos::checksum(uint8_t *buf, uint16_t len,uint8_t type){
         // type 0=ip , icmp
         //      1=udp
         //      2=tcp
@@ -141,7 +141,7 @@ uint16_t checksum(uint8_t *buf, uint16_t len,uint8_t type){
         return( (uint16_t) sum ^ 0xFFFF);
 }
 
-void fill_ip_hdr_checksum(uint8_t *buf)
+void Stos::fill_ip_hdr_checksum(uint8_t *buf)
 {
         uint16_t ck;
         // clear the 2 byte checksum
@@ -156,7 +156,7 @@ void fill_ip_hdr_checksum(uint8_t *buf)
         buf[IP_CHECKSUM_P+1]=ck& 0xff;
 }
 
-void make_ip(uint8_t *buf)
+void Stos::make_ip(uint8_t *buf)
 {
 	uint8_t i = 0;
 	while(i < 4)
@@ -168,7 +168,7 @@ void make_ip(uint8_t *buf)
 	fill_ip_hdr_checksum(buf);
 }
 
-void make_echo_reply_from_request(uint8_t *buf, uint16_t len)
+void Stos::make_echo_reply_from_request(uint8_t *buf, uint16_t len)
 {
 	make_eth(buf);
 	make_ip(buf);
@@ -180,11 +180,11 @@ void make_echo_reply_from_request(uint8_t *buf, uint16_t len)
 		buf[ICMP_CHECKSUM_P + 1]++;
 	}
 	buf[ICMP_CHECKSUM_P]+=0x08;
-	enc28j60_WyslijPakiet(len,buf);
+	ethernet.WyslijPakiet(len,buf);
 }
 
 // ------------------------ TCP --------------------------
-void step_seq(uint8_t *buf,uint16_t rel_ack_num,uint8_t cp_seq)
+void Stos::step_seq(uint8_t *buf,uint16_t rel_ack_num,uint8_t cp_seq)
 {
         uint8_t i;
         uint8_t tseq;
@@ -206,7 +206,7 @@ void step_seq(uint8_t *buf,uint16_t rel_ack_num,uint8_t cp_seq)
         }
 }
 
-void make_tcphead(uint8_t *buf,uint16_t rel_ack_num,uint8_t cp_seq)
+void Stos::make_tcphead(uint8_t *buf,uint16_t rel_ack_num,uint8_t cp_seq)
 {
         uint8_t i;
         // copy ports:
@@ -229,7 +229,7 @@ void make_tcphead(uint8_t *buf,uint16_t rel_ack_num,uint8_t cp_seq)
         buf[TCP_HEADER_LEN_P]=0x50;
 }
 
-void make_tcp_synack_from_syn(uint8_t *buf)
+void Stos::make_tcp_synack_from_syn(uint8_t *buf)
 {
         uint16_t ck;
         make_eth(buf);
@@ -270,12 +270,13 @@ void make_tcp_synack_from_syn(uint8_t *buf)
         buf[TCP_CHECKSUM_H_P]=ck>>8;
         buf[TCP_CHECKSUM_L_P]=ck& 0xff;
         // add 4 for option mss:
-        enc28j60_WyslijPakiet(IP_HEADER_LEN+TCP_HEADER_LEN_PLAIN+4+ETH_HEADER_LEN,buf);
+        ethernet.WyslijPakiet(IP_HEADER_LEN+TCP_HEADER_LEN_PLAIN+4+ETH_HEADER_LEN,buf);
 }
+/*
 void LAN_Start()
 {
 //	Stos_Init(adres_MAC, adres_IP, 502);
 }
-
+*/
 
 

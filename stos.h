@@ -8,6 +8,24 @@
 #ifndef STOS_H_
 #define STOS_H_
 #include <inttypes.h>
+
+class Stos
+{
+public:
+	uint8_t eth_type_is_arp_and_my_ip(uint8_t *buf, uint16_t len);
+	uint8_t eth_type_is_ip_and_my_ip(uint8_t *buf, uint16_t len);
+	void make_arp_answer_from_request(uint8_t *buf);
+	void make_echo_reply_from_request(uint8_t *buf, uint16_t len);
+	void make_tcp_synack_from_syn(uint8_t *buf);
+private:
+	void make_eth(uint8_t *buf);
+	void make_ip(uint8_t *buf);
+	uint16_t checksum(uint8_t *buf, uint16_t len,uint8_t type);
+	void fill_ip_hdr_checksum(uint8_t *buf);
+	void step_seq(uint8_t *buf,uint16_t rel_ack_num,uint8_t cp_seq);
+	void make_tcphead(uint8_t *buf,uint16_t rel_ack_num,uint8_t cp_seq);
+
+};
 #define ADR_MAC1	0x00
 #define ADR_MAC2	0x20
 #define ADR_MAC3	0x18
@@ -116,10 +134,6 @@
 #define TCP_OPTIONS_P 0x36
 
 //extern void Stos_Init(uint8_t *moj_adres_MAC, uint8_t *moj_adres_IP, uint16_t port);
-extern void LAN_Start();
-extern uint8_t eth_type_is_arp_and_my_ip(uint8_t *buf, uint16_t len);
-extern uint8_t eth_type_is_ip_and_my_ip(uint8_t *buf, uint16_t len);
-extern void make_arp_answer_from_request(uint8_t *buf);
-extern void make_echo_reply_from_request(uint8_t *buf, uint16_t len);
-extern void make_tcp_synack_from_syn(uint8_t *buf);
+//extern void LAN_Start();
+
 #endif /* STOS_H_ */

@@ -8,119 +8,139 @@
 /* UWAGI PRZY URUCHAMIANIU:
 1. Jesli adres MAC bedzie zle przypisany to poprawic definicje rejestrow!!
 bo sa ewidentnie zle
-2. Do obslugi maszyny stanow wykorzystac artykul z EP na preprocesorze
-
+2. Do przerobki: Nie ma konstruktora bo w funkcji OdbierzPakiet moze on byc wywolany.
 */
 #ifndef ENC28J60_H_
 #define ENC28J60_H_
 #include <inttypes.h>
 
+class Enc28j60
+{
+public:
+	void Init();
+	uint16_t OdbierzPakiet(uint16_t rozmiar_buf, uint8_t *buf);
+	void WyslijPakiet(uint16_t dl, uint8_t *buf);
+	void ZrzutRejestrow();
+private:
+	void SPI_Init();
+	void SPI_Wyslij(uint8_t bajt);
+	uint8_t SPI_Odbierz();
+	void Reset();
+	void RejWyczyscBity(uint8_t rejestr, uint8_t bity);
+	void RejUstawBity(uint8_t rejestr, uint8_t bity);
+	uint8_t RejCzytaj(uint8_t rejestr);
+	void RejZapisz(uint8_t rejestr, uint8_t wart_rejestru);
+	void ZapiszPhy(uint8_t rejPhy, uint16_t wartosc_rej);
+	void CzytajBuf(uint8_t *buf, uint16_t dl);
+	void ZapiszBuf(uint8_t *buf, uint16_t dl);
+};
+
 #define FULL_DUPLEX
 
-#define LO8(x) ( (uint8_t) ((x) & 0xFF) )
-#define HI8(x) ( (uint8_t) (((x) >> 8) & 0xFF) )
+#define LO8(x) 						((uint8_t) ((x) & 0xFF))
+#define HI8(x) 						((uint8_t) (((x) >> 8) & 0xFF))
 
 // ENC28J60 Packet Control Byte Bit Definitions
 // Nie wiem jeszcze co to jest ??
-#define PKTCTRL_PHUGEEN  0x08
-#define PKTCTRL_PPADEN   0x04
-#define PKTCTRL_PCRCEN   0x02
-#define PKTCTRL_POVERRIDE 0x01
+#define PKTCTRL_PHUGEEN 			0x08
+#define PKTCTRL_PPADEN 				0x04
+#define PKTCTRL_PCRCEN 				0x02
+#define PKTCTRL_POVERRIDE 			0x01
 
 // Kody rozkazów (s. 26)
-#define ENC28J60_CZYTAJ_REJ_KONTR    0x00
-#define ENC28J60_CZYTAJ_BUFOR		 0x3A
-#define ENC28J60_ZAPISZ_REJ_KONTR    0x40
-#define ENC28J60_ZAPISZ_BUFOR		 0x7A
-#define ENC28J60_USTAW_BITY       	 0x80
-#define ENC28J60_WYCZYSC_BITY      	 0xA0
-#define ENC28J60_RESET          	 0xFF
+#define ENC28J60_CZYTAJ_REJ_KONTR 	0x00
+#define ENC28J60_CZYTAJ_BUFOR 		0x3A
+#define ENC28J60_ZAPISZ_REJ_KONTR 	0x40
+#define ENC28J60_ZAPISZ_BUFOR 		0x7A
+#define ENC28J60_USTAW_BITY 		0x80
+#define ENC28J60_WYCZYSC_BITY 		0xA0
+#define ENC28J60_RESET 				0xFF
 
 // SPOSÓB DOSTÊPU DO REJESTRÓW KONTROLNYCH
 // Adres rejestru: 				bity 0-4
 // Numer banku:	   				bity 5-6
 // Znacznik typu (ETH lub MAC i MII): bit 7
 
-#define ADR_MASKA 		 0x1F		// 0b00011111	wlasciwy adres rejestru
-#define BANK_MASKA 		 0x60		// 0b01100000 	numer banku
+#define ADR_MASKA 					0x1F		// 0b00011111	wlasciwy adres rejestru
+#define BANK_MASKA 					0x60		// 0b01100000 	numer banku
 // patrz s. 27
-#define MAC_MII_MASKA 	 0x80		// 0b10000000 	znacznik typu - do odczytu tego typu rejestru trzeba
+#define MAC_MII_MASKA 				0x80		// 0b10000000 	znacznik typu - do odczytu tego typu rejestru trzeba
 									// odczytac na poczatku dodatkowy bajt
 // -------------------------------------------------
 
 	/* enc registers bank 0 */
-	#define ENC_REG_ERDPTL   (0x00 | 0x00)
-	#define ENC_REG_ERDPTH   (0x00 | 0x01)
-	#define ENC_REG_EWRPTL   (0x00 | 0x02)
-	#define ENC_REG_EWRPTH   (0x00 | 0x03)
-	#define ENC_REG_ETXSTL   (0x00 | 0x04)
-	#define ENC_REG_ETXSTH   (0x00 | 0x05)
-	#define ENC_REG_ETXNDL   (0x00 | 0x06)
-	#define ENC_REG_ETXNDH   (0x00 | 0x07)
-	#define ENC_REG_ERXSTL   (0x00 | 0x08)
-	#define ENC_REG_ERXSTH   (0x00 | 0x09)
-	#define ENC_REG_ERXNDL   (0x00 | 0x0A)
-	#define ENC_REG_ERXNDH   (0x00 | 0x0B)
-	#define ENC_REG_ERXRDPTL (0x00 | 0x0C)
-	#define ENC_REG_ERXRDPTH (0x00 | 0x0D)
-	#define ENC_REG_ERXWRPTL (0x00 | 0x0E)
-	#define ENC_REG_ERXWRPTH (0x00 | 0x0F)
-	#define ENC_REG_EDMASTL  (0x00 | 0x10)
-	#define ENC_REG_EDMASTH  (0x00 | 0x11)
-	#define ENC_REG_EDMANDL  (0x00 | 0x12)
-	#define ENC_REG_EDMANDH  (0x00 | 0x13)
-	#define ENC_REG_EDMADSTL (0x00 | 0x14)
-	#define ENC_REG_EDMADSTH (0x00 | 0x15)
-	#define ENC_REG_EDMACSL  (0x00 | 0x16)
-	#define ENC_REG_EDMACSH  (0x00 | 0x17)
+#define ENC_REG_ERDPTL 				(0x00 | 0x00)
+#define ENC_REG_ERDPTH 				(0x00 | 0x01)
+#define ENC_REG_EWRPTL 				(0x00 | 0x02)
+#define ENC_REG_EWRPTH 				(0x00 | 0x03)
+#define ENC_REG_ETXSTL 				(0x00 | 0x04)
+#define ENC_REG_ETXSTH 				(0x00 | 0x05)
+#define ENC_REG_ETXNDL 				(0x00 | 0x06)
+#define ENC_REG_ETXNDH 				(0x00 | 0x07)
+#define ENC_REG_ERXSTL 				(0x00 | 0x08)
+#define ENC_REG_ERXSTH 				(0x00 | 0x09)
+#define ENC_REG_ERXNDL 				(0x00 | 0x0A)
+#define ENC_REG_ERXNDH 				(0x00 | 0x0B)
+#define ENC_REG_ERXRDPTL 			(0x00 | 0x0C)
+#define ENC_REG_ERXRDPTH 			(0x00 | 0x0D)
+#define ENC_REG_ERXWRPTL 			(0x00 | 0x0E)
+#define ENC_REG_ERXWRPTH 			(0x00 | 0x0F)
+#define ENC_REG_EDMASTL 			(0x00 | 0x10)
+#define ENC_REG_EDMASTH 			(0x00 | 0x11)
+#define ENC_REG_EDMANDL 			(0x00 | 0x12)
+#define ENC_REG_EDMANDH 			(0x00 | 0x13)
+#define ENC_REG_EDMADSTL 			(0x00 | 0x14)
+#define ENC_REG_EDMADSTH 			(0x00 | 0x15)
+#define ENC_REG_EDMACSL 			(0x00 | 0x16)
+#define ENC_REG_EDMACSH 			(0x00 | 0x17)
 
 	/* enc registers bank 1 */
-	#define ENC_REG_EHT0     (0x20 | 0x00)
-	#define ENC_REG_EHT1     (0x20 | 0x01)
-	#define ENC_REG_EHT2     (0x20 | 0x02)
-	#define ENC_REG_EHT3     (0x20 | 0x03)
-	#define ENC_REG_EHT4     (0x20 | 0x04)
-	#define ENC_REG_EHT5     (0x20 | 0x05)
-	#define ENC_REG_EHT6     (0x20 | 0x06)
-	#define ENC_REG_EHT7     (0x20 | 0x07)
-	#define ENC_REG_EPMM0    (0x20 | 0x08)
-	#define ENC_REG_EPMM1    (0x20 | 0x09)
-	#define ENC_REG_EPMM2    (0x20 | 0x0A)
-	#define ENC_REG_EPMM3    (0x20 | 0x0B)
-	#define ENC_REG_EPMM4    (0x20 | 0x0C)
-	#define ENC_REG_EPMM5    (0x20 | 0x0D)
-	#define ENC_REG_EPMM6    (0x20 | 0x0E)
-	#define ENC_REG_EPMM7    (0x20 | 0x0F)
-	#define ENC_REG_EPMCSL   (0x20 | 0x10)
-	#define ENC_REG_EPMCSH   (0x20 | 0x11)
-	#define ENC_REG_EPMOL    (0x20 | 0x14)
-	#define ENC_REG_EPMOH    (0x20 | 0x15)
-	#define ENC_REG_EWOLIE   (0x20 | 0x16)
-	 #define ENC_BIT_UCWOLIE 7
-	 #define ENC_BIT_AWOLIE  6
-	 #define ENC_BIT_PMWOLIE 4
-	 #define ENC_BIT_MPWOLIE 3
-	 #define ENC_BIT_HTWOLIE 2
-	 #define ENC_BIT_MCWOLIE 1
-	 #define ENC_BIT_BCWOLIE 0
-	#define ENC_REG_EWOLIR   (0x20 | 0x17)
-	 #define ENC_BIT_UCWOLIF 7
-	 #define ENC_BIT_AWOLIF  6
-	 #define ENC_BIT_PMWOLIF 4
-	 #define ENC_BIT_MPWOLIF 3
-	 #define ENC_BIT_HTWOLIF 2
-	 #define ENC_BIT_MCWOLIF 1
-	 #define ENC_BIT_BCWOLIF 0
-	#define ENC_REG_ERXFCON  (0x20 | 0x18)
-	 #define ENC_BIT_UCEN    7
-	 #define ENC_BIT_ANDOR   6
-	 #define ENC_BIT_CRCEN   5
-	 #define ENC_BIT_PMEN    4
-	 #define ENC_BIT_MPEN    3
-	 #define ENC_BIT_HTEN    2
-	 #define ENC_BIT_MCEN    1
-	 #define ENC_BIT_BCEN    0
-	#define ENC_REG_EPKTCNT  (0x20 | 0x19)
+#define ENC_REG_EHT0 				(0x20 | 0x00)
+#define ENC_REG_EHT1 				(0x20 | 0x01)
+#define ENC_REG_EHT2 				(0x20 | 0x02)
+#define ENC_REG_EHT3 				(0x20 | 0x03)
+#define ENC_REG_EHT4 				(0x20 | 0x04)
+#define ENC_REG_EHT5 				(0x20 | 0x05)
+#define ENC_REG_EHT6 				(0x20 | 0x06)
+#define ENC_REG_EHT7 				(0x20 | 0x07)
+#define ENC_REG_EPMM0 				(0x20 | 0x08)
+#define ENC_REG_EPMM1 				(0x20 | 0x09)
+#define ENC_REG_EPMM2 				(0x20 | 0x0A)
+#define ENC_REG_EPMM3 				(0x20 | 0x0B)
+#define ENC_REG_EPMM4 				(0x20 | 0x0C)
+#define ENC_REG_EPMM5 				(0x20 | 0x0D)
+#define ENC_REG_EPMM6 				(0x20 | 0x0E)
+#define ENC_REG_EPMM7 				(0x20 | 0x0F)
+#define ENC_REG_EPMCSL 				(0x20 | 0x10)
+#define ENC_REG_EPMCSH 				(0x20 | 0x11)
+#define ENC_REG_EPMOL 				(0x20 | 0x14)
+#define ENC_REG_EPMOH 				(0x20 | 0x15)
+#define ENC_REG_EWOLIE 				(0x20 | 0x16)
+	 #define ENC_BIT_UCWOLIE 		7
+	 #define ENC_BIT_AWOLIE  		6
+	 #define ENC_BIT_PMWOLIE 		4
+	 #define ENC_BIT_MPWOLIE 		3
+	 #define ENC_BIT_HTWOLIE 		2
+	 #define ENC_BIT_MCWOLIE 		1
+	 #define ENC_BIT_BCWOLIE 		0
+#define ENC_REG_EWOLIR 				(0x20 | 0x17)
+	 #define ENC_BIT_UCWOLIF 		7
+	 #define ENC_BIT_AWOLIF 		6
+	 #define ENC_BIT_PMWOLIF 		4
+	 #define ENC_BIT_MPWOLIF 		3
+	 #define ENC_BIT_HTWOLIF 		2
+	 #define ENC_BIT_MCWOLIF 		1
+	 #define ENC_BIT_BCWOLIF 		0
+#define ENC_REG_ERXFCON 			(0x20 | 0x18)
+	 #define ENC_BIT_UCEN 			7
+	 #define ENC_BIT_ANDOR 			6
+	 #define ENC_BIT_CRCEN 			5
+	 #define ENC_BIT_PMEN 			4
+	 #define ENC_BIT_MPEN 			3
+	 #define ENC_BIT_HTEN 			2
+	 #define ENC_BIT_MCEN 			1
+	 #define ENC_BIT_BCEN 			0
+#define ENC_REG_EPKTCNT 			(0x20 | 0x19)
 
 	/* enc registers bank 2 */
 	#define ENC_REG_MACON1   (0x80 | 0x40 | 0x00)
@@ -294,11 +314,6 @@ bo sa ewidentnie zle
 #define MAX_ROZMIAR_PAKIETU 		1500
 
 
-// Funkcje
-void enc28j60_Init();
-uint16_t enc28j60_OdbierzPakiet(uint16_t rozmiar_buf, uint8_t *buf);
-void enc28j60_ZrzutRejestrow();
-extern void enc28j60_WyslijPakiet(uint16_t dl, uint8_t *buf);
 //extern uint8_t enc28j60getrev(void);
 #ifdef ENC28J60_BROADCAST
 extern void enc28j60EnableBroadcast(void);
