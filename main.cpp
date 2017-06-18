@@ -14,9 +14,9 @@
 #include "typ_maszyny.h"
 #include "enc28j60.h"
 #include "stos.h"
-//static uint8_t port_L = 80;
-//static uint8_t port_H = 0;
+
 Enc28j60 ethernet;
+
 int main()
 {
 	Wyswietlacz wysw;
@@ -40,8 +40,6 @@ int main()
 	//uart_dane.ramka = "Jest ramka\n";
 	sei();
 	Maszyna *m = WybierzTypMaszyny(TLockerbox);
-	//uint16_t licznik = 0;
-
 	uint16_t stan = m->PrzedstawSie();
 	wysw.Wypisz(stan);
 
