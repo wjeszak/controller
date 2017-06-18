@@ -20,7 +20,6 @@ int main()
 {
 	Wyswietlacz wysw;
 	Timer_Init();
-
 //	uart_dane.ramka = "Kupsko piekne";
 	//strcpy(uart_dane.ramka, txt);
 	//uart.ZD_WyslijRamke(&uart_dane);
