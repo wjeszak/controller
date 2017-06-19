@@ -20,8 +20,9 @@ Wyswietlacz wysw;
 
 int main()
 {
-
-
+	Uart uart(9600);
+	Uart_Param uart_dane;
+	uart_dane.ramka = "Jest ramka\n";
 	ethernet.Init();
 	Stos stos;
 	Timer_Init();
@@ -74,12 +75,13 @@ int main()
 		if(dl != 0)
 		{
 			wysw.Wypisz(licznik_pakietow++);
+			uart.ZD_WyslijRamke(&uart_dane);
 		}
 		if(stos.eth_type_is_arp_and_my_ip(buf_eth, dl))
 		{
 			// doprecyzowac typ pakietu
 			//USART_WyslijRamke("Nasz pakiet ARP!\n");
-		//	stos.make_arp_answer_from_request(buf_eth);
+			stos.make_arp_answer_from_request(buf_eth);
 		}
 		if(stos.eth_type_is_ip_and_my_ip(buf_eth, dl))
 		{

@@ -18,9 +18,9 @@
 
 #define USART_KIERUNEK_NAD 	USART_KIERUNEK_PORT |=  (1 << USART_KIERUNEK)
 #define USART_KIERUNEK_ODB 	USART_KIERUNEK_PORT &= ~(1 << USART_KIERUNEK)
-extern Uart_Param uart_dane;
-Uart_Param uart_dane;
-Uart uart(9600);
+//extern Uart_Param uart_dane;
+//Uart_Param uart_dane;
+//Uart uart(9600);
 uint8_t buf[UART_ROZMIAR_BUFORA];
 uint8_t	volatile poz_buf, index, zajety = 0;
 volatile uint8_t tmp_licznik = 0;
@@ -32,7 +32,7 @@ Uart::Uart(uint16_t Predkosc)
 	UBRR0L = (unsigned char)ubrr;
 
 	UCSR0B |= (1 << RXEN0) | (1 << RXCIE0) | (1 << TXEN0) | (1 << TXCIE0);
-	//UCSR0C = (1 << UCSZ01) | (1 << UCSZ00);
+	UCSR0C = (1 << UCSZ01) | (1 << UCSZ00);
 
 	USART_KIERUNEK_DDR |= (1 << USART_KIERUNEK);
 	USART_KIERUNEK_ODB;
@@ -81,6 +81,7 @@ void Uart::ZD_PustyBufor(Uart_Param *Dane)
 void Uart::ZD_KoniecNadawania(Uart_Param *Dane)
 {
 	USART_KIERUNEK_ODB;
+
 	//zajety = 0;
 }
 
@@ -90,8 +91,10 @@ void Uart::ZD_WyslijRamke(Uart_Param *Dane)
 	//while(zajety);
 	//zajety = 1;
 	//cli();
-	const char *txt = "Dupa Jasia";
-	const char *w = txt;
+	UCSR0B &= ~ ((1 << RXEN0) | (1 << RXCIE0));
+
+	//const char *txt = "Jest ramka\n";
+	const char *w = Dane->ramka;
 	while(*w)
 	{
 		buf[poz_buf++] = *w++;
@@ -146,10 +149,11 @@ ISR(USART0_UDRE_vect)
 ISR(USART0_TX_vect)
 {
 	USART_KIERUNEK_ODB;
+	UCSR0B |= (1 << RXEN0) | (1 << RXCIE0);
 	//uart.ZD_KoniecNadawania();
 }
 
 void tmp_wyslij()
 {
-	uart.ZD_WyslijRamke(&uart_dane);
+//	uart.ZD_WyslijRamke(&uart_dane);
 }
