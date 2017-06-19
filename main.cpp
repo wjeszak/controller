@@ -16,10 +16,11 @@
 #include "stos.h"
 
 Enc28j60 ethernet;
+Wyswietlacz wysw;
 
 int main()
 {
-	Wyswietlacz wysw;
+
 
 	ethernet.Init();
 	Stos stos;
@@ -38,6 +39,7 @@ int main()
 	uint16_t dl;
 	//uart_dane.flaga = 0;
 	//uart_dane.ramka = "Jest ramka\n";
+	uint16_t licznik_pakietow = 1;
 	sei();
 	Maszyna *m = WybierzTypMaszyny(TLockerbox);
 	uint16_t stan = m->PrzedstawSie();
@@ -45,13 +47,13 @@ int main()
 
 	while(1)
 	{
-		if(t_flaga)
-		{
-			t_flaga = 0;
-			wysw.Odswiez();
+		//if(t_flaga)
+		//{
+		//	t_flaga = 0;
+		//	wysw.Odswiez();
 
-		}
-		if(t_flaga_dluga)
+		//}
+		/*if(t_flaga_dluga)
 		{
 			m = WybierzTypMaszyny(TDynabox);
 			//m->ZmienStan(2);
@@ -61,7 +63,7 @@ int main()
 			//wysw.Wypisz(licznik++);
 			//if(licznik == 9999) licznik = 0;
 
-		}
+		}*/
 
 		//_delay_ms(100);
 		//uart.ZD_WyslijRamke(&uart_dane);
@@ -69,17 +71,21 @@ int main()
 
 		//}
 		dl = ethernet.OdbierzPakiet(1500, buf_eth);
+		if(dl != 0)
+		{
+			wysw.Wypisz(licznik_pakietow++);
+		}
 		if(stos.eth_type_is_arp_and_my_ip(buf_eth, dl))
 		{
 			// doprecyzowac typ pakietu
 			//USART_WyslijRamke("Nasz pakiet ARP!\n");
-			stos.make_arp_answer_from_request(buf_eth);
+		//	stos.make_arp_answer_from_request(buf_eth);
 		}
 		if(stos.eth_type_is_ip_and_my_ip(buf_eth, dl))
 		{
 			// doprecyzowac typ pakietu
 		//	USART_WyslijRamke("Nasz pakiet PING!\n");
-			stos.make_echo_reply_from_request(buf_eth, dl);
+		//	stos.make_echo_reply_from_request(buf_eth, dl);
 		}
 		/*
 		if(buf_eth[TCP_DST_PORT_H_P]== port_H && buf_eth[TCP_DST_PORT_L_P] == port_L)
