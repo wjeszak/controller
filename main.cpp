@@ -14,63 +14,45 @@
 #include "typ_maszyny.h"
 #include "enc28j60.h"
 #include "stos.h"
+#include "motor.h"
 
 Enc28j60 ethernet;
 Wyswietlacz wysw;
 
 int main()
 {
+	Motor motor;
+	motor.Enable(TForward, 20);
 	Uart uart(9600);
 	Uart_Param uart_dane;
 	uart_dane.ramka = "Jest ramka\n";
 	ethernet.Init();
 	Stos stos;
 	Timer_Init();
-//	uart_dane.ramka = "Kupsko piekne";
-	//strcpy(uart_dane.ramka, txt);
-	//uart.ZD_WyslijRamke(&uart_dane);
-
-
-	//us.OdebranoZnak();
-
-	//us.WyslijRamke("ENC OK\n");
-	//_delay_ms(100);
-	//enc28j60_ZrzutRejestrow();
 	uint8_t buf_eth[1500];
 	uint16_t dl;
-	//uart_dane.flaga = 0;
-	//uart_dane.ramka = "Jest ramka\n";
 	uint16_t licznik_pakietow = 1;
 	sei();
 	Maszyna *m = WybierzTypMaszyny(TLockerbox);
 	uint16_t stan = m->PrzedstawSie();
-	wysw.Wypisz(stan);
+	wysw.Wypisz(0);
 
 	while(1)
 	{
-		//if(t_flaga)
-		//{
-		//	t_flaga = 0;
-		//	wysw.Odswiez();
-
-		//}
-		/*if(t_flaga_dluga)
+		/*
+		_delay_ms(5000);
+		MOTOR_PORT ^= (1 << MOTOR_BRAKE_PIN);
+		if(t_flaga_dluga)
 		{
 			m = WybierzTypMaszyny(TDynabox);
-			//m->ZmienStan(2);
+			m->ZmienStan(2);
 			stan = m->PrzedstawSie();
 			wysw.Wypisz(stan);
 			t_flaga_dluga = 0;
-			//wysw.Wypisz(licznik++);
-			//if(licznik == 9999) licznik = 0;
-
-		}*/
-
-		//_delay_ms(100);
-		//uart.ZD_WyslijRamke(&uart_dane);
-			//uart.ZD_NowyZnak(&uart_dane);
-
-		//}
+			wysw.Wypisz(licznik++);
+			if(licznik == 9999) licznik = 0;
+		}
+		*/
 		dl = ethernet.OdbierzPakiet(1500, buf_eth);
 		if(dl != 0)
 		{
@@ -87,7 +69,7 @@ int main()
 		{
 			// doprecyzowac typ pakietu
 		//	USART_WyslijRamke("Nasz pakiet PING!\n");
-		//	stos.make_echo_reply_from_request(buf_eth, dl);
+			stos.make_echo_reply_from_request(buf_eth, dl);
 		}
 		/*
 		if(buf_eth[TCP_DST_PORT_H_P]== port_H && buf_eth[TCP_DST_PORT_L_P] == port_L)
