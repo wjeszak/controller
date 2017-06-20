@@ -17,31 +17,37 @@
 #include "motor.h"
 
 Enc28j60 ethernet;
-Wyswietlacz wysw;
+//Wyswietlacz wysw;
 
 int main()
 {
 	Motor motor;
-	motor.Enable(TForward, 20);
-	Uart uart(9600);
-	Uart_Param uart_dane;
-	uart_dane.ramka = "Jest ramka\n";
-	ethernet.Init();
-	Stos stos;
-	Timer_Init();
+	motor.Enable(TForward, 50);
+	//Uart uart(9600);
+	//Uart_Param uart_dane;
+	//uart_dane.ramka = "Jest ramka\n";
+	//ethernet.Init();
+	//Stos stos;
+	//Timer_Init();
 	uint8_t buf_eth[1500];
 	uint16_t dl;
 	uint16_t licznik_pakietow = 1;
 	sei();
 	Maszyna *m = WybierzTypMaszyny(TLockerbox);
 	uint16_t stan = m->PrzedstawSie();
-	wysw.Wypisz(0);
-
+	//wysw.Wypisz(0);
+	//TDirection d;
 	while(1)
 	{
+
+		//_delay_ms(1);
+		//MOTOR_PORT |= (1 << MOTOR_EN_PIN);
+		//_delay_ms(10);
+		//MOTOR_PORT &= ~ (1 << MOTOR_EN_PIN);
+		//if(d == TForward) d = TBackward;
+		//if(d == TBackward) d = TForward;
+		//motor.SetDirection(d);
 		/*
-		_delay_ms(5000);
-		MOTOR_PORT ^= (1 << MOTOR_BRAKE_PIN);
 		if(t_flaga_dluga)
 		{
 			m = WybierzTypMaszyny(TDynabox);
@@ -53,11 +59,12 @@ int main()
 			if(licznik == 9999) licznik = 0;
 		}
 		*/
+		/*
 		dl = ethernet.OdbierzPakiet(1500, buf_eth);
 		if(dl != 0)
 		{
-			wysw.Wypisz(licznik_pakietow++);
-			uart.ZD_WyslijRamke(&uart_dane);
+			//wysw.Wypisz(licznik_pakietow++);
+			//uart.ZD_WyslijRamke(&uart_dane);
 		}
 		if(stos.eth_type_is_arp_and_my_ip(buf_eth, dl))
 		{
