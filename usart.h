@@ -9,36 +9,48 @@
 #define USART_H_
 
 #include <inttypes.h>
-#include "maszyna.h"
-#define UART_ROZMIAR_BUFORA 			30
-extern volatile uint8_t tmp_licznik, flaga;
-extern void tmp_wyslij();
-class Uart_Param : public Param
+#include "machine.h"
+
+#define USART_DE_DDR 			DDRC
+#define USART_DE_PORT 			PORTC
+#define USART_DE_PIN	 		2
+
+#define USART_DE_RECEIVE 		USART_DE_PORT &= ~(1 << USART_DE_PIN)
+#define USART_DE_SEND 			USART_DE_PORT |=  (1 << USART_DE_PIN)
+#define USART_DE_INIT 			USART_DE_DDR  |=  (1 << USART_DE_PIN); USART_DE_RECEIVE
+
+#define UART_RX_BUF_SIZE 		32
+#define UART_TX_BUF_SIZE 		32
+
+class UsartData : public EventData
 {
 public:
-	char znak;
-	volatile int flaga;
-	const char *ramka;
+	uint8_t c;
+	const char *frame;
 };
 
-class Uart : public Maszyna
+class Usart : public Machine
 {
 public:
-	Uart(uint16_t Predkosc);
-	void ZD_NowyZnak(Uart_Param *Dane);
-	void ZD_WyslijRamke(Uart_Param *Dane);
-	void ZD_PustyBufor(Uart_Param *Dane = NULL);
-	void ZD_KoniecNadawania(Uart_Param *Dane = NULL);
-
-	void ST_Gotowy(Uart_Param *Dane);
-	void ST_OdebranyZnak(Uart_Param *Dane);
+	Usart(uint16_t baud = 9600);
+	void Idle(UsartData* pdata);
+	void NewChar(UsartData* pdata);									// RX_vect callback
+	void SendFrame(UsartData* pdata);
+	void TXBufferEmpty(UsartData* pdata = NULL);					// UDRE_vect callback
+	void TXComplete(UsartData* pdata = NULL);						// TX_vect callback
+	//virtual ~Usart();
 
 private:
-	void (Uart::*wsk_f[10])(Uart_Param *Dane);
-	enum Stany {ST_GOTOWY = 0, ST_ODEBRANY_ZNAK, ST_ODEBRANY_STRING, ST_WYSYLANIE};
-	uint8_t i;
-	//uint8_t buf[UART_ROZMIAR_BUFORA];
-	//uint8_t	poz_buf, index, zajety;
+	void RxEnable();
+	void RxDisable();
+	void TxEnable();
+	void TxDisable();
+	void (Usart::*p_fun[10])(UsartData* pdata);
+	enum States {IDLE, NEW_CHAR, SEND_FRAME, SENDING_FRAME};
+	volatile uint8_t buf_rx[UART_RX_BUF_SIZE];
+	volatile uint8_t buf_tx[UART_TX_BUF_SIZE];
+	volatile uint8_t rx_head, rx_tail, tx_head, tx_tail;
 };
+extern Usart usart;
 
 #endif /* USART_H_ */

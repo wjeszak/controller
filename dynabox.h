@@ -7,14 +7,11 @@
 
 #ifndef DYNABOX_H_
 #define DYNABOX_H_
-
-class Dynabox : public Maszyna
+#include "machine.h"
+class Dynabox : public Machine
 {
-	uint16_t PrzedstawSie() { return 40; }
+	uint16_t Who() { return 2; }
 
 } dynabox;
-
-
-
 
 #endif /* DYNABOX_H_ */

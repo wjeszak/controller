@@ -8,11 +8,17 @@
 #ifndef EEPROM_H_
 #define EEPROM_H_
 
+#include "machine.h"
+
+struct Config
+{
+	MachineType machine_type;
+};
 class Eeprom
 {
 public:
-	void Czytaj();
-	void Zapisz();
+	void Read();
+	void Write();
 };
 
 

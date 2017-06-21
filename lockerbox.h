@@ -9,12 +9,9 @@
 #define LOCKERBOX_H_
 
 //#include "maszyna.h"
-class Lockerbox : public Maszyna
+class Lockerbox : public Machine
 {
-	uint16_t PrzedstawSie() { return 67; }
+	uint16_t Who() { return 1; }
 } lockerbox;
-
-
-
 
 #endif /* LOCKERBOX_H_ */

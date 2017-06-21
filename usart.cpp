@@ -12,41 +12,45 @@
 #include <string.h>
 #include "usart.h"
 
-#define USART_KIERUNEK_DDR 		DDRC
-#define USART_KIERUNEK_PORT 	PORTC
-#define USART_KIERUNEK	 		2
-
-#define USART_KIERUNEK_NAD 	USART_KIERUNEK_PORT |=  (1 << USART_KIERUNEK)
-#define USART_KIERUNEK_ODB 	USART_KIERUNEK_PORT &= ~(1 << USART_KIERUNEK)
-//extern Uart_Param uart_dane;
-//Uart_Param uart_dane;
-//Uart uart(9600);
-uint8_t buf[UART_ROZMIAR_BUFORA];
-uint8_t	volatile poz_buf, index, zajety = 0;
-volatile uint8_t tmp_licznik = 0;
-volatile uint8_t flaga = 0;
-Uart::Uart(uint16_t Predkosc)
+Usart::Usart(uint16_t baud) : rx_head(0), rx_tail(0), tx_head(0), tx_tail(0)
 {
-	uint8_t ubrr = F_CPU / 16 / Predkosc - 1;
-	UBRR0H = (unsigned char)(ubrr >> 8);
-	UBRR0L = (unsigned char)ubrr;
+	uint8_t ubrr = F_CPU / 16 / baud - 1;
+	UBRR0H = (uint8_t)(ubrr >> 8);
+	UBRR0L = (uint8_t)ubrr;
 
-	UCSR0B |= (1 << RXEN0) | (1 << RXCIE0) | (1 << TXEN0) | (1 << TXCIE0);
-	UCSR0C = (1 << UCSZ01) | (1 << UCSZ00);
+	UCSR0B |= (1 << RXEN0) | (1 << TXEN0) | (1 << TXCIE0);
+	UCSR0C |= (1 << UCSZ01) | (1 << UCSZ00);
 
-	USART_KIERUNEK_DDR |= (1 << USART_KIERUNEK);
-	USART_KIERUNEK_ODB;
-
+	USART_DE_INIT;
 	//wsk_f[0] = &Uart::ST_Gotowy;
 	//wsk_f[1] = &Uart::ST_OdebranyZnak;
 	//wsk_f[2] = &Uart::ST_Wysylanie;
-	poz_buf = 0;
-	index = 0;
-	zajety = 0;
-	i = 0;
+
 	//Zdarzenie(ST_GOTOWY);
 	//WskPustyBufor = PustyBufor;
 	//wUsartDane = &dane;
+}
+
+void Usart::RxEnable()
+{
+	USART_DE_RECEIVE;
+	UCSR0B |= (1 << RXCIE0);
+}
+
+void Usart::RxDisable()
+{
+	UCSR0B &= ~(1 << RXCIE0);
+}
+
+void Usart::TxEnable()
+{
+	USART_DE_SEND;
+	UCSR0B |= (1 << UDRIE0);
+}
+
+void Usart::TxDisable()
+{
+	UCSR0B &= ~(1 << UDRIE0);
 }
 /*
 void Uart::ZD_NowyZnak(Uart_Param *Dane)
@@ -73,37 +77,41 @@ void Uart::ST_OdebranyZnak(Uart_Param *Dane)
 	//Zdarzenie(ST_);
 }
 */
-void Uart::ZD_PustyBufor(Uart_Param *Dane)
+void Usart::NewChar(UsartData* pdata)
 {
 
 }
 
-void Uart::ZD_KoniecNadawania(Uart_Param *Dane)
+void Usart::TXBufferEmpty(UsartData* pdata)
 {
-	USART_KIERUNEK_ODB;
-
-	//zajety = 0;
+	if(tx_head > 0)
+	{
+		UDR0 = buf_tx[tx_tail++];
+		tx_head--;
+	}
+	else
+	{
+		TxDisable();
+		tx_tail = 0;
+	}
 }
 
-void Uart::ZD_WyslijRamke(Uart_Param *Dane)
+void Usart::TXComplete(UsartData* pdata)
 {
+	RxEnable();
+}
 
-	//while(zajety);
-	//zajety = 1;
-	//cli();
-	UCSR0B &= ~ ((1 << RXEN0) | (1 << RXCIE0));
-
-	//const char *txt = "Jest ramka\n";
-	const char *w = Dane->ramka;
+void Usart::SendFrame(UsartData* pdata)
+{
+	RxDisable();
+	const char *w = pdata->frame;
 	while(*w)
 	{
-		buf[poz_buf++] = *w++;
+		buf_tx[tx_head++] = *w++;
 	}
-	//sei();
-	USART_KIERUNEK_NAD;
-	UCSR0B |= (1 << UDRIE0);
+	TxEnable();
 }
-
+/*
 void USART_WyslijLiczbe(uint16_t liczba, uint16_t podstawa)
 {
 	char buf[10];
@@ -116,41 +124,29 @@ void USART_Debug(const char *txt, uint16_t liczba, uint16_t podstawa)
 	//USART_WyslijRamke(txt);
 	USART_WyslijLiczbe(liczba, podstawa);
 }
-
+*/
 // --------- Debugowanie
 // http://mckmragowo.pl/mck/pliki/programming/clib/?f=va_start
 
 
 ISR(USART0_RX_vect)
 {
-	char znak = UDR0;
+	uint8_t c = UDR0;
 	//uart_dane.znak = znak;
-	UDR0 = znak;
-	flaga = 1;
-	tmp_licznik++;
+	//UDR0 = znak;
+//	flaga = 1;
+//	tmp_licznik++;
 	//uart.ZD_NowyZnak(&uart_dane);
 }
 
 ISR(USART0_UDRE_vect)
 {
-	if(poz_buf > 0)
-	{
-		UDR0 = buf[index++];
-		poz_buf--;
-	}
-	else
-	{
-		UCSR0B &= ~(1 << UDRIE0);
-		index = 0;
-	}
-	//uart.ZD_PustyBufor();
+	usart.TXBufferEmpty();
 }
 
 ISR(USART0_TX_vect)
 {
-	USART_KIERUNEK_ODB;
-	UCSR0B |= (1 << RXEN0) | (1 << RXCIE0);
-	//uart.ZD_KoniecNadawania();
+	usart.TXComplete();
 }
 
 void tmp_wyslij()

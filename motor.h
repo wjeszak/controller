@@ -23,6 +23,7 @@
 
 #define MOTOR_BRAKE_ON 		MOTOR_PORT |= (1 << MOTOR_BRAKE_PIN)
 #define MOTOR_BRAKE_OFF 	MOTOR_PORT &= ~(1 << MOTOR_BRAKE_PIN)
+
 enum Prescallers
 {
 	PS_0 = 0,
@@ -35,19 +36,18 @@ enum Prescallers
 	PS_1024 = (1 << CS22) | (1 << CS21) | (1 << CS20)
 };
 
-enum TDirection {TForward, TBackward};
+enum Direction {Forward, Backward};
 
 class Motor
 {
 public:
 	Motor();
-	void Enable(TDirection, uint8_t speed);
+	void Enable(Direction, uint8_t speed);
 	void Disable();
-	void SetDirection(TDirection dir);
+	void SetDirection(Direction dir);
 	private:
-	TDirection _direction;
-	uint8_t _speed;
-
+	Direction direction_;
+	uint8_t speed_;
 };
 
 #endif /* MOTOR_H_ */

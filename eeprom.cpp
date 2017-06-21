@@ -6,7 +6,8 @@
  */
 #include "eeprom.h"
 
-void Eeprom::Czytaj()
+
+void Eeprom::Read()
 {
 
 }

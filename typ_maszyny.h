@@ -8,27 +8,25 @@
 #ifndef TYP_MASZYNY_H_
 #define TYP_MASZYNY_H_
 
-#include "maszyna.h"
 #include "dynabox.h"
 #include "lockerbox.h"
+#include "machine.h"
 
-Maszyna * WybierzTypMaszyny(TypMaszyny typ)
+Machine * GetTypeOfMachine(MachineType type)
 {
-	Maszyna *wsk = NULL;
-	switch (typ)
+	Machine *p = NULL;
+	switch (type)
 	{
-	case TLockerbox:
-		wsk = &lockerbox;
+	case Lockerbox:
+		p = &lockerbox;
 		break;
-	case TDynabox:
-		wsk = &dynabox;
+	case Dynabox:
+		p = &dynabox;
 		break;
 	default:
-		wsk = NULL;
+		p = NULL;
 	}
-	return wsk;
+	return p;
 }
-
-
 
 #endif /* TYP_MASZYNY_H_ */
