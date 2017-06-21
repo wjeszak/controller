@@ -45,10 +45,13 @@ public:
 	void Enable(Direction, uint8_t speed);
 	void Disable();
 	void SetDirection(Direction dir);
+	void SetSpeed(uint8_t speed);
+	Direction GetDirection();
 	private:
-	Direction direction_;
-	uint8_t speed_;
+	Direction _direction;
+	uint8_t _speed;
 };
+extern Motor motor;
 
 #endif /* MOTOR_H_ */
 

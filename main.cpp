@@ -17,12 +17,13 @@
 #include "motor.h"
 
 Enc28j60 ethernet;
+Motor motor;
 Wyswietlacz wysw;
 Usart usart;
 UsartData usart_data;
 int main()
 {
-	Motor motor;
+
 	motor.Enable(Forward, 20);
 	usart_data.frame = "Ping!\n";
 	usart.SendFrame(&usart_data);

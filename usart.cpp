@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "usart.h"
-
+#include "motor.h"
 Usart::Usart(uint16_t baud) : rx_head(0), rx_tail(0), tx_head(0), tx_tail(0)
 {
 	uint8_t ubrr = F_CPU / 16 / baud - 1;
@@ -80,7 +80,17 @@ void Uart::ST_OdebranyZnak(Uart_Param *Dane)
 */
 void Usart::NewChar(UsartData* pdata)
 {
-	usart.SendFrame(&usart_data);
+	static uint8_t v = 20;
+	if(pdata->c == 'a')
+	{
+		motor.SetSpeed(++v);
+	}
+	if(pdata->c == 'z')
+	{
+		motor.SetSpeed(--v);
+	}
+	usart_data.c = v;
+	usart.SendInt(&usart_data);
 }
 
 void Usart::TXBufferEmpty(UsartData* pdata)
@@ -112,14 +122,15 @@ void Usart::SendFrame(UsartData* pdata)
 	}
 	TxEnable();
 }
-/*
-void USART_WyslijLiczbe(uint16_t liczba, uint16_t podstawa)
+
+void Usart::SendInt(UsartData *pdata)
 {
 	char buf[10];
-	itoa(liczba, buf, podstawa);
-	//USART_WyslijRamke(buf);
+	itoa(pdata->c, buf, 10);
+	pdata->frame = buf;
+	SendFrame(pdata);
 }
-
+/*
 void USART_Debug(const char *txt, uint16_t liczba, uint16_t podstawa)
 {
 	//USART_WyslijRamke(txt);

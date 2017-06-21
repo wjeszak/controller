@@ -7,7 +7,7 @@
 #include <avr/io.h>
 #include "motor.h"
 
-Motor::Motor() : direction_(Forward), speed_(0)
+Motor::Motor() : _direction(Forward), _speed(0)
 {
 	MOTOR_INIT;
 	TCCR2A |= (1 << WGM21) | (1 << WGM20) | (1 << COM2A1) | (1 << COM2A0); //  Mode 3, inverting
@@ -26,18 +26,24 @@ void Motor::SetDirection(Direction dir)
 		MOTOR_PORT |=  (1 << MOTOR_REV_PIN);
 		break;
 	}
-	direction_ = dir;
+	_direction = dir;
 }
 
 void Motor::Enable(Direction dir, uint8_t speed)
 {
 	//TCNT2 = 0;
-	OCR2A = speed;
-	MOTOR_ENABLE;
 	SetDirection(dir);
+	SetSpeed(speed);
+	MOTOR_ENABLE;
 }
 
 void Motor::Disable()
 {
 	MOTOR_DISABLE;
+}
+
+void Motor::SetSpeed(uint8_t speed)
+{
+	_speed = speed;
+	OCR2A = speed;
 }

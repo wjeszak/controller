@@ -36,6 +36,7 @@ public:
 	void Idle(UsartData* pdata);
 	void NewChar(UsartData* pdata);									// RX_vect callback
 	void SendFrame(UsartData* pdata);
+	void SendInt(UsartData* pdata);
 	void TXBufferEmpty(UsartData* pdata = NULL);					// UDRE_vect callback
 	void TXComplete(UsartData* pdata = NULL);						// TX_vect callback
 	//virtual ~Usart();
