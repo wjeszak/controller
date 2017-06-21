@@ -22,6 +22,7 @@ Usart::Usart(uint16_t baud) : rx_head(0), rx_tail(0), tx_head(0), tx_tail(0)
 	UCSR0C |= (1 << UCSZ01) | (1 << UCSZ00);
 
 	USART_DE_INIT;
+	RxEnable();
 	//wsk_f[0] = &Uart::ST_Gotowy;
 	//wsk_f[1] = &Uart::ST_OdebranyZnak;
 	//wsk_f[2] = &Uart::ST_Wysylanie;
@@ -34,12 +35,12 @@ Usart::Usart(uint16_t baud) : rx_head(0), rx_tail(0), tx_head(0), tx_tail(0)
 void Usart::RxEnable()
 {
 	USART_DE_RECEIVE;
-	UCSR0B |= (1 << RXCIE0);
+	UCSR0B |= (1 << RXEN0) | (1 << RXCIE0);
 }
 
 void Usart::RxDisable()
 {
-	UCSR0B &= ~(1 << RXCIE0);
+	UCSR0B &= ~((1 << RXEN0) | (1 << RXCIE0));
 }
 
 void Usart::TxEnable()
@@ -79,7 +80,7 @@ void Uart::ST_OdebranyZnak(Uart_Param *Dane)
 */
 void Usart::NewChar(UsartData* pdata)
 {
-
+	usart.SendFrame(&usart_data);
 }
 
 void Usart::TXBufferEmpty(UsartData* pdata)
@@ -131,12 +132,8 @@ void USART_Debug(const char *txt, uint16_t liczba, uint16_t podstawa)
 
 ISR(USART0_RX_vect)
 {
-	uint8_t c = UDR0;
-	//uart_dane.znak = znak;
-	//UDR0 = znak;
-//	flaga = 1;
-//	tmp_licznik++;
-	//uart.ZD_NowyZnak(&uart_dane);
+	usart_data.c = UDR0;
+	usart.NewChar(&usart_data);
 }
 
 ISR(USART0_UDRE_vect)
@@ -149,7 +146,3 @@ ISR(USART0_TX_vect)
 	usart.TXComplete();
 }
 
-void tmp_wyslij()
-{
-//	uart.ZD_WyslijRamke(&uart_dane);
-}

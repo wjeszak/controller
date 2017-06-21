@@ -17,7 +17,7 @@
 
 #define USART_DE_RECEIVE 		USART_DE_PORT &= ~(1 << USART_DE_PIN)
 #define USART_DE_SEND 			USART_DE_PORT |=  (1 << USART_DE_PIN)
-#define USART_DE_INIT 			USART_DE_DDR  |=  (1 << USART_DE_PIN); USART_DE_RECEIVE
+#define USART_DE_INIT 			USART_DE_DDR  |=  (1 << USART_DE_PIN)
 
 #define UART_RX_BUF_SIZE 		32
 #define UART_TX_BUF_SIZE 		32
@@ -52,5 +52,6 @@ private:
 	volatile uint8_t rx_head, rx_tail, tx_head, tx_tail;
 };
 extern Usart usart;
+extern UsartData usart_data;
 
 #endif /* USART_H_ */

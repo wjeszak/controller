@@ -19,11 +19,13 @@
 Enc28j60 ethernet;
 //Wyswietlacz wysw;
 Usart usart;
+UsartData usart_data;
 int main()
 {
 	Motor motor;
 	motor.Enable(Forward, 50);
-
+	usart_data.frame = "Witamy!\n";
+	usart.SendFrame(&usart_data);
 	//Uart uart(9600);
 	//Uart_Param uart_dane;
 	//uart_dane.ramka = "Jest ramka\n";
