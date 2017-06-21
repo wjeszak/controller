@@ -40,8 +40,8 @@ void Enc28j60::SPI_Init()
 
 	ENC28J60_CS_DDR |= (1 << ENC28J60_CS);
 	ENC28J60_CS_PASYWNY;
-
-	SPCR |= (1 << SPE) | (1 << MSTR) | (1 << SPR1) | (1 << SPR0);
+	// F_CPU / 4, przy nizszych czestotliwosciach wzrasta czas odpowiedzi na ping, dla F_CPU / 128: Tping = 22 ms
+	SPCR |= (1 << SPE) | (1 << MSTR);// | (1 << SPR1) | (1 << SPR0);
 	//SPSR |= (1<<SPI2X);
 	_delay_ms(100);
 }

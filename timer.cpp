@@ -27,7 +27,7 @@ ISR(TIMER0_COMPA_vect)
 		t_licznik = 0;
 		t_flaga_dluga = 1;
 	}
-	//wysw.Odswiez();
+	wysw.Odswiez();
 	//t_flaga = 1;
 }
 

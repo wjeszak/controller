@@ -17,41 +17,30 @@
 #include "motor.h"
 
 Enc28j60 ethernet;
-//Wyswietlacz wysw;
+Wyswietlacz wysw;
 Usart usart;
 UsartData usart_data;
 int main()
 {
 	Motor motor;
-	motor.Enable(Forward, 50);
-	usart_data.frame = "Witamy!\n";
+	motor.Enable(Forward, 20);
+	usart_data.frame = "Ping!\n";
 	usart.SendFrame(&usart_data);
-	//Uart uart(9600);
-	//Uart_Param uart_dane;
-	//uart_dane.ramka = "Jest ramka\n";
-	//ethernet.Init();
-	//Stos stos;
-	//Timer_Init();
-//	uint8_t buf_eth[1500];
-//	uint16_t dl;
-//	uint16_t licznik_pakietow = 1;
 	sei();
+	ethernet.Init();
+	Stos stos;
+	Timer_Init();
+	uint8_t buf_eth[1500];
+	uint16_t dl;
+	uint16_t licznik_pakietow = 1;
+
 //	Machine *m = GetTypeOfMachine(Lockerbox);
 //	uint16_t stan = m->Who();
 	//wysw.Wypisz(0);
 	//TDirection d;
 	while(1)
 	{
-
-		//_delay_ms(1);
-		//MOTOR_PORT |= (1 << MOTOR_EN_PIN);
-		//_delay_ms(10);
-		//MOTOR_PORT &= ~ (1 << MOTOR_EN_PIN);
-		//if(d == TForward) d = TBackward;
-		//if(d == TBackward) d = TForward;
-		//motor.SetDirection(d);
-
-		/*
+	/*
 		if(t_flaga_dluga)
 		{
 			m = WybierzTypMaszyny(TDynabox);
@@ -62,13 +51,14 @@ int main()
 			wysw.Wypisz(licznik++);
 			if(licznik == 9999) licznik = 0;
 		}
-
+*/
 
 		dl = ethernet.OdbierzPakiet(1500, buf_eth);
 		if(dl != 0)
 		{
-			//wysw.Wypisz(licznik_pakietow++);
-			//uart.ZD_WyslijRamke(&uart_dane);
+			wysw.Wypisz(licznik_pakietow++);
+
+			usart.SendFrame(&usart_data);
 		}
 		if(stos.eth_type_is_arp_and_my_ip(buf_eth, dl))
 		{
@@ -82,7 +72,7 @@ int main()
 		//	USART_WyslijRamke("Nasz pakiet PING!\n");
 			stos.make_echo_reply_from_request(buf_eth, dl);
 		}
-
+/*
 		if(buf_eth[TCP_DST_PORT_H_P]== port_H && buf_eth[TCP_DST_PORT_L_P] == port_L)
 		{
 			if (buf_eth[TCP_FLAGS_P] & TCP_FLAGS_SYN_V)
@@ -91,7 +81,7 @@ int main()
 				make_tcp_synack_from_syn(buf_eth);
 			}
 		}
-		*/
+*/
 	}
 
 }
