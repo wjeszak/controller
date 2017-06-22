@@ -14,6 +14,7 @@
 #include "usart.h"
 #include "motor.h"
 #include "machine.h"
+#include "display.h"
 Machine* m = NULL;
 
 Usart::Usart(uint16_t baud) : Machine(ST_MAX_STATES)
@@ -36,7 +37,7 @@ Usart::Usart(uint16_t baud) : Machine(ST_MAX_STATES)
 	fp[1] = &Usart::ST_ByteReceived;
 	fp[2] = &Usart::ST_FrameReceived;
 
-	Event(ST_IDLE, NULL);
+	//Event(ST_IDLE, NULL);
 }
 
 void Usart::RxEnable()
@@ -65,6 +66,8 @@ void Usart::ST_Idle(UsartData* pdata)
 {
 	usart_data.frame = "Idle\n";
 	usart.SendFrame(&usart_data);
+	static uint16_t i;
+	display.Write(i++);
 }
 
 void Usart::ST_ByteReceived(UsartData* pdata)

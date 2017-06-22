@@ -34,16 +34,7 @@ private:
 	void ChangeState(uint16_t new_state);
 	void StateEngine();
 	void (Machine::*fp[])(EventData* pdata);
-	//void (Machine::*StateFunction)(EventData*);
-	//const StateStruct* GetStateMap();
 	enum States {NOT_ALLOWED = 0xFF};
 };
-/*
-typedef void (Machine::*StateFunction)(EventData*);
-struct StateStruct
-{
-	StateFunction fp;
-};
 
-*/
 #endif /* MACHINE_H_ */

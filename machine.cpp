@@ -7,6 +7,7 @@
 
 #include "machine.h"
 #include "usart.h"
+
 Machine::Machine(uint8_t max_states) : current_state(0), _max_states(max_states), _event_generated(false)
 {
 }
@@ -37,27 +38,8 @@ void Machine::Event(uint16_t new_state, EventData *pdata)
 	ChangeState(new_state);
 	while(_event_generated)
 	{
-		//const StateStruct* pstate_map = GetStateMap();
-		(this->*fp[current_state])(pdata);			// run state function
+		//usart.ST_Idle(NULL);
+		(this->*fp[0])(pdata);			// run state function
 		_event_generated = false;
 	}
 }
-
-//void Machine::ST_Init(EventData*)
-//{
-//}
-
-//void Machine::ST_Idle(EventData*)
-//{
-//	usart_data.frame = "Idle\n";
-//	usart.SendFrame(&usart_data);
-//}
-
-//void Machine::NowyZnak(EventData* pdata)
-//{
-//	const uint8_t Transitions[] =
-//	{
-//		ST_IDLE
-//	};
-//	Event(Transitions[current_state], pdata);
-//}

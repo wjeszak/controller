@@ -22,21 +22,19 @@ Enc28j60 ethernet;
 Stos stos;
 Motor motor;
 Display display;
-Usart usart(19200);
+Usart usart;
 UsartData usart_data;
 
 int main()
 {
+	_delay_ms(2000);
 	timer.Assign(0, 1, DisplayRefresh);
 	motor.Enable(Forward, 20);
-	//Machine machine(2);
-	usart_data.frame = "Ping\n";
-	usart.SendFrame(&usart_data);
 	sei();
 	ethernet.Init();
-	uint8_t buf_eth[1500];
-	uint16_t dl;
-	uint16_t licznik_pakietow = 1;
+//	uint8_t buf_eth[1500];
+//	uint16_t dl;
+//	uint16_t licznik_pakietow = 1;
 
 	//Machine *m = GetTypeOfMachine(Lockerbox);
 	//uint16_t stan = m->Who();
@@ -55,13 +53,13 @@ int main()
 			if(licznik == 9999) licznik = 0;
 		}
 */
-
+/*
 		dl = ethernet.OdbierzPakiet(1500, buf_eth);
 		if(dl != 0)
 		{
-			display.Write(licznik_pakietow++);
+			//display.Write(licznik_pakietow++);
 
-			usart.SendFrame(&usart_data);
+			//usart.SendFrame(&usart_data);
 		}
 		if(stos.eth_type_is_arp_and_my_ip(buf_eth, dl))
 		{
@@ -74,7 +72,7 @@ int main()
 			// doprecyzowac typ pakietu
 		//	USART_WyslijRamke("Nasz pakiet PING!\n");
 			stos.make_echo_reply_from_request(buf_eth, dl);
-		}
+		}*/
 /*
 		if(buf_eth[TCP_DST_PORT_H_P]== port_H && buf_eth[TCP_DST_PORT_L_P] == port_L)
 		{
