@@ -1,31 +1,35 @@
 /*
- * stos.h
+ * stack.h
  *
  *  Created on: 26 maj 2017
  *      Author: tomek
  */
 
-#ifndef STOS_H_
-#define STOS_H_
+#ifndef STACK_H_
+#define STACK_H_
 #include <inttypes.h>
 
-class Stos
+class Stack
 {
 public:
-	uint8_t eth_type_is_arp_and_my_ip(uint8_t *buf, uint16_t len);
-	uint8_t eth_type_is_ip_and_my_ip(uint8_t *buf, uint16_t len);
-	void make_arp_answer_from_request(uint8_t *buf);
-	void make_echo_reply_from_request(uint8_t *buf, uint16_t len);
-	void make_tcp_synack_from_syn(uint8_t *buf);
+	Stack();
+	void StackPoll();
 private:
-	void make_eth(uint8_t *buf);
-	void make_ip(uint8_t *buf);
-	uint16_t checksum(uint8_t *buf, uint16_t len,uint8_t type);
-	void fill_ip_hdr_checksum(uint8_t *buf);
+	uint8_t EthTypeIsArpMyIP(uint8_t *buf, uint16_t len);
+	uint8_t EthTypeIsIPMyIP(uint8_t *buf, uint16_t len);
+	void MakeArpReply(uint8_t *buf);
+	void MakeIcmpReply(uint8_t *buf, uint16_t len);
+	void MakeEthHeader(uint8_t *buf);
+	void MakeIpHeader(uint8_t *buf);
+	void MakeTcpHeader(uint8_t *buf,uint16_t rel_ack_num,uint8_t cp_seq);
+	void MakeTcpSynAckFromSyn(uint8_t *buf);
+	uint16_t Checksum(uint8_t *buf, uint16_t len,uint8_t type);
+	void FillIpHeaderChecksum(uint8_t *buf);
 	void step_seq(uint8_t *buf,uint16_t rel_ack_num,uint8_t cp_seq);
-	void make_tcphead(uint8_t *buf,uint16_t rel_ack_num,uint8_t cp_seq);
-
+	uint8_t buf[1500];
+	uint16_t packet_len;
 };
+
 #define ADR_MAC1	0x00
 #define ADR_MAC2	0x20
 #define ADR_MAC3	0x18
@@ -133,7 +137,6 @@ private:
 #define TCP_CHECKSUM_L_P 0x33
 #define TCP_OPTIONS_P 0x36
 
-//extern void Stos_Init(uint8_t *moj_adres_MAC, uint8_t *moj_adres_IP, uint16_t port);
-//extern void LAN_Start();
+extern Stack stack;
 
-#endif /* STOS_H_ */
+#endif /* STACK_H_ */

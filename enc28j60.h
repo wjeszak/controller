@@ -18,7 +18,7 @@ class Enc28j60
 {
 public:
 	void Init();
-	uint16_t OdbierzPakiet(uint16_t rozmiar_buf, uint8_t *buf);
+	uint16_t ReceivePacket(uint16_t rozmiar_buf, uint8_t *buf);
 	void WyslijPakiet(uint16_t dl, uint8_t *buf);
 	void ZrzutRejestrow();
 private:
@@ -320,7 +320,8 @@ extern void enc28j60EnableBroadcast(void);
 extern void enc28j60DisableBroadcast(void);
 #endif
 
-extern uint8_t enc28j60linkup(void);
+extern Enc28j60 enc28j60;
+//extern uint8_t enc28j60linkup(void);
 
 
 #endif /* ENC28J60_H_ */

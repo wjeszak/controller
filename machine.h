@@ -32,11 +32,8 @@ private:
 	const uint8_t _max_states;
 	bool _event_generated;
 	void ChangeState(uint16_t new_state);
-	void StateEngine();
-	//void (Machine::*fp[])(EventData* pdata);
 	virtual const StateStruct* GetStateMap() { return NULL;}
 	enum States {NOT_ALLOWED = 0xFF};
-
 };
 
 typedef void (Machine::*StateFunc)(EventData *);

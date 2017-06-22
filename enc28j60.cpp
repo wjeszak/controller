@@ -9,8 +9,9 @@
 #include <avr/io.h>
 #include <stdlib.h>
 #include <util/delay.h>
+
+#include "stack.h"
 #include "usart.h"
-#include "stos.h"
 
 #define ENC28J60_CS_DDR 		DDRC
 #define ENC28J60_CS_PORT		PORTC
@@ -242,7 +243,7 @@ void Enc28j60::WyslijPakiet(uint16_t dl, uint8_t *buf)
 	RejUstawBity(ENC_REG_ECON1, (1 << ENC_BIT_TXRTS));
 }
 
-uint16_t Enc28j60::OdbierzPakiet(uint16_t rozmiar_buf, uint8_t *buf)
+uint16_t Enc28j60::ReceivePacket(uint16_t rozmiar_buf, uint8_t *buf)
 {
 	uint8_t rx_naglowek[6];
 	uint16_t dl, status;

@@ -1,20 +1,43 @@
 /*
- * stos.cpp
+ * stack.cpp
  *
  *  Created on: 26 maj 2017
  *      Author: tomek
  */
 
-#include "stos.h"
+#include "stack.h"
 #include "enc28j60.h"
+#include "usart.h"
+
 // Tutaj jest straszny burdel w nazwach i deklaracjach. Uporzadkowac.
-static uint8_t Adres_MAC[6] = {ADR_MAC1, ADR_MAC2, ADR_MAC3, ADR_MAC4, ADR_MAC5, ADR_MAC6};
-static uint8_t Adres_IP[4]  = {ADR_IP1, ADR_IP2, ADR_IP3, ADR_IP4};
-static uint8_t seqnum=0xa; // my initial tcp sequence number
-extern Enc28j60 ethernet;
+//static uint8_t Adres_MAC[6] = {ADR_MAC1, ADR_MAC2, ADR_MAC3, ADR_MAC4, ADR_MAC5, ADR_MAC6};
+//static uint8_t Adres_IP[4]  = {ADR_IP1, ADR_IP2, ADR_IP3, ADR_IP4};
+//static uint8_t seqnum=0xa; // my initial tcp sequence number
+Enc28j60 enc28j60;
 // Doprecyzowac typ pakietu przychodzacego, zeby ARP odpowiadal tylko na ARP Req
 // a ping na ICMP -> patrz koniec pliku ip_arp_udp_tcp.c
 
+Stack::Stack()
+{
+	enc28j60.Init();
+	packet_len = 0;
+}
+void Stack::StackPoll()
+{
+	packet_len = enc28j60.ReceivePacket(1500, buf);
+	if(packet_len != 0)
+	{
+		usart_data.frame = "Pakiet\n";
+		usart.SendFrame(&usart_data);
+	}
+}
+//if(stos.eth_type_is_arp_and_my_ip(buf_eth, dl))
+//{
+	// doprecyzowac typ pakietu
+	//USART_WyslijRamke("Nasz pakiet ARP!\n");
+	//stos.make_arp_answer_from_request(buf_eth);
+//}
+/*
 uint8_t Stos::eth_type_is_arp_and_my_ip(uint8_t *buf, uint16_t len)
 {
 	uint8_t i=0;
@@ -271,11 +294,6 @@ void Stos::make_tcp_synack_from_syn(uint8_t *buf)
         buf[TCP_CHECKSUM_L_P]=ck& 0xff;
         // add 4 for option mss:
         ethernet.WyslijPakiet(IP_HEADER_LEN+TCP_HEADER_LEN_PLAIN+4+ETH_HEADER_LEN,buf);
-}
-/*
-void LAN_Start()
-{
-//	Stos_Init(adres_MAC, adres_IP, 502);
 }
 */
 

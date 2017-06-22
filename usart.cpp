@@ -15,7 +15,6 @@
 #include "motor.h"
 #include "machine.h"
 #include "display.h"
-Machine* m = NULL;
 
 Usart::Usart(uint16_t baud) : Machine(ST_MAX_STATES)
 {
@@ -83,35 +82,9 @@ void Usart::CharReceived(UsartData* pdata)
 	{
 		ST_BYTE_RECEIVED,			// ST_IDLE
 		ST_BYTE_RECEIVED, 			// ST_BYTE_RECEIVED
-		ST_IDLE						// ST_FRAME_RECEIVED
+		ST_BYTE_RECEIVED			// ST_FRAME_RECEIVED
 	};
 	Event(Transitions[current_state], pdata);
-/*	static uint8_t v = 20;
-	switch(pdata->c)
-	{
-		case 'l':	// to bedzie zapisane w EEPROMIE
-			m = GetTypeOfMachine(Lockerbox);
-		break;
-		case 'd':
-			m = GetTypeOfMachine(Dynabox);
-		break;
-		case 's':
-			//usart_data.c = m->Who();
-			usart.SendInt(&usart_data);
-			break;
-		//case 'h':
-	}
-	if(pdata->c == 'a')
-	{
-		motor.SetSpeed(++v);
-	}
-	if(pdata->c == 'z')
-	{
-		motor.SetSpeed(--v);
-	}
-	//usart_data.c = v;
-	//usart.SendInt(&usart_data);
-	 */
 }
 
 void Usart::TXBufferEmpty(UsartData* pdata)
