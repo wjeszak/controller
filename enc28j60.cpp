@@ -196,7 +196,7 @@ void Enc28j60::ZapiszBuf(uint8_t *buf, uint16_t dl)
 
 // ------------------------------------------------------------------
 
-void Enc28j60::WyslijPakiet(uint16_t dl, uint8_t *buf)
+void Enc28j60::SendPacket(uint16_t dl, uint8_t *buf)
 {
 	unsigned char ctrl = 0;
 	unsigned int ms = 100;

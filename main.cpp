@@ -3,6 +3,7 @@
  *
  *  Created on: 25 maj 2017
  *      Author: tomek
+ *      Flaga zajetosci UARTA, bufory cykliczne (Kardas)
  */
 
 #include <avr/io.h>
@@ -18,7 +19,6 @@
 #include "stack.h"
 
 Timer timer(T0_PS_1024, 17);
-//Enc28j60 enc28j60;
 Stack stack;
 Motor motor;
 Display display;
@@ -31,7 +31,6 @@ int main()
 	timer.Assign(0, 1, DisplayRefresh);
 	motor.Enable(Forward, 20);
 	sei();
-//	ethernet.Init();
 	//Machine *m = GetTypeOfMachine(Lockerbox);
 	//uint16_t stan = m->Who();
 	//wysw.Wypisz(0);

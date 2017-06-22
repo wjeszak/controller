@@ -9,17 +9,24 @@
 #include "enc28j60.h"
 #include "usart.h"
 
-// Tutaj jest straszny burdel w nazwach i deklaracjach. Uporzadkowac.
-//static uint8_t Adres_MAC[6] = {ADR_MAC1, ADR_MAC2, ADR_MAC3, ADR_MAC4, ADR_MAC5, ADR_MAC6};
-//static uint8_t Adres_IP[4]  = {ADR_IP1, ADR_IP2, ADR_IP3, ADR_IP4};
 //static uint8_t seqnum=0xa; // my initial tcp sequence number
 Enc28j60 enc28j60;
-// Doprecyzowac typ pakietu przychodzacego, zeby ARP odpowiadal tylko na ARP Req
-// a ping na ICMP -> patrz koniec pliku ip_arp_udp_tcp.c
 
 Stack::Stack()
 {
 	enc28j60.Init();
+	// to bedzie odczytane z EEPROM
+	mac_address[0] = 0x00;
+	mac_address[1] = 0x20;
+	mac_address[2] = 0x18;
+	mac_address[3] = 0xB1;
+	mac_address[4] = 0x15;
+	mac_address[5] = 0x6F;
+	ip_address[0] = 192;
+	ip_address[1] = 168;
+	ip_address[2] = 1;
+	ip_address[3] = 170;
+
 	packet_len = 0;
 }
 void Stack::StackPoll()
@@ -29,30 +36,34 @@ void Stack::StackPoll()
 	{
 		usart_data.frame = "Pakiet\n";
 		usart.SendFrame(&usart_data);
+		// ARP
+		if(EthTypeIsArpMyIP(buf, packet_len))
+		{
+			MakeArpReply(buf);
+		}
+		// PING
+
 	}
 }
-//if(stos.eth_type_is_arp_and_my_ip(buf_eth, dl))
-//{
-	// doprecyzowac typ pakietu
-	//USART_WyslijRamke("Nasz pakiet ARP!\n");
-	//stos.make_arp_answer_from_request(buf_eth);
-//}
-/*
-uint8_t Stos::eth_type_is_arp_and_my_ip(uint8_t *buf, uint16_t len)
+
+uint8_t Stack::EthTypeIsArpMyIP(uint8_t *buf, uint16_t len)
 {
-	uint8_t i=0;
-        //
+	uint8_t i = 0;
 	if(len < 41)
 	{
-		return(0);
+		return 0;
 	}
 	if(buf[ETH_TYPE_H_P] != ETHTYPE_ARP_H_V || buf[ETH_TYPE_L_P] != ETHTYPE_ARP_L_V)
 	{
 		return 0;
 	}
-	while(i < 4)
+	if (buf[ETH_ARP_OPCODE_L_P] != ETH_ARP_OPCODE_REQ_L_V)
 	{
-		if(buf[ETH_ARP_DST_IP_P + i] != Adres_IP[i])
+		return 0;
+	}
+ 	while(i < 4)
+	{
+		if(buf[ETH_ARP_DST_IP_P + i] != ip_address[i])
 		{
 			return 0;
 		}
@@ -61,41 +72,43 @@ uint8_t Stos::eth_type_is_arp_and_my_ip(uint8_t *buf, uint16_t len)
 	return 1;
 }
 
-void Stos::make_eth(uint8_t *buf)
+void Stack::MakeArpReply(uint8_t *buf)
 {
 	uint8_t i = 0;
-	//copy the destination mac from the source and fill my mac into src
+	MakeEthHeader(buf);
+	buf[ETH_ARP_OPCODE_H_P] = ETH_ARP_OPCODE_REPLY_H_V;
+	buf[ETH_ARP_OPCODE_L_P] = ETH_ARP_OPCODE_REPLY_L_V;
+	while(i < 6)
+	{
+		buf[ETH_ARP_DST_MAC_P + i] = buf[ETH_ARP_SRC_MAC_P + i];
+		buf[ETH_ARP_SRC_MAC_P +i ] = mac_address[i];
+		i++;
+	}
+	i = 0;
+	while(i < 4)
+	{
+		buf[ETH_ARP_DST_IP_P + i] = buf[ETH_ARP_SRC_IP_P + i];
+		buf[ETH_ARP_SRC_IP_P + i] = ip_address[i];
+		i++;
+	}
+	// Eth + Arp is 42 bytes:
+	enc28j60.SendPacket(42, buf);
+}
+
+void Stack::MakeEthHeader(uint8_t *buf)
+{
+	uint8_t i = 0;
+	//copy the destination MAC from the source and fill my mac into src
 	while(i < 6)
 	{
 		buf[ETH_DST_MAC + i] = buf[ETH_SRC_MAC + i];
-		buf[ETH_SRC_MAC + i] = Adres_MAC[i];
+		buf[ETH_SRC_MAC + i] = mac_address[i];
 		i++;
 	}
 }
 
-void Stos::make_arp_answer_from_request(uint8_t *buf)
-{
-	uint8_t i = 0;
-	make_eth(buf);
-	buf[ETH_ARP_OPCODE_H_P] = ETH_ARP_OPCODE_REPLY_H_V;
-	buf[ETH_ARP_OPCODE_L_P]=ETH_ARP_OPCODE_REPLY_L_V;
-        // fill the mac addresses:
-        while(i<6){
-                buf[ETH_ARP_DST_MAC_P+i]=buf[ETH_ARP_SRC_MAC_P+i];
-                buf[ETH_ARP_SRC_MAC_P+i]=Adres_MAC[i];
-                i++;
-        }
-        i=0;
-        while(i<4){
-                buf[ETH_ARP_DST_IP_P+i]=buf[ETH_ARP_SRC_IP_P+i];
-                buf[ETH_ARP_SRC_IP_P+i]=Adres_IP[i];
-                i++;
-        }
-        // eth+arp is 42 bytes:
-        ethernet.WyslijPakiet(42,buf);
-}
 
-uint8_t Stos::eth_type_is_ip_and_my_ip(uint8_t *buf, uint16_t len)
+uint8_t Stack::EthTypeIsIPMyIP(uint8_t *buf, uint16_t len)
 {
 	uint8_t i = 0;
 	//eth+ip+udp header is 42
@@ -114,7 +127,7 @@ uint8_t Stos::eth_type_is_ip_and_my_ip(uint8_t *buf, uint16_t len)
 	}
 	while(i < 4)
 	{
-		if(buf[IP_DST_P + i] != Adres_IP[i])
+		if(buf[IP_DST_P + i] != ip_address[i])
 		{
 			return 0;
 		}
@@ -123,45 +136,47 @@ uint8_t Stos::eth_type_is_ip_and_my_ip(uint8_t *buf, uint16_t len)
 	return 1;
 }
 
-uint16_t Stos::checksum(uint8_t *buf, uint16_t len,uint8_t type){
-        // type 0=ip , icmp
-        //      1=udp
-        //      2=tcp
-        uint32_t sum = 0;
+uint16_t Stack::Checksum(uint8_t *buf, uint16_t len, uint8_t type)
+{
+	// type 0 = ip, icmp
+	//      1 = udp
+	//      2 = tcp
+	uint32_t sum = 0;
 
-        //if(type==0){
-        //        // do not add anything, standard IP checksum as described above
-        //        // Usable for ICMP and IP header
-        //}
-        if(type==1){
-                sum+=IP_PROTO_UDP_V; // protocol udp
+	if(type == 1)
+	{
+		sum+=IP_PROTO_UDP_V;
                 // the length here is the length of udp (data+header len)
                 // =length given to this function - (IP.scr+IP.dst length)
-                sum+=len-8; // = real udp len
-        }
-        if(type==2){
-                sum+=IP_PROTO_TCP_V;
+		sum+=len-8; // = real udp len
+	}
+	if(type==2)
+	{
+		sum+=IP_PROTO_TCP_V;
                 // the length here is the length of tcp (data+header len)
                 // =length given to this function - (IP.scr+IP.dst length)
-                sum+=len-8; // = real tcp len
-        }
+		sum+=len-8; // = real tcp len
+	}
         // build the sum of 16bit words
-        while(len >1){
-                sum += 0xFFFF & (((uint32_t)*buf<<8)|*(buf+1));
-                buf+=2;
-                len-=2;
-        }
-        // if there is a byte left then add it (padded with zero)
-        if (len){
-                sum += ((uint32_t)(0xFF & *buf))<<8;
-        }
-        // now calculate the sum over the bytes in the sum
-        // until the result is only 16bit long
-        while (sum>>16){
-                sum = (sum & 0xFFFF)+(sum >> 16);
-        }
-        // build 1's complement:
-        return( (uint16_t) sum ^ 0xFFFF);
+	while(len > 1)
+	{
+		sum += 0xFFFF & (((uint32_t)*buf<<8)|*(buf+1));
+		buf+=2;
+		len-=2;
+	}
+	// if there is a byte left then add it (padded with zero)
+	if(len)
+	{
+		sum += ((uint32_t)(0xFF & *buf)) << 8;
+	}
+	// now calculate the sum over the bytes in the sum
+	// until the result is only 16bit long
+	while (sum >> 16)
+	{
+		sum = (sum & 0xFFFF) + (sum >> 16);
+	}
+	// build 1's complement:
+	return ((uint16_t) sum ^ 0xFFFF);
 }
 
 void Stos::fill_ip_hdr_checksum(uint8_t *buf)

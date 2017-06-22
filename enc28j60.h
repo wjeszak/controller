@@ -19,7 +19,7 @@ class Enc28j60
 public:
 	void Init();
 	uint16_t ReceivePacket(uint16_t rozmiar_buf, uint8_t *buf);
-	void WyslijPakiet(uint16_t dl, uint8_t *buf);
+	void SendPacket(uint16_t dl, uint8_t *buf);
 	void ZrzutRejestrow();
 private:
 	void SPI_Init();
