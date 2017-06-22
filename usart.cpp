@@ -32,23 +32,6 @@ Usart::Usart(uint16_t baud) : Machine(ST_MAX_STATES)
 	tx_head = 0;
 	tx_tail = 0;
 	RxEnable();
-	// States table
-//	fp[0] = &Usart::ST_Idle;
-//	fp[1] = &Usart::ST_ByteReceived;
-//	fp[2] = &Usart::ST_FrameReceived;
-
-	//Event(ST_IDLE, NULL);
-}
-
-const StateStruct* Machine::GetStateMap()
-{
-	// to jest sprytne bo StateMap jest tworzone nie na stosie dzieki temu mozna zwrocic adres
-	static const StateStruct StateMap[] =
-	{
-		{reinterpret_cast<StateFunc>(&Usart::ST_Idle)},
-		//{&Machine::ST_Idle}
-	};
-	return &StateMap[0];
 }
 
 void Usart::RxEnable()
@@ -102,7 +85,7 @@ void Usart::CharReceived(UsartData* pdata)
 		ST_BYTE_RECEIVED, 			// ST_BYTE_RECEIVED
 		ST_IDLE						// ST_FRAME_RECEIVED
 	};
-	Event(0, pdata);
+	Event(Transitions[current_state], pdata);
 /*	static uint8_t v = 20;
 	switch(pdata->c)
 	{

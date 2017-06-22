@@ -11,6 +11,7 @@
 Machine::Machine(uint8_t max_states) : current_state(0), _max_states(max_states), _event_generated(false)
 {
 }
+
 /*
 const StateStruct* Machine::GetStateMap()
 {
@@ -41,7 +42,7 @@ void Machine::Event(uint16_t new_state, EventData *pdata)
 		//usart.ST_Idle(NULL);
 		//(this->*fp[0])(pdata);			// run state function
 		const StateStruct* pStateMap = GetStateMap();
-		(this->*pStateMap[0].pStateFunc)(pdata);
+		(this->*pStateMap[current_state].pStateFunc)(pdata);
 		_event_generated = false;
 	}
 }

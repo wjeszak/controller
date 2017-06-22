@@ -38,8 +38,6 @@ public:
 	void SendInt(UsartData* pdata);
 	void TXBufferEmpty(UsartData* pdata = NULL);					// UDRE_vect callback
 	void TXComplete(UsartData* pdata = NULL);						// TX_vect callback
-
-	void ST_Idle(UsartData* pdata);
 private:
 	void RxEnable();
 	void RxDisable();
@@ -49,13 +47,22 @@ private:
 	volatile uint8_t buf_tx[UART_TX_BUF_SIZE];
 	volatile uint8_t rx_head, rx_tail, tx_head, tx_tail;
 	// States
-
+	void ST_Idle(UsartData* pdata);
 	void ST_ByteReceived(UsartData* pdata);
 	void ST_FrameReceived(UsartData* pdata);
 	//
 	enum States {ST_IDLE = 0, ST_BYTE_RECEIVED, ST_FRAME_RECEIVED, ST_MAX_STATES};
-	void (Usart::*fp[ST_MAX_STATES])(UsartData* pdata);
-
+	const StateStruct* GetStateMap()
+	{
+		// to jest sprytne bo StateMap jest tworzone nie na stosie dzieki temu mozna zwrocic adres
+		static const StateStruct StateMap[] =
+		{
+			{reinterpret_cast<StateFunc>(&Usart::ST_Idle)},
+			{reinterpret_cast<StateFunc>(&Usart::ST_ByteReceived)},
+			{reinterpret_cast<StateFunc>(&Usart::ST_FrameReceived)}
+		};
+		return &StateMap[0];
+	}
 };
 
 extern Usart usart;
