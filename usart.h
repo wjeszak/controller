@@ -33,8 +33,7 @@ class Usart : public Machine
 {
 public:
 	Usart(uint16_t baud = 9600);
-	void Idle(UsartData* pdata);
-	void CharReceived(UsartData* pdata);									// RX_vect callback
+	void CharReceived(UsartData* pdata);							// RX_vect callback
 	void SendFrame(UsartData* pdata);
 	void SendInt(UsartData* pdata);
 	void TXBufferEmpty(UsartData* pdata = NULL);					// UDRE_vect callback
@@ -44,12 +43,19 @@ private:
 	void RxDisable();
 	void TxEnable();
 	void TxDisable();
-	void (Usart::*p_fun[10])(UsartData* pdata);
-	enum States {IDLE, NEW_CHAR, SEND_FRAME, SENDING_FRAME};
+	//void (Usart::*p_fun[10])(UsartData* pdata);
 	volatile uint8_t buf_rx[UART_RX_BUF_SIZE];
 	volatile uint8_t buf_tx[UART_TX_BUF_SIZE];
 	volatile uint8_t rx_head, rx_tail, tx_head, tx_tail;
+	// States
+	void ST_Idle(UsartData* pdata);
+	void ST_ByteReceived(UsartData* pdata);
+	void ST_FrameReceived(UsartData* pdata);
+	enum States {ST_IDLE, ST_BYTE_RECEIVED, ST_FRAME_RECEIVED, ST_MAX_STATES};
+	void (Usart::*fp[ST_MAX_STATES])(UsartData* pdata);
+
 };
+
 extern Usart usart;
 extern UsartData usart_data;
 

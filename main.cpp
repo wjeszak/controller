@@ -29,7 +29,8 @@ int main()
 {
 	timer.Assign(0, 1, DisplayRefresh);
 	motor.Enable(Forward, 20);
-	usart_data.frame = "Ping!\n";
+	//Machine machine(2);
+	usart_data.frame = "Ping\n";
 	usart.SendFrame(&usart_data);
 	sei();
 	ethernet.Init();

@@ -10,6 +10,8 @@
 
 class Dynabox : public Machine
 {
+public:
+	Dynabox() : Machine(5) {}
 	uint16_t Who() { return 2; }
 } dynabox;
 

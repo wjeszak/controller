@@ -13,10 +13,10 @@
 #include "machine_type.h"
 #include "usart.h"
 #include "motor.h"
-
+#include "machine.h"
 Machine* m = NULL;
 
-Usart::Usart(uint16_t baud) : rx_head(0), rx_tail(0), tx_head(0), tx_tail(0)
+Usart::Usart(uint16_t baud) : Machine(ST_MAX_STATES)
 {
 	uint8_t ubrr = F_CPU / 16 / baud - 1;
 	UBRR0H = (uint8_t)(ubrr >> 8);
@@ -26,14 +26,17 @@ Usart::Usart(uint16_t baud) : rx_head(0), rx_tail(0), tx_head(0), tx_tail(0)
 	UCSR0C |= (1 << UCSZ01) | (1 << UCSZ00);
 
 	USART_DE_INIT;
+	rx_head = 0;
+	rx_tail = 0;
+	tx_head = 0;
+	tx_tail = 0;
 	RxEnable();
-	//wsk_f[0] = &Uart::ST_Gotowy;
-	//wsk_f[1] = &Uart::ST_OdebranyZnak;
-	//wsk_f[2] = &Uart::ST_Wysylanie;
+	// States table
+	fp[0] = &Usart::ST_Idle;
+	fp[1] = &Usart::ST_ByteReceived;
+	fp[2] = &Usart::ST_FrameReceived;
 
-	//Zdarzenie(ST_GOTOWY);
-	//WskPustyBufor = PustyBufor;
-	//wUsartDane = &dane;
+	Event(ST_IDLE, NULL);
 }
 
 void Usart::RxEnable()
@@ -57,30 +60,36 @@ void Usart::TxDisable()
 {
 	UCSR0B &= ~(1 << UDRIE0);
 }
-/*
-void Uart::ZD_NowyZnak(Uart_Param *Dane)
+
+void Usart::ST_Idle(UsartData* pdata)
 {
-	const uint16_t TAB_PRZEJSC[] =
-	{
-		ST_ODEBRANY_ZNAK,				// ST_GOTOWY
-		ST_ODEBRANY_ZNAK,				// ST_ODEBRANY_ZNAK
-		//ST_ODEBRANY_ZNAK,				// ST_ODEBRANY_STRING
-		//ST_GOTOWY 						// ST_BLAD
-	};
-	Zdarzenie(TAB_PRZEJSC[StanBiezacy], Dane);
+	usart_data.frame = "Idle\n";
+	usart.SendFrame(&usart_data);
 }
 
-void Uart::ST_OdebranyZnak(Uart_Param *Dane)
+void Usart::ST_ByteReceived(UsartData* pdata)
 {
-	//strcpy(Dane->ramka, "Tomeczek");
-	Dane->ramka = "Testowa";
-	ZD_WyslijRamke(Dane);
-	//Zdarzenie(ST_);
+	usart_data.frame = "Byte received\n";
+	usart.SendFrame(&usart_data);
+	if(usart_data.c == 'f') Event(ST_FRAME_RECEIVED, NULL);
 }
-*/
+
+void Usart::ST_FrameReceived(UsartData* pdata)
+{
+	usart_data.frame = "Frame received!\n";
+	usart.SendFrame(&usart_data);
+}
+
 void Usart::CharReceived(UsartData* pdata)
 {
-	static uint8_t v = 20;
+	const uint8_t Transitions[] =
+	{
+		ST_BYTE_RECEIVED,			// ST_IDLE
+		ST_BYTE_RECEIVED, 			// ST_BYTE_RECEIVED
+		ST_IDLE						// ST_FRAME_RECEIVED
+	};
+	Event(Transitions[current_state], pdata);
+/*	static uint8_t v = 20;
 	switch(pdata->c)
 	{
 		case 'l':	// to bedzie zapisane w EEPROMIE
@@ -90,8 +99,10 @@ void Usart::CharReceived(UsartData* pdata)
 			m = GetTypeOfMachine(Dynabox);
 		break;
 		case 's':
-			usart_data.c = m->Who();
+			//usart_data.c = m->Who();
 			usart.SendInt(&usart_data);
+			break;
+		//case 'h':
 	}
 	if(pdata->c == 'a')
 	{
@@ -103,6 +114,7 @@ void Usart::CharReceived(UsartData* pdata)
 	}
 	//usart_data.c = v;
 	//usart.SendInt(&usart_data);
+	 */
 }
 
 void Usart::TXBufferEmpty(UsartData* pdata)

@@ -16,23 +16,34 @@ class EventData
 public:
 };
 
+struct StateStruct;
+
 class Machine
 {
 public:
-	Machine();
+	Machine(uint8_t max_states);
 	uint16_t GetState();
-	void ChangeState(uint16_t new_state);
 	void Event(uint16_t new_state, EventData* pdata = NULL);
-	void InternalEvent(uint16_t new_state, EventData* pdata);
-	virtual uint16_t Who() { return 10; }
-	//virtual ~Machine();
+//	virtual uint16_t Who() { return 10; }
+//	virtual ~Machine();
 protected:
 	uint16_t current_state;
 private:
+	const uint8_t _max_states;
 	bool _event_generated;
+	void ChangeState(uint16_t new_state);
 	void StateEngine();
-	void (Machine::*pfun[])(EventData* pdata);
+	void (Machine::*fp[])(EventData* pdata);
+	//void (Machine::*StateFunction)(EventData*);
+	//const StateStruct* GetStateMap();
 	enum States {NOT_ALLOWED = 0xFF};
 };
+/*
+typedef void (Machine::*StateFunction)(EventData*);
+struct StateStruct
+{
+	StateFunction fp;
+};
 
+*/
 #endif /* MACHINE_H_ */
