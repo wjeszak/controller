@@ -34,13 +34,11 @@ class Usart : public Machine
 public:
 	Usart(uint16_t baud = 9600);
 	void Idle(UsartData* pdata);
-	void NewChar(UsartData* pdata);									// RX_vect callback
+	void CharReceived(UsartData* pdata);									// RX_vect callback
 	void SendFrame(UsartData* pdata);
 	void SendInt(UsartData* pdata);
 	void TXBufferEmpty(UsartData* pdata = NULL);					// UDRE_vect callback
 	void TXComplete(UsartData* pdata = NULL);						// TX_vect callback
-	//virtual ~Usart();
-
 private:
 	void RxEnable();
 	void RxDisable();

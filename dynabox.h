@@ -7,11 +7,10 @@
 
 #ifndef DYNABOX_H_
 #define DYNABOX_H_
-#include "machine.h"
+
 class Dynabox : public Machine
 {
 	uint16_t Who() { return 2; }
-
 } dynabox;
 
 #endif /* DYNABOX_H_ */

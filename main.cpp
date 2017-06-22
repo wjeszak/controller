@@ -8,37 +8,38 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
+
+#include "display.h"
 #include "timer.h"
 #include "usart.h"
-#include "wyswietlacz.h"
-#include "typ_maszyny.h"
 #include "enc28j60.h"
+#include "machine_type.h"
 #include "stos.h"
 #include "motor.h"
 
+Timer timer(T0_PS_1024, 17);
 Enc28j60 ethernet;
+Stos stos;
 Motor motor;
-Wyswietlacz wysw;
-Usart usart;
+Display display;
+Usart usart(19200);
 UsartData usart_data;
+
 int main()
 {
-
+	timer.Assign(0, 1, DisplayRefresh);
 	motor.Enable(Forward, 20);
 	usart_data.frame = "Ping!\n";
 	usart.SendFrame(&usart_data);
 	sei();
 	ethernet.Init();
-	Stos stos;
-	Timer_Init();
 	uint8_t buf_eth[1500];
 	uint16_t dl;
 	uint16_t licznik_pakietow = 1;
 
-//	Machine *m = GetTypeOfMachine(Lockerbox);
-//	uint16_t stan = m->Who();
+	//Machine *m = GetTypeOfMachine(Lockerbox);
+	//uint16_t stan = m->Who();
 	//wysw.Wypisz(0);
-	//TDirection d;
 	while(1)
 	{
 	/*
@@ -57,7 +58,7 @@ int main()
 		dl = ethernet.OdbierzPakiet(1500, buf_eth);
 		if(dl != 0)
 		{
-			wysw.Wypisz(licznik_pakietow++);
+			display.Write(licznik_pakietow++);
 
 			usart.SendFrame(&usart_data);
 		}

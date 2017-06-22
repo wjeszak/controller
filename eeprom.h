@@ -9,10 +9,11 @@
 #define EEPROM_H_
 
 #include "machine.h"
-
+/*
 struct Config
 {
 	MachineType machine_type;
+	uint8_t
 };
 class Eeprom
 {
@@ -21,7 +22,7 @@ public:
 	void Write();
 };
 
-
+*/
 
 
 #endif /* EEPROM_H_ */

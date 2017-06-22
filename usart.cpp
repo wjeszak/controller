@@ -10,8 +10,12 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
+#include "machine_type.h"
 #include "usart.h"
 #include "motor.h"
+
+Machine* m = NULL;
+
 Usart::Usart(uint16_t baud) : rx_head(0), rx_tail(0), tx_head(0), tx_tail(0)
 {
 	uint8_t ubrr = F_CPU / 16 / baud - 1;
@@ -65,10 +69,6 @@ void Uart::ZD_NowyZnak(Uart_Param *Dane)
 	};
 	Zdarzenie(TAB_PRZEJSC[StanBiezacy], Dane);
 }
-void Uart::ST_Gotowy(Uart_Param *Dane)
-{
-	//cout << "Stan: Gotowy" << endl;
-}
 
 void Uart::ST_OdebranyZnak(Uart_Param *Dane)
 {
@@ -78,9 +78,21 @@ void Uart::ST_OdebranyZnak(Uart_Param *Dane)
 	//Zdarzenie(ST_);
 }
 */
-void Usart::NewChar(UsartData* pdata)
+void Usart::CharReceived(UsartData* pdata)
 {
 	static uint8_t v = 20;
+	switch(pdata->c)
+	{
+		case 'l':	// to bedzie zapisane w EEPROMIE
+			m = GetTypeOfMachine(Lockerbox);
+		break;
+		case 'd':
+			m = GetTypeOfMachine(Dynabox);
+		break;
+		case 's':
+			usart_data.c = m->Who();
+			usart.SendInt(&usart_data);
+	}
 	if(pdata->c == 'a')
 	{
 		motor.SetSpeed(++v);
@@ -89,8 +101,8 @@ void Usart::NewChar(UsartData* pdata)
 	{
 		motor.SetSpeed(--v);
 	}
-	usart_data.c = v;
-	usart.SendInt(&usart_data);
+	//usart_data.c = v;
+	//usart.SendInt(&usart_data);
 }
 
 void Usart::TXBufferEmpty(UsartData* pdata)
@@ -144,7 +156,7 @@ void USART_Debug(const char *txt, uint16_t liczba, uint16_t podstawa)
 ISR(USART0_RX_vect)
 {
 	usart_data.c = UDR0;
-	usart.NewChar(&usart_data);
+	usart.CharReceived(&usart_data);
 }
 
 ISR(USART0_UDRE_vect)
@@ -156,4 +168,3 @@ ISR(USART0_TX_vect)
 {
 	usart.TXComplete();
 }
-

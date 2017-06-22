@@ -1,0 +1,75 @@
+/*
+ * display.cpp
+ *
+ *  Created on: 15 cze 2017
+ *      Author: tomek
+ */
+
+#include "display.h"
+
+Display::Display()
+{
+	 //tab[0] = {&WYSW1_DDR, &WYSW1_PORT, WYSW1_PIN};
+	 //tab[1] = {&WYSW2_DDR, &WYSW2_PORT, WYSW2_PIN};
+	 //tab[2] = {&WYSW3_DDR, &WYSW3_PORT, WYSW3_PIN};
+	 //tab[3] = {&WYSW4_DDR, &WYSW4_PORT, WYSW4_PIN};
+	// taka inicjalizacja nie dziala
+	disp_tab[0].ddr =  &DISP1_DDR;
+	disp_tab[0].port = &DISP1_PORT;
+	disp_tab[0].pin =   DISP1_PIN;
+	disp_tab[1].ddr =  &DISP2_DDR;
+	disp_tab[1].port = &DISP2_PORT;
+	disp_tab[1].pin =   DISP2_PIN;
+	disp_tab[2].ddr =  &DISP3_DDR;
+	disp_tab[2].port = &DISP3_PORT;
+	disp_tab[2].pin =   DISP3_PIN;
+	disp_tab[3].ddr =  &DISP4_DDR;
+	disp_tab[3].port = &DISP4_PORT;
+	disp_tab[3].pin =   DISP4_PIN;
+
+	for(uint8_t i = 0; i < 4; i++)
+		{
+			*(disp_tab[i].ddr) |= disp_tab[i].pin;		// Outputs
+			*(disp_tab[i].port) |= disp_tab[i].pin; 	// Off
+		}
+	// Segments outputs
+	DISP_SEGM_DDR = 0b01111111;
+	disp_number = 0;
+	digits[0] =  DISP_CHAR_0;
+	digits[1] =  DISP_CHAR_1;
+	digits[2] =  DISP_CHAR_2;
+	digits[3] =  DISP_CHAR_3;
+	digits[4] =  DISP_CHAR_4;
+	digits[5] =  DISP_CHAR_5;
+	digits[6] =  DISP_CHAR_6;
+	digits[7] =  DISP_CHAR_7;
+	digits[8] =  DISP_CHAR_8;
+	digits[9] =  DISP_CHAR_9;
+	digits[10] = DISP_CHAR_ALL_OFF;
+	// startup values
+	value[0] = digits[1];
+	value[1] = digits[2];
+	value[2] = digits[3];
+	value[3] = digits[4];
+}
+
+void Display::Refresh()
+{
+	DISP_SEGM_PORT = value[disp_number];									// load to port
+	*(disp_tab[disp_number].port) &= ~disp_tab[disp_number].pin;			// on
+	if(disp_number == 0)
+		*(disp_tab[3].port) |= disp_tab[3].pin;								// off 4
+	else
+		*(disp_tab[disp_number-1].port) |= disp_tab[disp_number-1].pin;		// off previous
+	disp_number++;
+	if(disp_number == 4) disp_number = 0;
+}
+
+void Display::Write(uint16_t val)
+{
+	value[0] = digits[val / 1000]; 			// thousands
+	value[1] = digits[(val / 100) % 10]; 	// hundreds
+	value[2] = digits[(val % 100) / 10]; 	// dozens
+	value[3] = digits[val % 10]; 			// units
+
+}

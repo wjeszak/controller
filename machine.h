@@ -35,6 +35,4 @@ private:
 	enum States {NOT_ALLOWED = 0xFF};
 };
 
-enum MachineType {Lockerbox, Dynabox};
-
 #endif /* MACHINE_H_ */

@@ -8,7 +8,6 @@
 #ifndef LOCKERBOX_H_
 #define LOCKERBOX_H_
 
-//#include "maszyna.h"
 class Lockerbox : public Machine
 {
 	uint16_t Who() { return 1; }
