@@ -33,8 +33,15 @@ private:
 	bool _event_generated;
 	void ChangeState(uint16_t new_state);
 	void StateEngine();
-	void (Machine::*fp[])(EventData* pdata);
+	//void (Machine::*fp[])(EventData* pdata);
+	const StateStruct* GetStateMap();
 	enum States {NOT_ALLOWED = 0xFF};
+};
+
+typedef void (Machine::*StateFunc)(EventData *);
+struct StateStruct
+{
+    StateFunc pStateFunc;
 };
 
 #endif /* MACHINE_H_ */

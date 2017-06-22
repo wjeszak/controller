@@ -39,7 +39,9 @@ void Machine::Event(uint16_t new_state, EventData *pdata)
 	while(_event_generated)
 	{
 		//usart.ST_Idle(NULL);
-		(this->*fp[0])(pdata);			// run state function
+		//(this->*fp[0])(pdata);			// run state function
+		const StateStruct* pStateMap = GetStateMap();
+		(this->*pStateMap[0].pStateFunc)(pdata);
 		_event_generated = false;
 	}
 }
