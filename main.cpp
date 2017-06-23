@@ -51,16 +51,7 @@ int main()
 		}
 */
 
-/*
-		if(buf_eth[TCP_DST_PORT_H_P]== port_H && buf_eth[TCP_DST_PORT_L_P] == port_L)
-		{
-			if (buf_eth[TCP_FLAGS_P] & TCP_FLAGS_SYN_V)
-			{
-				//USART_WyslijRamke("Nasz pakiet TCP [SYN]\n");
-				make_tcp_synack_from_syn(buf_eth);
-			}
-		}
-*/
+
 	}
 
 }

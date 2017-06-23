@@ -21,15 +21,15 @@ private:
 	void MakeIcmpReply(uint8_t *buf, uint16_t len);
 	void MakeEthHeader(uint8_t *buf);
 	void MakeIpHeader(uint8_t *buf);
-	void MakeTcpHeader(uint8_t *buf,uint16_t rel_ack_num,uint8_t cp_seq);
+	void MakeTcpHeader(uint8_t *buf, uint16_t rel_ack_num, uint8_t cp_seq);
 	void MakeTcpSynAckFromSyn(uint8_t *buf);
-	uint16_t Checksum(uint8_t *buf, uint16_t len,uint8_t type);
+	uint16_t Checksum(uint8_t *buf, uint16_t len, uint8_t type);
 	void FillIpHeaderChecksum(uint8_t *buf);
-	void step_seq(uint8_t *buf,uint16_t rel_ack_num,uint8_t cp_seq);
+	void StepSequence(uint8_t *buf, uint16_t rel_ack_num, uint8_t cp_seq);
 	uint8_t buf[1500];
 	uint16_t packet_len;
-	//uint8_t mac_address[6];
-	//uint8_t ip_address[4];
+	uint8_t seqnum;
+	uint16_t port;
 };
 
 // ******* ETH *******

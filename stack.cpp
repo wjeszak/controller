@@ -9,13 +9,15 @@
 #include "enc28j60.h"
 #include "usart.h"
 #include "eeprom.h"
-//static uint8_t seqnum=0xa; // my initial tcp sequence number
+
 Enc28j60 enc28j60;
 
 Stack::Stack()
 {
 	enc28j60.Init();
 	packet_len = 0;
+	seqnum  = 0xA; 				// my initial tcp sequence number
+	port = 502;
 }
 void Stack::StackPoll()
 {
@@ -36,6 +38,15 @@ void Stack::StackPoll()
 			if(buf[IP_PROTO_P] == IP_PROTO_ICMP_V && buf[ICMP_TYPE_P] == ICMP_TYPE_ECHOREQUEST_V)
 			{
 				MakeIcmpReply(buf, packet_len);
+			}
+			// TCP
+			if((buf[TCP_DST_PORT_H_P] == (port >> 8)) && (buf[TCP_DST_PORT_L_P] == (port & 0xFF)))
+			{
+				// SYN
+				if(buf[TCP_FLAGS_P] & TCP_FLAGS_SYN_V)
+				{
+					MakeTcpSynAckFromSyn(buf);
+				}
 			}
 		}
 	}
@@ -218,95 +229,99 @@ void Stack::MakeIcmpReply(uint8_t *buf, uint16_t len)
 }
 
 // ------------------------ TCP --------------------------
-/*
-void Stos::step_seq(uint8_t *buf,uint16_t rel_ack_num,uint8_t cp_seq)
+
+void Stack::StepSequence(uint8_t *buf,uint16_t rel_ack_num, uint8_t cp_seq)
 {
-        uint8_t i;
-        uint8_t tseq;
-        i=4;
-        // sequence numbers:
-        // add the rel ack num to SEQACK
-        while(i>0){
-                rel_ack_num=buf[TCP_SEQ_H_P+i-1]+rel_ack_num;
-                tseq=buf[TCP_SEQACK_H_P+i-1];
-                buf[TCP_SEQACK_H_P+i-1]=0xff&rel_ack_num;
-                if (cp_seq){
-                        // copy the acknum sent to us into the sequence number
-                        buf[TCP_SEQ_H_P+i-1]=tseq;
-                }else{
-                        buf[TCP_SEQ_H_P+i-1]= 0; // some preset value
-                }
-                rel_ack_num=rel_ack_num>>8;
-                i--;
-        }
+	uint8_t i;
+	uint8_t tseq;
+	i = 4;
+	// sequence numbers:
+	// add the rel ack num to SEQACK
+	while(i > 0)
+	{
+		rel_ack_num = buf[TCP_SEQ_H_P + i - 1] + rel_ack_num;
+		tseq = buf[TCP_SEQACK_H_P + i - 1];
+		buf[TCP_SEQACK_H_P + i - 1] = 0xFF & rel_ack_num;
+		if (cp_seq)
+		{
+		// copy the acknum sent to us into the sequence number
+			buf[TCP_SEQ_H_P + i - 1] = tseq;
+		}
+		else
+		{
+			buf[TCP_SEQ_H_P + i - 1] = 0; // some preset value
+		}
+		rel_ack_num = rel_ack_num >> 8;
+		i--;
+	}
 }
 
-void Stos::make_tcphead(uint8_t *buf,uint16_t rel_ack_num,uint8_t cp_seq)
+void Stack::MakeTcpHeader(uint8_t *buf, uint16_t rel_ack_num, uint8_t cp_seq)
 {
-        uint8_t i;
-        // copy ports:
-        i=buf[TCP_DST_PORT_H_P];
-        buf[TCP_DST_PORT_H_P]=buf[TCP_SRC_PORT_H_P];
-        buf[TCP_SRC_PORT_H_P]=i;
-        //
-        i=buf[TCP_DST_PORT_L_P];
-        buf[TCP_DST_PORT_L_P]=buf[TCP_SRC_PORT_L_P];
-        buf[TCP_SRC_PORT_L_P]=i;
-        step_seq(buf,rel_ack_num,cp_seq);
-        // zero the checksum
-        buf[TCP_CHECKSUM_H_P]=0;
-        buf[TCP_CHECKSUM_L_P]=0;
-        // no options:
-        // 20 bytes:
-        // The tcp header length is only a 4 bit field (the upper 4 bits).
-        // It is calculated in units of 4 bytes.
-        // E.g 20 bytes: 20/4=6 => 0x50=header len field
-        buf[TCP_HEADER_LEN_P]=0x50;
+	uint8_t i;
+	// copy ports:
+	i = buf[TCP_DST_PORT_H_P];
+	buf[TCP_DST_PORT_H_P] = buf[TCP_SRC_PORT_H_P];
+	buf[TCP_SRC_PORT_H_P] = i;
+	i=buf[TCP_DST_PORT_L_P];
+	buf[TCP_DST_PORT_L_P] = buf[TCP_SRC_PORT_L_P];
+	buf[TCP_SRC_PORT_L_P] = i;
+
+	StepSequence(buf, rel_ack_num, cp_seq);
+	// zero the checksum
+	buf[TCP_CHECKSUM_H_P] = 0;
+	buf[TCP_CHECKSUM_L_P] = 0;
+	// no options:
+	// 20 bytes:
+	// The tcp header length is only a 4 bit field (the upper 4 bits).
+	// It is calculated in units of 4 bytes.
+	// E.g 20 bytes: 20/4=6 => 0x50=header len field
+	buf[TCP_HEADER_LEN_P] = 0x50;
 }
 
-void Stos::make_tcp_synack_from_syn(uint8_t *buf)
+void Stack::MakeTcpSynAckFromSyn(uint8_t *buf)
 {
-        uint16_t ck;
-        make_eth(buf);
-        // total length field in the IP header must be set:
-        // 20 bytes IP + 24 bytes (20tcp+4tcp options)
-        buf[IP_TOTLEN_H_P]=0;
-        buf[IP_TOTLEN_L_P]=IP_HEADER_LEN+TCP_HEADER_LEN_PLAIN+4;
-        make_ip(buf);
-        buf[TCP_FLAGS_P]=TCP_FLAGS_SYNACK_V;
-        make_tcphead(buf,1,0);
-        // put an inital seq number
-        buf[TCP_SEQ_H_P+0]= 0;
-        buf[TCP_SEQ_H_P+1]= 0;
-        // we step only the second byte, this allows us to send packts
-        // with 255 bytes, 512  or 765 (step by 3) without generating
-        // overlapping numbers.
-        buf[TCP_SEQ_H_P+2]= seqnum;
-        buf[TCP_SEQ_H_P+3]= 0;
-        // step the inititial seq num by something we will not use
-        // during this tcp session:
-        seqnum+=3;
-        // add an mss options field with MSS to 1280:
-        // 1280 in hex is 0x500
-        buf[TCP_OPTIONS_P]=2;
-        buf[TCP_OPTIONS_P+1]=4;
-        buf[TCP_OPTIONS_P+2]=0x05;
-        buf[TCP_OPTIONS_P+3]=0x0;
-        // The tcp header length is only a 4 bit field (the upper 4 bits).
-        // It is calculated in units of 4 bytes.
-        // E.g 24 bytes: 24/4=6 => 0x60=header len field
-        buf[TCP_HEADER_LEN_P]=0x60;
-        // here we must just be sure that the web browser contacting us
-        // will send only one get packet
-        buf[TCP_WIN_SIZE]=0x0a; // was 1400=0x578, 2560=0xa00 suggested by Andras Tucsni to be able to receive bigger packets
-        buf[TCP_WIN_SIZE+1]=0; //
-        // calculate the checksum, len=8 (start from ip.src) + TCP_HEADER_LEN_PLAIN + 4 (one option: mss)
-        ck=checksum(&buf[IP_SRC_P], 8+TCP_HEADER_LEN_PLAIN+4,2);
-        buf[TCP_CHECKSUM_H_P]=ck>>8;
-        buf[TCP_CHECKSUM_L_P]=ck& 0xff;
-        // add 4 for option mss:
-        ethernet.WyslijPakiet(IP_HEADER_LEN+TCP_HEADER_LEN_PLAIN+4+ETH_HEADER_LEN,buf);
+	uint16_t ck;
+	MakeEthHeader(buf);
+	// total length field in the IP header must be set:
+	// 20 bytes IP + 24 bytes (20tcp+4tcp options)
+	buf[IP_TOTLEN_H_P] = 0;
+	buf[IP_TOTLEN_L_P] = IP_HEADER_LEN + TCP_HEADER_LEN_PLAIN + 4;
+	MakeIpHeader(buf);
+	buf[TCP_FLAGS_P] = TCP_FLAGS_SYNACK_V;
+	MakeTcpHeader(buf, 1, 0);
+	// put an inital seq number
+	buf[TCP_SEQ_H_P + 0] = 0;
+	buf[TCP_SEQ_H_P + 1] = 0;
+	// we step only the second byte, this allows us to send packts
+	// with 255 bytes, 512  or 765 (step by 3) without generating
+	// overlapping numbers.
+	buf[TCP_SEQ_H_P + 2] = seqnum;
+	buf[TCP_SEQ_H_P + 3] = 0;
+	// step the inititial seq num by something we will not use
+	// during this tcp session:
+	seqnum += 3;
+	// add an mss options field with MSS to 1280:
+	// 1280 in hex is 0x500
+	buf[TCP_OPTIONS_P] = 2;
+	buf[TCP_OPTIONS_P + 1] = 4;
+	buf[TCP_OPTIONS_P + 2] = 0x05;
+	buf[TCP_OPTIONS_P + 3] = 0x0;
+	// The tcp header length is only a 4 bit field (the upper 4 bits).
+	// It is calculated in units of 4 bytes.
+	// E.g 24 bytes: 24/4=6 => 0x60=header len field
+	buf[TCP_HEADER_LEN_P] = 0x60;
+	// here we must just be sure that the web browser contacting us
+	// will send only one get packet
+	buf[TCP_WIN_SIZE] = 0x0a; // was 1400=0x578, 2560=0xa00 suggested by Andras Tucsni to be able to receive bigger packets
+	buf[TCP_WIN_SIZE + 1] = 0;
+	// calculate the checksum, len=8 (start from ip.src) + TCP_HEADER_LEN_PLAIN + 4 (one option: mss)
+	ck = Checksum(&buf[IP_SRC_P], 8 + TCP_HEADER_LEN_PLAIN + 4, 2);
+	buf[TCP_CHECKSUM_H_P] = ck >> 8;
+	buf[TCP_CHECKSUM_L_P] = ck & 0xFF;
+	// add 4 for option mss:
+	enc28j60.SendPacket(IP_HEADER_LEN + TCP_HEADER_LEN_PLAIN + 4 + ETH_HEADER_LEN, buf);
 }
-*/
+
 
 
