@@ -17,7 +17,8 @@
 #include "machine_type.h"
 #include "motor.h"
 #include "stack.h"
-
+#include "eeprom.h"
+Eeprom eprom;
 Timer timer(T0_PS_1024, 17);
 Stack stack;
 Motor motor;

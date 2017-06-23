@@ -28,8 +28,8 @@ private:
 	void step_seq(uint8_t *buf,uint16_t rel_ack_num,uint8_t cp_seq);
 	uint8_t buf[1500];
 	uint16_t packet_len;
-	uint8_t mac_address[6];
-	uint8_t ip_address[4];
+	//uint8_t mac_address[6];
+	//uint8_t ip_address[4];
 };
 
 // ******* ETH *******

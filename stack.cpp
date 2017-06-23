@@ -8,25 +8,13 @@
 #include "stack.h"
 #include "enc28j60.h"
 #include "usart.h"
-
+#include "eeprom.h"
 //static uint8_t seqnum=0xa; // my initial tcp sequence number
 Enc28j60 enc28j60;
 
 Stack::Stack()
 {
 	enc28j60.Init();
-	// to bedzie odczytane z EEPROM
-	mac_address[0] = 0x00;
-	mac_address[1] = 0x20;
-	mac_address[2] = 0x18;
-	mac_address[3] = 0xB1;
-	mac_address[4] = 0x15;
-	mac_address[5] = 0x6F;
-	ip_address[0] = 192;
-	ip_address[1] = 168;
-	ip_address[2] = 1;
-	ip_address[3] = 170;
-
 	packet_len = 0;
 }
 void Stack::StackPoll()
@@ -41,8 +29,15 @@ void Stack::StackPoll()
 		{
 			MakeArpReply(buf);
 		}
-		// PING
-
+		// IP
+		if(EthTypeIsIPMyIP(buf, packet_len))
+		{
+			// ICMP
+			if(buf[IP_PROTO_P] == IP_PROTO_ICMP_V && buf[ICMP_TYPE_P] == ICMP_TYPE_ECHOREQUEST_V)
+			{
+				MakeIcmpReply(buf, packet_len);
+			}
+		}
 	}
 }
 
@@ -63,13 +58,25 @@ uint8_t Stack::EthTypeIsArpMyIP(uint8_t *buf, uint16_t len)
 	}
  	while(i < 4)
 	{
-		if(buf[ETH_ARP_DST_IP_P + i] != ip_address[i])
+		if(buf[ETH_ARP_DST_IP_P + i] != cfg.ip_addr[i])
 		{
 			return 0;
 		}
 		i++;
 	}
 	return 1;
+}
+
+void Stack::MakeEthHeader(uint8_t *buf)
+{
+	uint8_t i = 0;
+	//copy the destination MAC from the source and fill my mac into src
+	while(i < 6)
+	{
+		buf[ETH_DST_MAC + i] = buf[ETH_SRC_MAC + i];
+		buf[ETH_SRC_MAC + i] = cfg.mac_addr[i];
+		i++;
+	}
 }
 
 void Stack::MakeArpReply(uint8_t *buf)
@@ -81,30 +88,31 @@ void Stack::MakeArpReply(uint8_t *buf)
 	while(i < 6)
 	{
 		buf[ETH_ARP_DST_MAC_P + i] = buf[ETH_ARP_SRC_MAC_P + i];
-		buf[ETH_ARP_SRC_MAC_P +i ] = mac_address[i];
+		buf[ETH_ARP_SRC_MAC_P +i ] = cfg.mac_addr[i];
 		i++;
 	}
 	i = 0;
 	while(i < 4)
 	{
 		buf[ETH_ARP_DST_IP_P + i] = buf[ETH_ARP_SRC_IP_P + i];
-		buf[ETH_ARP_SRC_IP_P + i] = ip_address[i];
+		buf[ETH_ARP_SRC_IP_P + i] = cfg.ip_addr[i];
 		i++;
 	}
 	// Eth + Arp is 42 bytes:
 	enc28j60.SendPacket(42, buf);
 }
 
-void Stack::MakeEthHeader(uint8_t *buf)
+
+void Stack::MakeIpHeader(uint8_t *buf)
 {
 	uint8_t i = 0;
-	//copy the destination MAC from the source and fill my mac into src
-	while(i < 6)
+	while(i < 4)
 	{
-		buf[ETH_DST_MAC + i] = buf[ETH_SRC_MAC + i];
-		buf[ETH_SRC_MAC + i] = mac_address[i];
+		buf[IP_DST_P + i] = buf[IP_SRC_P + i];
+		buf[IP_SRC_P + i] = cfg.ip_addr[i];
 		i++;
 	}
+	FillIpHeaderChecksum(buf);
 }
 
 
@@ -127,7 +135,7 @@ uint8_t Stack::EthTypeIsIPMyIP(uint8_t *buf, uint16_t len)
 	}
 	while(i < 4)
 	{
-		if(buf[IP_DST_P + i] != ip_address[i])
+		if(buf[IP_DST_P + i] != cfg.ip_addr[i])
 		{
 			return 0;
 		}
@@ -179,49 +187,38 @@ uint16_t Stack::Checksum(uint8_t *buf, uint16_t len, uint8_t type)
 	return ((uint16_t) sum ^ 0xFFFF);
 }
 
-void Stos::fill_ip_hdr_checksum(uint8_t *buf)
+void Stack::FillIpHeaderChecksum(uint8_t *buf)
 {
-        uint16_t ck;
-        // clear the 2 byte checksum
-        buf[IP_CHECKSUM_P]=0;
-        buf[IP_CHECKSUM_P+1]=0;
-        buf[IP_FLAGS_P]=0x40; // don't fragment
-        buf[IP_FLAGS_P+1]=0;  // fragement offset
-        buf[IP_TTL_P]=64; // ttl
-        // calculate the checksum:
-        ck=checksum(&buf[IP_P], IP_HEADER_LEN,0);
-        buf[IP_CHECKSUM_P]=ck>>8;
-        buf[IP_CHECKSUM_P+1]=ck& 0xff;
+	uint16_t ck;
+	// clear the 2 byte checksum
+	buf[IP_CHECKSUM_P] = 0;
+	buf[IP_CHECKSUM_P + 1] = 0;
+	buf[IP_FLAGS_P] = 0x40; 			// don't fragment
+	buf[IP_FLAGS_P + 1] = 0;  			// fragement offset
+	buf[IP_TTL_P] = 64; 				// TTL
+	// calculate the checksum:
+	ck = Checksum(&buf[IP_P], IP_HEADER_LEN, 0);
+	buf[IP_CHECKSUM_P] = ck >> 8;
+	buf[IP_CHECKSUM_P + 1] = ck & 0xFF;
 }
 
-void Stos::make_ip(uint8_t *buf)
+void Stack::MakeIcmpReply(uint8_t *buf, uint16_t len)
 {
-	uint8_t i = 0;
-	while(i < 4)
-	{
-		buf[IP_DST_P + i] = buf[IP_SRC_P + i];
-		buf[IP_SRC_P + i] = Adres_IP[i];
-		i++;
-	}
-	fill_ip_hdr_checksum(buf);
-}
-
-void Stos::make_echo_reply_from_request(uint8_t *buf, uint16_t len)
-{
-	make_eth(buf);
-	make_ip(buf);
+	MakeEthHeader(buf);
+	MakeIpHeader(buf);
 	buf[ICMP_TYPE_P] = ICMP_TYPE_ECHOREPLY_V;
 	// we changed only the icmp.type field from request(=8) to reply(=0).
 	// we can therefore easily correct the checksum:
-	if (buf[ICMP_CHECKSUM_P] > (0xff-0x08))
+	if(buf[ICMP_CHECKSUM_P] > (0xff - 0x08))
 	{
 		buf[ICMP_CHECKSUM_P + 1]++;
 	}
-	buf[ICMP_CHECKSUM_P]+=0x08;
-	ethernet.WyslijPakiet(len,buf);
+	buf[ICMP_CHECKSUM_P]+= 0x08;
+	enc28j60.SendPacket(len,buf);
 }
 
 // ------------------------ TCP --------------------------
+/*
 void Stos::step_seq(uint8_t *buf,uint16_t rel_ack_num,uint8_t cp_seq)
 {
         uint8_t i;

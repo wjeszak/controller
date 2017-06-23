@@ -4,12 +4,13 @@
  *  Created on: 25 maj 2017
  *      Author: tomek
  */
-#include "enc28j60.h"
 
 #include <avr/io.h>
 #include <stdlib.h>
 #include <util/delay.h>
 
+#include "enc28j60.h"
+#include "eeprom.h"
 #include "stack.h"
 #include "usart.h"
 
@@ -43,7 +44,6 @@ void Enc28j60::SPI_Init()
 	ENC28J60_CS_PASYWNY;
 	// F_CPU / 4, przy nizszych czestotliwosciach wzrasta czas odpowiedzi na ping, dla F_CPU / 128: Tping = 22 ms
 	SPCR |= (1 << SPE) | (1 << MSTR);// | (1 << SPR1) | (1 << SPR0);
-	//SPSR |= (1<<SPI2X);
 	_delay_ms(100);
 }
 
@@ -483,12 +483,12 @@ void Enc28j60::Init()
 		#endif
 
 		// our mac address
-	RejZapisz(ENC_REG_MAADR5, ADR_MAC1);
-	RejZapisz(ENC_REG_MAADR4, ADR_MAC2);
-	RejZapisz(ENC_REG_MAADR3, ADR_MAC3);
-	RejZapisz(ENC_REG_MAADR2, ADR_MAC4);
-	RejZapisz(ENC_REG_MAADR1, ADR_MAC5);
-	RejZapisz(ENC_REG_MAADR0, ADR_MAC6);
+	RejZapisz(ENC_REG_MAADR5, cfg.mac_addr[0]);
+	RejZapisz(ENC_REG_MAADR4, cfg.mac_addr[1]);
+	RejZapisz(ENC_REG_MAADR3, cfg.mac_addr[2]);
+	RejZapisz(ENC_REG_MAADR2, cfg.mac_addr[3]);
+	RejZapisz(ENC_REG_MAADR1, cfg.mac_addr[4]);
+	RejZapisz(ENC_REG_MAADR0, cfg.mac_addr[5]);
 
 		// disable CLKOUT pin
 	RejZapisz(ENC_REG_ECOCON, 0x00);
