@@ -26,7 +26,7 @@ private:
 	uint16_t Checksum(uint8_t *buf, uint16_t len, uint8_t type);
 	void FillIpHeaderChecksum(uint8_t *buf);
 	void StepSequence(uint8_t *buf, uint16_t rel_ack_num, uint8_t cp_seq);
-	uint16_t FillTcpData(uint8_t *buf, uint16_t pos, const char *pdata);
+	uint16_t FillTcpData(uint8_t *buf,uint16_t pos, uint8_t *pdata, uint8_t len);
 	void MakeTcpAckFromAny(uint8_t *buf, int16_t datlentoack, uint8_t addflags);
 	void MakeTcpAckWithDataNoFlags(uint8_t *buf, uint16_t dlen);
 	uint8_t buf[1500];

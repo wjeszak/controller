@@ -50,10 +50,42 @@ void Stack::StackPoll()
 				if(buf[TCP_FLAGS_P] & TCP_FLAGS_PUSH_V)
 				{
 					MakeTcpAckFromAny(buf, 12, 0);
-					//const char *ramka = ""
-					FillTcpData(buf, 0, "Dupsko");
+					// 7 bytes MBAP
+					// REQ
+#define TRANS_ID_H 				0
+#define TRANS_ID_L 				1
+#define PROT_ID_H 				2
+#define PROT_ID_L 				3
+#define LENGTH_H				4
+#define LENGTH_L				5
+#define UNIT_ID					6
+#define FUNCTION_CODE			7
+#define ADDR_FIRST_H 			8
+#define ADDR_FIRST_L 			9
+#define NUMBER_OF_REG_H			10
+#define NUMBER_OF_REG_L 		11
+					// RES
+#define BYTE_COUNT 				8
+#define START_DATA 				9
+
+					uint8_t frame[100];
+					frame[TRANS_ID_H] = 0;
+					frame[TRANS_ID_L] = 0;
+					frame[PROT_ID_H] = 0;
+					frame[PROT_ID_L] = 0;
+					frame[LENGTH_H] = 0;
+					frame[LENGTH_L] = 75; // 4b
+					frame[UNIT_ID] = 1;
+					frame[FUNCTION_CODE] = 3;
+					frame[BYTE_COUNT] = 72;
+					for(uint8_t i = 0; i < 36; i++)
+					{
+						frame[START_DATA +  2 * i] = i;
+					}
+					//uint8_t frame[] = {0, 0, 0, 0, 0, 6, 1, 3, 0, 25, 0, 36, 0, 47};
+					FillTcpData(buf, 0, frame, 81);
 					buf[TCP_FLAGS_P] = TCP_FLAGS_ACK_V | TCP_FLAGS_PUSH_V | TCP_FLAGS_FIN_V;
-					MakeTcpAckWithDataNoFlags(buf, 6);
+					MakeTcpAckWithDataNoFlags(buf, 81);
 
 				}
 			}
@@ -332,14 +364,15 @@ void Stack::MakeTcpSynAckFromSyn(uint8_t *buf)
 	enc28j60.SendPacket(IP_HEADER_LEN + TCP_HEADER_LEN_PLAIN + 4 + ETH_HEADER_LEN, buf);
 }
 
-uint16_t Stack::FillTcpData(uint8_t *buf,uint16_t pos, const char *pdata)
+uint16_t Stack::FillTcpData(uint8_t *buf,uint16_t pos, uint8_t *pdata, uint8_t len)
 {
 	// fill in tcp data at position pos
 	// with no options the data starts after the checksum + 2 more bytes (urgent ptr)
-	const char *w = pdata;
-	while (*w)
+	uint8_t *w = pdata;
+	while (len)
 	{
 		buf[TCP_CHECKSUM_L_P + 3 + pos] = *w++;
+		len--;
 		pos++;
 	}
 	return pos;
