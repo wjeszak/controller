@@ -49,7 +49,7 @@ void Stack::StackPoll()
 				}
 				if(buf[TCP_FLAGS_P] & TCP_FLAGS_PUSH_V)
 				{
-					MakeTcpAckFromAny(buf, 12, 0);
+					MakeTcpAckFromAny(buf, 0, 0);
 					// 7 bytes MBAP
 					// REQ
 #define TRANS_ID_H 				0
@@ -59,6 +59,7 @@ void Stack::StackPoll()
 #define LENGTH_H				4
 #define LENGTH_L				5
 #define UNIT_ID					6
+
 #define FUNCTION_CODE			7
 #define ADDR_FIRST_H 			8
 #define ADDR_FIRST_L 			9
@@ -70,25 +71,32 @@ void Stack::StackPoll()
 
 					uint8_t frame[100];
 					frame[TRANS_ID_H] = 0;
-					frame[TRANS_ID_L] = 0;
+					frame[TRANS_ID_L] = 1;
 					frame[PROT_ID_H] = 0;
 					frame[PROT_ID_L] = 0;
 					frame[LENGTH_H] = 0;
-					frame[LENGTH_L] = 75; // 4b
+					frame[LENGTH_L] = (buf[TCP_CHECKSUM_L_P + 3 + NUMBER_OF_REG_L] * 2) + 3; // 4b
 					frame[UNIT_ID] = 1;
 					frame[FUNCTION_CODE] = 3;
-					frame[BYTE_COUNT] = 72;
-					for(uint8_t i = 0; i < 36; i++)
+					frame[BYTE_COUNT] = buf[TCP_CHECKSUM_L_P + 3 + NUMBER_OF_REG_L] * 2;
+					//uint16_t wart =
+					for(uint8_t i = 0; i < buf[TCP_CHECKSUM_L_P + 3 + NUMBER_OF_REG_L]; i++)
 					{
-						//frame[START_DATA +  2 * i] = i;
 						frame[START_DATA + 2 * i] = Msb(i);
 						frame[START_DATA + (2 * i) + 1] = Lsb(i);
 					}
-					//uint8_t frame[] = {0, 0, 0, 0, 0, 6, 1, 3, 0, 25, 0, 36, 0, 47};
-					FillTcpData(buf, 0, frame, 81);
-					buf[TCP_FLAGS_P] = TCP_FLAGS_ACK_V | TCP_FLAGS_PUSH_V | TCP_FLAGS_FIN_V;
-					MakeTcpAckWithDataNoFlags(buf, 81);
+					uint8_t j = 0;
+					j = (1 << 1);
+					frame[START_DATA] = Msb(j);
+					frame[START_DATA +1] = Lsb(j);
+					FillTcpData(buf, 0, frame, frame[LENGTH_L] + 6);
+					buf[TCP_FLAGS_P] = TCP_FLAGS_PUSH_V | TCP_FLAGS_ACK_V; //| TCP_FLAGS_FIN_V;
+					MakeTcpAckWithDataNoFlags(buf, frame[LENGTH_L] + 6);
 
+				}
+				if(buf[TCP_FLAGS_P] & TCP_FLAGS_FIN_V)
+				{
+					MakeTcpAckFromAny(buf, 0, 0);
 				}
 			}
 		}
