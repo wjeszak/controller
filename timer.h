@@ -7,6 +7,7 @@
 
 #ifndef TIMER_H_
 #define TIMER_H_
+#include "machine.h"
 /*
 #if (F_CPU == 1843200) | (F_CPU == 3686400) | (F_CPU == 4915200) | (F_CPU == 7372800) | \
 	(F_CPU == 9216000) | (F_CPU == 11059200) | (F_CPU == 14745600) | (F_CPU == 18432000) | (F_CPU == 22118400)
@@ -40,7 +41,7 @@ class Timer
 public:
 	Timer(T0Prescallers Prescaller, uint8_t Tick);
 	void Assign(uint8_t HandlerNumber, uint64_t Interval, void(*fp)());
-	int8_t Assign (uint64_t Interval, void(*fp)());
+//	int8_t Assign (uint64_t Interval, void(*fp)());
 	void UnAssign (uint8_t HandlerNumber);
 	void Enable (uint8_t HandlerNumber);
 	void Disable (uint8_t HandlerNumber);
@@ -52,5 +53,8 @@ public:
 	void SetPrescaller (T0Prescallers Prescaller);
 	void SetPeriod (uint8_t Tick);
 };
-void DisplayRefresh();
+extern void DisplayRefresh();
+extern void ModbusRTU35T();
+
+extern Timer timer;
 #endif /* TIMER_H_ */

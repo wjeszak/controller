@@ -35,7 +35,7 @@ void Stack::StackPoll()
 		if(EthTypeIsIPMyIP(buf, packet_len))
 		{
 			// ICMP
-			if(buf[IP_PROTO_P] == IP_PROTO_ICMP_V && buf[ICMP_TYPE_P] == ICMP_TYPE_ECHOREQUEST_V)
+			if(EthTypeIsIcmp(buf))
 			{
 				MakeIcmpReply(buf, packet_len);
 			}
@@ -204,6 +204,13 @@ uint8_t Stack::EthTypeIsIPMyIP(uint8_t *buf, uint16_t len)
 		i++;
 	}
 	return 1;
+}
+uint8_t Stack::EthTypeIsIcmp(uint8_t* buf)
+{
+	if(buf[IP_PROTO_P] == IP_PROTO_ICMP_V && buf[ICMP_TYPE_P] == ICMP_TYPE_ECHOREQUEST_V)
+		return 1;
+	else
+		return 0;
 }
 
 uint16_t Stack::Checksum(uint8_t *buf, uint16_t len, uint8_t type)

@@ -35,14 +35,17 @@ uint16_t Machine::GetState()
 }
 void Machine::Event(uint16_t new_state, EventData *pdata)
 {
-	_event_generated = true;
-	ChangeState(new_state);
-	while(_event_generated)
+	if(new_state == ST_NOT_ALLOWED) {}
+	else
 	{
-		//usart.ST_Idle(NULL);
-		//(this->*fp[0])(pdata);			// run state function
-		const StateStruct* pStateMap = GetStateMap();
-		(this->*pStateMap[current_state].pStateFunc)(pdata);
-		_event_generated = false;
+		_event_generated = true;
+		ChangeState(new_state);
+		while(_event_generated)
+		{
+			// run state function
+			const StateStruct* pStateMap = GetStateMap();
+			(this->*pStateMap[current_state].pStateFunc)(pdata);
+			_event_generated = false;
+		}
 	}
 }

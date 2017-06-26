@@ -10,6 +10,7 @@
 #include <stdio.h>			// NULL
 #include "timer.h"
 #include "display.h"
+#include "usart.h"
 
 volatile TimerHandler STHandlers[8];
 
@@ -35,9 +36,26 @@ void Timer::Assign(uint8_t HandlerNumber, uint64_t Interval, void(*fp)())
 	STHandlers [HandlerNumber].Active = true;
 	STHandlers [HandlerNumber].fp = fp;
 }
+
+void Timer::Enable(uint8_t HandlerNumber)
+{
+	STHandlers [HandlerNumber].Active = true;
+	STHandlers [HandlerNumber].Counter = 0;
+}
+
+void Timer::Disable(uint8_t HandlerNumber)
+{
+	STHandlers [HandlerNumber].Active = false;
+}
+
 void DisplayRefresh()
 {
 	display.Refresh();
+}
+
+void ModbusRTU35T()
+{
+	usart.RTU35T();
 }
 ISR(TIMER0_COMPA_vect)
 {

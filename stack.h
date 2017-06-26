@@ -17,6 +17,7 @@ public:
 private:
 	uint8_t EthTypeIsArpMyIP(uint8_t *buf, uint16_t len);
 	uint8_t EthTypeIsIPMyIP(uint8_t *buf, uint16_t len);
+	uint8_t EthTypeIsIcmp(uint8_t *buf);
 	void MakeArpReply(uint8_t *buf);
 	void MakeIcmpReply(uint8_t *buf, uint16_t len);
 	void MakeEthHeader(uint8_t *buf);

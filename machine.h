@@ -28,12 +28,13 @@ public:
 //	virtual ~Machine();
 protected:
 	uint16_t current_state;
+	enum States {ST_NOT_ALLOWED = 0xFF};
 private:
 	const uint8_t _max_states;
 	bool _event_generated;
 	void ChangeState(uint16_t new_state);
 	virtual const StateStruct* GetStateMap() { return NULL;}
-	enum States {NOT_ALLOWED = 0xFF};
+
 };
 
 typedef void (Machine::*StateFunc)(EventData *);

@@ -10,7 +10,7 @@
 
 #include <avr/io.h>
 #include <inttypes.h>
-
+#include "machine.h"
 // Numeracja wg. rozmieszczenia na plytce
 #define DISP1_DDR 				DDRD
 #define DISP2_DDR 				DDRC

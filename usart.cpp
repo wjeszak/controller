@@ -15,6 +15,7 @@
 #include "motor.h"
 #include "machine.h"
 #include "display.h"
+#include "timer.h"
 
 Usart::Usart(uint16_t baud) : Machine(ST_MAX_STATES)
 {
@@ -31,6 +32,7 @@ Usart::Usart(uint16_t baud) : Machine(ST_MAX_STATES)
 	tx_head = 0;
 	tx_tail = 0;
 	RxEnable();
+	timer.Assign(1, 1000, ModbusRTU35T);
 }
 
 void Usart::RxEnable()
@@ -55,34 +57,50 @@ void Usart::TxDisable()
 	UCSR0B &= ~(1 << UDRIE0);
 }
 
+void Usart::ST_Init(UsartData* pdata) {}
 void Usart::ST_Idle(UsartData* pdata)
 {
 	usart_data.frame = "Idle\n";
 	usart.SendFrame(&usart_data);
 	static uint16_t i;
 	display.Write(i++);
+	timer.Disable(1);
 }
 
 void Usart::ST_ByteReceived(UsartData* pdata)
 {
 	usart_data.frame = "Byte received\n";
 	usart.SendFrame(&usart_data);
-	if(usart_data.c == 'f') Event(ST_FRAME_RECEIVED, NULL);
+	timer.Enable(1);
 }
 
 void Usart::ST_FrameReceived(UsartData* pdata)
 {
 	usart_data.frame = "Frame received!\n";
 	usart.SendFrame(&usart_data);
+	timer.Disable(1);
 }
 
 void Usart::CharReceived(UsartData* pdata)
 {
 	const uint8_t Transitions[] =
 	{
-		ST_BYTE_RECEIVED,			// ST_IDLE
-		ST_BYTE_RECEIVED, 			// ST_BYTE_RECEIVED
+		// musi byc obsluga jesli znak przyjdzie w stanie INIT
+		ST_BYTE_RECEIVED,			// ST_INIT
+		ST_BYTE_RECEIVED, 			// ST_IDLE
+		ST_BYTE_RECEIVED,			// ST_BYTE_RECEIVED
 		ST_BYTE_RECEIVED			// ST_FRAME_RECEIVED
+	};
+	Event(Transitions[current_state], pdata);
+}
+
+void Usart::RTU35T(UsartData* pdata)
+{
+	const uint8_t Transitions[] =
+	{
+		ST_IDLE,						// ST_INIT
+		ST_NOT_ALLOWED, 				// ST_IDLE
+		ST_FRAME_RECEIVED				// ST_BYTE_RECEIVED
 	};
 	Event(Transitions[current_state], pdata);
 }

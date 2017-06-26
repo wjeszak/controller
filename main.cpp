@@ -3,7 +3,7 @@
  *
  *  Created on: 25 maj 2017
  *      Author: tomek
- *
+ * Jak rozwiazac wskazniki do funkcji z timerem ? Zeby sztucznie nie tworzyc nowych poza klasa.
  */
 
 #include <avr/io.h>
@@ -37,7 +37,7 @@ int main()
 	//wysw.Wypisz(0);
 	while(1)
 	{
-		stack.StackPoll();
+		//stack.StackPoll();
 		/*
 		if(t_flaga_dluga)
 		{
