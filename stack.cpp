@@ -47,6 +47,15 @@ void Stack::StackPoll()
 				{
 					MakeTcpSynAckFromSyn(buf);
 				}
+				if(buf[TCP_FLAGS_P] & TCP_FLAGS_PUSH_V)
+				{
+					MakeTcpAckFromAny(buf, 12, 0);
+					//const char *ramka = ""
+					FillTcpData(buf, 0, "Dupsko");
+					buf[TCP_FLAGS_P] = TCP_FLAGS_ACK_V | TCP_FLAGS_PUSH_V | TCP_FLAGS_FIN_V;
+					MakeTcpAckWithDataNoFlags(buf, 6);
+
+				}
 			}
 		}
 	}
@@ -321,4 +330,73 @@ void Stack::MakeTcpSynAckFromSyn(uint8_t *buf)
 	buf[TCP_CHECKSUM_L_P] = ck & 0xFF;
 	// add 4 for option mss:
 	enc28j60.SendPacket(IP_HEADER_LEN + TCP_HEADER_LEN_PLAIN + 4 + ETH_HEADER_LEN, buf);
+}
+
+uint16_t Stack::FillTcpData(uint8_t *buf,uint16_t pos, const char *pdata)
+{
+	// fill in tcp data at position pos
+	// with no options the data starts after the checksum + 2 more bytes (urgent ptr)
+	const char *w = pdata;
+	while (*w)
+	{
+		buf[TCP_CHECKSUM_L_P + 3 + pos] = *w++;
+		pos++;
+	}
+	return pos;
+}
+
+void Stack::MakeTcpAckFromAny(uint8_t *buf, int16_t datlentoack, uint8_t addflags)
+{
+	uint16_t j;
+	MakeEthHeader(buf);
+	// fill the header:
+	buf[TCP_FLAGS_P] = TCP_FLAGS_ACK_V | addflags;
+	if (addflags == TCP_FLAGS_RST_V)
+	{
+		MakeTcpHeader(buf, datlentoack, 1);
+	}
+	else
+	{
+		if (datlentoack == 0)
+		{
+			// if there is no data then we must still acknoledge one packet
+			datlentoack = 1;
+		}
+		// normal case, ack the data:
+		MakeTcpHeader(buf, datlentoack, 1); // no options
+	}
+	// total length field in the IP header must be set:
+	// 20 bytes IP + 20 bytes tcp (when no options)
+	j = IP_HEADER_LEN + TCP_HEADER_LEN_PLAIN;
+	buf[IP_TOTLEN_H_P] = j >> 8;
+	buf[IP_TOTLEN_L_P] = j & 0xFF;
+	MakeIpHeader(buf);
+	// use a low window size otherwise we have to have
+	// timers and can not just react on every packet.
+	buf[TCP_WIN_SIZE] = 0x4; // 1024=0x400, 1280=0x500 2048=0x800 768=0x300
+	buf[TCP_WIN_SIZE +1 ] = 0;
+	// calculate the checksum, len=8 (start from ip.src) + TCP_HEADER_LEN_PLAIN + data len
+	j = Checksum(&buf[IP_SRC_P], 8 + TCP_HEADER_LEN_PLAIN, 2);
+	buf[TCP_CHECKSUM_H_P] = j >> 8;
+	buf[TCP_CHECKSUM_L_P] = j & 0xFF;
+	enc28j60.SendPacket(IP_HEADER_LEN + TCP_HEADER_LEN_PLAIN + ETH_HEADER_LEN, buf);
+}
+
+void Stack::MakeTcpAckWithDataNoFlags(uint8_t *buf, uint16_t dlen)
+{
+	uint16_t j;
+	// total length field in the IP header must be set:
+	// 20 bytes IP + 20 bytes tcp (when no options) + len of data
+	j = IP_HEADER_LEN + TCP_HEADER_LEN_PLAIN + dlen;
+	buf[IP_TOTLEN_H_P] = j >> 8;
+	buf[IP_TOTLEN_L_P]= j & 0xFF;
+	FillIpHeaderChecksum(buf);
+	// zero the checksum
+	buf[TCP_CHECKSUM_H_P] = 0;
+	buf[TCP_CHECKSUM_L_P] = 0;
+	// calculate the checksum, len=8 (start from ip.src) + TCP_HEADER_LEN_PLAIN + data len
+	j = Checksum(&buf[IP_SRC_P], 8 + TCP_HEADER_LEN_PLAIN + dlen, 2);
+	buf[TCP_CHECKSUM_H_P] = j >> 8;
+	buf[TCP_CHECKSUM_L_P] = j & 0xFF;
+	enc28j60.SendPacket(IP_HEADER_LEN + TCP_HEADER_LEN_PLAIN + dlen + ETH_HEADER_LEN, buf);
 }

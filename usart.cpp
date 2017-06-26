@@ -109,7 +109,6 @@ void Usart::SendFrame(UsartData* pdata)
 {
 	RxDisable();
 	uint8_t tmp_tx_head;
-
 	const char *w = pdata->frame;
 	while(*w)
 	{
@@ -118,7 +117,6 @@ void Usart::SendFrame(UsartData* pdata)
 		buf_tx[tmp_tx_head] = *w++;
 		tx_head = tmp_tx_head;
 	}
-
 	TxEnable();
 }
 
