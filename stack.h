@@ -29,6 +29,8 @@ private:
 	uint16_t FillTcpData(uint8_t *buf,uint16_t pos, uint8_t *pdata, uint8_t len);
 	void MakeTcpAckFromAny(uint8_t *buf, int16_t datlentoack, uint8_t addflags);
 	void MakeTcpAckWithDataNoFlags(uint8_t *buf, uint16_t dlen);
+	uint8_t Msb(uint16_t val) { return val >> 8; }
+	uint8_t Lsb(uint16_t val) { return val & 0xFF; }
 	uint8_t buf[1500];
 	uint16_t packet_len;
 	uint8_t seqnum;

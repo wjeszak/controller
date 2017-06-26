@@ -80,7 +80,9 @@ void Stack::StackPoll()
 					frame[BYTE_COUNT] = 72;
 					for(uint8_t i = 0; i < 36; i++)
 					{
-						frame[START_DATA +  2 * i] = i;
+						//frame[START_DATA +  2 * i] = i;
+						frame[START_DATA + 2 * i] = Msb(i);
+						frame[START_DATA + (2 * i) + 1] = Lsb(i);
 					}
 					//uint8_t frame[] = {0, 0, 0, 0, 0, 6, 1, 3, 0, 25, 0, 36, 0, 47};
 					FillTcpData(buf, 0, frame, 81);
