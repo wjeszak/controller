@@ -322,6 +322,3 @@ void Stack::MakeTcpSynAckFromSyn(uint8_t *buf)
 	// add 4 for option mss:
 	enc28j60.SendPacket(IP_HEADER_LEN + TCP_HEADER_LEN_PLAIN + 4 + ETH_HEADER_LEN, buf);
 }
-
-
-
