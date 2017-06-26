@@ -60,7 +60,7 @@ void Usart::TxDisable()
 void Usart::ST_Init(UsartData* pdata) {}
 void Usart::ST_Idle(UsartData* pdata)
 {
-	usart_data.frame = "Idle\n";
+	//usart_data.frame = "Idle\n";
 	usart.SendFrame(&usart_data);
 	static uint16_t i;
 	display.Write(i++);
@@ -69,14 +69,34 @@ void Usart::ST_Idle(UsartData* pdata)
 
 void Usart::ST_ByteReceived(UsartData* pdata)
 {
-	usart_data.frame = "Byte received\n";
-	usart.SendFrame(&usart_data);
+	//usart_data.frame = "Byte received\n";
+	//usart.SendFrame(&usart_data);
+	uint8_t tmp_head;
+	tmp_head = (rx_head + 1) & UART_RX_BUF_MASK;
+	if(tmp_head == rx_tail)
+	{
+		// nadpisanie bufora
+	}
+	else
+	{
+		rx_head = tmp_head;
+		buf_rx[tmp_head] = pdata->c;
+	}
 	timer.Enable(1);
 }
 
 void Usart::ST_FrameReceived(UsartData* pdata)
 {
-	usart_data.frame = "Frame received!\n";
+	//usart_data.frame = "Frame received: ";
+	//usart.SendFrame(&usart_data);
+	uint8_t i = 0;
+	pdata->len = 3;
+	while(rx_tail != rx_head)
+	{
+		rx_tail = (rx_tail + 1) & UART_RX_BUF_MASK;
+		usart_data.frame[i] = buf_rx[rx_tail];
+		i++;
+	}
 	usart.SendFrame(&usart_data);
 	timer.Disable(1);
 }
@@ -127,13 +147,15 @@ void Usart::SendFrame(UsartData* pdata)
 {
 	RxDisable();
 	uint8_t tmp_tx_head;
-	const char *w = pdata->frame;
-	while(*w)
+	uint8_t *w = pdata->frame;
+	uint8_t len = pdata->len;
+	while(len)
 	{
 		tmp_tx_head = (tx_head  + 1) & UART_TX_BUF_MASK;
 		while(tmp_tx_head == tx_tail) {}
 		buf_tx[tmp_tx_head] = *w++;
 		tx_head = tmp_tx_head;
+		len--;
 	}
 	TxEnable();
 }
@@ -142,19 +164,12 @@ void Usart::SendInt(UsartData *pdata)
 {
 	char buf[10];
 	itoa(pdata->c, buf, 10);
-	pdata->frame = buf;
+	//pdata->frame = buf;
 	SendFrame(pdata);
 }
-/*
-void USART_Debug(const char *txt, uint16_t liczba, uint16_t podstawa)
-{
-	//USART_WyslijRamke(txt);
-	USART_WyslijLiczbe(liczba, podstawa);
-}
-*/
+
 // --------- Debugowanie
 // http://mckmragowo.pl/mck/pliki/programming/clib/?f=va_start
-
 
 ISR(USART0_RX_vect)
 {

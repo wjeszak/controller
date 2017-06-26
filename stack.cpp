@@ -24,7 +24,7 @@ void Stack::StackPoll()
 	packet_len = enc28j60.ReceivePacket(1500, buf);
 	if(packet_len != 0)
 	{
-		usart_data.frame = "Pakiet\n";
+		//usart_data.frame = "Pakiet\n";
 		usart.SendFrame(&usart_data);
 		// ARP
 		if(EthTypeIsArpMyIP(buf, packet_len))

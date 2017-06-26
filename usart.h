@@ -22,11 +22,13 @@
 #define UART_RX_BUF_SIZE 		32
 #define UART_TX_BUF_SIZE 		32
 #define UART_TX_BUF_MASK 		(UART_TX_BUF_SIZE - 1)
+#define UART_RX_BUF_MASK 		(UART_RX_BUF_SIZE - 1)
 class UsartData : public EventData
 {
 public:
 	uint8_t c;
-	const char *frame;
+	uint8_t frame[32];
+	uint8_t len;
 };
 
 class Usart : public Machine
