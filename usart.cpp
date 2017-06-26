@@ -89,15 +89,14 @@ void Usart::CharReceived(UsartData* pdata)
 
 void Usart::TXBufferEmpty(UsartData* pdata)
 {
-	if(tx_head > 0)
+	if(tx_head != tx_tail)
 	{
-		UDR0 = buf_tx[tx_tail++];
-		tx_head--;
+		UDR0 = buf_tx[tx_tail];
+		tx_tail = (tx_tail + 1) & UART_TX_BUF_MASK;
 	}
 	else
 	{
 		TxDisable();
-		tx_tail = 0;
 	}
 }
 
@@ -109,11 +108,17 @@ void Usart::TXComplete(UsartData* pdata)
 void Usart::SendFrame(UsartData* pdata)
 {
 	RxDisable();
+	uint8_t tmp_tx_head;
+
 	const char *w = pdata->frame;
 	while(*w)
 	{
-		buf_tx[tx_head++] = *w++;
+		tmp_tx_head = (tx_head  + 1) & UART_TX_BUF_MASK;
+		while(tmp_tx_head == tx_tail) {}
+		buf_tx[tmp_tx_head] = *w++;
+		tx_head = tmp_tx_head;
 	}
+
 	TxEnable();
 }
 

@@ -3,7 +3,7 @@
  *
  *  Created on: 25 maj 2017
  *      Author: tomek
- *      Flaga zajetosci UARTA, bufory cykliczne (Kardas)
+ *
  */
 
 #include <avr/io.h>
