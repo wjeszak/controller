@@ -25,7 +25,7 @@ void Stack::StackPoll()
 	if(packet_len != 0)
 	{
 		//usart_data.frame = "Pakiet\n";
-		usart.SendFrame(&usart_data);
+		//usart.SendFrame(&usart_data);
 		// ARP
 		if(EthTypeIsArpMyIP(buf, packet_len))
 		{

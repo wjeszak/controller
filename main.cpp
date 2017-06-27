@@ -28,7 +28,7 @@ UsartData usart_data;
 
 int main()
 {
-	_delay_ms(1000);
+	//_delay_ms(1000);
 	timer.Assign(0, 1, DisplayRefresh);
 	motor.Enable(Forward, 20);
 	sei();

@@ -28,7 +28,7 @@ class UsartData : public EventData
 public:
 	uint8_t c;
 	uint8_t frame[32];
-	uint8_t len;
+	uint16_t len;
 };
 
 class Usart : public Machine

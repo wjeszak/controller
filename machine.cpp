@@ -12,18 +12,6 @@ Machine::Machine(uint8_t max_states) : current_state(0), _max_states(max_states)
 {
 }
 
-/*
-const StateStruct* Machine::GetStateMap()
-{
-	// to jest sprytne bo StateMap jest tworzone nie na stosie dzieki temu mozna zwrocic adres
-	static const StateStruct StateMap[] =
-	{
-		//{&Machine::ST_Init},
-		//{&Machine::ST_Idle}
-	};
-	return &StateMap[0];
-}
-*/
 void Machine::ChangeState(uint16_t new_state)
 {
 	current_state = new_state;

@@ -58,19 +58,16 @@ void Usart::TxDisable()
 }
 
 void Usart::ST_Init(UsartData* pdata) {}
+
 void Usart::ST_Idle(UsartData* pdata)
 {
-	//usart_data.frame = "Idle\n";
-	usart.SendFrame(&usart_data);
-	static uint16_t i;
-	display.Write(i++);
+	display.Write(GetState());
 	timer.Disable(1);
 }
 
 void Usart::ST_ByteReceived(UsartData* pdata)
 {
-	//usart_data.frame = "Byte received\n";
-	//usart.SendFrame(&usart_data);
+	display.Write(GetState());
 	uint8_t tmp_head;
 	tmp_head = (rx_head + 1) & UART_RX_BUF_MASK;
 	if(tmp_head == rx_tail)
@@ -87,10 +84,8 @@ void Usart::ST_ByteReceived(UsartData* pdata)
 
 void Usart::ST_FrameReceived(UsartData* pdata)
 {
-	//usart_data.frame = "Frame received: ";
-	//usart.SendFrame(&usart_data);
+	usart_data.len = 8;
 	uint8_t i = 0;
-	pdata->len = 3;
 	while(rx_tail != rx_head)
 	{
 		rx_tail = (rx_tail + 1) & UART_RX_BUF_MASK;
@@ -129,8 +124,9 @@ void Usart::TXBufferEmpty(UsartData* pdata)
 {
 	if(tx_head != tx_tail)
 	{
-		UDR0 = buf_tx[tx_tail];
+
 		tx_tail = (tx_tail + 1) & UART_TX_BUF_MASK;
+		UDR0 = buf_tx[tx_tail];
 	}
 	else
 	{
@@ -148,7 +144,8 @@ void Usart::SendFrame(UsartData* pdata)
 	RxDisable();
 	uint8_t tmp_tx_head;
 	uint8_t *w = pdata->frame;
-	uint8_t len = pdata->len;
+	uint16_t len = pdata->len;
+	display.Write(len);
 	while(len)
 	{
 		tmp_tx_head = (tx_head  + 1) & UART_TX_BUF_MASK;
@@ -157,6 +154,7 @@ void Usart::SendFrame(UsartData* pdata)
 		tx_head = tmp_tx_head;
 		len--;
 	}
+
 	TxEnable();
 }
 
