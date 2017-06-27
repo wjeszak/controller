@@ -25,8 +25,9 @@ void ModbusRTU::ParseFrame(uint8_t* frame, uint8_t len)
 		{
 			case 3:
 				ReadHoldingRegisters(frame);
-				display.Write(90);
+				//display.Write(90);
 			break;
+			default: FunctionNotSupported(frame);
 		}
 	}
 
@@ -69,6 +70,18 @@ void ModbusRTU::ReadHoldingRegisters(uint8_t* frame)
 	frame[3 + byte_count] = (uint8_t) crc;
 	frame[4 + byte_count] = (uint8_t) (crc >> 8);
 	usart_data.len = 5 + byte_count;
+	usart.SendFrame(&usart_data);
+}
+
+void ModbusRTU::FunctionNotSupported(uint8_t *frame)
+{
+	frame[0] = SlaveAddr;
+	frame[1] = frame[1] + 0x80;
+	frame[2] = 1; 									// Illegal function
+	uint16_t crc = Checksum(frame, 3);
+	frame[3] = (uint8_t) crc;
+	frame[4] = (uint8_t) (crc >> 8);
+	usart_data.len = 5;
 	usart.SendFrame(&usart_data);
 }
 
