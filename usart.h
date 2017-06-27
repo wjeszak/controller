@@ -19,15 +19,15 @@
 #define USART_DE_SEND 			USART_DE_PORT |=  (1 << USART_DE_PIN)
 #define USART_DE_INIT 			USART_DE_DDR  |=  (1 << USART_DE_PIN)
 
-#define UART_RX_BUF_SIZE 		32
-#define UART_TX_BUF_SIZE 		32
+#define UART_RX_BUF_SIZE 		64
+#define UART_TX_BUF_SIZE 		64
 #define UART_TX_BUF_MASK 		(UART_TX_BUF_SIZE - 1)
 #define UART_RX_BUF_MASK 		(UART_RX_BUF_SIZE - 1)
 class UsartData : public EventData
 {
 public:
 	uint8_t c;
-	uint8_t frame[32];
+	uint8_t frame[64];
 	uint16_t len;
 };
 

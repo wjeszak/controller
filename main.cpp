@@ -18,6 +18,7 @@
 #include "motor.h"
 #include "stack.h"
 #include "eeprom.h"
+#include "modbus_rtu.h"
 Eeprom eprom;
 Timer timer(T0_PS_1024, 17);
 Stack stack;
@@ -25,6 +26,7 @@ Motor motor;
 Display display;
 Usart usart;
 UsartData usart_data;
+ModbusRTU modbus_rtu;
 
 int main()
 {

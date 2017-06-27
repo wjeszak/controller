@@ -16,6 +16,7 @@
 #include "machine.h"
 #include "display.h"
 #include "timer.h"
+#include "modbus_rtu.h"
 
 Usart::Usart(uint16_t baud) : Machine(ST_MAX_STATES)
 {
@@ -32,7 +33,7 @@ Usart::Usart(uint16_t baud) : Machine(ST_MAX_STATES)
 	tx_head = 0;
 	tx_tail = 0;
 	RxEnable();
-	timer.Assign(1, 1000, ModbusRTU35T);
+	timer.Assign(1, 2, ModbusRTU35T);
 }
 
 void Usart::RxEnable()
@@ -92,7 +93,8 @@ void Usart::ST_FrameReceived(UsartData* pdata)
 		usart_data.frame[i] = buf_rx[rx_tail];
 		i++;
 	}
-	usart.SendFrame(&usart_data);
+	display.Write(GetState());
+	modbus_rtu.ParseFrame(usart_data.frame, 8);
 	timer.Disable(1);
 }
 
@@ -124,7 +126,6 @@ void Usart::TXBufferEmpty(UsartData* pdata)
 {
 	if(tx_head != tx_tail)
 	{
-
 		tx_tail = (tx_tail + 1) & UART_TX_BUF_MASK;
 		UDR0 = buf_tx[tx_tail];
 	}
