@@ -19,6 +19,7 @@ ModbusRTU::ModbusRTU()
 void ModbusRTU::Poll()
 {
 	static uint16_t addr = 1;
+	display.Write(addr);
 	usart_data.frame[0] = (uint8_t)addr++;
 	usart_data.frame[1] = 3;
 	usart_data.frame[2] = 0;
@@ -29,9 +30,8 @@ void ModbusRTU::Poll()
 	usart_data.frame[6] = crc & 0xFF;
 	usart_data.frame[7] = crc >> 8;
 	usart_data.len = 8;
-	display.Write(addr);
 	usart.SendFrame(&usart_data);
-	if(addr == 30) addr = 1;
+	if(addr == 10) addr = 1;
 }
 
 // to jest do kitu, trzeba podzielic na 2 funkcje tak jak w slave!!!!!!!!!!!!!!!!!!!!!!!
