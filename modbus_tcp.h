@@ -39,6 +39,7 @@ class ModbusTcp
 public:
 	void ParseFrame(uint8_t* frame);
 	uint8_t ReadHoldingRegisters(uint8_t* frame);
+	void PrepareFrame(uint8_t* frame);
 private:
 	uint16_t HoldingRegisters[NUMBER_OF_HOLDING_REGISTERS_TCP];
 	uint16_t trans_id;
@@ -46,7 +47,7 @@ private:
 	uint8_t function_code;
 	uint16_t starting_address;
 	uint16_t quantity;
-	uint8_t byte_count;
+	//uint8_t byte_count;
 	uint16_t length;
 };
 
