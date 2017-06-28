@@ -46,7 +46,7 @@ int main()
 	display.Write(kto);
 	while(1)
 	{
-		//stack.StackPoll();
+		stack.StackPoll();
 	}
 
 }

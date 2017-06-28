@@ -12,7 +12,7 @@
 void ModbusTcp::ParseFrame(uint8_t* frame)
 {
 	// Modbus TCP frame ?
-	if((frame[PROT_ID_H] == 0) && (frame[PROT_ID_L] == 0))
+	if((frame[PROTOCOL_ID_H] == 0) && (frame[PROTOCOL_ID_L] == 0))
 	{
 		switch(frame[FUNCTION_CODE])
 		{
@@ -27,61 +27,37 @@ void ModbusTcp::ParseFrame(uint8_t* frame)
 
 uint8_t ModbusTcp::ReadHoldingRegisters(uint8_t* frame)
 {
-	starting_address = frame[ADDR_FIRST_H] << 8 | frame[ADDR_FIRST_L];
+	trans_id 		 = frame[TRANSACTION_ID_H] << 8 | frame[TRANSACTION_ID_L];
+	unit_id 		 = frame[UNIT_ID];
+	function_code 	 = frame[FUNCTION_CODE];
+	starting_address = frame[START_ADDR_H] << 8 | frame[START_ADDR_L];
 	quantity 		 = frame[QUANTITY_H] << 8 | frame[QUANTITY_L];
-	trans_id 		 = frame[TRANS_ID_L]; 		// zmienic
+	length = (quantity * 2) + UNIT_ID_FUNCTION_CODE_BYTE_COUNT_LEN;
 	uint8_t error_code = 0;
 
-	//if((quantity > 125) || (quantity < 1)) error_code = 3;
-	//if((starting_address + quantity) > NUMBER_OF_HOLDING_REGISTERS_TCP) error_code = 2;
-
+	if((quantity > 125) || (quantity < 1)) error_code = 3;
+	if((starting_address + quantity - ADDR_OFFSET) > NUMBER_OF_HOLDING_REGISTERS_TCP) error_code = 2;
+	if(starting_address < ADDR_OFFSET) error_code = 2;
 	//if(error_code)
 	//{
-		frame[TRANS_ID_H] = 0;
-		frame[TRANS_ID_L] = trans_id;
-		frame[PROT_ID_H] = 0;
-		frame[PROT_ID_L] = 0;
-		frame[LENGTH_H] = 0; 		// to jest do przerobienia
-		frame[LENGTH_L] = (uint8_t)(quantity * 2) + 3;
-		frame[UNIT_ID] = 1;
-		frame[FUNCTION_CODE] = 3;
-		frame[BYTE_COUNT] = (uint8_t)(quantity * 2);
+		frame[TRANSACTION_ID_H] = (trans_id >> 8);
+		frame[TRANSACTION_ID_L] = (trans_id & 0xFF);
+		//frame[PROT_ID_H] = 0;
+		//frame[PROT_ID_L] = 0;
+		frame[LENGTH_H] = (length >> 8);
+		frame[LENGTH_L] = (length & 0xFF);
+		frame[UNIT_ID] = unit_id;
+		frame[FUNCTION_CODE] = function_code;
+		frame[BYTE_COUNT] = ((quantity * 2) & 0xFF);
 
-		for(uint8_t i = 0; i < (uint8_t)(quantity); i++)
+		for(uint8_t i = 0; i < (uint8_t)quantity; i++)
 		{
-			frame[START_DATA + 2 * i] = 0;//Msb(i);
-			frame[START_DATA + (2 * i) + 1] = 73;//Lsb(i);
+			frame[DATA + 2 * i] 	  = (uint8_t)(HoldingRegisters[starting_address - ADDR_OFFSET + i] >> 8);
+			frame[DATA + (2 * i) + 1] = (uint8_t)(HoldingRegisters[starting_address - ADDR_OFFSET + i]);
 		}
-		stack_data.len = 9 + (quantity * 2);
+		stack_data.len = MBAP_FUNCTION_CODE_BYTE_COUNT_LEN + (quantity * 2);
 		//return error_code;
 	//}
 	return 0;
 }
-/*
-void ModbusTcp::ParseFrame(uint8_t* buf)
-{
-	uint8_t frame[100];
-	frame[TRANS_ID_H] = 0;
-	frame[TRANS_ID_L] = 1;
-	frame[PROT_ID_H] = 0;
-	frame[PROT_ID_L] = 0;
-	frame[LENGTH_H] = 0;
-	frame[LENGTH_L] = (buf[TCP_CHECKSUM_L_P + 3 + NUMBER_OF_REG_L] * 2) + 3; // 4b
-	frame[UNIT_ID] = 1;
-	frame[FUNCTION_CODE] = 3;
-	frame[BYTE_COUNT] = buf[TCP_CHECKSUM_L_P + 3 + NUMBER_OF_REG_L] * 2;
-	//uint16_t wart =
-	for(uint8_t i = 0; i < buf[TCP_CHECKSUM_L_P + 3 + NUMBER_OF_REG_L]; i++)
-	{
-		frame[START_DATA + 2 * i] = Msb(i);
-		frame[START_DATA + (2 * i) + 1] = Lsb(i);
-	}
-	uint8_t j = 0;
-	j = (1 << 1);
-	frame[START_DATA] = Msb(j);
-	frame[START_DATA +1] = Lsb(j);
-	FillTcpData(buf, 0, frame, frame[LENGTH_L] + 6);
-	buf[TCP_FLAGS_P] = TCP_FLAGS_PUSH_V | TCP_FLAGS_ACK_V; //| TCP_FLAGS_FIN_V;
-	MakeTcpAckWithDataNoFlags(buf, frame[LENGTH_L] + 6);
-}
-*/
+
