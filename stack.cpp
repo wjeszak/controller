@@ -9,23 +9,24 @@
 #include "enc28j60.h"
 #include "usart.h"
 #include "eeprom.h"
+#include "display.h"
 
 Enc28j60 enc28j60;
 
-Stack::Stack()
+Stack::Stack() : Machine(ST_MAX_STATES)
 {
 	enc28j60.Init();
 	packet_len = 0;
 	seqnum  = 0xA; 				// my initial tcp sequence number
 	port = 502;
+	display.Write(GetState());
 }
+
 void Stack::StackPoll()
 {
 	packet_len = enc28j60.ReceivePacket(1500, buf);
 	if(packet_len != 0)
 	{
-		//usart_data.frame = "Pakiet\n";
-		//usart.SendFrame(&usart_data);
 		// ARP
 		if(EthTypeIsArpMyIP(buf, packet_len))
 		{
@@ -45,54 +46,15 @@ void Stack::StackPoll()
 				// SYN
 				if(buf[TCP_FLAGS_P] & TCP_FLAGS_SYN_V)
 				{
-					MakeTcpSynAckFromSyn(buf);
+					Syn();
+				}
+				if(buf[TCP_FLAGS_P] & TCP_FLAGS_ACK_V)
+				{
+					Ack();
 				}
 				if(buf[TCP_FLAGS_P] & TCP_FLAGS_PUSH_V)
 				{
 					MakeTcpAckFromAny(buf, 0, 0);
-					// 7 bytes MBAP
-					// REQ
-#define TRANS_ID_H 				0
-#define TRANS_ID_L 				1
-#define PROT_ID_H 				2
-#define PROT_ID_L 				3
-#define LENGTH_H				4
-#define LENGTH_L				5
-#define UNIT_ID					6
-
-#define FUNCTION_CODE			7
-#define ADDR_FIRST_H 			8
-#define ADDR_FIRST_L 			9
-#define NUMBER_OF_REG_H			10
-#define NUMBER_OF_REG_L 		11
-					// RES
-#define BYTE_COUNT 				8
-#define START_DATA 				9
-
-					uint8_t frame[100];
-					frame[TRANS_ID_H] = 0;
-					frame[TRANS_ID_L] = 1;
-					frame[PROT_ID_H] = 0;
-					frame[PROT_ID_L] = 0;
-					frame[LENGTH_H] = 0;
-					frame[LENGTH_L] = (buf[TCP_CHECKSUM_L_P + 3 + NUMBER_OF_REG_L] * 2) + 3; // 4b
-					frame[UNIT_ID] = 1;
-					frame[FUNCTION_CODE] = 3;
-					frame[BYTE_COUNT] = buf[TCP_CHECKSUM_L_P + 3 + NUMBER_OF_REG_L] * 2;
-					//uint16_t wart =
-					for(uint8_t i = 0; i < buf[TCP_CHECKSUM_L_P + 3 + NUMBER_OF_REG_L]; i++)
-					{
-						frame[START_DATA + 2 * i] = Msb(i);
-						frame[START_DATA + (2 * i) + 1] = Lsb(i);
-					}
-					uint8_t j = 0;
-					j = (1 << 1);
-					frame[START_DATA] = Msb(j);
-					frame[START_DATA +1] = Lsb(j);
-					FillTcpData(buf, 0, frame, frame[LENGTH_L] + 6);
-					buf[TCP_FLAGS_P] = TCP_FLAGS_PUSH_V | TCP_FLAGS_ACK_V; //| TCP_FLAGS_FIN_V;
-					MakeTcpAckWithDataNoFlags(buf, frame[LENGTH_L] + 6);
-
 				}
 				if(buf[TCP_FLAGS_P] & TCP_FLAGS_FIN_V)
 				{
@@ -102,7 +64,45 @@ void Stack::StackPoll()
 		}
 	}
 }
+void Stack::ST_Listen(StackData* pdata)
+{
 
+}
+
+void Stack::ST_SynReceived(StackData* pdata)
+{
+	MakeTcpSynAckFromSyn(buf);
+	display.Write(GetState());
+}
+
+void Stack::ST_Established(StackData* pdata)
+{
+	display.Write(GetState());
+}
+
+void Stack::Syn(StackData* pdata)
+{
+	const uint8_t Transitions[] =
+	{
+		ST_SYN_RECV,				// ST_LISTEN
+		//ST_BYTE_RECEIVED, 		// ST_SYN_RECV
+		//ST_BYTE_RECEIVED			// ST_ESTABLISHED
+	};
+	Event(Transitions[current_state], pdata);
+}
+
+void Stack::Ack(StackData* pdata)
+{
+	const uint8_t Transitions[] =
+	{
+		ST_NOT_ALLOWED,				// ST_LISTEN
+		ST_ESTABLISHED 				// ST_SYN_RECV
+		//ST_BYTE_RECEIVED			// ST_ESTABLISHED
+	};
+	Event(Transitions[current_state], pdata);
+}
+
+// ------------------------------------------------------------------
 uint8_t Stack::EthTypeIsArpMyIP(uint8_t *buf, uint16_t len)
 {
 	uint8_t i = 0;

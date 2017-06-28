@@ -62,13 +62,13 @@ void Usart::ST_Init(UsartData* pdata) {}
 
 void Usart::ST_Idle(UsartData* pdata)
 {
-	display.Write(GetState());
+//	display.Write(GetState());
 	timer.Disable(1);
 }
 
 void Usart::ST_ByteReceived(UsartData* pdata)
 {
-	display.Write(GetState());
+//	display.Write(GetState());
 	uint8_t tmp_head;
 	tmp_head = (rx_head + 1) & UART_RX_BUF_MASK;
 	if(tmp_head == rx_tail)
@@ -93,7 +93,7 @@ void Usart::ST_FrameReceived(UsartData* pdata)
 		usart_data.frame[i] = buf_rx[rx_tail];
 		i++;
 	}
-	display.Write(GetState());
+//	display.Write(GetState());
 	modbus_rtu.ParseFrame(usart_data.frame, 8);
 	timer.Disable(1);
 }
@@ -146,7 +146,7 @@ void Usart::SendFrame(UsartData* pdata)
 	uint8_t tmp_tx_head;
 	uint8_t *w = pdata->frame;
 	uint16_t len = pdata->len;
-	display.Write(len);
+//	display.Write(len);
 	while(len)
 	{
 		tmp_tx_head = (tx_head  + 1) & UART_TX_BUF_MASK;

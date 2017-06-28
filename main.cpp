@@ -19,18 +19,19 @@
 #include "stack.h"
 #include "eeprom.h"
 #include "modbus_rtu.h"
+
 Eeprom eprom;
 Timer timer(T0_PS_1024, 17);
-Stack stack;
 Motor motor;
 Display display;
+Stack stack;
 Usart usart;
 UsartData usart_data;
 ModbusRTU modbus_rtu;
 
 int main()
 {
-	//_delay_ms(1000);
+	_delay_ms(1000);
 	timer.Assign(0, 1, DisplayRefresh);
 	motor.Enable(Forward, 20);
 	sei();
@@ -39,7 +40,7 @@ int main()
 	//wysw.Wypisz(0);
 	while(1)
 	{
-		//stack.StackPoll();
+		stack.StackPoll();
 		/*
 		if(t_flaga_dluga)
 		{

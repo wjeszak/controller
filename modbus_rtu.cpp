@@ -25,12 +25,11 @@ void ModbusRTU::ParseFrame(uint8_t* frame, uint8_t len)
 		{
 			case 3:
 				ReadHoldingRegisters(frame);
-				//display.Write(90);
 			break;
-			default: FunctionNotSupported(frame);
+			default:
+				FunctionNotSupported(frame);
 		}
 	}
-
 }
 
 void ModbusRTU::ReadHoldingRegisters(uint8_t* frame)
@@ -91,22 +90,18 @@ uint16_t ModbusRTU::Checksum(uint8_t *frame, uint8_t len)
 	int pos = 0;
 	for (pos = 0; pos < len; pos++)
 	{
-		crc ^= (uint16_t)frame[pos];          	// XOR byte into least sig. byte of crc
+		crc ^= (uint16_t)frame[pos];
 		int i = 0;
 		for (i = 8; i != 0; i--)
-		{										// Loop over each bit
+		{
 			if ((crc & 0x0001) != 0)
-			{      // If the LSB is set
-				crc >>= 1;                   	// Shift right and XOR 0xA001
+			{
+				crc >>= 1;
 				crc ^= 0xA001;
 			}
-			else                            	// Else LSB is not set
-			crc >>= 1;                    		// Just shift right
+			else
+			crc >>= 1;
 		}
 	}
-	// Note, this number has low and high bytes swapped, so use it accordingly (or swap bytes)
 	return crc;
 }
-
-
-

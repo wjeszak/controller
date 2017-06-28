@@ -7,13 +7,23 @@
 
 #ifndef STACK_H_
 #define STACK_H_
-#include <inttypes.h>
 
-class Stack
+#include <inttypes.h>
+#include "machine.h"
+
+class StackData : public EventData
+{
+public:
+};
+
+class Stack : public Machine
 {
 public:
 	Stack();
 	void StackPoll();
+	// Events
+	void Syn(StackData* pdata = NULL);
+	void Ack(StackData* pdata = NULL);
 private:
 	uint8_t EthTypeIsArpMyIP(uint8_t *buf, uint16_t len);
 	uint8_t EthTypeIsIPMyIP(uint8_t *buf, uint16_t len);
@@ -36,6 +46,22 @@ private:
 	uint16_t packet_len;
 	uint8_t seqnum;
 	uint16_t port;
+// States
+	void ST_Listen(StackData* pdata);
+	void ST_SynReceived(StackData* pdata);
+	void ST_Established(StackData* pdata);
+	enum States {ST_LISTEN = 0, ST_SYN_RECV, ST_ESTABLISHED, ST_MAX_STATES};
+	const StateStruct* GetStateMap()
+	{
+		// to jest sprytne bo StateMap jest tworzone nie na stosie dzieki temu mozna zwrocic adres
+		static const StateStruct StateMap[] =
+		{
+			{reinterpret_cast<StateFunc>(&Stack::ST_Listen)},
+			{reinterpret_cast<StateFunc>(&Stack::ST_SynReceived)},
+			{reinterpret_cast<StateFunc>(&Stack::ST_Established)}
+		};
+		return &StateMap[0];
+	}
 };
 
 // ******* ETH *******
