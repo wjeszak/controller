@@ -52,9 +52,10 @@ void Stack::StackPoll()
 				{
 					Ack();
 				}
+				// dlaczego sie wywala jesli sprawdzam PSH i ACK ?
 				if(buf[TCP_FLAGS_P] & TCP_FLAGS_PUSH_V)
 				{
-					MakeTcpAckFromAny(buf, 0, 0);
+					Psh();
 				}
 				if(buf[TCP_FLAGS_P] & TCP_FLAGS_FIN_V)
 				{
@@ -80,6 +81,13 @@ void Stack::ST_Established(StackData* pdata)
 	display.Write(GetState());
 }
 
+void Stack::ST_Request(StackData* pdata)
+{
+	MakeTcpAckFromAny(buf, 0, 0);
+	// parsowanie i przygotowanie ramki modbus
+	display.Write(GetState());
+}
+
 void Stack::Syn(StackData* pdata)
 {
 	const uint8_t Transitions[] =
@@ -98,6 +106,17 @@ void Stack::Ack(StackData* pdata)
 		ST_NOT_ALLOWED,				// ST_LISTEN
 		ST_ESTABLISHED 				// ST_SYN_RECV
 		//ST_BYTE_RECEIVED			// ST_ESTABLISHED
+	};
+	Event(Transitions[current_state], pdata);
+}
+
+void Stack::Psh(StackData* pdata)
+{
+	const uint8_t Transitions[] =
+	{
+		ST_NOT_ALLOWED,				// ST_LISTEN
+		ST_NOT_ALLOWED, 			// ST_SYN_RECV
+		ST_REQUEST					// ST_ESTABLISHED
 	};
 	Event(Transitions[current_state], pdata);
 }

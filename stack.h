@@ -24,6 +24,7 @@ public:
 	// Events
 	void Syn(StackData* pdata = NULL);
 	void Ack(StackData* pdata = NULL);
+	void Psh(StackData* pdata = NULL);
 private:
 	uint8_t EthTypeIsArpMyIP(uint8_t *buf, uint16_t len);
 	uint8_t EthTypeIsIPMyIP(uint8_t *buf, uint16_t len);
@@ -50,7 +51,8 @@ private:
 	void ST_Listen(StackData* pdata);
 	void ST_SynReceived(StackData* pdata);
 	void ST_Established(StackData* pdata);
-	enum States {ST_LISTEN = 0, ST_SYN_RECV, ST_ESTABLISHED, ST_MAX_STATES};
+	void ST_Request(StackData* pdata);
+	enum States {ST_LISTEN = 0, ST_SYN_RECV, ST_ESTABLISHED, ST_REQUEST, ST_MAX_STATES};
 	const StateStruct* GetStateMap()
 	{
 		// to jest sprytne bo StateMap jest tworzone nie na stosie dzieki temu mozna zwrocic adres
@@ -58,7 +60,8 @@ private:
 		{
 			{reinterpret_cast<StateFunc>(&Stack::ST_Listen)},
 			{reinterpret_cast<StateFunc>(&Stack::ST_SynReceived)},
-			{reinterpret_cast<StateFunc>(&Stack::ST_Established)}
+			{reinterpret_cast<StateFunc>(&Stack::ST_Established)},
+			{reinterpret_cast<StateFunc>(&Stack::ST_Request)}
 		};
 		return &StateMap[0];
 	}
