@@ -40,13 +40,14 @@ int main()
 {
 	_delay_ms(1000);
 	timer.Assign(0, 1, DisplayRefresh);
+	timer.Assign(2, 500, ModbusPoll);
 	sei();
 	Machine *m = GetTypeOfMachine(TLockerbox);
 	uint16_t kto = m->StartupTest();
 	display.Write(kto);
 	while(1)
 	{
-		stack.StackPoll();
+	//	stack.StackPoll();
 	}
 
 }

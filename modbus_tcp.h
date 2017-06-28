@@ -37,6 +37,7 @@
 class ModbusTcp
 {
 public:
+	ModbusTcp();
 	void ParseFrame(uint8_t* frame);
 	uint8_t ReadHoldingRegisters(uint8_t* frame);
 	void PrepareFrame(uint8_t* frame);

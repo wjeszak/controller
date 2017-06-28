@@ -11,6 +11,7 @@
 #include "timer.h"
 #include "display.h"
 #include "usart.h"
+#include "modbus_rtu.h"
 
 volatile TimerHandler STHandlers[8];
 
@@ -47,16 +48,23 @@ void Timer::Disable(uint8_t HandlerNumber)
 {
 	STHandlers [HandlerNumber].Active = false;
 }
-
+// 0
 void DisplayRefresh()
 {
 	display.Refresh();
 }
-
+// 1
 void ModbusRTU35T()
 {
 	usart.RTU35T();
 }
+
+// 2
+void ModbusPoll()
+{
+	modbus_rtu.Poll();
+}
+
 ISR(TIMER0_COMPA_vect)
 {
 	for(uint8_t n = 0; n < 8; n++)

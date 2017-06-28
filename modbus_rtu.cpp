@@ -15,6 +15,25 @@ ModbusRTU::ModbusRTU()
 	HoldingRegisters[0] = 45;
 	HoldingRegisters[1] = 23;
 }
+
+void ModbusRTU::Poll()
+{
+	static uint16_t addr = 1;
+	usart_data.frame[0] = (uint8_t)addr++;
+	usart_data.frame[1] = 3;
+	usart_data.frame[2] = 0;
+	usart_data.frame[3] = 0;
+	usart_data.frame[4] = 0;
+	usart_data.frame[5] = 1;
+	uint16_t crc = Checksum(usart_data.frame, 6);
+	usart_data.frame[6] = crc & 0xFF;
+	usart_data.frame[7] = crc >> 8;
+	usart_data.len = 8;
+	display.Write(addr);
+	usart.SendFrame(&usart_data);
+	if(addr == 30) addr = 1;
+}
+
 // to jest do kitu, trzeba podzielic na 2 funkcje tak jak w slave!!!!!!!!!!!!!!!!!!!!!!!
 void ModbusRTU::ParseFrame(uint8_t* frame, uint8_t len)
 {

@@ -9,6 +9,10 @@
 #include "display.h"
 #include "stack.h"
 
+ModbusTcp::ModbusTcp()
+{
+	HoldingRegisters[12] = 45;
+}
 void ModbusTcp::ParseFrame(uint8_t* frame)
 {
 	// Modbus TCP frame ?
