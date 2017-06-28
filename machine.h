@@ -24,7 +24,7 @@ public:
 	Machine(uint8_t max_states);
 	uint16_t GetState();
 	void Event(uint16_t new_state, EventData* pdata = NULL);
-//	virtual uint16_t Who() { return 10; }
+	virtual uint16_t StartupTest() { return 0xFF; }
 //	virtual ~Machine();
 protected:
 	uint16_t current_state;

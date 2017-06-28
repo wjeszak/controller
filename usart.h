@@ -23,6 +23,7 @@
 #define UART_TX_BUF_SIZE 		64
 #define UART_TX_BUF_MASK 		(UART_TX_BUF_SIZE - 1)
 #define UART_RX_BUF_MASK 		(UART_RX_BUF_SIZE - 1)
+
 class UsartData : public EventData
 {
 public:

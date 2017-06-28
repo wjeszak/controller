@@ -15,10 +15,10 @@ Machine* GetTypeOfMachine(MachineType type)
 	Machine* p = NULL;
 	switch (type)
 	{
-	case Lockerbox:
+	case TLockerbox:
 		p = &lockerbox;
 		break;
-	case Dynabox:
+	case TDynabox:
 		p = &dynabox;
 		break;
 	default:

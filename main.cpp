@@ -3,13 +3,15 @@
  *
  *  Created on: 25 maj 2017
  *      Author: tomek
- * Jak rozwiazac wskazniki do funkcji z timerem ? Zeby sztucznie nie tworzyc nowych poza klasa.
+ *
  */
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
+#include "lockerbox.h"
+#include "dynabox.h"
 #include "display.h"
 #include "timer.h"
 #include "usart.h"
@@ -20,6 +22,9 @@
 #include "eeprom.h"
 #include "modbus_rtu.h"
 #include "modbus_tcp.h"
+
+Lockerbox lockerbox;
+Dynabox dynabox;
 Eeprom eprom;
 Timer timer(T0_PS_1024, 17);
 Motor motor;
@@ -35,28 +40,13 @@ int main()
 {
 	_delay_ms(1000);
 	timer.Assign(0, 1, DisplayRefresh);
-	motor.Enable(Forward, 20);
 	sei();
-	//Machine *m = GetTypeOfMachine(Lockerbox);
-	//uint16_t stan = m->Who();
-	//wysw.Wypisz(0);
+	Machine *m = GetTypeOfMachine(TLockerbox);
+	uint16_t kto = m->StartupTest();
+	display.Write(kto);
 	while(1)
 	{
-		stack.StackPoll();
-		/*
-		if(t_flaga_dluga)
-		{
-			m = WybierzTypMaszyny(TDynabox);
-			m->ZmienStan(2);
-			stan = m->PrzedstawSie();
-			wysw.Wypisz(stan);
-			t_flaga_dluga = 0;
-			wysw.Wypisz(licznik++);
-			if(licznik == 9999) licznik = 0;
-		}
-*/
-
-
+		//stack.StackPoll();
 	}
 
 }

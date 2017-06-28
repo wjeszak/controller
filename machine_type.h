@@ -10,7 +10,7 @@
 
 #include "machine.h"
 
-enum MachineType {Lockerbox, Dynabox};
+enum MachineType {TLockerbox, TDynabox};
 extern Machine* GetTypeOfMachine(MachineType type);
 
 #endif /* MACHINE_TYPE_H_ */

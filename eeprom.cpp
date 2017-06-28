@@ -22,7 +22,7 @@
 // Default values
 ConfigurationParams EEMEM eem_cfg =
 {
-		Lockerbox,
+		TLockerbox,
 		{MAC_ADDR1, MAC_ADDR2, MAC_ADDR3, MAC_ADDR4, MAC_ADDR5, MAC_ADDR6},
 		{IP_ADDR1, IP_ADDR2, IP_ADDR3, IP_ADDR4}
 };

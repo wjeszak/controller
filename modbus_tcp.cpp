@@ -17,7 +17,6 @@ void ModbusTcp::ParseFrame(uint8_t* frame)
 		switch(frame[FUNCTION_CODE])
 		{
 			case 3:
-				//display.Write(333);
 				ReadHoldingRegisters(frame);
 			break;
 			//default:
@@ -48,7 +47,6 @@ uint8_t ModbusTcp::ReadHoldingRegisters(uint8_t* frame)
 		frame[FUNCTION_CODE] = 3;
 		frame[BYTE_COUNT] = (uint8_t)(quantity * 2);
 
-		//for(uint8_t i = 0; i < 1; i++)
 		for(uint8_t i = 0; i < (uint8_t)(quantity); i++)
 		{
 			frame[START_DATA + 2 * i] = 0;//Msb(i);

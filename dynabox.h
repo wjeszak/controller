@@ -7,12 +7,15 @@
 
 #ifndef DYNABOX_H_
 #define DYNABOX_H_
+#include "machine.h"
 
 class Dynabox : public Machine
 {
 public:
-	Dynabox() : Machine(5) {}
-	uint16_t Who() { return 2; }
+	Dynabox();
+	uint16_t StartupTest();
+private:
+	enum States {ST_INIT = 0, ST_MAX_STATES};
 	const StateStruct* GetStateMap()
 	{
 		// to jest sprytne bo StateMap jest tworzone nie na stosie dzieki temu mozna zwrocic adres
@@ -24,6 +27,8 @@ public:
 		};
 		return &StateMap[0];
 	}
-} dynabox;
+};
+
+extern Dynabox dynabox;
 
 #endif /* DYNABOX_H_ */
