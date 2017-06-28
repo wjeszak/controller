@@ -84,7 +84,8 @@ void Stack::ST_Established(StackData* pdata)
 
 void Stack::ST_Request(StackData* pdata)
 {
-	MakeTcpAckFromAny(buf, 12, 0);
+	uint16_t len = GetTcpDataLen(buf);
+	MakeTcpAckFromAny(buf, len, 0);
 	modbus_tcp.ParseFrame(&buf[0x36]);
 	//FillTcpData(buf, 0, &buf[0x36], frame[LENGTH_L] + 6);
 	buf[TCP_FLAGS_P] =  TCP_FLAGS_ACK_V | TCP_FLAGS_PUSH_V | TCP_FLAGS_FIN_V;
@@ -417,6 +418,19 @@ uint16_t Stack::FillTcpData(uint8_t *buf,uint16_t pos, uint8_t *pdata, uint8_t l
 		pos++;
 	}
 	return pos;
+}
+
+uint16_t Stack::GetTcpDataLen(uint8_t* buf)
+{
+	int16_t i;
+	i=(((int16_t)buf[IP_TOTLEN_H_P]) << 8) | (buf[IP_TOTLEN_L_P] & 0xFF);
+	i-= IP_HEADER_LEN;
+	i-=(buf[TCP_HEADER_LEN_P] >> 4) * 4; // generate len in bytes;
+	if (i <= 0)
+	{
+		i=0;
+	}
+	return((uint16_t)i);
 }
 
 void Stack::MakeTcpAckFromAny(uint8_t *buf, int16_t datlentoack, uint8_t addflags)

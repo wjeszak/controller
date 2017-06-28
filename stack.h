@@ -39,6 +39,7 @@ private:
 	void FillIpHeaderChecksum(uint8_t *buf);
 	void StepSequence(uint8_t *buf, uint16_t rel_ack_num, uint8_t cp_seq);
 	uint16_t FillTcpData(uint8_t *buf,uint16_t pos, uint8_t *pdata, uint8_t len);
+	uint16_t GetTcpDataLen(uint8_t* buf);
 	void MakeTcpAckFromAny(uint8_t *buf, int16_t datlentoack, uint8_t addflags);
 	void MakeTcpAckWithDataNoFlags(uint8_t *buf, uint16_t dlen);
 	uint8_t Msb(uint16_t val) { return val >> 8; }
