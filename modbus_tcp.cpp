@@ -11,7 +11,7 @@
 void ModbusTcp::ParseFrame(uint8_t* frame)
 {
 	// Modbus TCP frame ?
-	if((frame[TRANS_ID_H] == 0) && (frame[TRANS_ID_L] == 1) && (frame[PROT_ID_H] == 0) && (frame[PROT_ID_L] == 0))
+	if((frame[PROT_ID_H] == 0) && (frame[PROT_ID_L] == 0))
 	{
 		switch(frame[FUNCTION_CODE])
 		{
@@ -29,6 +29,7 @@ uint8_t ModbusTcp::ReadHoldingRegisters(uint8_t* frame)
 {
 	starting_address = frame[ADDR_FIRST_H] << 8 | frame[ADDR_FIRST_L];
 	quantity 		 = frame[QUANTITY_H] << 8 | frame[QUANTITY_L];
+	trans_id 		 = frame[TRANS_ID_L]; 		// zmienic
 	uint8_t error_code = 0;
 
 	//if((quantity > 125) || (quantity < 1)) error_code = 3;
@@ -37,16 +38,17 @@ uint8_t ModbusTcp::ReadHoldingRegisters(uint8_t* frame)
 	//if(error_code)
 	//{
 		frame[TRANS_ID_H] = 0;
-		frame[TRANS_ID_L] = 1;
+		frame[TRANS_ID_L] = trans_id;
 		frame[PROT_ID_H] = 0;
 		frame[PROT_ID_L] = 0;
 		frame[LENGTH_H] = 0; 		// to jest do przerobienia
-		frame[LENGTH_L] = (uint8_t)(quantity * 2) + 3;
+		frame[LENGTH_L] = 5;//(uint8_t)(quantity * 2) + 3;
 		frame[UNIT_ID] = 1;
 		frame[FUNCTION_CODE] = 3;
-		frame[BYTE_COUNT] = (uint8_t)(quantity * 2);
+		frame[BYTE_COUNT] = 2;//(uint8_t)(quantity * 2);
 
-		for(uint8_t i = 0; i < (uint8_t)(quantity); i++)
+		for(uint8_t i = 0; i < 1; i++)
+		//for(uint8_t i = 0; i < (uint8_t)(quantity); i++)
 		{
 			frame[START_DATA + 2 * i] = 0;//Msb(i);
 			frame[START_DATA + (2 * i) + 1] = 73;//Lsb(i);

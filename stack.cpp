@@ -88,7 +88,7 @@ void Stack::ST_Request(StackData* pdata)
 	MakeTcpAckFromAny(buf, len, 0);
 	modbus_tcp.ParseFrame(&buf[0x36]);
 	//FillTcpData(buf, 0, &buf[0x36], frame[LENGTH_L] + 6);
-	buf[TCP_FLAGS_P] =  TCP_FLAGS_ACK_V | TCP_FLAGS_PUSH_V | TCP_FLAGS_FIN_V;
+	buf[TCP_FLAGS_P] =  TCP_FLAGS_ACK_V | TCP_FLAGS_PUSH_V; //| TCP_FLAGS_FIN_V;
 	MakeTcpAckWithDataNoFlags(buf, 5 + 6);
 	// parsowanie i przygotowanie ramki modbus
 	//display.Write(GetState());
@@ -110,8 +110,9 @@ void Stack::Ack(StackData* pdata)
 	const uint8_t Transitions[] =
 	{
 		ST_NOT_ALLOWED,				// ST_LISTEN
-		ST_ESTABLISHED 				// ST_SYN_RECV
-		//ST_BYTE_RECEIVED			// ST_ESTABLISHED
+		ST_ESTABLISHED, 			// ST_SYN_RECV
+		ST_NOT_ALLOWED,				// ST_ESTABLISHED
+		ST_ESTABLISHED 				// ST_REQUEST
 	};
 	Event(Transitions[current_state], pdata);
 }

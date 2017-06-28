@@ -38,6 +38,7 @@ public:
 private:
 	uint16_t starting_address;
 	uint16_t quantity;
+	uint16_t trans_id;
 	uint8_t byte_count;
 };
 
