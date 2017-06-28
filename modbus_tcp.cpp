@@ -6,7 +6,59 @@
  */
 
 #include "modbus_tcp.h"
+#include "display.h"
+
+void ModbusTcp::ParseFrame(uint8_t* frame)
+{
+	// Modbus TCP frame ?
+	if((frame[TRANS_ID_H] == 0) && (frame[TRANS_ID_L] == 1) && (frame[PROT_ID_H] == 0) && (frame[PROT_ID_L] == 0))
+	{
+		switch(frame[FUNCTION_CODE])
+		{
+			case 3:
+				display.Write(333);
+				ReadHoldingRegisters(frame);
+			break;
+			//default:
+				//FunctionNotSupported(frame);
+		}
+	}
+}
+
+uint8_t ModbusTcp::ReadHoldingRegisters(uint8_t* frame)
+{
+	starting_address = frame[ADDR_FIRST_H] << 8 | frame[ADDR_FIRST_L];
+	quantity 		 = frame[QUANTITY_H] << 8 | frame[QUANTITY_L];
+	uint8_t error_code = 0;
+
+	//if((quantity > 125) || (quantity < 1)) error_code = 3;
+	//if((starting_address + quantity) > NUMBER_OF_HOLDING_REGISTERS_TCP) error_code = 2;
+
+	//if(error_code)
+	//{
+		frame[TRANS_ID_H] = 0;
+		frame[TRANS_ID_L] = 1;
+		frame[PROT_ID_H] = 0;
+		frame[PROT_ID_L] = 0;
+		frame[LENGTH_H] = 0; 		// to jest do przerobienia
+		frame[LENGTH_L] = (uint8_t)(quantity * 2) + 3;
+		frame[UNIT_ID] = 1;
+		frame[FUNCTION_CODE] = 3;
+		frame[BYTE_COUNT] = (uint8_t)(quantity * 2);
+
+		for(uint8_t i = 0; i < (uint8_t)(quantity); i++)
+		{
+			frame[START_DATA + 2 * i] = 0;//Msb(i);
+			frame[START_DATA + (2 * i) + 1] = 73;//Lsb(i);
+		}
+
+		//return error_code;
+	//}
+	return 0;
+}
 /*
+void ModbusTcp::ParseFrame(uint8_t* buf)
+{
 	uint8_t frame[100];
 	frame[TRANS_ID_H] = 0;
 	frame[TRANS_ID_L] = 1;
@@ -30,5 +82,5 @@
 	FillTcpData(buf, 0, frame, frame[LENGTH_L] + 6);
 	buf[TCP_FLAGS_P] = TCP_FLAGS_PUSH_V | TCP_FLAGS_ACK_V; //| TCP_FLAGS_FIN_V;
 	MakeTcpAckWithDataNoFlags(buf, frame[LENGTH_L] + 6);
+}
 */
-

@@ -19,7 +19,7 @@
 #include "stack.h"
 #include "eeprom.h"
 #include "modbus_rtu.h"
-
+#include "modbus_tcp.h"
 Eeprom eprom;
 Timer timer(T0_PS_1024, 17);
 Motor motor;
@@ -28,6 +28,7 @@ Stack stack;
 Usart usart;
 UsartData usart_data;
 ModbusRTU modbus_rtu;
+ModbusTcp modbus_tcp;
 
 int main()
 {

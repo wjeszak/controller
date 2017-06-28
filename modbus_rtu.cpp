@@ -15,7 +15,7 @@ ModbusRTU::ModbusRTU()
 	HoldingRegisters[0] = 45;
 	HoldingRegisters[1] = 23;
 }
-
+// to jest do kitu, trzeba podzielic na 2 funkcje tak jak w slave!!!!!!!!!!!!!!!!!!!!!!!
 void ModbusRTU::ParseFrame(uint8_t* frame, uint8_t len)
 {
 	uint16_t crc = Checksum(frame, len - 2);
