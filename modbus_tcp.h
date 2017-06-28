@@ -47,7 +47,6 @@ private:
 	uint8_t function_code;
 	uint16_t starting_address;
 	uint16_t quantity;
-	//uint8_t byte_count;
 	uint16_t length;
 };
 
