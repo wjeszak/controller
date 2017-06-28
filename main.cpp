@@ -25,6 +25,7 @@ Timer timer(T0_PS_1024, 17);
 Motor motor;
 Display display;
 Stack stack;
+StackData stack_data;
 Usart usart;
 UsartData usart_data;
 ModbusRTU modbus_rtu;

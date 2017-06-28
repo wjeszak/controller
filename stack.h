@@ -14,6 +14,7 @@
 class StackData : public EventData
 {
 public:
+	uint16_t len;
 };
 
 class Stack : public Machine
@@ -161,5 +162,6 @@ private:
 #define TCP_OPTIONS_P 						0x36
 
 extern Stack stack;
+extern StackData stack_data;
 
 #endif /* STACK_H_ */

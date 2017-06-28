@@ -7,6 +7,7 @@
 
 #include "modbus_tcp.h"
 #include "display.h"
+#include "stack.h"
 
 void ModbusTcp::ParseFrame(uint8_t* frame)
 {
@@ -16,7 +17,7 @@ void ModbusTcp::ParseFrame(uint8_t* frame)
 		switch(frame[FUNCTION_CODE])
 		{
 			case 3:
-				display.Write(333);
+				//display.Write(333);
 				ReadHoldingRegisters(frame);
 			break;
 			//default:
@@ -42,18 +43,18 @@ uint8_t ModbusTcp::ReadHoldingRegisters(uint8_t* frame)
 		frame[PROT_ID_H] = 0;
 		frame[PROT_ID_L] = 0;
 		frame[LENGTH_H] = 0; 		// to jest do przerobienia
-		frame[LENGTH_L] = 5;//(uint8_t)(quantity * 2) + 3;
+		frame[LENGTH_L] = (uint8_t)(quantity * 2) + 3;
 		frame[UNIT_ID] = 1;
 		frame[FUNCTION_CODE] = 3;
-		frame[BYTE_COUNT] = 2;//(uint8_t)(quantity * 2);
+		frame[BYTE_COUNT] = (uint8_t)(quantity * 2);
 
-		for(uint8_t i = 0; i < 1; i++)
-		//for(uint8_t i = 0; i < (uint8_t)(quantity); i++)
+		//for(uint8_t i = 0; i < 1; i++)
+		for(uint8_t i = 0; i < (uint8_t)(quantity); i++)
 		{
 			frame[START_DATA + 2 * i] = 0;//Msb(i);
 			frame[START_DATA + (2 * i) + 1] = 73;//Lsb(i);
 		}
-
+		stack_data.len = 9 + (quantity * 2);
 		//return error_code;
 	//}
 	return 0;
