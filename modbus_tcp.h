@@ -31,19 +31,30 @@
 
 #define UNIT_ID_FUNCTION_CODE_BYTE_COUNT_LEN 	3
 #define MBAP_FUNCTION_CODE_BYTE_COUNT_LEN 		9
-#define NUMBER_OF_HOLDING_REGISTERS_TCP 		20
-#define ADDR_OFFSET 							100
 
-class ModbusTcp
+#define FUNCTION_CODE_READ_HOLDING 				3
+#define FUNCTION_CODE_WRITE_MULTIPLE 			16
+
+#define ADDR_OFFSET_READ_HOLDING_REG			100
+#define NUMBER_OF_HOLDING_REG_TCP		 		49
+
+#define ADDR_OFFSET_WRITE_MULTIPLE_REG 			150
+#define NUMBER_OF_WRITE_MULTIPLE_REG_TCP		37
+
+class ModbusTCP
 {
 public:
-	ModbusTcp();
-	void ParseFrame(uint8_t* frame);
+	ModbusTCP();
+	void Process(uint8_t* frame);
+	void WhatKindOfFunction(uint8_t* frame);
 	uint8_t ReadHoldingRegisters(uint8_t* frame);
+	uint8_t WriteMultipleRegisters(uint8_t* frame);
 	void PrepareFrame(uint8_t* frame);
 private:
-	uint16_t HoldingRegisters[NUMBER_OF_HOLDING_REGISTERS_TCP];
+	uint16_t HoldingRegisters[NUMBER_OF_HOLDING_REG_TCP];
+	uint16_t MultipleRegisters[NUMBER_OF_WRITE_MULTIPLE_REG_TCP];
 	uint16_t trans_id;
+	uint16_t prot_id;
 	uint8_t unit_id;
 	uint8_t function_code;
 	uint16_t starting_address;
@@ -51,6 +62,6 @@ private:
 	uint16_t length;
 };
 
-extern ModbusTcp modbus_tcp;
+extern ModbusTCP modbus_tcp;
 
 #endif /* MODBUS_TCP_H_ */
