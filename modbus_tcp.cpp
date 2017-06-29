@@ -8,7 +8,7 @@
 #include "modbus_tcp.h"
 #include "display.h"
 #include "stack.h"
-
+#include "motor.h"
 ModbusTCP::ModbusTCP()
 {
 	HoldingRegisters[12] = 45;
@@ -94,7 +94,7 @@ uint8_t ModbusTCP::WriteMultipleRegisters(uint8_t* frame)
 	{
 		for(uint8_t i = 0; i < (uint8_t)quantity; i++)
 		{
-			MultipleRegisters[starting_address - ADDR_OFFSET_WRITE_MULTIPLE_REG + 2 * i] = (frame[13 + 2 * i] << 8) | frame[14 + 2 * i];
+			MultipleRegisters[starting_address - ADDR_OFFSET_WRITE_MULTIPLE_REG + i] = (frame[13 + 2 * i] << 8) | frame[14 + 2 * i];
 		}
 		frame[TRANSACTION_ID_H] = (trans_id >> 8);
 		frame[TRANSACTION_ID_L] = (trans_id & 0xFF);
@@ -109,6 +109,8 @@ uint8_t ModbusTCP::WriteMultipleRegisters(uint8_t* frame)
 		frame[QUANTITY_H] = (quantity >> 8);
 		frame[QUANTITY_L] = (quantity & 0xFF);
 		stack_data.len = 12;
+		display.Write(MultipleRegisters[3]);
+		motor.Enable(Forward, MultipleRegisters[3]);
 	}
 	return 0;
 }
