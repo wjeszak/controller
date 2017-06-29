@@ -85,7 +85,7 @@ void Usart::ST_ByteReceived(UsartData* pdata)
 
 void Usart::ST_FrameReceived(UsartData* pdata)
 {
-	usart_data.len = 8;
+	usart_data.len = 7;
 	uint8_t i = 0;
 	while(rx_tail != rx_head)
 	{
@@ -94,7 +94,7 @@ void Usart::ST_FrameReceived(UsartData* pdata)
 		i++;
 	}
 //	display.Write(GetState());
-	modbus_rtu.ParseFrame(usart_data.frame, 8);
+	modbus_rtu.ParseFrame(usart_data.frame, 7);
 	timer.Disable(1);
 }
 

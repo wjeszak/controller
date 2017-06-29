@@ -50,8 +50,9 @@ public:
 	uint8_t ReadHoldingRegisters(uint8_t* frame);
 	uint8_t WriteMultipleRegisters(uint8_t* frame);
 	void PrepareFrame(uint8_t* frame);
-private:
 	uint16_t HoldingRegisters[NUMBER_OF_HOLDING_REG_TCP];
+private:
+
 	uint16_t MultipleRegisters[NUMBER_OF_WRITE_MULTIPLE_REG_TCP];
 	uint16_t trans_id;
 	uint16_t prot_id;

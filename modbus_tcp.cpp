@@ -114,7 +114,8 @@ uint8_t ModbusTCP::WriteMultipleRegisters(uint8_t* frame)
 		//display.Write(MultipleRegisters[3]);
 
 		if(MultipleRegisters[0] == 1) motor.Test();
-		if(MultipleRegisters[1] > 0) timer.Assign(2, 300, ModbusPoll);
+		if(MultipleRegisters[1] > 0) timer.Assign(2, 500, ModbusPoll);
+		if(MultipleRegisters[1] == 0) timer.Disable(2);
 	}
 	return 0;
 }
