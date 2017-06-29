@@ -54,12 +54,10 @@ void ModbusRTU::ParseFrame(uint8_t* frame, uint8_t len)
 void ModbusRTU::ReadHoldingRegisters(uint8_t* frame)
 {
 	//uint8_t byte_count = frame[2];
-	// obsluga bledowe !!!!!!!!!!!!
-	//for(uint8_t i = 0; i < (byte_count / 2); i++)
-	//{
-		modbus_tcp.HoldingRegisters[slave_addr - 1] = (frame[3] << 8) | frame[4];
-	//}
+	// obsluga bledow !!!!!!!!!!!!
+	modbus_tcp.HoldingRegisters[slave_addr - 1] = (frame[3] << 8) | frame[4];
 }
+
 /*
 void ModbusRTU::FunctionNotSupported(uint8_t *frame)
 {
