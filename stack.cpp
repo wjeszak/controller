@@ -20,7 +20,7 @@ Stack::Stack() : Machine(ST_MAX_STATES)
 	packet_len = 0;
 	seqnum  = 0xA; 				// my initial tcp sequence number
 	port = 502;
-	display.Write(GetState());
+	//display.Write(GetState());
 }
 
 void Stack::StackPoll()
@@ -74,12 +74,12 @@ void Stack::ST_Listen(StackData* pdata)
 void Stack::ST_SynReceived(StackData* pdata)
 {
 	MakeTcpSynAckFromSyn(buf);
-	display.Write(GetState());
+	//display.Write(GetState());
 }
 
 void Stack::ST_Established(StackData* pdata)
 {
-	display.Write(GetState());
+	//display.Write(GetState());
 }
 
 void Stack::ST_Request(StackData* pdata)
