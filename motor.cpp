@@ -6,6 +6,7 @@
  */
 #include <avr/io.h>
 #include "motor.h"
+#include "timer.h"
 
 Motor::Motor() : _direction(Forward), _speed(0)
 {
@@ -46,4 +47,9 @@ void Motor::SetSpeed(uint8_t speed)
 {
 	_speed = speed;
 	OCR2A = speed;
+}
+
+void Motor::Test()
+{
+	timer.Assign(3, 250, MotorTesting); 	// 100 ms
 }

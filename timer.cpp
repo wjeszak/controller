@@ -12,6 +12,7 @@
 #include "display.h"
 #include "usart.h"
 #include "modbus_rtu.h"
+#include "motor.h"
 
 volatile TimerHandler STHandlers[8];
 
@@ -63,6 +64,29 @@ void ModbusRTU35T()
 void ModbusPoll()
 {
 	modbus_rtu.Poll();
+}
+
+void MotorTesting()
+{
+	enum {Acc, Decc};
+	static uint8_t state = Acc;
+	static uint8_t v = 0;
+	if(state == Acc)
+	{
+		v = v + 5;
+		if(v == 100) state = Decc;
+	}
+	if(state == Decc)
+	{
+		v = v - 5;
+		if(v == 0)
+		{
+			timer.Disable(3);
+			state = Acc;
+			return;
+		}
+	}
+	motor.Enable(Forward, v);
 }
 
 ISR(TIMER0_COMPA_vect)

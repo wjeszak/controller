@@ -47,6 +47,7 @@ public:
 	void SetDirection(Direction dir);
 	void SetSpeed(uint8_t speed);
 	Direction GetDirection();
+	void Test();
 	private:
 	Direction _direction;
 	uint8_t _speed;

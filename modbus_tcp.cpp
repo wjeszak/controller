@@ -110,7 +110,8 @@ uint8_t ModbusTCP::WriteMultipleRegisters(uint8_t* frame)
 		frame[QUANTITY_L] = (quantity & 0xFF);
 		stack_data.len = 12;
 		display.Write(MultipleRegisters[3]);
-		motor.Enable(Forward, MultipleRegisters[3]);
+		if(MultipleRegisters[0] == 1) motor.Test();
+		//motor.Enable(Forward, MultipleRegisters[3]);
 	}
 	return 0;
 }
