@@ -22,7 +22,9 @@
 #include "eeprom.h"
 #include "modbus_rtu.h"
 #include "modbus_tcp.h"
+#include "encoder.h"
 
+Encoder encoder;
 Lockerbox lockerbox;
 Dynabox dynabox;
 Eeprom eprom;
@@ -40,12 +42,31 @@ int main()
 {
 	_delay_ms(1000);
 	timer.Assign(0, 1, DisplayRefresh);
+	timer.Assign(4, 1, EncoderStatus);
 	sei();
 	Machine *m = GetTypeOfMachine(TDynabox);
 	uint16_t kto = m->StartupTest();
 	//display.Write(kto);
+	uint16_t param = 0;
 	while(1)
 	{
+		if (encoder.GetStatus() == 1)
+		{
+			param++;
+			display.Write(param);
+			encoder.ResetStatus();
+		}
+		if (encoder.GetStatus() == 2)
+		{
+			param--;
+			display.Write(param);
+			encoder.ResetStatus();
+		}
+		if (encoder.GetStatus() == 3)
+		{
+			display.Write(50);
+			encoder.ResetStatus();
+		}
 		stack.StackPoll();
 	}
 

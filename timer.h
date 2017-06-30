@@ -57,6 +57,7 @@ extern void DisplayRefresh();
 extern void ModbusRTU35T();
 extern void ModbusPoll();
 extern void MotorTesting();
+extern void EncoderStatus();
 
 extern Timer timer;
 #endif /* TIMER_H_ */

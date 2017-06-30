@@ -13,6 +13,7 @@
 #include "usart.h"
 #include "modbus_rtu.h"
 #include "motor.h"
+#include "encoder.h"
 
 volatile TimerHandler STHandlers[8];
 
@@ -64,6 +65,11 @@ void ModbusRTU35T()
 void ModbusPoll()
 {
 	modbus_rtu.Poll();
+}
+
+void EncoderStatus()
+{
+	encoder.CheckStatus();
 }
 
 void MotorTesting()
