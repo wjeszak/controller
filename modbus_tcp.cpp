@@ -11,6 +11,10 @@
 #include "motor.h"
 #include "modbus_rtu.h"
 #include "timer.h"
+#include "machine.h"
+
+
+
 ModbusTCP::ModbusTCP()
 {
 	HoldingRegisters[12] = 45;
@@ -113,9 +117,10 @@ uint8_t ModbusTCP::WriteMultipleRegisters(uint8_t* frame)
 		stack_data.len = 12;
 		//display.Write(MultipleRegisters[3]);
 
-		if(MultipleRegisters[0] == 1) motor.Test();
-		if(MultipleRegisters[1] > 0) timer.Assign(2, 500, ModbusPoll);
-		if(MultipleRegisters[1] == 0) timer.Disable(2);
+		if(MultipleRegisters[0] == 1) m->StartupTest();
+		//if(MultipleRegisters[0] == 1) motor.Test();
+		//if(MultipleRegisters[1] > 0) //timer.Assign(2, 500, ModbusPoll);
+		//if(MultipleRegisters[1] == 0) timer.Disable(2);
 	}
 	return 0;
 }

@@ -16,9 +16,9 @@ Dynabox::Dynabox() : Machine(ST_MAX_STATES)
 
 uint16_t Dynabox::StartupTest()
 {
-	//motor.Enable(Forward, 10);
-	//timer.Assign(2, 300, ModbusPoll);
-	return 10;
+	motor.Test();
+	timer.Assign(2, 500, ModbusPoll);
+	return 2;
 }
 
 

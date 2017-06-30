@@ -43,4 +43,6 @@ struct StateStruct
     StateFunc pStateFunc;
 };
 
+extern Machine *m;
+
 #endif /* MACHINE_H_ */
