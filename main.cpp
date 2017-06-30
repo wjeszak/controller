@@ -55,12 +55,14 @@ int main()
 		if (encoder.GetStatus() == 1)
 		{
 			param++;
+			if(param > 10) param = 0;
 			display.Write(param);
 			encoder.ResetStatus();
 		}
 		if (encoder.GetStatus() == 2)
 		{
 			param--;
+			if((param < 0) || (param > 10)) param = 0;
 			display.Write(param);
 			encoder.ResetStatus();
 		}

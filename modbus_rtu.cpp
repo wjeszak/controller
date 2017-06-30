@@ -55,7 +55,7 @@ void ModbusRTU::ReadHoldingRegisters(uint8_t* frame)
 {
 	//uint8_t byte_count = frame[2];
 	// obsluga bledow !!!!!!!!!!!!
-	modbus_tcp.HoldingRegisters[slave_addr - 1] = (frame[3] << 8) | frame[4];
+	modbus_tcp.HoldingRegisters[1 + slave_addr - 1] = (frame[3] << 8) | frame[4];
 }
 
 /*
