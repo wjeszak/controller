@@ -12,12 +12,13 @@
 #include "modbus_rtu.h"
 #include "timer.h"
 #include "machine.h"
+#include "usart.h"
 
 
 
 ModbusTCP::ModbusTCP()
 {
-	HoldingRegisters[12] = 45;
+//	HoldingRegisters[12] = 45;
 }
 
 void ModbusTCP::Process(uint8_t* frame)
@@ -115,7 +116,25 @@ uint8_t ModbusTCP::WriteMultipleRegisters(uint8_t* frame)
 		frame[QUANTITY_H] = (quantity >> 8);
 		frame[QUANTITY_L] = (quantity & 0xFF);
 		stack_data.len = 12;
-		//display.Write(MultipleRegisters[3]);
+		for(uint8_t i = 2; i < NUMBER_OF_WRITE_MULTIPLE_REG_TCP; i ++)
+		{
+			if(MultipleRegisters[i] != 0)
+			{
+				// to juz jest TOTALNIE na chama
+				usart_data.frame[0] = i - 1;
+				usart_data.frame[1] = 6; 		// function
+				usart_data.frame[2] = 0;		// reg addr hi
+				usart_data.frame[3] = 0;		// reg addr lo
+				usart_data.frame[4] = MultipleRegisters[i] >> 8;		// val hi
+				usart_data.frame[5] = MultipleRegisters[i] & 0xFF;
+				uint16_t crc = modbus_rtu.Checksum(usart_data.frame, 6);
+				usart_data.frame[6] = crc & 0xFF;
+				usart_data.frame[7] = crc >> 8;
+				usart_data.len = 8;
+				usart.SendFrame(&usart_data);
+				break;
+			}
+		}
 
 		if(MultipleRegisters[0] == 1) m->StartupTest();
 		//if(MultipleRegisters[0] == 1) motor.Test();

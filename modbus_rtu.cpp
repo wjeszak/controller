@@ -81,6 +81,29 @@ void ModbusRTU::WriteSingleRegister(uint8_t* frame)
 		usart_data.len = 8;
 		usart.SendFrame(&usart_data);
 }
+
+void ModbusRTU::WriteSingleRegisterToElectrom(uint8_t* frame)
+{
+
+		usart_data.frame[0] = slave_addr - 1 + 100;
+		usart_data.frame[1] = 6; 		// function
+		usart_data.frame[2] = 0;		// reg addr hi
+		usart_data.frame[3] = 0;		// reg addr lo
+		usart_data.frame[4] = 0;		// val hi
+		if(modbus_tcp.HoldingRegisters[1 + slave_addr - 1] == 5)
+		{
+			usart_data.frame[5] = 25;			// val lo
+		}
+		else
+		{
+			usart_data.frame[5] = 200;
+		}
+		uint16_t crc = Checksum(frame, 6);
+		usart_data.frame[6] = crc & 0xFF;
+		usart_data.frame[7] = crc >> 8;
+		usart_data.len = 8;
+		usart.SendFrame(&usart_data);
+}
 /*
 void ModbusRTU::FunctionNotSupported(uint8_t *frame)
 {
