@@ -45,7 +45,7 @@ int main()
 	timer.Assign(4, 1, EncoderStatus);
 	sei();
 	// wskaznik do typu maszyny
-	m = NULL;
+	m = GetTypeOfMachine(TDynabox);
 	//uint16_t kto = m->StartupTest();
 
 	uint16_t param = 0;

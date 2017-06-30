@@ -12,6 +12,8 @@ Motor::Motor() : _direction(Forward), _speed(0)
 {
 	MOTOR_INIT;
 	TCCR2A |= (1 << WGM21) | (1 << WGM20) | (1 << COM2A1) | (1 << COM2A0); //  Mode 3, inverting
+	state = Acc;
+	v = 0;
 }
 
 void Motor::SetDirection(Direction dir)
@@ -30,11 +32,12 @@ void Motor::SetDirection(Direction dir)
 	_direction = dir;
 }
 
-void Motor::Enable(Direction dir, uint8_t speed)
+void Motor::Enable(Direction dir)//, uint8_t speed)
 {
 	//TCNT2 = 0;
 	SetDirection(dir);
-	SetSpeed(speed);
+	SetSpeed(v);
+	//SetSpeed(speed);
 	MOTOR_ENABLE;
 }
 
@@ -51,5 +54,5 @@ void Motor::SetSpeed(uint8_t speed)
 
 void Motor::Test()
 {
-	timer.Assign(3, 250, MotorTesting); 	// 100 ms
+	timer.Assign(3, 250, MotorTesting); 	// 500 ms
 }

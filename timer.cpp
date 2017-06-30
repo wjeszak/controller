@@ -74,25 +74,32 @@ void EncoderStatus()
 
 void MotorTesting()
 {
-	enum {Acc, Decc};
-	static uint8_t state = Acc;
-	static uint8_t v = 0;
-	if(state == Acc)
+	if(motor.state == 0)
 	{
-		v = v + 5;
-		if(v == 100) state = Decc;
+		motor.v = motor.v + 5;
+		if(motor.v == 100)
+		{
+			motor.state = 2;
+			timer.Assign(5, 2500, MotorChangeState);
+		}
 	}
-	if(state == Decc)
+	if(motor.state == 1)
 	{
-		v = v - 5;
-		if(v == 0)
+		motor.v = motor.v - 5;
+		if(motor.v == 0)
 		{
 			timer.Disable(3);
-			state = Acc;
+			motor.state = 0;
 			return;
 		}
 	}
-	motor.Enable(Forward, v);
+	motor.Enable(Forward);
+}
+
+void MotorChangeState()
+{
+	motor.state = 1;
+	timer.Disable(5);
 }
 
 ISR(TIMER0_COMPA_vect)

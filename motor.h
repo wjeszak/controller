@@ -42,12 +42,16 @@ class Motor
 {
 public:
 	Motor();
-	void Enable(Direction, uint8_t speed);
+	//void Enable(Direction, uint8_t speed);
+	void Enable(Direction);
 	void Disable();
 	void SetDirection(Direction dir);
 	void SetSpeed(uint8_t speed);
 	Direction GetDirection();
 	void Test();
+	enum {Acc, Decc, Const};
+	uint8_t state;
+	uint8_t v;
 	private:
 	Direction _direction;
 	uint8_t _speed;
