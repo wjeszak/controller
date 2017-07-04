@@ -168,7 +168,11 @@ ISR(TIMER0_COMPA_vect)
 		display.Write(motor.position++);
 		if(motor.f_homing != 1)
 		{
-			if(motor.position == motor.new_position) motor.Disable();
+			if(motor.position == motor.new_position)
+			{
+				motor.Disable();
+				timer2.Disable(3);
+			}
 		}
 			if(motor.position == 100) motor.position = 0;
 	}
@@ -188,7 +192,11 @@ ISR(TIMER1_COMPA_vect)
 		display.Write(motor.position++);
 		if(motor.f_homing != 1)
 		{
-			if(motor.position == motor.new_position) motor.Disable();
+			if(motor.position == motor.new_position)
+			{
+				motor.Disable();
+				timer2.Disable(3);
+			}
 		}
 		if(motor.position == 100) motor.position = 0;
 	}

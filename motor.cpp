@@ -63,7 +63,7 @@ void Motor::Homing()
 
 void Motor::Run(uint16_t pos)
 {
-	motor.position = pos;
+	motor.new_position = pos;
 	Enable(Forward, 0);
 	timer2.Assign(3, 250, MotorTesting);
 }
