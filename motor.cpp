@@ -16,6 +16,7 @@ Motor::Motor() : _direction(Forward), _speed(0)
 	//TCCR2A |= (1 << WGM21) | (1 << WGM20) | T2_PS_1; //  Mode 3, inverting
 	state = Acc;
 	v = 0;
+	f_homing = 0;
 }
 
 void Motor::SetDirection(Direction dir)
@@ -53,14 +54,26 @@ void Motor::SetSpeed(uint8_t speed)
 	OCR2A = speed;
 }
 
-void Motor::Test()
+void Motor::Homing()
 {
 	Enable(Forward, 0);
 	timer2.Assign(3, 250, MotorTesting); 	// 500 ms
+	motor.f_homing = 1;
+}
+
+void Motor::Run(uint16_t pos)
+{
+	motor.position = pos;
+	Enable(Forward, 0);
+	timer2.Assign(3, 250, MotorTesting);
 }
 
 ISR(INT2_vect)
 {
-	motor.Disable();
-	motor.position = 0;		// set encoder zero
+	if(motor.f_homing)	// ST_Homing
+	{
+		motor.f_homing = 0;
+		motor.Disable();
+		motor.position = 0;		// set encoder zero
+	}
 }

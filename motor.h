@@ -36,11 +36,14 @@ public:
 	void SetDirection(Direction dir);
 	void SetSpeed(uint8_t speed);
 	Direction GetDirection();
-	void Test();
-	enum {Acc, Decc, Const};
+	void Homing();
+	void Run(uint16_t pos);
+	enum {Acc, Decc, Const, ST_Homing};
 	uint8_t state;
 	uint8_t v;
+	uint8_t f_homing;
 	uint16_t position;
+	uint16_t new_position;
 	private:
 	Direction _direction;
 	uint8_t _speed;

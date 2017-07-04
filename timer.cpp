@@ -166,7 +166,11 @@ ISR(TIMER0_COMPA_vect)
 	{
 		//display.Write(50); 	// kierunek
 		display.Write(motor.position++);
-		if(motor.position == 100) motor.position = 0;
+		if(motor.f_homing != 1)
+		{
+			if(motor.position == motor.new_position) motor.Disable();
+		}
+			if(motor.position == 100) motor.position = 0;
 	}
 }
 
@@ -182,6 +186,10 @@ ISR(TIMER1_COMPA_vect)
 	{
 		//display.Write(50); 	// kierunek
 		display.Write(motor.position++);
+		if(motor.f_homing != 1)
+		{
+			if(motor.position == motor.new_position) motor.Disable();
+		}
 		if(motor.position == 100) motor.position = 0;
 	}
 }
