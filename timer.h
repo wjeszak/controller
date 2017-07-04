@@ -90,4 +90,6 @@ public:
 };
 
 extern Timer1 timer1;
+
+void Irq_Init();
 #endif /* TIMER_H_ */

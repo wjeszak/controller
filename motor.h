@@ -19,7 +19,7 @@
 #define MOTOR_INIT 			MOTOR_DDR |= (1 << MOTOR_FWD_PIN) | (1 << MOTOR_REV_PIN) | (1 << MOTOR_EN_PIN) | (1 << MOTOR_BRAKE_PIN);
 
 #define MOTOR_ENABLE 		TCCR2A |= (1 << COM2A1) | (1 << COM2A0);
-#define MOTOR_DISABLE		TCCR2A &= ~((1 << COM2A1) | (1 << COM2A0));
+#define MOTOR_DISABLE		TCCR2A &= ~((1 << COM2A1) | (1 << COM2A0)); MOTOR_PORT |= (1 << MOTOR_EN_PIN);
 
 #define MOTOR_BRAKE_ON 		MOTOR_PORT |= (1 << MOTOR_BRAKE_PIN)
 #define MOTOR_BRAKE_OFF 	MOTOR_PORT &= ~(1 << MOTOR_BRAKE_PIN)
@@ -31,7 +31,7 @@ class Motor
 public:
 	Motor();
 	//void Enable(Direction, uint8_t speed);
-	void Enable(Direction);
+	void Enable(Direction, uint8_t speed);
 	void Disable();
 	void SetDirection(Direction dir);
 	void SetSpeed(uint8_t speed);
@@ -40,10 +40,12 @@ public:
 	enum {Acc, Decc, Const};
 	uint8_t state;
 	uint8_t v;
+	uint16_t position;
 	private:
 	Direction _direction;
 	uint8_t _speed;
 };
+
 extern Motor motor;
 
 #endif /* MOTOR_H_ */

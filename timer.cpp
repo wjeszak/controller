@@ -73,16 +73,16 @@ void EncoderStatus()
 {
 	encoder.CheckStatus();
 }
-/*
+
 void MotorTesting()
 {
 	if(motor.state == 0)
 	{
-		motor.v = motor.v + 5;
+		motor.v = motor.v + 10;
 		if(motor.v == 100)
 		{
 			motor.state = 2;
-			timer.Assign(5, 2500, MotorChangeState);
+			//timer2.Assign(5, 2500, MotorChangeState);
 		}
 	}
 	if(motor.state == 1)
@@ -90,7 +90,7 @@ void MotorTesting()
 		motor.v = motor.v - 5;
 		if(motor.v == 0)
 		{
-			timer.Disable(3);
+			timer2.Disable(3);
 			//motor.Disable();
 			motor.state = 0;
 			return;
@@ -98,14 +98,14 @@ void MotorTesting()
 	}
 	motor.SetSpeed(motor.v);
 }
-*/
-/*
+
+
 void MotorChangeState()
 {
 	motor.state = 1;
-	timer.Disable(5);
+	timer2.Disable(5);
 }
-*/
+
 Timer0::Timer0()
 {
 	DDRB &= ~(1 << PB0);
@@ -114,17 +114,24 @@ Timer0::Timer0()
 	TCNT0 = 0;
 	TIMSK0 |= (1<<OCIE0A);
 	OCR0A = 1;
-	//TCNT0 = 254;
 }
 
 Timer1::Timer1()
 {
 	DDRB &= ~(1 << PB1);
 	TCCR1B |= (1 << WGM12);
-	TCCR1B |= (1<< CS12) | (1<< CS11) | (1 << CS10);  //zrod³o zewnêtrzne - zbocze opadaj¹ce
+	TCCR1B |= (1<< CS12) | (1<< CS11) | (1 << CS10);  //zrod³o zewnêtrzne - zbocze narastajace
 	TCNT1 = 0;
 	TIMSK1 |= (1 << OCIE1A);
 	OCR1A = 1;
+}
+
+void Irq_Init()
+{
+	DDRB &= ~(1 << PB2);
+	PORTB |= (1 << PB2);
+	EICRA = (1 << ISC21); 		// opadajace
+	EIMSK = (1 << INT2);
 }
 
 ISR(TIMER2_COMPB_vect)
@@ -151,11 +158,15 @@ ISR(TIMER0_COMPA_vect)
 	timer0.cnt++;
 	if(PINB & (1 << PB1))
 	{
-		display.Write(25);
+		//display.Write(25);
+		//display.Write(counter--);
+		//if((counter < 0) || (counter > 9999)) counter = 0;
 	}
 	else
 	{
-		display.Write(50);
+		//display.Write(50); 	// kierunek
+		display.Write(motor.position++);
+		if(motor.position == 100) motor.position = 0;
 	}
 }
 
@@ -164,11 +175,13 @@ ISR(TIMER1_COMPA_vect)
 	timer1.cnt++;
 	if(PINB & (1 << PB0))
 	{
-		display.Write(25);
+		//display.Write(counter--);
+		//if((counter < 0) || (counter > 9999)) counter = 0;
 	}
 	else
 	{
-		display.Write(50);
+		//display.Write(50); 	// kierunek
+		display.Write(motor.position++);
+		if(motor.position == 100) motor.position = 0;
 	}
-	//TCNT1 = 65435;
 }

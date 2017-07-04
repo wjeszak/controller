@@ -4,7 +4,9 @@
  *  Created on: 20 cze 2017
  *      Author: tomek
  */
+
 #include <avr/io.h>
+#include <avr/interrupt.h>
 #include "motor.h"
 #include "timer.h"
 
@@ -32,12 +34,11 @@ void Motor::SetDirection(Direction dir)
 	_direction = dir;
 }
 
-void Motor::Enable(Direction dir)//, uint8_t speed)
+void Motor::Enable(Direction dir, uint8_t speed)
 {
 	//TCNT2 = 0;
 	SetDirection(dir);
-	SetSpeed(50);
-	//SetSpeed(speed);
+	SetSpeed(speed);
 	MOTOR_ENABLE;
 }
 
@@ -54,6 +55,12 @@ void Motor::SetSpeed(uint8_t speed)
 
 void Motor::Test()
 {
-	Enable(Forward);
-	//timer.Assign(3, 250, MotorTesting); 	// 500 ms
+	Enable(Forward, 0);
+	timer2.Assign(3, 250, MotorTesting); 	// 500 ms
+}
+
+ISR(INT2_vect)
+{
+	motor.Disable();
+	motor.position = 0;		// set encoder zero
 }
