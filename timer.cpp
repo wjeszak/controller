@@ -17,7 +17,9 @@
 
 volatile TimerHandler STHandlers[8];
 
-Timer::Timer(T0Prescallers Prescaller, uint8_t Tick)
+// obsluga timera 2, najbardziej rozbudowanego
+
+Timer2::Timer2(T2Prescallers Prescaller, uint8_t Tick)
 {
 	for(uint8_t n = 0; n < 8; n++)
 	{
@@ -26,13 +28,13 @@ Timer::Timer(T0Prescallers Prescaller, uint8_t Tick)
 		STHandlers[n].Interval = 0;
 		STHandlers[n].fp = NULL;
 	}
-	TCCR0A |= (1 << WGM01); 		// CTC
-	TCCR0B |= Prescaller;
-	OCR0A = Tick; 					// :		F_CPU / preskaler / 200 Hz = OCR
-	TIMSK0 |= (1 << OCIE0A);
+	TCCR2A |= (1 << WGM21) | (1 << WGM20);
+	TCCR2B |= Prescaller;
+	OCR2B = Tick; 					// :		F_CPU / preskaler / 200 Hz = OCR
+	TIMSK2 |= (1 << OCIE2B);
 }
 
-void Timer::Assign(uint8_t HandlerNumber, uint64_t Interval, void(*fp)())
+void Timer2::Assign(uint8_t HandlerNumber, uint64_t Interval, void(*fp)())
 {
 	STHandlers [HandlerNumber].Interval = Interval;
 	STHandlers [HandlerNumber].Counter = 0;
@@ -40,13 +42,13 @@ void Timer::Assign(uint8_t HandlerNumber, uint64_t Interval, void(*fp)())
 	STHandlers [HandlerNumber].fp = fp;
 }
 
-void Timer::Enable(uint8_t HandlerNumber)
+void Timer2::Enable(uint8_t HandlerNumber)
 {
 	STHandlers [HandlerNumber].Active = true;
 	STHandlers [HandlerNumber].Counter = 0;
 }
 
-void Timer::Disable(uint8_t HandlerNumber)
+void Timer2::Disable(uint8_t HandlerNumber)
 {
 	STHandlers [HandlerNumber].Active = false;
 }
@@ -71,7 +73,7 @@ void EncoderStatus()
 {
 	encoder.CheckStatus();
 }
-
+/*
 void MotorTesting()
 {
 	if(motor.state == 0)
@@ -89,20 +91,43 @@ void MotorTesting()
 		if(motor.v == 0)
 		{
 			timer.Disable(3);
+			//motor.Disable();
 			motor.state = 0;
 			return;
 		}
 	}
-	motor.Enable(Forward);
+	motor.SetSpeed(motor.v);
 }
-
+*/
+/*
 void MotorChangeState()
 {
 	motor.state = 1;
 	timer.Disable(5);
 }
+*/
+Timer0::Timer0()
+{
+	DDRB &= ~(1 << PB0);
+	TCCR0A |= (1 << WGM01);
+	TCCR0B |= (1 << CS02) | (1 << CS01);  //zrod³o zewnêtrzne - zbocze opadaj¹ce
+	TCNT0 = 0;
+	TIMSK0 |= (1<<OCIE0A);
+	OCR0A = 1;
+	//TCNT0 = 254;
+}
 
-ISR(TIMER0_COMPA_vect)
+Timer1::Timer1()
+{
+	DDRB &= ~(1 << PB1);
+	TCCR1B |= (1 << WGM12);
+	TCCR1B |= (1<< CS12) | (1<< CS11) | (1 << CS10);  //zrod³o zewnêtrzne - zbocze opadaj¹ce
+	TCNT1 = 0;
+	TIMSK1 |= (1 << OCIE1A);
+	OCR1A = 1;
+}
+
+ISR(TIMER2_COMPB_vect)
 {
 	for(uint8_t n = 0; n < 8; n++)
 	{
@@ -121,3 +146,29 @@ ISR(TIMER0_COMPA_vect)
 	}
 }
 
+ISR(TIMER0_COMPA_vect)
+{
+	timer0.cnt++;
+	if(PINB & (1 << PB1))
+	{
+		display.Write(25);
+	}
+	else
+	{
+		display.Write(50);
+	}
+}
+
+ISR(TIMER1_COMPA_vect)
+{
+	timer1.cnt++;
+	if(PINB & (1 << PB0))
+	{
+		display.Write(25);
+	}
+	else
+	{
+		display.Write(50);
+	}
+	//TCNT1 = 65435;
+}

@@ -33,7 +33,7 @@ Usart::Usart(uint16_t baud) : Machine(ST_MAX_STATES)
 	tx_head = 0;
 	tx_tail = 0;
 	RxEnable();
-	timer.Assign(1, 2, ModbusRTU35T);
+	timer2.Assign(1, 2, ModbusRTU35T);
 }
 
 void Usart::RxEnable()
@@ -63,7 +63,7 @@ void Usart::ST_Init(UsartData* pdata) {}
 void Usart::ST_Idle(UsartData* pdata)
 {
 //	display.Write(GetState());
-	timer.Disable(1);
+	timer2.Disable(1);
 }
 
 void Usart::ST_ByteReceived(UsartData* pdata)
@@ -80,7 +80,7 @@ void Usart::ST_ByteReceived(UsartData* pdata)
 		rx_head = tmp_head;
 		buf_rx[tmp_head] = pdata->c;
 	}
-	timer.Enable(1);
+	timer2.Enable(1);
 }
 
 void Usart::ST_FrameReceived(UsartData* pdata)
@@ -95,7 +95,7 @@ void Usart::ST_FrameReceived(UsartData* pdata)
 	}
 //	display.Write(GetState());
 	modbus_rtu.ParseFrame(usart_data.frame, 7);
-	timer.Disable(1);
+	timer2.Disable(1);
 }
 
 void Usart::CharReceived(UsartData* pdata)

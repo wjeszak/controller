@@ -18,23 +18,11 @@
 #define MOTOR_EN_PIN 		7
 #define MOTOR_INIT 			MOTOR_DDR |= (1 << MOTOR_FWD_PIN) | (1 << MOTOR_REV_PIN) | (1 << MOTOR_EN_PIN) | (1 << MOTOR_BRAKE_PIN);
 
-#define MOTOR_ENABLE 		TCCR2B |= T2_PS_1
-#define MOTOR_DISABLE		TCCR2B |= T2_PS_0
+#define MOTOR_ENABLE 		TCCR2A |= (1 << COM2A1) | (1 << COM2A0);
+#define MOTOR_DISABLE		TCCR2A &= ~((1 << COM2A1) | (1 << COM2A0));
 
 #define MOTOR_BRAKE_ON 		MOTOR_PORT |= (1 << MOTOR_BRAKE_PIN)
 #define MOTOR_BRAKE_OFF 	MOTOR_PORT &= ~(1 << MOTOR_BRAKE_PIN)
-
-enum T2Prescallers
-{
-	T2_PS_0 = 0,
-	T2_PS_1 = (1 << CS20),
-	T2_PS_8 = (1 << CS21),
-	T2_PS_32 = (1 <<CS21) | (1 << CS20),
-	T2_PS_64 = (1 << CS22),
-	T2_PS_128 = (1 << CS22) | (1 << CS20),
-	T2_PS_256 = (1 << CS22) | (1 << CS21),
-	T2_PS_1024 = (1 << CS22) | (1 << CS21) | (1 << CS20)
-};
 
 enum Direction {Forward, Backward};
 

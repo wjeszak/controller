@@ -18,7 +18,7 @@ ModbusRTU::ModbusRTU()
 
 void ModbusRTU::Poll()
 {
-	display.Write(slave_addr);
+//	display.Write(slave_addr);
 	usart_data.frame[0] = slave_addr++;
 	usart_data.frame[1] = 3;
 	usart_data.frame[2] = 0;

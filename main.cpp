@@ -28,8 +28,11 @@ Encoder encoder;
 Lockerbox lockerbox;
 Dynabox dynabox;
 Eeprom eprom;
-Timer timer(T0_PS_1024, 17);
 Motor motor;
+Timer0 timer0;
+Timer1 timer1;
+Timer2 timer2(T2_PS_128, 17);
+
 Display display;
 Stack stack;
 StackData stack_data;
@@ -41,8 +44,8 @@ Machine *m;
 int main()
 {
 	_delay_ms(1000);
-	timer.Assign(0, 1, DisplayRefresh);
-	timer.Assign(4, 1, EncoderStatus);
+	timer2.Assign(0, 1, DisplayRefresh);
+	timer2.Assign(4, 1, EncoderStatus);
 	sei();
 	// wskaznik do typu maszyny
 	m = GetTypeOfMachine(TDynabox);
@@ -52,17 +55,19 @@ int main()
 	display.Write(param);
 	while(1)
 	{
+	/*
+		//EncoderStatus();
 		if (encoder.GetStatus() == 1)
 		{
 			param++;
-			if(param > 10) param = 0;
+			if(param > 1000) param = 0;
 			display.Write(param);
 			encoder.ResetStatus();
 		}
 		if (encoder.GetStatus() == 2)
 		{
 			param--;
-			if((param < 0) || (param > 10)) param = 0;
+			if((param < 0) || (param > 1000)) param = 0;
 			display.Write(param);
 			encoder.ResetStatus();
 		}
@@ -73,6 +78,7 @@ int main()
 			//display.Write(50);
 			encoder.ResetStatus();
 		}
+		*/
 		stack.StackPoll();
 	}
 
