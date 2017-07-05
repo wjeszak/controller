@@ -95,7 +95,8 @@ void Motor::EV_PhaseA(MotorData* pdata)
 		if(motor.position == motor_data.pos)
 		{
 			motor.Disable();
-			Event(0, NULL);
+			timer2.Disable(3);
+			Event(5, NULL);
 		}
 		if(motor.position == ENCODER_ROWS) motor.position = 0;
 	}
@@ -114,7 +115,8 @@ void Motor::EV_PhaseB(MotorData* pdata)
 		if(motor.position == motor_data.pos)
 		{
 			motor.Disable();
-			Event(0, NULL);
+			timer2.Disable(3);
+			Event(5, NULL);
 		}
 		if(motor.position == ENCODER_ROWS) motor.position = 0;
 	}
@@ -166,12 +168,17 @@ void Motor::ST_Home(MotorData* pdata)
 //	display.Write(motor.current_state);
 	display.Write(position);
 	home_ok = 1;
-	Event(0, NULL);		// back to ST_IDLE
+//	Event(0, NULL);		// back to ST_IDLE
 }
 
 void Motor::ST_Decceleration(MotorData* pdata)
 {
 
+}
+
+void Motor::ST_PositionAchieved(MotorData* pdata)
+{
+	motor_data.pos = 0;
 }
 
 void Motor::EV_RunToPosition(MotorData* pdata)
@@ -186,7 +193,10 @@ void Motor::EV_RunToPosition(MotorData* pdata)
 		{
 			ST_ACCELERATION,			// ST_IDLE
 			ST_NOT_ALLOWED, 			// ST_ACCELERATION
-			ST_NOT_ALLOWED				// ST_RUNNING
+			ST_NOT_ALLOWED,				// ST_RUNNING
+			ST_ACCELERATION,			// ST_HOME
+			ST_NOT_ALLOWED,				// ST_DECCELERATION
+			ST_ACCELERATION				// ST_POSITION_ACHIEVED
 		};
 		Event(Transitions[current_state], pdata);
 	}

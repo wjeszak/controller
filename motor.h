@@ -60,6 +60,7 @@ public:
 	void ST_Running(MotorData* pdata);
 	void ST_Home(MotorData* pdata);
 	void ST_Decceleration(MotorData* pdata);
+	void ST_PositionAchieved(MotorData* pdata);
 	enum States {ST_IDLE = 0, ST_ACCELERATION, ST_RUNNING, ST_HOME, ST_DECCELERATION, ST_POSITION_ACHIEVED, ST_MAX_STATES};
 	const StateStruct* GetStateMap()
 	{
@@ -70,7 +71,8 @@ public:
 			{reinterpret_cast<StateFunc>(&Motor::ST_Acceleration)},
 			{reinterpret_cast<StateFunc>(&Motor::ST_Running)},
 			{reinterpret_cast<StateFunc>(&Motor::ST_Home)},
-			{reinterpret_cast<StateFunc>(&Motor::ST_Decceleration)}
+			{reinterpret_cast<StateFunc>(&Motor::ST_Decceleration)},
+			{reinterpret_cast<StateFunc>(&Motor::ST_PositionAchieved)}
 		};
 		return &StateMap[0];
 	}
