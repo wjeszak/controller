@@ -144,7 +144,7 @@ void Motor::ST_Acceleration(MotorData* pdata)
 {
 	actual_speed = 0;
 	MOTOR_ENABLE;
-	timer2.Assign(3, 50, MotorAccelerate);
+	timer2.Assign(3, 10, MotorAccelerate);
 //	display.Write(motor.current_state);
 }
 
