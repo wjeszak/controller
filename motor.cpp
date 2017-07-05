@@ -92,7 +92,11 @@ void Motor::EV_PhaseA(MotorData* pdata)
 	{
 		// right
 		display.Write(motor.position++);
-		if(motor.position == motor_data.pos) motor.Disable();
+		if(motor.position == motor_data.pos)
+		{
+			motor.Disable();
+			Event(0, NULL);
+		}
 		if(motor.position == ENCODER_ROWS) motor.position = 0;
 	}
 }
@@ -107,7 +111,11 @@ void Motor::EV_PhaseB(MotorData* pdata)
 	{
 		// right
 		display.Write(motor.position++);
-		if(motor.position == motor_data.pos) motor.Disable();
+		if(motor.position == motor_data.pos)
+		{
+			motor.Disable();
+			Event(0, NULL);
+		}
 		if(motor.position == ENCODER_ROWS) motor.position = 0;
 	}
 }
@@ -134,7 +142,7 @@ void Motor::ST_Acceleration(MotorData* pdata)
 {
 	actual_speed = 0;
 	MOTOR_ENABLE;
-	timer2.Assign(3, 100, MotorAccelerate);
+	timer2.Assign(3, 50, MotorAccelerate);
 //	display.Write(motor.current_state);
 }
 
