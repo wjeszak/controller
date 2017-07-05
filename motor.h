@@ -7,6 +7,7 @@
 
 #ifndef MOTOR_H_
 #define MOTOR_H_
+#include "machine.h"
 /* Zerowanie preskalera przy uruchamianiu silnika, czy trzeba zerowac TCNT2 po odlaczeniu i zalaczeniu preskalera ?
  *
  */
@@ -26,33 +27,48 @@
 
 enum Direction {Forward, Backward};
 
-class Motor
+class MotorData : public EventData
+{
+public:
+};
+
+class Motor : public Machine
 {
 public:
 	Motor();
-	//void Enable(Direction, uint8_t speed);
-	void Enable(Direction, uint8_t speed);
+	//void EV_Start(MotorData* pdata);
 	void Disable();
+	void IrqInit();
 	void SetDirection(Direction dir);
 	void SetSpeed(uint8_t speed);
 	Direction GetDirection();
-	void Homing();
-	void Run(uint16_t pos);
-	enum {Acc, Decc, Const, ST_Homing};
-	uint8_t state;
-	uint8_t v;
-	uint8_t f_homing;
+	void EV_Homing(MotorData* pdata = NULL);
+	void RunToPosition(uint16_t pos);
+	uint8_t actual_speed;
+	uint8_t desired_speed;
 	uint16_t position;
-	uint16_t new_position;
-	uint8_t enable;
+	uint16_t desired_position;
 	private:
 	Direction _direction;
-	uint8_t _speed;
+	void ST_Idle(MotorData* pdata);
+	void ST_Acceleration(MotorData* pdata);
+	void ST_Running(MotorData* pdata);
+	enum States {ST_IDLE = 0, ST_ACCELERATION, ST_RUNNING, ST_HOMING, ST_DECCELERATION, ST_POSITION_ACHIEVED, ST_MAX_STATES};
+	const StateStruct* GetStateMap()
+	{
+		// to jest sprytne bo StateMap jest tworzone nie na stosie dzieki temu mozna zwrocic adres
+		static const StateStruct StateMap[] =
+		{
+			{reinterpret_cast<StateFunc>(&Motor::ST_Idle)},
+			{reinterpret_cast<StateFunc>(&Motor::ST_Acceleration)},
+			{reinterpret_cast<StateFunc>(&Motor::ST_Running)},
+			//{reinterpret_cast<StateFunc>(&Motor::ST_Decceleration)},
+			//{reinterpret_cast<StateFunc>(&Motor::ST_PositionAchieved)}
+		};
+		return &StateMap[0];
+	}
 };
 
 extern Motor motor;
 
 #endif /* MOTOR_H_ */
-
-
-

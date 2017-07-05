@@ -29,8 +29,8 @@ Lockerbox lockerbox;
 Dynabox dynabox;
 Eeprom eprom;
 Motor motor;
-Timer0 timer0;
-Timer1 timer1;
+//Timer0 timer0;
+//Timer1 timer1;
 Timer2 timer2(T2_PS_64, 17);
 
 Display display;
@@ -45,7 +45,6 @@ int main()
 {
 
 	_delay_ms(1000);
-	Irq_Init();
 	timer2.Assign(0, 1, DisplayRefresh);
 	timer2.Assign(4, 1, EncoderStatus);
 	sei();

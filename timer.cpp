@@ -74,38 +74,6 @@ void EncoderStatus()
 	encoder.CheckStatus();
 }
 
-void MotorTesting()
-{
-	if(motor.state == 0)
-	{
-		motor.v = motor.v + 10;
-		if(motor.v == 70)
-		{
-			motor.state = 2;
-			//timer2.Assign(5, 2500, MotorChangeState);
-		}
-	}
-	if(motor.state == 1)
-	{
-		motor.v = motor.v - 5;
-		if(motor.v == 0)
-		{
-			timer2.Disable(3);
-			//motor.Disable();
-			motor.state = 0;
-			return;
-		}
-	}
-	motor.SetSpeed(motor.v);
-}
-
-
-void MotorChangeState()
-{
-	motor.state = 1;
-	timer2.Disable(5);
-}
-
 Timer0::Timer0()
 {
 	DDRB &= ~(1 << PB0);
@@ -126,13 +94,6 @@ Timer1::Timer1()
 	OCR1A = 1;
 }
 
-void Irq_Init()
-{
-	DDRB &= ~(1 << PB2);
-	PORTB |= (1 << PB2);
-	EICRA = (1 << ISC21); 		// opadajace
-	EIMSK = (1 << INT2);
-}
 
 ISR(TIMER2_COMPB_vect)
 {
@@ -152,7 +113,7 @@ ISR(TIMER2_COMPB_vect)
 		}
 	}
 }
-
+/*
 ISR(TIMER0_COMPA_vect)
 {
 	timer0.cnt++;
@@ -202,3 +163,4 @@ ISR(TIMER1_COMPA_vect)
 		if(motor.position == 64) motor.position = 0;
 	}
 }
+*/
