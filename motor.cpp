@@ -67,6 +67,9 @@ void Motor::SetSpeed(uint8_t speed)
 
 void Motor::EV_Homing(MotorData* pdata)
 {
+	SetDirection(Forward);
+	SetSpeed(50);		// percent
+	IrqInit();
 	const uint8_t Transitions[] =
 	{
 		// musi byc obsluga jesli znak przyjdzie w stanie INIT
@@ -84,10 +87,7 @@ void Motor::ST_Idle(MotorData* pdata)
 void Motor::ST_Acceleration(MotorData* pdata)
 {
 	motor.actual_speed = 0;
-	SetDirection(Forward);
-	SetSpeed(50);		// percent
 	MOTOR_ENABLE;
-	IrqInit();
 	timer2.Assign(3, 100, MotorAccelerate); 	//
 //	display.Write(motor.current_state);
 }
