@@ -79,7 +79,7 @@ void MotorTesting()
 	if(motor.state == 0)
 	{
 		motor.v = motor.v + 10;
-		if(motor.v == 100)
+		if(motor.v == 70)
 		{
 			motor.state = 2;
 			//timer2.Assign(5, 2500, MotorChangeState);
@@ -165,7 +165,7 @@ ISR(TIMER0_COMPA_vect)
 	else
 	{
 		//display.Write(50); 	// kierunek
-		display.Write(motor.position++);
+		if(motor.enable == 1) display.Write(motor.position++);
 		if(motor.f_homing != 1)
 		{
 			if(motor.position == motor.new_position)
@@ -174,7 +174,7 @@ ISR(TIMER0_COMPA_vect)
 				timer2.Disable(3);
 			}
 		}
-			if(motor.position == 100) motor.position = 0;
+			if(motor.position == 64) motor.position = 0;
 	}
 }
 
@@ -189,7 +189,8 @@ ISR(TIMER1_COMPA_vect)
 	else
 	{
 		//display.Write(50); 	// kierunek
-		display.Write(motor.position++);
+		if(motor.enable == 1) display.Write(motor.position++);
+
 		if(motor.f_homing != 1)
 		{
 			if(motor.position == motor.new_position)
@@ -198,6 +199,6 @@ ISR(TIMER1_COMPA_vect)
 				timer2.Disable(3);
 			}
 		}
-		if(motor.position == 100) motor.position = 0;
+		if(motor.position == 64) motor.position = 0;
 	}
 }

@@ -44,6 +44,7 @@ public:
 	uint8_t f_homing;
 	uint16_t position;
 	uint16_t new_position;
+	uint8_t enable;
 	private:
 	Direction _direction;
 	uint8_t _speed;

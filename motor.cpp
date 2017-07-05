@@ -17,6 +17,7 @@ Motor::Motor() : _direction(Forward), _speed(0)
 	state = Acc;
 	v = 0;
 	f_homing = 0;
+	enable = 0;
 }
 
 void Motor::SetDirection(Direction dir)
@@ -59,6 +60,7 @@ void Motor::Homing()
 	Enable(Forward, 0);
 	timer2.Assign(3, 250, MotorTesting); 	// 500 ms
 	motor.f_homing = 1;
+	motor.enable = 1;
 }
 
 void Motor::Run(uint16_t pos)
@@ -66,6 +68,7 @@ void Motor::Run(uint16_t pos)
 	motor.new_position = pos;
 	Enable(Forward, 0);
 	timer2.Assign(3, 250, MotorTesting);
+	motor.enable = 1;
 }
 
 ISR(INT2_vect)
@@ -75,5 +78,6 @@ ISR(INT2_vect)
 		motor.f_homing = 0;
 		motor.Disable();
 		motor.position = 0;		// set encoder zero
+		motor.enable = 0;
 	}
 }
