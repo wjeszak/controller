@@ -79,6 +79,52 @@ void Motor::EV_Homing(MotorData* pdata)
 	};
 	Event(Transitions[current_state], pdata);
 }
+void Motor::EV_PhaseA(MotorData* pdata)
+{
+	if(PINB & (1 << PB1))
+	{
+	//display.Write(25);
+	//display.Write(counter--);
+	//if((counter < 0) || (counter > 9999)) counter = 0;
+	// left
+	}
+	else
+	{
+	// right
+	//display.Write(50); 	// kierunek
+		display.Write(motor.position++);
+	//if(motor.f_homing != 1)
+	//{
+	//	if(motor.position == motor.new_position)
+	//	{
+	//		motor.Disable();
+	//		timer2.Disable(3);
+	//	}
+	//}
+	}
+	if(motor.position == ENCODER_ROWS) motor.position = 0;
+}
+
+void Motor::EV_PhaseB(MotorData* pdata)
+{
+	if(PINB & (1 << PB0))
+	{
+		//display.Write(counter--);
+		//if((counter < 0) || (counter > 9999)) counter = 0;
+	}
+	else
+	{
+		//display.Write(50); 	// kierunek
+		display.Write(motor.position++);
+		if(motor.position == ENCODER_ROWS) motor.position = 0;
+	}
+}
+
+void Motor::EV_PhaseZ(MotorData* pdata)
+{
+	Disable();
+}
+
 void Motor::ST_Idle(MotorData* pdata)
 {
 	display.Write(15);
@@ -107,5 +153,5 @@ void Motor::RunToPosition(uint16_t pos)
 
 ISR(INT2_vect)
 {
-	motor.Disable();
+	motor.EV_PhaseZ(NULL);
 }

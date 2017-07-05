@@ -25,6 +25,7 @@
 #define MOTOR_BRAKE_ON 		MOTOR_PORT |= (1 << MOTOR_BRAKE_PIN)
 #define MOTOR_BRAKE_OFF 	MOTOR_PORT &= ~(1 << MOTOR_BRAKE_PIN)
 
+#define ENCODER_ROWS 		64
 enum Direction {Forward, Backward};
 
 class MotorData : public EventData
@@ -36,13 +37,15 @@ class Motor : public Machine
 {
 public:
 	Motor();
-	//void EV_Start(MotorData* pdata);
 	void Disable();
 	void IrqInit();
 	void SetDirection(Direction dir);
 	void SetSpeed(uint8_t speed);
 	Direction GetDirection();
 	void EV_Homing(MotorData* pdata = NULL);
+	void EV_PhaseA(MotorData* pdata = NULL);
+	void EV_PhaseB(MotorData* pdata = NULL);
+	void EV_PhaseZ(MotorData* pdata = NULL);
 	void RunToPosition(uint16_t pos);
 	uint8_t actual_speed;
 	uint8_t desired_speed;

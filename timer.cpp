@@ -113,54 +113,13 @@ ISR(TIMER2_COMPB_vect)
 		}
 	}
 }
-/*
+
 ISR(TIMER0_COMPA_vect)
 {
-	timer0.cnt++;
-	if(PINB & (1 << PB1))
-	{
-		//display.Write(25);
-		//display.Write(counter--);
-		//if((counter < 0) || (counter > 9999)) counter = 0;
-	}
-	else
-	{
-		//display.Write(50); 	// kierunek
-		if(motor.enable == 1) display.Write(motor.position++);
-		if(motor.f_homing != 1)
-		{
-			if(motor.position == motor.new_position)
-			{
-				motor.Disable();
-				timer2.Disable(3);
-			}
-		}
-			if(motor.position == 64) motor.position = 0;
-	}
+	motor.EV_PhaseA(NULL);
 }
 
 ISR(TIMER1_COMPA_vect)
 {
-	timer1.cnt++;
-	if(PINB & (1 << PB0))
-	{
-		//display.Write(counter--);
-		//if((counter < 0) || (counter > 9999)) counter = 0;
-	}
-	else
-	{
-		//display.Write(50); 	// kierunek
-		if(motor.enable == 1) display.Write(motor.position++);
-
-		if(motor.f_homing != 1)
-		{
-			if(motor.position == motor.new_position)
-			{
-				motor.Disable();
-				timer2.Disable(3);
-			}
-		}
-		if(motor.position == 64) motor.position = 0;
-	}
+	motor.EV_PhaseB(NULL);
 }
-*/
