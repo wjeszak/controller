@@ -29,6 +29,7 @@ Lockerbox lockerbox;
 Dynabox dynabox;
 Eeprom eprom;
 Motor motor;
+MotorData motor_data;
 Timer0 timer0;
 Timer1 timer1;
 Timer2 timer2(T2_PS_64, 17);

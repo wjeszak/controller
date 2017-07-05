@@ -27,13 +27,16 @@ Motor::Motor() : Machine(ST_MAX_STATES)
 {
 	MOTOR_INIT;
 	//TCCR2A |= (1 << WGM21) | (1 << WGM20) | T2_PS_1; //  Mode 3, inverting
+	home_ok = 0;
+//	position = 0;
+//	actual_speed = 0;
 }
 
 void Motor::IrqInit()
 {
 	DDRB &= ~(1 << PB2);
-	PORTB |= (1 << PB2);
-	EICRA |= (1 << ISC21); 		// opadajace
+//	PORTB |= (1 << PB2);
+	EICRA |= (1 << ISC21) | (1 << ISC20); 		// wznoszace
 	EIMSK |= (1 << INT2);
 }
 
@@ -89,6 +92,7 @@ void Motor::EV_PhaseA(MotorData* pdata)
 	{
 		// right
 		display.Write(motor.position++);
+		if(motor.position == motor_data.pos) motor.Disable();
 		if(motor.position == ENCODER_ROWS) motor.position = 0;
 	}
 }
@@ -103,14 +107,15 @@ void Motor::EV_PhaseB(MotorData* pdata)
 	{
 		// right
 		display.Write(motor.position++);
+		if(motor.position == motor_data.pos) motor.Disable();
 		if(motor.position == ENCODER_ROWS) motor.position = 0;
 	}
 }
 
 void Motor::EV_PhaseZ(MotorData* pdata)
 {
-	// zeby przerwanie sie nie wywolywalo kilka razy, bo sie bzdury dzieja
-	EIMSK &= ~(1 << INT2);
+	// wylaczyc tutaj przerwanie INT2 ?
+
 	const uint8_t Transitions[] =
 	{
 		ST_NOT_ALLOWED,			// ST_IDLE
@@ -122,7 +127,7 @@ void Motor::EV_PhaseZ(MotorData* pdata)
 
 void Motor::ST_Idle(MotorData* pdata)
 {
-//	display.Write(motor.current_state);
+//	display.Write(75);
 }
 
 void Motor::ST_Acceleration(MotorData* pdata)
@@ -150,9 +155,10 @@ void Motor::ST_Home(MotorData* pdata)
 	TIMSK0 &= ~(1 << OCIE0A);
 	TIMSK1 &= ~(1 << OCIE1A);
 	position = 0;
-	//display.Write(motor.current_state);
+//	display.Write(motor.current_state);
 	display.Write(position);
-	//Event(0, NULL); 	// back to ST_IDLE
+	home_ok = 1;
+	Event(0, NULL);		// back to ST_IDLE
 }
 
 void Motor::ST_Decceleration(MotorData* pdata)
@@ -162,15 +168,20 @@ void Motor::ST_Decceleration(MotorData* pdata)
 
 void Motor::EV_RunToPosition(MotorData* pdata)
 {
-	SetDirection(Forward);
-	SetSpeed(50);		// percent
-	const uint8_t Transitions[] =
+	if(home_ok)
 	{
-		ST_ACCELERATION,			// ST_IDLE
-		ST_NOT_ALLOWED, 			// ST_ACCELERATION
-		ST_NOT_ALLOWED				// ST_RUNNING
-	};
-	Event(Transitions[current_state], pdata);
+		TIMSK0 |= (1 << OCIE0A);
+		TIMSK1 |= (1 << OCIE1A);
+		SetDirection(Forward);
+		SetSpeed(50);		// percent
+		const uint8_t Transitions[] =
+		{
+			ST_ACCELERATION,			// ST_IDLE
+			ST_NOT_ALLOWED, 			// ST_ACCELERATION
+			ST_NOT_ALLOWED				// ST_RUNNING
+		};
+		Event(Transitions[current_state], pdata);
+	}
 }
 
 ISR(INT2_vect)

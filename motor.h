@@ -31,6 +31,7 @@ enum Direction {Forward, Backward};
 class MotorData : public EventData
 {
 public:
+	uint16_t pos;
 };
 
 class Motor : public Machine
@@ -47,6 +48,7 @@ public:
 	void EV_PhaseB(MotorData* pdata = NULL);
 	void EV_PhaseZ(MotorData* pdata = NULL);
 	void EV_RunToPosition(MotorData* pdata);
+	uint8_t home_ok;
 	uint8_t actual_speed;
 	uint8_t desired_speed;
 	uint16_t position;
@@ -75,5 +77,6 @@ public:
 };
 
 extern Motor motor;
+extern MotorData motor_data;
 
 #endif /* MOTOR_H_ */

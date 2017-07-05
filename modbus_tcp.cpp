@@ -138,7 +138,12 @@ uint8_t ModbusTCP::WriteMultipleRegisters(uint8_t* frame)
 
 		//if(MultipleRegisters[0] > 0) m->StartupTest();
 		if(MultipleRegisters[0] > 0) motor.EV_Homing();		// homing
-		//if(MultipleRegisters[1] > 0) motor.RunToPosition(MultipleRegisters[1]);
+
+		if(MultipleRegisters[1] > 0)
+		{
+			motor_data.pos = MultipleRegisters[1];
+			motor.EV_RunToPosition(&motor_data);
+		}
 		//if(MultipleRegisters[1] > 0) //timer.Assign(2, 500, ModbusPoll);
 		//if(MultipleRegisters[1] == 0) timer.Disable(2);
 	}
