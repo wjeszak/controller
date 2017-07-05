@@ -46,7 +46,7 @@ public:
 	void EV_PhaseA(MotorData* pdata = NULL);
 	void EV_PhaseB(MotorData* pdata = NULL);
 	void EV_PhaseZ(MotorData* pdata = NULL);
-	void RunToPosition(uint16_t pos);
+	void EV_RunToPosition(MotorData* pdata);
 	uint8_t actual_speed;
 	uint8_t desired_speed;
 	uint16_t position;
@@ -56,7 +56,9 @@ public:
 	void ST_Idle(MotorData* pdata);
 	void ST_Acceleration(MotorData* pdata);
 	void ST_Running(MotorData* pdata);
-	enum States {ST_IDLE = 0, ST_ACCELERATION, ST_RUNNING, ST_HOMING, ST_DECCELERATION, ST_POSITION_ACHIEVED, ST_MAX_STATES};
+	void ST_Home(MotorData* pdata);
+	void ST_Decceleration(MotorData* pdata);
+	enum States {ST_IDLE = 0, ST_ACCELERATION, ST_RUNNING, ST_HOME, ST_DECCELERATION, ST_POSITION_ACHIEVED, ST_MAX_STATES};
 	const StateStruct* GetStateMap()
 	{
 		// to jest sprytne bo StateMap jest tworzone nie na stosie dzieki temu mozna zwrocic adres
@@ -65,8 +67,8 @@ public:
 			{reinterpret_cast<StateFunc>(&Motor::ST_Idle)},
 			{reinterpret_cast<StateFunc>(&Motor::ST_Acceleration)},
 			{reinterpret_cast<StateFunc>(&Motor::ST_Running)},
-			//{reinterpret_cast<StateFunc>(&Motor::ST_Decceleration)},
-			//{reinterpret_cast<StateFunc>(&Motor::ST_PositionAchieved)}
+			{reinterpret_cast<StateFunc>(&Motor::ST_Home)},
+			{reinterpret_cast<StateFunc>(&Motor::ST_Decceleration)}
 		};
 		return &StateMap[0];
 	}

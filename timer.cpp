@@ -80,7 +80,7 @@ Timer0::Timer0()
 	TCCR0A |= (1 << WGM01);
 	TCCR0B |= (1 << CS02) | (1 << CS01);  //zrod³o zewnêtrzne - zbocze opadaj¹ce
 	TCNT0 = 0;
-	TIMSK0 |= (1<<OCIE0A);
+	TIMSK0 |= (1 << OCIE0A);
 	OCR0A = 1;
 }
 

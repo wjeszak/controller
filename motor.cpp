@@ -14,9 +14,8 @@
 // call from timer :/
 void MotorAccelerate()
 {
-	//motor.actual_speed++; //= motor.actual_speed + 1;
 	OCR2A = motor.actual_speed++;
-	display.Write(motor.actual_speed);
+//	display.Write(motor.actual_speed);
 	if(motor.actual_speed == motor.desired_speed)
 	{
 		timer2.Disable(3);
@@ -34,8 +33,8 @@ void Motor::IrqInit()
 {
 	DDRB &= ~(1 << PB2);
 	PORTB |= (1 << PB2);
-	EICRA = (1 << ISC21); 		// opadajace
-	EIMSK = (1 << INT2);
+	EICRA |= (1 << ISC21); 		// opadajace
+	EIMSK |= (1 << INT2);
 }
 
 void Motor::SetDirection(Direction dir)
@@ -79,42 +78,30 @@ void Motor::EV_Homing(MotorData* pdata)
 	};
 	Event(Transitions[current_state], pdata);
 }
+
 void Motor::EV_PhaseA(MotorData* pdata)
 {
 	if(PINB & (1 << PB1))
 	{
-	//display.Write(25);
-	//display.Write(counter--);
-	//if((counter < 0) || (counter > 9999)) counter = 0;
-	// left
+		// left
 	}
 	else
 	{
-	// right
-	//display.Write(50); 	// kierunek
+		// right
 		display.Write(motor.position++);
-	//if(motor.f_homing != 1)
-	//{
-	//	if(motor.position == motor.new_position)
-	//	{
-	//		motor.Disable();
-	//		timer2.Disable(3);
-	//	}
-	//}
+		if(motor.position == ENCODER_ROWS) motor.position = 0;
 	}
-	if(motor.position == ENCODER_ROWS) motor.position = 0;
 }
 
 void Motor::EV_PhaseB(MotorData* pdata)
 {
 	if(PINB & (1 << PB0))
 	{
-		//display.Write(counter--);
-		//if((counter < 0) || (counter > 9999)) counter = 0;
+		// left
 	}
 	else
 	{
-		//display.Write(50); 	// kierunek
+		// right
 		display.Write(motor.position++);
 		if(motor.position == ENCODER_ROWS) motor.position = 0;
 	}
@@ -122,34 +109,69 @@ void Motor::EV_PhaseB(MotorData* pdata)
 
 void Motor::EV_PhaseZ(MotorData* pdata)
 {
-	Disable();
+	// zeby przerwanie sie nie wywolywalo kilka razy, bo sie bzdury dzieja
+	EIMSK &= ~(1 << INT2);
+	const uint8_t Transitions[] =
+	{
+		ST_NOT_ALLOWED,			// ST_IDLE
+		ST_HOME, 				// ST_ACCELERATION
+		ST_HOME					// ST_RUNNING
+	};
+	Event(Transitions[current_state], pdata);
 }
 
 void Motor::ST_Idle(MotorData* pdata)
 {
-	display.Write(15);
+//	display.Write(motor.current_state);
 }
 
 void Motor::ST_Acceleration(MotorData* pdata)
 {
-	motor.actual_speed = 0;
+	actual_speed = 0;
 	MOTOR_ENABLE;
-	timer2.Assign(3, 100, MotorAccelerate); 	//
+	timer2.Assign(3, 100, MotorAccelerate);
 //	display.Write(motor.current_state);
 }
 
 void Motor::ST_Running(MotorData* pdata)
 {
-	display.Write(motor.current_state);
+//	display.Write(motor.current_state);
 }
 
-void Motor::RunToPosition(uint16_t pos)
+void Motor::ST_Home(MotorData* pdata)
 {
-	motor.desired_position = pos;
-	//Start(Forward, 0);
-	timer2.Assign(3, 250, MotorAccelerate);
+	timer2.Disable(3); // w przypadku gdyby sie rozpedzal
+	Disable();
+	// nie zliczaj impulsow bezwladnosciowych
+	// tutaj mozna zrobic offset do ew. cofniecia (nie wylaczajac przerwan), np.
+	// Disable();
+	// 	position = 0;
+	// offset = position (poniewaz przerwania pracuja)
+	TIMSK0 &= ~(1 << OCIE0A);
+	TIMSK1 &= ~(1 << OCIE1A);
+	position = 0;
+	//display.Write(motor.current_state);
+	display.Write(position);
+	//Event(0, NULL); 	// back to ST_IDLE
 }
 
+void Motor::ST_Decceleration(MotorData* pdata)
+{
+
+}
+
+void Motor::EV_RunToPosition(MotorData* pdata)
+{
+	SetDirection(Forward);
+	SetSpeed(50);		// percent
+	const uint8_t Transitions[] =
+	{
+		ST_ACCELERATION,			// ST_IDLE
+		ST_NOT_ALLOWED, 			// ST_ACCELERATION
+		ST_NOT_ALLOWED				// ST_RUNNING
+	};
+	Event(Transitions[current_state], pdata);
+}
 
 ISR(INT2_vect)
 {
