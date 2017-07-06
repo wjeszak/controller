@@ -77,6 +77,7 @@ void EncoderStatus()
 Timer0::Timer0()
 {
 	DDRB &= ~(1 << PB0);
+	PORTB |= (1 << PB0);
 	TCCR0A |= (1 << WGM01);
 	TCCR0B |= (1 << CS02) | (1 << CS01);  //zrod³o zewnêtrzne - zbocze opadaj¹ce
 	TCNT0 = 0;
@@ -87,6 +88,7 @@ Timer0::Timer0()
 Timer1::Timer1()
 {
 	DDRB &= ~(1 << PB1);
+	PORTB |= (1 << PB1);
 	TCCR1B |= (1 << WGM12);
 	TCCR1B |= (1<< CS12) | (1<< CS11) | (1 << CS10);  //zrod³o zewnêtrzne - zbocze narastajace
 	TCNT1 = 0;

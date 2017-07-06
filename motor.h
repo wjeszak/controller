@@ -25,7 +25,7 @@
 #define MOTOR_BRAKE_ON 		MOTOR_PORT |= (1 << MOTOR_BRAKE_PIN)
 #define MOTOR_BRAKE_OFF 	MOTOR_PORT &= ~(1 << MOTOR_BRAKE_PIN)
 
-#define ENCODER_ROWS 		64
+#define ENCODER_ROWS 		3600
 enum Direction {Forward, Backward};
 
 class MotorData : public EventData

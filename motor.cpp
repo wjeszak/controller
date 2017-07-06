@@ -70,7 +70,7 @@ void Motor::SetSpeed(uint8_t speed)
 void Motor::EV_Homing(MotorData* pdata)
 {
 	SetDirection(Forward);
-	SetSpeed(50);		// percent
+	SetSpeed(80);		// percent
 	IrqInit();
 	const uint8_t Transitions[] =
 	{
@@ -87,6 +87,15 @@ void Motor::EV_PhaseA(MotorData* pdata)
 	if(PINB & (1 << PB1))
 	{
 		// left
+/*		display.Write(motor.position--);
+		if(motor.position == motor_data.pos)
+		{
+			motor.Disable();
+			timer2.Disable(3);
+			Event(5, NULL);
+		}
+		if((motor.position > ENCODER_ROWS) || (motor.position < 0)) motor.position = 0;
+*/
 	}
 	else
 	{
@@ -106,7 +115,15 @@ void Motor::EV_PhaseB(MotorData* pdata)
 {
 	if(PINB & (1 << PB0))
 	{
-		// left
+/*		display.Write(motor.position--);
+		if(motor.position == motor_data.pos)
+		{
+			motor.Disable();
+			timer2.Disable(3);
+			Event(5, NULL);
+		}
+		if((motor.position > ENCODER_ROWS) || (motor.position < 0)) motor.position = 0;
+*/
 	}
 	else
 	{
@@ -188,7 +205,7 @@ void Motor::EV_RunToPosition(MotorData* pdata)
 		TIMSK0 |= (1 << OCIE0A);
 		TIMSK1 |= (1 << OCIE1A);
 		SetDirection(Forward);
-		SetSpeed(50);		// percent
+		SetSpeed(30);		// percent
 		const uint8_t Transitions[] =
 		{
 			ST_ACCELERATION,			// ST_IDLE
