@@ -70,15 +70,15 @@ void Usart::SendFrame(UsartData* pdata)
 	RxDisable();
 	uint8_t tmp_tx_head;
 	uint8_t *w = pdata->frame;
-	uint8_t len = pdata->len;
+	//uint8_t len = pdata->len;
 
-	while(len)
+	while(pdata->len)
 	{
 		tmp_tx_head = (tx_head  + 1) & UART_BUF_MASK;
 		while(tmp_tx_head == tx_tail) {}
 		tx_buf[tmp_tx_head] = *w++;
 		tx_head = tmp_tx_head;
-		len--;
+		pdata->len--;
 	}
 	TxEnable();
 }
@@ -127,21 +127,23 @@ void Usart::ST_ByteReceived(UsartData* pdata)
 	{
 		rx_head = tmp_head;
 		rx_buf[tmp_head] = pdata->c;
+		pdata->len++;
 	}
 	timer.Enable(TIMER_MODBUS_RTU_35T);
 }
 
 void Usart::ST_FrameReceived(UsartData* pdata)
 {
-	pdata->len = 7;
+	//pdata->len = 7;
 	uint8_t i = 0;
 	while(rx_tail != rx_head)
 	{
 		rx_tail = (rx_tail + 1) & UART_BUF_MASK;
-		usart_data.frame[i] = rx_buf[rx_tail];
+		pdata->frame[i] = rx_buf[rx_tail];
 		i++;
 	}
 	modbus_rtu.ParseFrame(pdata->frame, pdata->len);
+	pdata->len = 0;
 	timer.Disable(TIMER_MODBUS_RTU_35T);
 }
 
