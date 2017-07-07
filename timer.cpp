@@ -88,7 +88,7 @@ void ModbusRTU35T()
 // 2
 void ModbusPoll()
 {
-	modbus_rtu.Poll();
+	modbus_rtu.PollDoors();
 }
 
 void EncoderStatus()

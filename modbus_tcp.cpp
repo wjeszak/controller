@@ -77,7 +77,7 @@ uint8_t ModbusTCP::WriteMultipleRegisters(uint8_t* frame)
 	uint8_t error_code = 0;
 
 	if((quantity > 123) || (quantity < 1)) error_code = 3;
-	if((starting_address + quantity - ADDR_OFFSET_WRITE_MULTIPLE_REG) > NUMBER_OF_WRITE_MULTIPLE_REG_TCP) error_code = 2;
+	if((starting_address + quantity - ADDR_OFFSET_WRITE_MULTIPLE_REG) > NUMBER_OF_MULTIPLE_REG_TCP) error_code = 2;
 	if(starting_address < ADDR_OFFSET_WRITE_MULTIPLE_REG) error_code = 2;
 
 	if(error_code)
@@ -113,7 +113,7 @@ uint8_t ModbusTCP::WriteMultipleRegisters(uint8_t* frame)
 		frame[QUANTITY_H] = (quantity >> 8);
 		frame[QUANTITY_L] = (quantity & 0xFF);
 		stack_data.len = 12;
-		for(uint8_t i = 2; i < NUMBER_OF_WRITE_MULTIPLE_REG_TCP; i ++)
+		for(uint8_t i = 2; i < NUMBER_OF_MULTIPLE_REG_TCP; i ++)
 		{
 			if(MultipleRegisters[i] != 0)
 			{
@@ -168,4 +168,8 @@ void ModbusTCP::PrepareFrame(uint8_t* frame)
 	}
 	stack_data.len = MBAP_FUNCTION_CODE_BYTE_COUNT_LEN + (quantity * 2);
 }
+void ModbusTCP::UpdateMultiple(uint8_t address, uint16_t value)
+{
+	HoldingRegisters[address] = value;
 
+}

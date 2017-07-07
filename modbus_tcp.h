@@ -39,7 +39,19 @@
 #define NUMBER_OF_HOLDING_REG_TCP		 		49
 
 #define ADDR_OFFSET_WRITE_MULTIPLE_REG 			150
-#define NUMBER_OF_WRITE_MULTIPLE_REG_TCP		37
+#define NUMBER_OF_MULTIPLE_REG_TCP				37
+
+#define HOLDING_ORDER_STATUS 					0
+#define HOLDING_GENERAL_ERROR_STATUS 			1
+#define HOLDING_ACTUAL_SPEED 					44
+#define HOLDING_TYPE_OF_MACHINE 				45
+#define HOLDING_SERIAL_NUMBER 					46
+#define HOLDING_IO_INFORMATIONS					47
+#define HOLDING_ENCODER_CURRENT_VALUE_HI 		48
+#define HOLDING_ENCODER_CURRENT_VALUE_LO 		49
+
+#define MULTIPLE_FIRST_DOOR_NUMBER 				0
+#define MULTIPLE_LOCATIONS_NUMBER 				1
 
 class ModbusTCP
 {
@@ -50,9 +62,10 @@ public:
 	uint8_t ReadHoldingRegisters(uint8_t* frame);
 	uint8_t WriteMultipleRegisters(uint8_t* frame);
 	void PrepareFrame(uint8_t* frame);
-	uint16_t HoldingRegisters[NUMBER_OF_HOLDING_REG_TCP];
+	void UpdateMultiple(uint8_t address, uint16_t value);
 private:
-	uint16_t MultipleRegisters[NUMBER_OF_WRITE_MULTIPLE_REG_TCP];
+	uint16_t HoldingRegisters[NUMBER_OF_HOLDING_REG_TCP];
+	uint16_t MultipleRegisters[NUMBER_OF_MULTIPLE_REG_TCP];
 	uint16_t trans_id;
 	uint16_t prot_id;
 	uint8_t unit_id;
