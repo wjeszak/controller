@@ -31,7 +31,7 @@ Motor motor;
 MotorData motor_data;
 Timer0 timer0;
 Timer1 timer1;
-Timer timer(T2_PS_64, 17);
+Timer timer(T2_PS_1);
 Display display;
 Stack stack;
 StackData stack_data;

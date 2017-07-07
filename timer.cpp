@@ -15,9 +15,7 @@
 #include "motor.h"
 #include "encoder.h"
 
-volatile TimerHandler timer_handlers[8];
-
-Timer::Timer(T2Prescallers prescaller, uint8_t tick)
+Timer::Timer(T2Prescallers prescaller)
 {
 	for(uint8_t n = 0; n < 8; n++)
 	{
@@ -28,8 +26,27 @@ Timer::Timer(T2Prescallers prescaller, uint8_t tick)
 	}
 	TCCR2A |= (1 << WGM21) | (1 << WGM20);
 	TCCR2B |= prescaller;
-	OCR2B = tick; 					// :		F_CPU / preskaler / 200 Hz = OCR
+	OCR2B = 255;
 	TIMSK2 |= (1 << OCIE2B);
+}
+
+void Timer::Irq()
+{
+	for(uint8_t n = 0; n < 8; n++)
+	{
+		if ((timer_handlers[n].active) && (timer_handlers[n].fp != NULL))
+		{
+			if ((timer_handlers[n].counter == timer_handlers[n].interval))
+			{
+				timer_handlers[n].counter = 0;
+				timer_handlers[n].fp();
+			}
+			else
+			{
+				timer_handlers[n].counter++;
+			}
+		}
+	}
 }
 
 void Timer::Assign(uint8_t handler_id, uint64_t interval, void(*fp)())
@@ -97,21 +114,7 @@ Timer1::Timer1()
 
 ISR(TIMER2_COMPB_vect)
 {
-	for(uint8_t n = 0; n < 8; n++)
-	{
-		if ((timer_handlers[n].active) && (timer_handlers[n].fp != NULL))
-		{
-			if ((timer_handlers[n].counter == timer_handlers[n].interval))
-			{
-				timer_handlers[n].counter = 0;
-				timer_handlers[n].fp();
-			}
-			else
-			{
-				timer_handlers[n].counter++;
-			}
-		}
-	}
+	timer.Irq();
 }
 
 ISR(TIMER0_COMPA_vect)

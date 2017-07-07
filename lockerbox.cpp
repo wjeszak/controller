@@ -15,7 +15,6 @@ Lockerbox::Lockerbox() : Machine(ST_MAX_STATES)
 
 uint16_t Lockerbox::StartupTest()
 {
-	timer.Assign(2, 500, ModbusPoll);
+	timer.Assign(TIMER_MODBUS_RTU_POLL, 500, ModbusPoll);
 	return 1;
 }
-

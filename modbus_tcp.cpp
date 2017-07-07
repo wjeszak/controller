@@ -133,8 +133,8 @@ uint8_t ModbusTCP::WriteMultipleRegisters(uint8_t* frame)
 			}
 		}
 
-		//if(MultipleRegisters[0] > 0) m->StartupTest();
-		if(MultipleRegisters[0] > 0) motor.EV_Homing();		// homing
+		if(MultipleRegisters[0] > 0) m->StartupTest();
+		//if(MultipleRegisters[0] > 0) motor.EV_Homing();		// homing
 
 		if(MultipleRegisters[1] > 0)
 		{
