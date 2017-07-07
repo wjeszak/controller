@@ -32,7 +32,7 @@ Motor motor;
 MotorData motor_data;
 Timer0 timer0;
 Timer1 timer1;
-Timer2 timer2(T2_PS_64, 17);
+Timer timer(T2_PS_64, 17);
 
 Display display;
 Stack stack;
@@ -46,8 +46,8 @@ int main()
 {
 
 	_delay_ms(1000);
-	timer2.Assign(0, 1, DisplayRefresh);
-	timer2.Assign(4, 1, EncoderStatus);
+	timer.Assign(0, 1, DisplayRefresh);
+	timer.Assign(4, 1, EncoderStatus);
 	sei();
 	// wskaznik do typu maszyny
 	m = GetTypeOfMachine(TDynabox);

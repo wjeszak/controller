@@ -18,7 +18,7 @@ void MotorAccelerate()
 //	display.Write(motor.actual_speed);
 	if(motor.actual_speed == motor.desired_speed)
 	{
-		timer2.Disable(3);
+		timer.Disable(3);
 		motor.Event(2, NULL);
 	}
 }
@@ -104,7 +104,7 @@ void Motor::EV_PhaseA(MotorData* pdata)
 		if(motor.position == motor_data.pos)
 		{
 			motor.Disable();
-			timer2.Disable(3);
+			timer.Disable(3);
 			Event(5, NULL);
 		}
 		if(motor.position == ENCODER_ROWS) motor.position = 0;
@@ -132,7 +132,7 @@ void Motor::EV_PhaseB(MotorData* pdata)
 		if(motor.position == motor_data.pos)
 		{
 			motor.Disable();
-			timer2.Disable(3);
+			timer.Disable(3);
 			Event(5, NULL);
 		}
 		if(motor.position == ENCODER_ROWS) motor.position = 0;
@@ -161,7 +161,7 @@ void Motor::ST_Acceleration(MotorData* pdata)
 {
 	actual_speed = 0;
 	MOTOR_ENABLE;
-	timer2.Assign(3, 10, MotorAccelerate);
+	timer.Assign(3, 10, MotorAccelerate);
 //	display.Write(motor.current_state);
 }
 
@@ -172,7 +172,7 @@ void Motor::ST_Running(MotorData* pdata)
 
 void Motor::ST_Home(MotorData* pdata)
 {
-	timer2.Disable(3); // w przypadku gdyby sie rozpedzal
+	timer.Disable(3); // w przypadku gdyby sie rozpedzal
 	Disable();
 	// nie zliczaj impulsow bezwladnosciowych
 	// tutaj mozna zrobic offset do ew. cofniecia (nie wylaczajac przerwan), np.

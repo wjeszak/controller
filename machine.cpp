@@ -6,7 +6,6 @@
  */
 
 #include "machine.h"
-#include "usart.h"
 
 Machine::Machine(uint8_t max_states) : current_state(0), _max_states(max_states), _event_generated(false)
 {
@@ -30,8 +29,8 @@ void Machine::Event(uint16_t new_state, EventData *pdata)
 		ChangeState(new_state);
 		while(_event_generated)
 		{
-			// run state function
 			const StateStruct* pStateMap = GetStateMap();
+			// run state function
 			(this->*pStateMap[current_state].pStateFunc)(pdata);
 			_event_generated = false;
 		}

@@ -1,5 +1,5 @@
 /*
- * timery.cpp
+ * timer.cpp
  *
  *  Created on: 15 cze 2017
  *      Author: tomek
@@ -7,7 +7,7 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include <stdio.h>			// NULL
+#include <stdio.h>
 #include "timer.h"
 #include "display.h"
 #include "usart.h"
@@ -15,42 +15,40 @@
 #include "motor.h"
 #include "encoder.h"
 
-volatile TimerHandler STHandlers[8];
+volatile TimerHandler timer_handlers[8];
 
-// obsluga timera 2, najbardziej rozbudowanego
-
-Timer2::Timer2(T2Prescallers Prescaller, uint8_t Tick)
+Timer::Timer(T2Prescallers prescaller, uint8_t tick)
 {
 	for(uint8_t n = 0; n < 8; n++)
 	{
-		STHandlers[n].Active = false;
-		STHandlers[n].Counter = 0;
-		STHandlers[n].Interval = 0;
-		STHandlers[n].fp = NULL;
+		timer_handlers[n].active = false;
+		timer_handlers[n].counter = 0;
+		timer_handlers[n].interval = 0;
+		timer_handlers[n].fp = NULL;
 	}
 	TCCR2A |= (1 << WGM21) | (1 << WGM20);
-	TCCR2B |= Prescaller;
-	OCR2B = Tick; 					// :		F_CPU / preskaler / 200 Hz = OCR
+	TCCR2B |= prescaller;
+	OCR2B = tick; 					// :		F_CPU / preskaler / 200 Hz = OCR
 	TIMSK2 |= (1 << OCIE2B);
 }
 
-void Timer2::Assign(uint8_t HandlerNumber, uint64_t Interval, void(*fp)())
+void Timer::Assign(uint8_t handler_id, uint64_t interval, void(*fp)())
 {
-	STHandlers [HandlerNumber].Interval = Interval;
-	STHandlers [HandlerNumber].Counter = 0;
-	STHandlers [HandlerNumber].Active = true;
-	STHandlers [HandlerNumber].fp = fp;
+	timer_handlers[handler_id].interval = interval;
+	timer_handlers[handler_id].counter = 0;
+	timer_handlers[handler_id].active = true;
+	timer_handlers[handler_id].fp = fp;
 }
 
-void Timer2::Enable(uint8_t HandlerNumber)
+void Timer::Enable(uint8_t handler_id)
 {
-	STHandlers [HandlerNumber].Active = true;
-	STHandlers [HandlerNumber].Counter = 0;
+	timer_handlers[handler_id].active = true;
+	timer_handlers[handler_id].counter = 0;
 }
 
-void Timer2::Disable(uint8_t HandlerNumber)
+void Timer::Disable(uint8_t handler_id)
 {
-	STHandlers [HandlerNumber].Active = false;
+	timer_handlers[handler_id].active = false;
 }
 // 0
 void DisplayRefresh()
@@ -101,16 +99,16 @@ ISR(TIMER2_COMPB_vect)
 {
 	for(uint8_t n = 0; n < 8; n++)
 	{
-		if ((STHandlers[n].Active) && (STHandlers[n].fp != NULL))
+		if ((timer_handlers[n].active) && (timer_handlers[n].fp != NULL))
 		{
-			if ((STHandlers[n].Counter == STHandlers[n].Interval))
+			if ((timer_handlers[n].counter == timer_handlers[n].interval))
 			{
-				STHandlers[n].Counter = 0;
-				STHandlers [n].fp();
+				timer_handlers[n].counter = 0;
+				timer_handlers[n].fp();
 			}
 			else
 			{
-				STHandlers[n].Counter++;
+				timer_handlers[n].counter++;
 			}
 		}
 	}

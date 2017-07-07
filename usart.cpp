@@ -7,14 +7,7 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include <stdarg.h>
-#include <stdlib.h>
-#include <string.h>
-#include "machine_type.h"
 #include "usart.h"
-#include "motor.h"
-#include "machine.h"
-#include "display.h"
 #include "timer.h"
 #include "modbus_rtu.h"
 
@@ -24,7 +17,7 @@ Usart::Usart(uint16_t baud) : Machine(ST_MAX_STATES)
 	UBRR0H = (uint8_t)(ubrr >> 8);
 	UBRR0L = (uint8_t)ubrr;
 
-	UCSR0B |= (1 << RXEN0) | (1 << TXEN0) | (1 << TXCIE0);
+	UCSR0B |= (1 << RXEN0) | (1 << RXCIE0) | (1 << TXEN0) | (1 << TXCIE0);
 	UCSR0C |= (1 << UCSZ01) | (1 << UCSZ00);
 
 	USART_DE_INIT;
@@ -32,8 +25,7 @@ Usart::Usart(uint16_t baud) : Machine(ST_MAX_STATES)
 	rx_tail = 0;
 	tx_head = 0;
 	tx_tail = 0;
-	RxEnable();
-	timer2.Assign(1, 2, ModbusRTU35T);
+	timer.Assign(1, 2, ModbusRTU35T);
 }
 
 void Usart::RxEnable()
@@ -58,29 +50,29 @@ void Usart::TxDisable()
 	UCSR0B &= ~(1 << UDRIE0);
 }
 
-void Usart::ST_Init(UsartData* pdata) {}
+void Usart::ST_Init(UsartData* pdata)
+{
+}
 
 void Usart::ST_Idle(UsartData* pdata)
 {
-//	display.Write(GetState());
-	timer2.Disable(1);
+	timer.Disable(1);
 }
 
 void Usart::ST_ByteReceived(UsartData* pdata)
 {
-//	display.Write(GetState());
 	uint8_t tmp_head;
-	tmp_head = (rx_head + 1) & UART_RX_BUF_MASK;
+	tmp_head = (rx_head + 1) & UART_BUF_MASK;
 	if(tmp_head == rx_tail)
 	{
-		// nadpisanie bufora
+		// buffer overwrite
 	}
 	else
 	{
 		rx_head = tmp_head;
-		buf_rx[tmp_head] = pdata->c;
+		rx_buf[tmp_head] = pdata->c;
 	}
-	timer2.Enable(1);
+	timer.Enable(1);
 }
 
 void Usart::ST_FrameReceived(UsartData* pdata)
@@ -89,16 +81,15 @@ void Usart::ST_FrameReceived(UsartData* pdata)
 	uint8_t i = 0;
 	while(rx_tail != rx_head)
 	{
-		rx_tail = (rx_tail + 1) & UART_RX_BUF_MASK;
-		usart_data.frame[i] = buf_rx[rx_tail];
+		rx_tail = (rx_tail + 1) & UART_BUF_MASK;
+		usart_data.frame[i] = rx_buf[rx_tail];
 		i++;
 	}
-//	display.Write(GetState());
 	modbus_rtu.ParseFrame(usart_data.frame, 7);
-	timer2.Disable(1);
+	timer.Disable(1);
 }
 
-void Usart::CharReceived(UsartData* pdata)
+void Usart::EV_NewByte(UsartData* pdata)
 {
 	const uint8_t Transitions[] =
 	{
@@ -122,12 +113,12 @@ void Usart::RTU35T(UsartData* pdata)
 	Event(Transitions[current_state], pdata);
 }
 
-void Usart::TXBufferEmpty(UsartData* pdata)
+void Usart::EV_TXBufferEmpty(UsartData* pdata)
 {
 	if(tx_head != tx_tail)
 	{
-		tx_tail = (tx_tail + 1) & UART_TX_BUF_MASK;
-		UDR0 = buf_tx[tx_tail];
+		tx_tail = (tx_tail + 1) & UART_BUF_MASK;
+		UDR0 = tx_buf[tx_tail];
 	}
 	else
 	{
@@ -135,7 +126,7 @@ void Usart::TXBufferEmpty(UsartData* pdata)
 	}
 }
 
-void Usart::TXComplete(UsartData* pdata)
+void Usart::EV_TXComplete(UsartData* pdata)
 {
 	RxEnable();
 }
@@ -146,42 +137,30 @@ void Usart::SendFrame(UsartData* pdata)
 	uint8_t tmp_tx_head;
 	uint8_t *w = pdata->frame;
 	uint16_t len = pdata->len;
-//	display.Write(len);
+
 	while(len)
 	{
-		tmp_tx_head = (tx_head  + 1) & UART_TX_BUF_MASK;
+		tmp_tx_head = (tx_head  + 1) & UART_BUF_MASK;
 		while(tmp_tx_head == tx_tail) {}
-		buf_tx[tmp_tx_head] = *w++;
+		tx_buf[tmp_tx_head] = *w++;
 		tx_head = tmp_tx_head;
 		len--;
 	}
-
 	TxEnable();
 }
-
-void Usart::SendInt(UsartData *pdata)
-{
-	char buf[10];
-	itoa(pdata->c, buf, 10);
-	//pdata->frame = buf;
-	SendFrame(pdata);
-}
-
-// --------- Debugowanie
-// http://mckmragowo.pl/mck/pliki/programming/clib/?f=va_start
 
 ISR(USART0_RX_vect)
 {
 	usart_data.c = UDR0;
-	usart.CharReceived(&usart_data);
+	usart.EV_NewByte(&usart_data);
 }
 
 ISR(USART0_UDRE_vect)
 {
-	usart.TXBufferEmpty();
+	usart.EV_TXBufferEmpty();
 }
 
 ISR(USART0_TX_vect)
 {
-	usart.TXComplete();
+	usart.EV_TXComplete();
 }
