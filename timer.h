@@ -4,9 +4,10 @@
  * Created on: 15 cze 2017
  * Author: wjeszak
  *
- * Internal timers & PWM
+ * Main system timer & PWM
  * PWMfreq = F_CPU / preskaler / 256	(DT p. 196)
  * PWMfreq = 9216000 / 1 / 256 = 36 kHz
+ * tick time [ms] = 1 / PWMfreq * main_system_timer * 1000
  */
 
 #ifndef TIMER_H_
@@ -14,6 +15,7 @@
 
 #include <avr/io.h>
 #include "machine.h"
+#define MAIN_TIMER_PRESCALER 			36
 #define NUMBER_OF_TIMERS 				8
 
 #define TIMER_DISPLAY_REFRESH 			0
@@ -57,6 +59,7 @@ private:
 		uint64_t counter;
 	};
 	TimerHandler timer_handlers[NUMBER_OF_TIMERS];
+	uint16_t main_timer_prescaler;
 };
 
 extern void DisplayRefresh();

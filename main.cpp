@@ -44,8 +44,7 @@ Machine *m;
 int main()
 {
 	_delay_ms(1000);
-	timer.Assign(TIMER_DISPLAY_REFRESH, 1, DisplayRefresh);
-	//timer.Assign(4, 1, EncoderStatus);
+	timer.Assign(TIMER_DISPLAY_REFRESH, 4, DisplayRefresh);
 	sei();
 	// wskaznik do typu maszyny
 	m = GetTypeOfMachine(TDynabox);

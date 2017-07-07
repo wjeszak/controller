@@ -26,24 +26,31 @@ Timer::Timer(T2Prescallers prescaller)
 	}
 	TCCR2A |= (1 << WGM21) | (1 << WGM20);
 	TCCR2B |= prescaller;
+	// for main system timer
 	OCR2B = 255;
 	TIMSK2 |= (1 << OCIE2B);
+	main_timer_prescaler = 0;
 }
 
 void Timer::Irq()
 {
-	for(uint8_t n = 0; n < 8; n++)
+	main_timer_prescaler++;
+	if(main_timer_prescaler == MAIN_TIMER_PRESCALER)
 	{
-		if ((timer_handlers[n].active) && (timer_handlers[n].fp != NULL))
+		main_timer_prescaler = 0;
+		for(uint8_t n = 0; n < 8; n++)
 		{
-			if ((timer_handlers[n].counter == timer_handlers[n].interval))
+			if ((timer_handlers[n].active) && (timer_handlers[n].fp != NULL))
 			{
-				timer_handlers[n].counter = 0;
-				timer_handlers[n].fp();
-			}
-			else
-			{
-				timer_handlers[n].counter++;
+				if ((timer_handlers[n].counter == timer_handlers[n].interval))
+				{
+					timer_handlers[n].counter = 0;
+					timer_handlers[n].fp();
+				}
+				else
+				{
+					timer_handlers[n].counter++;
+				}
 			}
 		}
 	}
