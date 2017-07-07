@@ -16,7 +16,7 @@ ModbusRTU::ModbusRTU()
 	slave_addr_max = 10;
 }
 
-void ModbusRTU::PrepareFrameHolding(uint8_t* frame, uint8_t address, uint8_t function)
+void ModbusRTU::PrepareFrameRead(uint8_t* frame, uint8_t address, uint8_t function)
 {
 	frame[MODBUS_RTU_ADDR_ID] = address;
 	frame[MODBUS_RTU_FUNCTION_ID] = MODBUS_RTU_HOLDING_FUNCTION;
@@ -26,7 +26,7 @@ void ModbusRTU::PrepareFrameHolding(uint8_t* frame, uint8_t address, uint8_t fun
 	frame[MODBUS_RTU_REQ_HOLDING_QUANTITY_LO] = 1;
 }
 
-void ModbusRTU::PrepareFrameSingle(uint8_t* frame, uint8_t address, uint8_t function, uint16_t value)
+void ModbusRTU::PrepareFrameWrite(uint8_t* frame, uint8_t address, uint8_t function, uint16_t value)
 {
 	frame[MODBUS_RTU_ADDR_ID] = address;
 	frame[MODBUS_RTU_FUNCTION_ID] = MODBUS_RTU_SINGLE_FUNCTION;
@@ -45,7 +45,7 @@ void ModbusRTU::PrepareFrameCRC(uint8_t* frame)
 
 void ModbusRTU::PollDoors()
 {
-	PrepareFrameHolding(usart_data.frame, slave_addr, MODBUS_RTU_HOLDING_FUNCTION);
+	PrepareFrameRead(usart_data.frame, slave_addr, MODBUS_RTU_HOLDING_FUNCTION);
 	PrepareFrameCRC(usart_data.frame);
 	usart_data.len = MODBUS_RTU_REQ_LEN;
 	usart.SendFrame(&usart_data);
@@ -63,7 +63,7 @@ void ModbusRTU::ParseFrame(uint8_t* frame, uint8_t len)
 		switch(frame[MODBUS_RTU_FUNCTION_ID])
 		{
 		case MODBUS_RTU_HOLDING_FUNCTION:
-			ReadHolding(frame);
+			ParseFrameRead(frame);
 		break;
 		default:
 		break;
@@ -71,42 +71,20 @@ void ModbusRTU::ParseFrame(uint8_t* frame, uint8_t len)
 	}
 }
 
-void ModbusRTU::ReadHolding(uint8_t* frame)
+void ModbusRTU::ParseFrameRead(uint8_t* frame)
 {
 	uint8_t address = MULTIPLE_LOCATIONS_NUMBER + slave_addr - 1;
 	uint16_t value = (frame[MODBUS_RTU_RES_HOLDING_REG_VAL_HI] << 8) | frame[MODBUS_RTU_RES_HOLDING_REG_VAL_LO];
 	// update master's holding registers
 	modbus_tcp.UpdateMultiple(address, value);
 	// send command to led module
-	PrepareFrameSingle(frame, MODBUS_RTU_LED_OFFSET + slave_addr - 1, MODBUS_RTU_SINGLE_FUNCTION, 5);
+	PrepareFrameWrite(frame, MODBUS_RTU_LED_OFFSET + slave_addr - 1, MODBUS_RTU_SINGLE_FUNCTION, 5);
 	PrepareFrameCRC(usart_data.frame);
 	usart_data.len = MODBUS_RTU_REQ_LEN;
 	usart.SendFrame(&usart_data);
 }
-/*
-void ModbusRTU::WriteSingle(uint8_t* frame)
-{
-	frame[0] = slave_addr - 1 + 100;
-	frame[1] = 6; 		// function
-	frame[2] = 0;		// reg addr hi
-	frame[3] = 0;		// reg addr lo
-	frame[4] = 0;		// val hi
-	if(modbus_tcp.HoldingRegisters[1 + slave_addr - 1] == 5)
-	{
-		frame[5] = 25;			// val lo
-	}
-	else
-	{
-		frame[5] = 200;
-	}
-	uint16_t crc = Checksum(frame, 6);
-	frame[6] = crc & 0xFF;
-	frame[7] = crc >> 8;
-	usart_data.len = 8;
-	usart.SendFrame(&usart_data);
-}
-*/
-uint16_t ModbusRTU::Checksum(uint8_t *frame, uint8_t len)
+
+uint16_t ModbusRTU::Checksum(uint8_t* frame, uint8_t len)
 {
 	uint16_t crc = 0xFFFF;
 	int pos = 0;

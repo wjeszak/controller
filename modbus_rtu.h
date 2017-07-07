@@ -39,18 +39,19 @@
 #define MODBUS_RTU_REQ_LEN 							8
 
 #define MODBUS_RTU_LED_OFFSET 						100
+
 class ModbusRTU
 {
 public:
 	ModbusRTU();
-	void PrepareFrameHolding(uint8_t* frame, uint8_t address, uint8_t function);
-	void PrepareFrameSingle(uint8_t* frame, uint8_t address, uint8_t function, uint16_t value);
-	void PrepareFrameCRC(uint8_t* frame);
 	void PollDoors();
 	void ParseFrame(uint8_t* frame, uint8_t len);
 	uint16_t Checksum(uint8_t* frame, uint8_t len);
 private:
-	void ReadHolding(uint8_t* frame);
+	void PrepareFrameRead(uint8_t* frame, uint8_t address, uint8_t function);
+	void PrepareFrameWrite(uint8_t* frame, uint8_t address, uint8_t function, uint16_t value);
+	void PrepareFrameCRC(uint8_t* frame);
+	void ParseFrameRead(uint8_t* frame);
 	void WriteSingle(uint8_t* frame);
 //	void FunctionNotSupported(uint8_t *frame);
 	uint8_t slave_addr, slave_addr_max;
