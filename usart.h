@@ -1,8 +1,11 @@
 /*
  * usart.h
  *
- *  Created on: 26 maj 2017
- *      Author: tomek
+ * Created on: 26 maj 2017
+ * Author: tomek
+ *
+ * Usart frame: 1 bit start + 8 bits data + 1 bit stop = 10 bits
+ * @19200 bps: t_byte = (1 / (19200 bps / 10 bits)) * 1000 =~ 0.5 ms
  */
 
 #ifndef USART_H_

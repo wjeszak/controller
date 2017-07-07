@@ -62,7 +62,7 @@ void Usart::RTU35T(UsartData* pdata)
         TRANSITION_MAP_ENTRY(ST_IDLE)				// ST_INIT
         TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)		// ST_IDLE
         TRANSITION_MAP_ENTRY(ST_FRAME_RECEIVED)		// ST_BYTE_RECEIVED
-    END_TRANSITION_MAP(NULL)
+    END_TRANSITION_MAP(pdata)
 }
 
 void Usart::SendFrame(UsartData* pdata)
@@ -138,7 +138,7 @@ void Usart::ST_FrameReceived(UsartData* pdata)
 	while(rx_tail != rx_head)
 	{
 		rx_tail = (rx_tail + 1) & UART_BUF_MASK;
-		pdata->frame[i] = rx_buf[rx_tail];
+		usart_data.frame[i] = rx_buf[rx_tail];
 		i++;
 	}
 	modbus_rtu.ParseFrame(pdata->frame, pdata->len);

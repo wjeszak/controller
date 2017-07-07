@@ -82,7 +82,7 @@ void DisplayRefresh()
 // 1
 void ModbusRTU35T()
 {
-	usart.RTU35T();
+	usart.RTU35T(&usart_data);
 }
 
 // 2
