@@ -16,30 +16,51 @@ ModbusRTU::ModbusRTU()
 	slave_addr_max = 10;
 }
 
+void ModbusRTU::PrepareFrameHolding(uint8_t address, uint8_t function)
+{
+	usart_data.frame[MODBUS_RTU_ADDR_ID] = address;
+	usart_data.frame[MODBUS_RTU_FUNCTION_ID] = MODBUS_RTU_HOLDING_FUNCTION;
+	usart_data.frame[MODBUS_RTU_REQ_HOLDING_STARTING_ADDR_HI] = 0;
+	usart_data.frame[MODBUS_RTU_REQ_HOLDING_STARTING_ADDR_LO] = 0;
+	usart_data.frame[MODBUS_RTU_REQ_HOLDING_QUANTITY_HI] = 0;
+	usart_data.frame[MODBUS_RTU_REQ_HOLDING_QUANTITY_LO] = 1;
+}
+
+void ModbusRTU::PrepareFrameSingle(uint8_t address, uint8_t function, uint16_t value)
+{
+	usart_data.frame[MODBUS_RTU_ADDR_ID] = address;
+	usart_data.frame[MODBUS_RTU_FUNCTION_ID] = MODBUS_RTU_SINGLE_FUNCTION;
+	usart_data.frame[MODBUS_RTU_SINGLE_REG_ADDR_HI] = 0;
+	usart_data.frame[MODBUS_RTU_SINGLE_REG_ADDR_LO] = 0;
+	usart_data.frame[MODBUS_RTU_SINGLE_REG_VAL_HI] = value >> 8;
+	usart_data.frame[MODBUS_RTU_SINGLE_REG_VAL_LO] = value & 0xFF;
+}
+
+void ModbusRTU::PrepareFrameCRC()
+{
+	uint16_t crc = Checksum(usart_data.frame, MODBUS_RTU_REQ_LEN - 2);
+	usart_data.frame[MODBUS_RTU_REQ_CRC_LO] = crc & 0xFF;
+	usart_data.frame[MODBUS_RTU_REQ_CRC_HI] = crc >> 8;
+}
+
 void ModbusRTU::Poll()
 {
-//	display.Write(slave_addr);
-	usart_data.frame[0] = slave_addr++;
-	usart_data.frame[1] = 3;
-	usart_data.frame[2] = 0;
-	usart_data.frame[3] = 0;
-	usart_data.frame[4] = 0;
-	usart_data.frame[5] = 1;
-	uint16_t crc = Checksum(usart_data.frame, 6);
-	usart_data.frame[6] = crc & 0xFF;
-	usart_data.frame[7] = crc >> 8;
-	usart_data.len = 8;
+	PrepareFrameHolding(slave_addr, MODBUS_RTU_HOLDING_FUNCTION);
+	PrepareFrameCRC();
+	usart_data.len = MODBUS_RTU_REQ_LEN;
 	usart.SendFrame(&usart_data);
-	if(slave_addr == slave_addr_max) slave_addr = 1;
+	slave_addr++;
+	if(slave_addr == slave_addr_max + 1) slave_addr = 1;
 }
 
 void ModbusRTU::ParseFrame(uint8_t* frame, uint8_t len)
 {
 	uint16_t crc = Checksum(frame, len - 2);
-	if((frame[0] == (slave_addr - 1)) && ((uint8_t) crc == frame[len - 2]) && ((uint8_t) (crc >> 8)) == frame[len - 1])
+	if((frame[MODBUS_RTU_ADDR_ID] == (slave_addr - 1)) &&
+			((uint8_t) crc == frame[len - 2]) &&
+			((uint8_t) (crc >> 8)) == frame[len - 1])
 	{
-		display.Write(usart_data.len);
-		switch(frame[1])
+		switch(frame[MODBUS_RTU_FUNCTION_ID])
 		{
 			case 3:
 				ReadHoldingRegisters(frame);
