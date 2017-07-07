@@ -15,11 +15,13 @@
 #define MAC_ADDR4 		0xB1
 #define MAC_ADDR5		0x15
 #define MAC_ADDR6 		0x6F
+
 #define IP_ADDR1 		192
 #define IP_ADDR2 		168
 #define IP_ADDR3 		1
 #define IP_ADDR4 		170
-// Default values
+
+// default values
 ConfigurationParams EEMEM eem_cfg =
 {
 		TLockerbox,
@@ -42,4 +44,3 @@ void Eeprom::Write()
 {
 	eeprom_update_block(&eem_cfg, &cfg, sizeof(ConfigurationParams));
 }
-

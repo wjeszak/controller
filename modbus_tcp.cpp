@@ -14,11 +14,8 @@
 #include "machine.h"
 #include "usart.h"
 
-
-
 ModbusTCP::ModbusTCP()
 {
-//	HoldingRegisters[12] = 45;
 }
 
 void ModbusTCP::Process(uint8_t* frame)

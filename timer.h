@@ -8,7 +8,11 @@
 #ifndef TIMER_H_
 #define TIMER_H_
 
+#include <avr/io.h>
 #include "machine.h"
+
+#define TIMER_DISPLAY_REFRESH 			0
+#define TIMER_MODBUS_RTU_35T			1
 
 enum T2Prescallers
 {

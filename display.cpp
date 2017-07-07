@@ -9,30 +9,25 @@
 
 Display::Display()
 {
-	 //tab[0] = {&WYSW1_DDR, &WYSW1_PORT, WYSW1_PIN};
-	 //tab[1] = {&WYSW2_DDR, &WYSW2_PORT, WYSW2_PIN};
-	 //tab[2] = {&WYSW3_DDR, &WYSW3_PORT, WYSW3_PIN};
-	 //tab[3] = {&WYSW4_DDR, &WYSW4_PORT, WYSW4_PIN};
-	// taka inicjalizacja nie dziala
 	disp_tab[0].ddr =  &DISP1_DDR;
 	disp_tab[0].port = &DISP1_PORT;
-	disp_tab[0].pin =   DISP1_PIN;
+	disp_tab[0].pin =   (1 << DISP1_PIN);
 	disp_tab[1].ddr =  &DISP2_DDR;
 	disp_tab[1].port = &DISP2_PORT;
-	disp_tab[1].pin =   DISP2_PIN;
+	disp_tab[1].pin =   (1 << DISP2_PIN);
 	disp_tab[2].ddr =  &DISP3_DDR;
 	disp_tab[2].port = &DISP3_PORT;
-	disp_tab[2].pin =   DISP3_PIN;
+	disp_tab[2].pin =   (1 << DISP3_PIN);
 	disp_tab[3].ddr =  &DISP4_DDR;
 	disp_tab[3].port = &DISP4_PORT;
-	disp_tab[3].pin =   DISP4_PIN;
+	disp_tab[3].pin =   (1 << DISP4_PIN);
 
 	for(uint8_t i = 0; i < 4; i++)
-		{
-			*(disp_tab[i].ddr) |= disp_tab[i].pin;		// Outputs
-			*(disp_tab[i].port) |= disp_tab[i].pin; 	// Off
-		}
-	// Segments outputs
+	{
+		*(disp_tab[i].ddr)  |= disp_tab[i].pin;		// outputs
+		*(disp_tab[i].port) |= disp_tab[i].pin; 	// off
+	}
+
 	DISP_SEGM_DDR = 0b01111111;
 	disp_number = 0;
 	digits[0] =  DISP_CHAR_0;
@@ -46,7 +41,7 @@ Display::Display()
 	digits[8] =  DISP_CHAR_8;
 	digits[9] =  DISP_CHAR_9;
 	digits[10] = DISP_CHAR_ALL_OFF;
-	// startup values
+	// Startup values
 	value[0] = digits[1];
 	value[1] = digits[2];
 	value[2] = digits[3];
@@ -71,5 +66,4 @@ void Display::Write(uint16_t val)
 	value[1] = digits[(val / 100) % 10]; 	// hundreds
 	value[2] = digits[(val % 100) / 10]; 	// dozens
 	value[3] = digits[val % 10]; 			// units
-
 }

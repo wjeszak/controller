@@ -10,8 +10,7 @@
 
 #include <avr/io.h>
 #include <inttypes.h>
-#include "machine.h"
-// Numeracja wg. rozmieszczenia na plytce
+
 #define DISP1_DDR 				DDRD
 #define DISP2_DDR 				DDRC
 #define DISP3_DDR 				DDRB
@@ -22,10 +21,10 @@
 #define DISP3_PORT 				PORTB
 #define DISP4_PORT 				PORTB
 
-#define DISP1_PIN				(1 << 4)
-#define DISP2_PIN				(1 << 0)
-#define DISP3_PIN 				(1 << 3)
-#define DISP4_PIN				(1 << 4)
+#define DISP1_PIN				4
+#define DISP2_PIN				0
+#define DISP3_PIN 				3
+#define DISP4_PIN				4
 
 #define DISP_SEGM_DDR 			DDRA
 #define DISP_SEGM_PORT 			PORTA
@@ -60,6 +59,7 @@ private:
 	uint8_t digits[11];
 	uint8_t value[4];
 };
+
 extern Display display;
 
 #endif /* DISPLAY_H_ */

@@ -5,10 +5,10 @@
  *      Author: tomek
  */
 
-#include <avr/io.h> 		// to jest ze wzgledu na preskalery silnika, zmienic!
 #include "dynabox.h"
 #include "motor.h"
 #include "timer.h"
+
 Dynabox::Dynabox() : Machine(ST_MAX_STATES)
 {
 
@@ -17,7 +17,7 @@ Dynabox::Dynabox() : Machine(ST_MAX_STATES)
 uint16_t Dynabox::StartupTest()
 {
 	//motor.Homing();
-	timer.Assign(2, 500, ModbusPoll);
+	//timer.Assign(2, 500, ModbusPoll);
 	return 2;
 }
 

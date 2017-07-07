@@ -7,7 +7,7 @@
 
 #include "encoder.h"
 
-void Encoder::Init()
+Encoder::Encoder()
 {
 	ENCODER_DDR &= ~((1 << ENCODER_PA) | (1 << ENCODER_PB));
 	ENCODER_BUTTON_DDR &= ~(1 << ENCODER_BUTTONP);
@@ -19,30 +19,27 @@ void Encoder::Init()
 
 void Encoder::CheckStatus()
 {
-//reading rotary and button
-//check if rotation is left
- 	if(ROTA & (!wait))
-		wait=1;
-	if (ROTB & ROTA & (wait))
-		{
-			rotarystatus=2;
-			wait=2;
-		}
-		else if(ROTA & (!ROTB) & wait)
-		{
-			rotarystatus=1;
-			wait=2;
-		}
-	if ((!ROTA)&!(ROTB)&(wait==2))
-		wait=0;
+	if(ROTA & (!wait))
+		wait = 1;
+	if(ROTB & ROTA & (wait))
+	{
+		rotarystatus = 2;
+		wait = 2;
+	}
+	else if(ROTA & (!ROTB) & wait)
+	{
+		rotarystatus = 1;
+		wait = 2;
+	}
+	if((!ROTA) & !(ROTB) & (wait == 2))
+		wait = 0;
 	//check button status
-	if (ROTCLICK)
-		{
-			for(volatile uint16_t x=0;x<0x0FFF;x++);
-			if (ROTCLICK)
-			rotarystatus=3;
-
-		}
+	if(ROTCLICK)
+	{
+		// debounce
+		for(volatile uint16_t x = 0; x < 0x0FFF; x++);
+		if (ROTCLICK) rotarystatus = 3;
+	}
 }
 
 uint8_t Encoder::GetStatus()

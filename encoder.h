@@ -21,15 +21,15 @@
 #define ENCODER_PA 				0
 #define ENCODER_PB 				1
 #define ENCODER_BUTTONP			2
-//define macros to check status
-#define ROTA !((1 << ENCODER_PA) & ENCODER_PIN)
-#define ROTB !((1 << ENCODER_PB) & ENCODER_PIN)
-#define ROTCLICK !((1 << ENCODER_BUTTONP) & ENCODER_BUTTON_PIN)
+
+#define ROTA !(ENCODER_PIN & (1 << ENCODER_PA))
+#define ROTB !(ENCODER_PIN & (1 << ENCODER_PB))
+#define ROTCLICK !(ENCODER_BUTTON_PIN & (1 << ENCODER_BUTTONP))
 
 class Encoder
 {
 public:
-	void Init();
+	Encoder();
 	void CheckStatus();
 	void ResetStatus();
 	uint8_t GetStatus();

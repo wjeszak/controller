@@ -38,16 +38,13 @@ public:
 	void EV_NewByte(UsartData* pdata);							// RX_vect callback
 	void EV_TXBufferEmpty(UsartData* pdata = NULL);				// UDRE_vect callback
 	void EV_TXComplete(UsartData* pdata = NULL);				// TX_vect callback
-	void SendFrame(UsartData* pdata);
 	void RTU35T(UsartData* pdata = NULL);
+	void SendFrame(UsartData* pdata);
 private:
 	void RxEnable();
 	void RxDisable();
 	void TxEnable();
 	void TxDisable();
-	volatile uint8_t rx_buf[UART_BUF_SIZE];
-	volatile uint8_t tx_buf[UART_BUF_SIZE];
-	volatile uint8_t rx_head, rx_tail, tx_head, tx_tail;
 	// States functions
 	void ST_Init(UsartData* pdata);
 	void ST_Idle(UsartData* pdata);
@@ -60,6 +57,10 @@ private:
 		STATE_MAP_ENTRY(&Usart::ST_ByteReceived)
 		STATE_MAP_ENTRY(&Usart::ST_FrameReceived)
 	END_STATE_MAP
+
+	volatile uint8_t rx_buf[UART_BUF_SIZE];
+	volatile uint8_t tx_buf[UART_BUF_SIZE];
+	volatile uint8_t rx_head, rx_tail, tx_head, tx_tail;
 };
 
 extern Usart usart;

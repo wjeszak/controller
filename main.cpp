@@ -9,7 +9,6 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
-
 #include "lockerbox.h"
 #include "dynabox.h"
 #include "display.h"
@@ -33,7 +32,6 @@ MotorData motor_data;
 Timer0 timer0;
 Timer1 timer1;
 Timer timer(T2_PS_64, 17);
-
 Display display;
 Stack stack;
 StackData stack_data;
@@ -42,19 +40,15 @@ UsartData usart_data;
 ModbusRTU modbus_rtu;
 ModbusTCP modbus_tcp;
 Machine *m;
+
 int main()
 {
-
 	_delay_ms(1000);
-	timer.Assign(0, 1, DisplayRefresh);
-	timer.Assign(4, 1, EncoderStatus);
+	timer.Assign(TIMER_DISPLAY_REFRESH, 1, DisplayRefresh);
+	//timer.Assign(4, 1, EncoderStatus);
 	sei();
 	// wskaznik do typu maszyny
 	m = GetTypeOfMachine(TDynabox);
-	//uint16_t kto = m->StartupTest();
-
-	uint16_t param = 0;
-	display.Write(param);
 	while(1)
 	{
 	/*

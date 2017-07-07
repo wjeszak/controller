@@ -7,6 +7,7 @@
 
 #ifndef DYNABOX_H_
 #define DYNABOX_H_
+
 #include "machine.h"
 
 class Dynabox : public Machine
@@ -16,17 +17,12 @@ public:
 	uint16_t StartupTest();
 private:
 	enum States {ST_INIT = 0, ST_MAX_STATES};
-	const StateStruct* GetStateMap()
-	{
-		// to jest sprytne bo StateMap jest tworzone nie na stosie dzieki temu mozna zwrocic adres
-		static const StateStruct StateMap[] =
-		{
-			//{reinterpret_cast<StateFunc>(&Usart::ST_Idle)},
-			//{reinterpret_cast<StateFunc>(&Usart::ST_ByteReceived)},
-			//{reinterpret_cast<StateFunc>(&Usart::ST_FrameReceived)}
-		};
-		return &StateMap[0];
-	}
+	//	BEGIN_STATE_MAP
+	//		STATE_MAP_ENTRY(&Usart::ST_Init)
+	//		STATE_MAP_ENTRY(&Usart::ST_Idle)
+	//		STATE_MAP_ENTRY(&Usart::ST_ByteReceived)
+	//		STATE_MAP_ENTRY(&Usart::ST_FrameReceived)
+	//	END_STATE_MAP
 };
 
 extern Dynabox dynabox;
