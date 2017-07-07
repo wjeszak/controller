@@ -22,7 +22,7 @@
 #define USART_DE_RECEIVE 		USART_DE_PORT &= ~(1 << USART_DE_PIN)
 #define USART_DE_SEND 			USART_DE_PORT |=  (1 << USART_DE_PIN)
 
-#define UART_BUF_SIZE 		64
+#define UART_BUF_SIZE 		16
 #define UART_BUF_MASK 		(UART_BUF_SIZE - 1)
 
 class UsartData : public EventData

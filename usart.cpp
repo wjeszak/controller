@@ -70,7 +70,6 @@ void Usart::SendFrame(UsartData* pdata)
 	RxDisable();
 	uint8_t tmp_tx_head;
 	uint8_t *w = pdata->frame;
-	//uint8_t len = pdata->len;
 
 	while(pdata->len)
 	{
@@ -134,7 +133,6 @@ void Usart::ST_ByteReceived(UsartData* pdata)
 
 void Usart::ST_FrameReceived(UsartData* pdata)
 {
-	//pdata->len = 7;
 	uint8_t i = 0;
 	while(rx_tail != rx_head)
 	{

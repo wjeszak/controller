@@ -35,7 +35,6 @@ void ModbusRTU::Poll()
 
 void ModbusRTU::ParseFrame(uint8_t* frame, uint8_t len)
 {
-
 	uint16_t crc = Checksum(frame, len - 2);
 	if((frame[0] == (slave_addr - 1)) && ((uint8_t) crc == frame[len - 2]) && ((uint8_t) (crc >> 8)) == frame[len - 1])
 	{
