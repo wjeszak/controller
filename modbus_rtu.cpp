@@ -7,7 +7,6 @@
 
 #include "modbus_rtu.h"
 #include "usart.h"
-#include "display.h"
 #include "modbus_tcp.h"
 
 ModbusRTU::ModbusRTU()
@@ -18,8 +17,8 @@ ModbusRTU::ModbusRTU()
 
 void ModbusRTU::PrepareFrameRead(uint8_t* frame, uint8_t address, uint8_t function)
 {
-	frame[MODBUS_RTU_ADDR_ID] = address;
-	frame[MODBUS_RTU_FUNCTION_ID] = MODBUS_RTU_HOLDING_FUNCTION;
+	frame[MODBUS_RTU_ADDR] = address;
+	frame[MODBUS_RTU_FUNCTION] = MODBUS_RTU_HOLDING_FUNCTION;
 	frame[MODBUS_RTU_REQ_HOLDING_STARTING_ADDR_HI] = 0;
 	frame[MODBUS_RTU_REQ_HOLDING_STARTING_ADDR_LO] = 0;
 	frame[MODBUS_RTU_REQ_HOLDING_QUANTITY_HI] = 0;
@@ -28,8 +27,8 @@ void ModbusRTU::PrepareFrameRead(uint8_t* frame, uint8_t address, uint8_t functi
 
 void ModbusRTU::PrepareFrameWrite(uint8_t* frame, uint8_t address, uint8_t function, uint16_t value)
 {
-	frame[MODBUS_RTU_ADDR_ID] = address;
-	frame[MODBUS_RTU_FUNCTION_ID] = MODBUS_RTU_SINGLE_FUNCTION;
+	frame[MODBUS_RTU_ADDR] = address;
+	frame[MODBUS_RTU_FUNCTION] = MODBUS_RTU_SINGLE_FUNCTION;
 	frame[MODBUS_RTU_SINGLE_REG_ADDR_HI] = 0;
 	frame[MODBUS_RTU_SINGLE_REG_ADDR_LO] = 0;
 	frame[MODBUS_RTU_SINGLE_REG_VAL_HI] = value >> 8;
@@ -56,11 +55,11 @@ void ModbusRTU::PollDoors()
 void ModbusRTU::ParseFrame(uint8_t* frame, uint8_t len)
 {
 	uint16_t crc = Checksum(frame, len - 2);
-	if((frame[MODBUS_RTU_ADDR_ID] == (slave_addr - 1)) &&
+	if((frame[MODBUS_RTU_ADDR] == (slave_addr - 1)) &&
 			((uint8_t) crc == frame[len - 2]) &&
 			((uint8_t) (crc >> 8)) == frame[len - 1])
 	{
-		switch(frame[MODBUS_RTU_FUNCTION_ID])
+		switch(frame[MODBUS_RTU_FUNCTION])
 		{
 		case MODBUS_RTU_HOLDING_FUNCTION:
 			ParseFrameRead(frame);
@@ -76,7 +75,7 @@ void ModbusRTU::ParseFrameRead(uint8_t* frame)
 	uint8_t address = MULTIPLE_LOCATIONS_NUMBER + slave_addr - 1;
 	uint16_t value = (frame[MODBUS_RTU_RES_HOLDING_REG_VAL_HI] << 8) | frame[MODBUS_RTU_RES_HOLDING_REG_VAL_LO];
 	// update master's holding registers
-	modbus_tcp.UpdateMultiple(address, value);
+	modbus_tcp.UpdateHoldingRegisters(address, value);
 	// send command to led module
 	PrepareFrameWrite(frame, MODBUS_RTU_LED_OFFSET + slave_addr - 1, MODBUS_RTU_SINGLE_FUNCTION, 5);
 	PrepareFrameCRC(usart_data.frame);

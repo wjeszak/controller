@@ -10,8 +10,8 @@
 
 #include <inttypes.h>
 
-#define MODBUS_RTU_ADDR_ID							0
-#define MODBUS_RTU_FUNCTION_ID 						1
+#define MODBUS_RTU_ADDR								0
+#define MODBUS_RTU_FUNCTION 						1
 
 // read from slave - request
 #define MODBUS_RTU_REQ_HOLDING_STARTING_ADDR_HI 	2
