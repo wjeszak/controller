@@ -22,6 +22,7 @@
 #define TIMER_DISPLAY_REFRESH 			0
 #define TIMER_MODBUS_RTU_35T			1
 #define TIMER_MODBUS_RTU_POLL 			2
+#define TIMER_MOTOR_ACCELERATE 			3
 
 enum T2Prescallers
 {
@@ -43,14 +44,6 @@ public:
 	void Assign(uint8_t handler_id, uint64_t interval, void(*fp)());
 	void Enable (uint8_t handler_id);
 	void Disable (uint8_t handler_id);
-//	void UnAssign (uint8_t handler_id);
-//	void Hold (uint8_t handler_id);
-//	void UnHold (uint8_t handler_id);
-//	bool Enabled (uint8_t handler_id);
-//	void SetInterval (uint8_t handler_id, uint64_t interval);
-//	uint64_t GetInterval (uint8_t handler_id);
-//	void SetPrescaller (T2Prescallers prescaller);
-//	void SetPeriod (uint8_t tick);
 private:
 	struct TimerHandler
 	{
@@ -63,32 +56,11 @@ private:
 	uint16_t main_timer_prescaler;
 };
 
+extern Timer timer;
+
 extern void DisplayRefresh();
 extern void ModbusRTU35T();
 extern void ModbusPoll();
-extern void MotorTesting();
-extern void EncoderStatus();
-extern void MotorChangeState();
+extern void MotorAccelerate();
 
-extern Timer timer;
-
-class Timer0
-{
-public:
-	Timer0();
-	volatile uint8_t cnt;
-};
-
-extern Timer0 timer0;
-
-class Timer1
-{
-public:
-	Timer1();
-	volatile uint8_t cnt;
-};
-
-extern Timer1 timer1;
-
-void Irq_Init();
 #endif /* TIMER_H_ */

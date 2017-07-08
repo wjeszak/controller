@@ -1,31 +1,46 @@
 /*
  * motor.h
  *
- *  Created on: 20 cze 2017
- *      Author: tomek
+ * Created on: 20 cze 2017
+ * Author: tomek
  */
 
 #ifndef MOTOR_H_
 #define MOTOR_H_
+
 #include "machine.h"
-/* Zerowanie preskalera przy uruchamianiu silnika, czy trzeba zerowac TCNT2 po odlaczeniu i zalaczeniu preskalera ?
- *
- */
-#define MOTOR_DDR 			DDRD
-#define MOTOR_PORT 			PORTD
-#define MOTOR_BRAKE_PIN 	3
-#define MOTOR_FWD_PIN 		5
-#define MOTOR_REV_PIN 		6
-#define MOTOR_EN_PIN 		7
-#define MOTOR_INIT 			MOTOR_DDR |= (1 << MOTOR_FWD_PIN) | (1 << MOTOR_REV_PIN) | (1 << MOTOR_EN_PIN) | (1 << MOTOR_BRAKE_PIN);
 
-#define MOTOR_ENABLE 		TCCR2A |= (1 << COM2A1) | (1 << COM2A0);
-#define MOTOR_DISABLE		TCCR2A &= ~((1 << COM2A1) | (1 << COM2A0)); MOTOR_PORT |= (1 << MOTOR_EN_PIN);
+#define MOTOR_DDR 						DDRD
+#define MOTOR_PORT 						PORTD
+#define MOTOR_BRAKE_PIN 				3
+#define MOTOR_FWD_PIN 					5
+#define MOTOR_REV_PIN 					6
+#define MOTOR_EN_PIN 					7
+#define MOTOR_INIT 						MOTOR_DDR |= (1 << MOTOR_FWD_PIN) | (1 << MOTOR_REV_PIN) | (1 << MOTOR_EN_PIN) | (1 << MOTOR_BRAKE_PIN);
 
-#define MOTOR_BRAKE_ON 		MOTOR_PORT |= (1 << MOTOR_BRAKE_PIN)
-#define MOTOR_BRAKE_OFF 	MOTOR_PORT &= ~(1 << MOTOR_BRAKE_PIN)
+#define MOTOR_START 					TCCR2A |= (1 << COM2A1) | (1 << COM2A0);
+#define MOTOR_STOP						TCCR2A &= ~((1 << COM2A1) | (1 << COM2A0)); MOTOR_PORT |= (1 << MOTOR_EN_PIN);
 
-#define ENCODER_ROWS 		3600
+//#define MOTOR_BRAKE_ON 			MOTOR_PORT |= (1 << MOTOR_BRAKE_PIN)
+//#define MOTOR_BRAKE_OFF 			MOTOR_PORT &= ~(1 << MOTOR_BRAKE_PIN)
+
+#define MOTOR_ENCODER_DDR 				DDRB
+#define MOTOR_ENCODER_PORT 				PORTB
+#define MOTOR_ENCODER_PIN 				PINB
+#define MOTOR_ENCODER_PHASEA_PIN 		0
+#define MOTOR_ENCODER_PHASEB_PIN 		1
+#define MOTOR_ENCODER_PHASEA_ENABLE 	TIMSK0 |= (1 << OCIE0A);
+#define MOTOR_ENCODER_PHASEA_DISABLE 	TIMSK0 &= ~(1 << OCIE0A);
+#define MOTOR_ENCODER_PHASEB_ENABLE 	TIMSK1 |= (1 << OCIE1A);
+#define MOTOR_ENCODER_PHASEB_DISABLE 	TIMSK1 &= ~(1 << OCIE1A);
+
+#define MOTOR_HOME_IRQ_DDR			DDRB
+#define MOTOR_HOME_IRQ_PIN 			2
+#define MOTOR_HOME_IRQ_ENABLE 		EIMSK |=  (1 << INT2);
+#define MOTOR_HOME_IRQ_DISABLE 		EIMSK &= ~(1 << INT2);
+
+#define ENCODER_ROWS 				64
+
 enum Direction {Forward, Backward};
 
 class MotorData : public EventData
@@ -38,8 +53,8 @@ class Motor : public Machine
 {
 public:
 	Motor();
-	void Disable();
-	void IrqInit();
+
+	void EncoderAndHomeIrqInit();
 	void SetDirection(Direction dir);
 	void SetSpeed(uint8_t speed);
 	Direction GetDirection();
@@ -48,34 +63,29 @@ public:
 	void EV_PhaseB(MotorData* pdata = NULL);
 	void EV_PhaseZ(MotorData* pdata = NULL);
 	void EV_RunToPosition(MotorData* pdata);
+	void Stop();
 	uint8_t home_ok;
 	uint8_t actual_speed;
 	uint8_t desired_speed;
 	uint16_t position;
 	uint16_t desired_position;
-	private:
+private:
 	Direction _direction;
 	void ST_Idle(MotorData* pdata);
 	void ST_Acceleration(MotorData* pdata);
 	void ST_Running(MotorData* pdata);
 	void ST_Home(MotorData* pdata);
-	void ST_Decceleration(MotorData* pdata);
+	void ST_Deceleration(MotorData* pdata);
 	void ST_PositionAchieved(MotorData* pdata);
-	enum States {ST_IDLE = 0, ST_ACCELERATION, ST_RUNNING, ST_HOME, ST_DECCELERATION, ST_POSITION_ACHIEVED, ST_MAX_STATES};
-	const StateStruct* GetStateMap()
-	{
-		// to jest sprytne bo StateMap jest tworzone nie na stosie dzieki temu mozna zwrocic adres
-		static const StateStruct StateMap[] =
-		{
-			{reinterpret_cast<StateFunc>(&Motor::ST_Idle)},
-			{reinterpret_cast<StateFunc>(&Motor::ST_Acceleration)},
-			{reinterpret_cast<StateFunc>(&Motor::ST_Running)},
-			{reinterpret_cast<StateFunc>(&Motor::ST_Home)},
-			{reinterpret_cast<StateFunc>(&Motor::ST_Decceleration)},
-			{reinterpret_cast<StateFunc>(&Motor::ST_PositionAchieved)}
-		};
-		return &StateMap[0];
-	}
+	enum States {ST_IDLE = 0, ST_ACCELERATION, ST_RUNNING, ST_HOME, ST_DECELERATION, ST_POSITION_ACHIEVED, ST_MAX_STATES};
+	BEGIN_STATE_MAP
+		STATE_MAP_ENTRY(&Motor::ST_Idle)
+		STATE_MAP_ENTRY(&Motor::ST_Acceleration)
+		STATE_MAP_ENTRY(&Motor::ST_Running)
+		STATE_MAP_ENTRY(&Motor::ST_Home)
+		STATE_MAP_ENTRY(&Motor::ST_Deceleration)
+		STATE_MAP_ENTRY(&Motor::ST_PositionAchieved)
+	END_STATE_MAP
 };
 
 extern Motor motor;

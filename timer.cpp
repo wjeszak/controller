@@ -74,62 +74,38 @@ void Timer::Disable(uint8_t handler_id)
 {
 	timer_handlers[handler_id].active = false;
 }
-// 0
+
+// TIMER_DISPLAY_REFRESH
 void DisplayRefresh()
 {
 	display.Refresh();
 }
-// 1
+
+// TIMER_MODBUS_RTU_35T
 void ModbusRTU35T()
 {
 	usart.RTU35T(&usart_data);
 }
 
-// 2
+// TIMER_MODBUS_RTU_POLL
 void ModbusPoll()
 {
 	modbus_rtu.PollDoors();
 }
 
-void EncoderStatus()
+// TIMER_MOTOR_ACCELERATE
+void MotorAccelerate()
 {
-	encoder.CheckStatus();
+	OCR2A = motor.actual_speed++;
+//	display.Write(motor.actual_speed);
+	if(motor.actual_speed == motor.desired_speed)
+	{
+		timer.Disable(3);
+		motor.Event(2, NULL);
+	}
 }
-
-Timer0::Timer0()
-{
-	DDRB &= ~(1 << PB0);
-	PORTB |= (1 << PB0);
-	TCCR0A |= (1 << WGM01);
-	TCCR0B |= (1 << CS02) | (1 << CS01);  //zrod³o zewnêtrzne - zbocze opadaj¹ce
-	TCNT0 = 0;
-	TIMSK0 |= (1 << OCIE0A);
-	OCR0A = 1;
-}
-
-Timer1::Timer1()
-{
-	DDRB &= ~(1 << PB1);
-	PORTB |= (1 << PB1);
-	TCCR1B |= (1 << WGM12);
-	TCCR1B |= (1<< CS12) | (1<< CS11) | (1 << CS10);  //zrod³o zewnêtrzne - zbocze narastajace
-	TCNT1 = 0;
-	TIMSK1 |= (1 << OCIE1A);
-	OCR1A = 1;
-}
-
 
 ISR(TIMER2_COMPB_vect)
 {
 	timer.Irq();
-}
-
-ISR(TIMER0_COMPA_vect)
-{
-	motor.EV_PhaseA(NULL);
-}
-
-ISR(TIMER1_COMPA_vect)
-{
-	motor.EV_PhaseB(NULL);
 }

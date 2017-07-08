@@ -314,11 +314,6 @@ void Stack::MakeTcpHeader(uint8_t* buf, uint16_t rel_ack_num, uint8_t cp_seq)
 	StepSequence(buf, rel_ack_num, cp_seq);
 	buf[TCP_CHECKSUM_H_P] = 0;
 	buf[TCP_CHECKSUM_L_P] = 0;
-	// no options:
-	// 20 bytes:
-	// The tcp header length is only a 4 bit field (the upper 4 bits).
-	// It is calculated in units of 4 bytes.
-	// E.g 20 bytes: 20/4=6 => 0x50=header len field
 	buf[TCP_HEADER_LEN_P] = 0x50;
 }
 

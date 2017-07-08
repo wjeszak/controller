@@ -32,9 +32,6 @@ Stack stack;
 ModbusTCP modbus_tcp;
 Motor motor;
 
-Timer0 timer0;
-Timer1 timer1;
-
 UsartData usart_data;
 StackData stack_data;
 MotorData motor_data;

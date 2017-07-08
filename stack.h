@@ -58,8 +58,6 @@ private:
 		STATE_MAP_ENTRY(&Stack::ST_Request)
 	END_STATE_MAP
 
-	uint8_t Msb(uint16_t val) { return val >> 8; }
-	uint8_t Lsb(uint16_t val) { return val & 0xFF; }
 	uint8_t buf[MAX_PACKET_SIZE];
 	uint16_t packet_len;
 	uint8_t seqnum;

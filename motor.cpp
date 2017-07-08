@@ -1,8 +1,8 @@
 /*
  * motor.cpp
  *
- *  Created on: 20 cze 2017
- *      Author: tomek
+ * Created on: 20 cze 2017
+ * Author: tomek
  */
 
 #include <avr/io.h>
@@ -11,33 +11,34 @@
 #include "timer.h"
 #include "display.h"
 
-// call from timer :/
-void MotorAccelerate()
-{
-	OCR2A = motor.actual_speed++;
-//	display.Write(motor.actual_speed);
-	if(motor.actual_speed == motor.desired_speed)
-	{
-		timer.Disable(3);
-		motor.Event(2, NULL);
-	}
-}
-
 Motor::Motor() : Machine(ST_MAX_STATES)
 {
 	MOTOR_INIT;
-	//TCCR2A |= (1 << WGM21) | (1 << WGM20) | T2_PS_1; //  Mode 3, inverting
+	EncoderAndHomeIrqInit();
 	home_ok = 0;
-//	position = 0;
-//	actual_speed = 0;
 }
 
-void Motor::IrqInit()
+void Motor::EncoderAndHomeIrqInit()
 {
-	DDRB &= ~(1 << PB2);
-//	PORTB |= (1 << PB2);
-	EICRA |= (1 << ISC21) | (1 << ISC20); 		// wznoszace
-	EIMSK |= (1 << INT2);
+	// phase A (timer 0)
+	MOTOR_ENCODER_DDR &= ~(1 << MOTOR_ENCODER_PHASEA_PIN);
+	MOTOR_ENCODER_PORT |= (1 << MOTOR_ENCODER_PHASEA_PIN);
+	TCCR0A |= (1 << WGM01);
+	TCCR0B |= (1 << CS02) | (1 << CS01);  			// external source, falling edge
+	TCNT0 = 0;
+//	TIMSK0 |= (1 << OCIE0A);
+	OCR0A = 1;
+	// phase B (timer 1)
+	MOTOR_ENCODER_DDR &= ~(1 << MOTOR_ENCODER_PHASEB_PIN);
+	MOTOR_ENCODER_PORT |= (1 << MOTOR_ENCODER_PHASEB_PIN);
+	TCCR1B |= (1 << WGM12);
+	TCCR1B |= (1<< CS12) | (1<< CS11) | (1 << CS10);  // external source, rising edge
+	TCNT1 = 0;
+//	TIMSK1 |= (1 << OCIE1A);
+	OCR1A = 1;
+	// homing
+	MOTOR_HOME_IRQ_DDR &= ~(1 << MOTOR_HOME_IRQ_PIN);
+	EICRA |= (1 << ISC21) | (1 << ISC20); 			// rising edge
 }
 
 void Motor::SetDirection(Direction dir)
@@ -56,9 +57,9 @@ void Motor::SetDirection(Direction dir)
 	_direction = dir;
 }
 
-void Motor::Disable()
+void Motor::Stop()
 {
-	MOTOR_DISABLE;
+	MOTOR_STOP;
 }
 
 void Motor::SetSpeed(uint8_t speed)
@@ -70,32 +71,23 @@ void Motor::SetSpeed(uint8_t speed)
 void Motor::EV_Homing(MotorData* pdata)
 {
 	SetDirection(Forward);
-	SetSpeed(80);		// percent
-	IrqInit();
-	const uint8_t Transitions[] =
-	{
-		// musi byc obsluga jesli znak przyjdzie w stanie INIT
-		ST_ACCELERATION,			// ST_IDLE
-		ST_NOT_ALLOWED, 			// ST_ACCELERATION
-		ST_NOT_ALLOWED				// ST_RUNNING
-	};
-	Event(Transitions[current_state], pdata);
+	SetSpeed(80);
+	MOTOR_ENCODER_PHASEA_ENABLE;
+	MOTOR_ENCODER_PHASEB_ENABLE;
+	MOTOR_HOME_IRQ_ENABLE;
+
+    BEGIN_TRANSITION_MAP							// current state
+        TRANSITION_MAP_ENTRY(ST_ACCELERATION)		// ST_IDLE
+        TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)		// ST_ACCELERATION
+        TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)		// ST_RUNNING
+    END_TRANSITION_MAP(pdata)
 }
 
 void Motor::EV_PhaseA(MotorData* pdata)
 {
-	if(PINB & (1 << PB1))
+	if(MOTOR_ENCODER_PIN & (1 << MOTOR_ENCODER_PHASEB_PIN))
 	{
 		// left
-/*		display.Write(motor.position--);
-		if(motor.position == motor_data.pos)
-		{
-			motor.Disable();
-			timer2.Disable(3);
-			Event(5, NULL);
-		}
-		if((motor.position > ENCODER_ROWS) || (motor.position < 0)) motor.position = 0;
-*/
 	}
 	else
 	{
@@ -103,8 +95,8 @@ void Motor::EV_PhaseA(MotorData* pdata)
 		display.Write(motor.position++);
 		if(motor.position == motor_data.pos)
 		{
-			motor.Disable();
-			timer.Disable(3);
+			motor.Stop();
+			timer.Disable(TIMER_MOTOR_ACCELERATE);
 			Event(5, NULL);
 		}
 		if(motor.position == ENCODER_ROWS) motor.position = 0;
@@ -113,17 +105,9 @@ void Motor::EV_PhaseA(MotorData* pdata)
 
 void Motor::EV_PhaseB(MotorData* pdata)
 {
-	if(PINB & (1 << PB0))
+	if(MOTOR_ENCODER_PIN & (1 << MOTOR_ENCODER_PHASEA_PIN))
 	{
-/*		display.Write(motor.position--);
-		if(motor.position == motor_data.pos)
-		{
-			motor.Disable();
-			timer2.Disable(3);
-			Event(5, NULL);
-		}
-		if((motor.position > ENCODER_ROWS) || (motor.position < 0)) motor.position = 0;
-*/
+		// left
 	}
 	else
 	{
@@ -131,8 +115,8 @@ void Motor::EV_PhaseB(MotorData* pdata)
 		display.Write(motor.position++);
 		if(motor.position == motor_data.pos)
 		{
-			motor.Disable();
-			timer.Disable(3);
+			motor.Stop();
+			timer.Disable(TIMER_MOTOR_ACCELERATE);
 			Event(5, NULL);
 		}
 		if(motor.position == ENCODER_ROWS) motor.position = 0;
@@ -141,39 +125,35 @@ void Motor::EV_PhaseB(MotorData* pdata)
 
 void Motor::EV_PhaseZ(MotorData* pdata)
 {
-	// wylaczyc tutaj przerwanie INT2 ?
-
-	const uint8_t Transitions[] =
-	{
-		ST_NOT_ALLOWED,			// ST_IDLE
-		ST_HOME, 				// ST_ACCELERATION
-		ST_HOME					// ST_RUNNING
-	};
-	Event(Transitions[current_state], pdata);
+	// disable INT2 ?
+    BEGIN_TRANSITION_MAP							// current state
+        TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)		// ST_IDLE
+        TRANSITION_MAP_ENTRY(ST_HOME)				// ST_ACCELERATION
+        TRANSITION_MAP_ENTRY(ST_HOME)				// ST_RUNNING
+    END_TRANSITION_MAP(pdata)
 }
 
 void Motor::ST_Idle(MotorData* pdata)
 {
-//	display.Write(75);
+
 }
 
 void Motor::ST_Acceleration(MotorData* pdata)
 {
 	actual_speed = 0;
-	MOTOR_ENABLE;
-	timer.Assign(3, 10, MotorAccelerate);
-//	display.Write(motor.current_state);
+	MOTOR_START;
+	timer.Assign(TIMER_MOTOR_ACCELERATE, 10, MotorAccelerate);
 }
 
 void Motor::ST_Running(MotorData* pdata)
 {
-//	display.Write(motor.current_state);
+
 }
 
 void Motor::ST_Home(MotorData* pdata)
 {
-	timer.Disable(3); // w przypadku gdyby sie rozpedzal
-	Disable();
+	timer.Disable(TIMER_MOTOR_ACCELERATE); // w przypadku gdyby sie rozpedzal
+	Stop();
 	// nie zliczaj impulsow bezwladnosciowych
 	// tutaj mozna zrobic offset do ew. cofniecia (nie wylaczajac przerwan), np.
 	// Disable();
@@ -188,7 +168,7 @@ void Motor::ST_Home(MotorData* pdata)
 //	Event(0, NULL);		// back to ST_IDLE
 }
 
-void Motor::ST_Decceleration(MotorData* pdata)
+void Motor::ST_Deceleration(MotorData* pdata)
 {
 
 }
@@ -217,6 +197,15 @@ void Motor::EV_RunToPosition(MotorData* pdata)
 		};
 		Event(Transitions[current_state], pdata);
 	}
+}
+ISR(TIMER0_COMPA_vect)
+{
+	motor.EV_PhaseA(NULL);
+}
+
+ISR(TIMER1_COMPA_vect)
+{
+	motor.EV_PhaseB(NULL);
 }
 
 ISR(INT2_vect)
