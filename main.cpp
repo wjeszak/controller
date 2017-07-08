@@ -1,80 +1,51 @@
 /*
  * main.cpp
  *
- *  Created on: 25 maj 2017
- *      Author: tomek
+ * Created on: 25 maj 2017
+ * Author: tomek
  *
  */
 
-#include <avr/io.h>
-#include <avr/interrupt.h>
-#include <util/delay.h>
+#include "system.h"
+#include "timer.h"
+#include "display.h"
+#include "encoder.h"
+#include "eeprom.h"
+#include "machine_type.h"
 #include "lockerbox.h"
 #include "dynabox.h"
-#include "display.h"
-#include "timer.h"
 #include "usart.h"
-#include "enc28j60.h"
-#include "machine_type.h"
-#include "motor.h"
-#include "stack.h"
-#include "eeprom.h"
 #include "modbus_rtu.h"
+#include "stack.h"
 #include "modbus_tcp.h"
-#include "encoder.h"
+#include "motor.h"
 
-Encoder encoder;
-Lockerbox lockerbox;
-Dynabox dynabox;
-Eeprom eprom;
-Motor motor;
-MotorData motor_data;
-Timer0 timer0;
-Timer1 timer1;
 Timer timer(T2_PS_1);
 Display display;
-Stack stack;
-StackData stack_data;
+Encoder encoder;
+Eeprom eprom;
+Lockerbox lockerbox;
+Dynabox dynabox;
 Usart usart;
-UsartData usart_data;
 ModbusRTU modbus_rtu;
+Stack stack;
 ModbusTCP modbus_tcp;
+Motor motor;
+
+Timer0 timer0;
+Timer1 timer1;
+
+UsartData usart_data;
+StackData stack_data;
+MotorData motor_data;
 Machine *m;
 
 int main()
 {
-	_delay_ms(1000);
-	timer.Assign(TIMER_DISPLAY_REFRESH, 4, DisplayRefresh);
-	sei();
-	// wskaznik do typu maszyny
+	SystemInit();
 	m = GetTypeOfMachine(TDynabox);
 	while(1)
 	{
-	/*
-		//EncoderStatus();
-		if (encoder.GetStatus() == 1)
-		{
-			param++;
-			if(param > 1000) param = 0;
-			display.Write(param);
-			encoder.ResetStatus();
-		}
-		if (encoder.GetStatus() == 2)
-		{
-			param--;
-			if((param < 0) || (param > 1000)) param = 0;
-			display.Write(param);
-			encoder.ResetStatus();
-		}
-		if (encoder.GetStatus() == 3)
-		{
-			if(param == 1) m = GetTypeOfMachine(TLockerbox);
-			if(param == 2) m = GetTypeOfMachine(TDynabox);
-			//display.Write(50);
-			encoder.ResetStatus();
-		}
-		*/
 		stack.StackPoll();
 	}
-
 }

@@ -1,17 +1,12 @@
 /*
  * modbus_tcp.cpp
  *
- *  Created on: 28 cze 2017
- *      Author: tomek
+ * Created on: 28 cze 2017
+ * Author: tomek
  */
 
 #include "modbus_tcp.h"
-#include "display.h"
 #include "stack.h"
-#include "modbus_rtu.h"
-#include "timer.h"
-#include "machine.h"
-#include "usart.h"
 #include "common.h"
 
 ModbusTCP::ModbusTCP()
@@ -21,12 +16,12 @@ ModbusTCP::ModbusTCP()
 
 void ModbusTCP::Process(uint8_t* frame)
 {
-	trans_id 		 = frame[MODBUS_TCP_TRANSACTION_ID_HI] << 8 | frame[MODBUS_TCP_TRANSACTION_ID_LO];
-	prot_id 		 = frame[MODBUS_TCP_PROTOCOL_ID_HI] << 8 | frame[MODBUS_TCP_PROTOCOL_ID_LO];
+	trans_id 		 = hi(frame[MODBUS_TCP_TRANSACTION_ID_HI]) | frame[MODBUS_TCP_TRANSACTION_ID_LO];
+	prot_id 		 = hi(frame[MODBUS_TCP_PROTOCOL_ID_HI])    | frame[MODBUS_TCP_PROTOCOL_ID_LO];
 	unit_id 		 = frame[MODBUS_TCP_UNIT_ID];
 	function_code 	 = frame[MODBUS_TCP_FUNCTION];
-	starting_address = frame[MODBUS_TCP_START_ADDR_HI] << 8 | frame[MODBUS_TCP_START_ADDR_LO];
-	quantity 		 = frame[MODBUS_TCP_QUANTITY_HI] << 8 | frame[MODBUS_TCP_QUANTITY_LO];
+	starting_address = hi(frame[MODBUS_TCP_START_ADDR_HI])     | frame[MODBUS_TCP_START_ADDR_LO];
+	quantity 		 = hi(frame[MODBUS_TCP_QUANTITY_HI])       | frame[MODBUS_TCP_QUANTITY_LO];
 
 	if(prot_id == PROTOCOL_ID_MODBUS_TCP)
 	{
