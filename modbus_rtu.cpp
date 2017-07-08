@@ -63,9 +63,9 @@ void ModbusRTU::ParseFrame(uint8_t* frame, uint8_t len)
 		{
 		case MODBUS_RTU_HOLDING_FUNCTION:
 			ParseFrameRead(frame);
-		break;
+			break;
 		default:
-		break;
+			break;
 		}
 	}
 }

@@ -76,8 +76,10 @@ void ModbusTCP::WriteMultipleRegisters(uint8_t* frame)
 	}
 	else
 	{
+		//MultipleRegisters[1] = 23;
 		UpdateMultipleRegisters(frame, starting_address, quantity);
 		WriteMultipleRegistersReply(frame);
+		AnalizeMultipleRegisters();
 	}
 }
 
@@ -96,7 +98,7 @@ void ModbusTCP::PrepareMBAPHeader(uint8_t* frame)	// without length
 	frame[MODBUS_TCP_UNIT_ID] = unit_id;
 }
 
-void ModbusTCP::ReturnHoldingRegisters(uint8_t* frame, uint8_t starting_address, uint16_t quantity)
+void ModbusTCP::ReturnHoldingRegisters(uint8_t* frame, uint16_t starting_address, uint16_t quantity)
 {
 	for(uint8_t i = 0; i < quantity; i++)
 	{
@@ -105,11 +107,11 @@ void ModbusTCP::ReturnHoldingRegisters(uint8_t* frame, uint8_t starting_address,
 	}
 }
 
-void ModbusTCP::UpdateMultipleRegisters(uint8_t* frame, uint8_t starting_address, uint16_t quantity)
+void ModbusTCP::UpdateMultipleRegisters(uint8_t* frame, uint16_t starting_address, uint16_t quantity)
 {
 	for(uint8_t i = 0; i < quantity; i++)
 	{
-		MultipleRegisters[starting_address - MODBUS_TCP_ADDR_OFFSET_MULTIPLE_REG] = (hi(frame[MODBUS_REQ_TCP_REG_VAL_HI + 2 * i])) | (lo(frame[MODBUS_REQ_TCP_REG_VAL_LO + 2 * i]));
+		MultipleRegisters[starting_address - MODBUS_TCP_ADDR_OFFSET_MULTIPLE_REG + i] = (hi(frame[MODBUS_REQ_TCP_REG_VAL_HI + 2 * i])) | (lo(frame[MODBUS_REQ_TCP_REG_VAL_LO + 2 * i]));
 	}
 }
 
@@ -147,4 +149,11 @@ void ModbusTCP::SendErrorFrame(uint8_t* frame, uint8_t error_code)
 	frame[MODBUS_TCP_FUNCTION] = function_code + 0x80;
 	frame[MODBUS_RES_TCP_BYTE_COUNT] = error_code;
 	stack_data.len = 9;
+}
+
+void ModbusTCP::AnalizeMultipleRegisters()
+{
+	// ---------------- tutaj dziala polimorfizm ----------------
+	// testowo, dla pokazania idei
+	if(MultipleRegisters[MULTIPLE_LOCATIONS_NUMBER] > 0) m->StartupTest();
 }
