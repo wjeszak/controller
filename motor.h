@@ -29,19 +29,17 @@
 #define MOTOR_ENCODER_PIN 				PINB
 #define MOTOR_ENCODER_PHASEA_PIN 		0
 #define MOTOR_ENCODER_PHASEB_PIN 		1
-#define MOTOR_ENCODER_PHASEA_ENABLE 	TIMSK0 |= (1 << OCIE0A);
-#define MOTOR_ENCODER_PHASEA_DISABLE 	TIMSK0 &= ~(1 << OCIE0A);
-#define MOTOR_ENCODER_PHASEB_ENABLE 	TIMSK1 |= (1 << OCIE1A);
-#define MOTOR_ENCODER_PHASEB_DISABLE 	TIMSK1 &= ~(1 << OCIE1A);
+#define MOTOR_ENCODER_ENABLE 			TIMSK0 |=  (1 << OCIE0A); TIMSK1 |=  (1 << OCIE1A);
+#define MOTOR_ENCODER_DISABLE 			TIMSK0 &= ~(1 << OCIE0A); TIMSK1 &= ~(1 << OCIE1A);
 
-#define MOTOR_HOME_IRQ_DDR			DDRB
-#define MOTOR_HOME_IRQ_PIN 			2
-#define MOTOR_HOME_IRQ_ENABLE 		EIMSK |=  (1 << INT2);
-#define MOTOR_HOME_IRQ_DISABLE 		EIMSK &= ~(1 << INT2);
+#define MOTOR_HOME_IRQ_DDR				DDRB
+#define MOTOR_HOME_IRQ_PIN 				2
+#define MOTOR_HOME_IRQ_ENABLE 			EIMSK |=  (1 << INT2);
+#define MOTOR_HOME_IRQ_DISABLE 			EIMSK &= ~(1 << INT2);
 
-#define ENCODER_ROWS 				64
+#define ENCODER_ROWS 					64
 
-enum Direction {Forward, Backward};
+
 
 class MotorData : public EventData
 {
@@ -53,24 +51,23 @@ class Motor : public Machine
 {
 public:
 	Motor();
-	void EncoderAndHomeIrqInit();
-	void SetDirection(Direction dir);
-	void SetSpeed(uint8_t speed);
-	Direction GetDirection();
 	void Accelerate();
-	void EV_Homing(MotorData* pdata = NULL);
 	void EV_PhaseA(MotorData* pdata = NULL);
 	void EV_PhaseB(MotorData* pdata = NULL);
 	void EV_PhaseZ(MotorData* pdata = NULL);
+	void EV_Homing(MotorData* pdata = NULL);
 	void EV_RunToPosition(MotorData* pdata);
 	void Stop();
 	uint8_t home_ok;
 	uint8_t actual_speed;
 	uint8_t desired_speed;
-	uint16_t position;
+	uint16_t actual_position;
 	uint16_t desired_position;
 private:
-	Direction _direction;
+	enum Direction {Forward, Backward};
+	void EncoderAndHomeIrqInit();
+	void SetDirection(Direction dir);
+	void SetSpeed(uint8_t speed);
 	void ST_Idle(MotorData* pdata);
 	void ST_Acceleration(MotorData* pdata);
 	void ST_Running(MotorData* pdata);
@@ -86,6 +83,8 @@ private:
 		STATE_MAP_ENTRY(&Motor::ST_Deceleration)
 		STATE_MAP_ENTRY(&Motor::ST_PositionAchieved)
 	END_STATE_MAP
+
+	Direction _direction;
 };
 
 extern Motor motor;
