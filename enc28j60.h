@@ -306,7 +306,7 @@ private:
 #define ENC_TX_BUFFER_START  		0x1A00
 #define ENC_TX_BUFFER_END    		0x1FFF
 
-#define MAX_PACKET_SIZE 			1500
+#define MAX_PACKET_SIZE 			1518
 
 extern Enc28j60 enc28j60;
 

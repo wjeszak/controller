@@ -270,8 +270,8 @@ void Enc28j60::Init()
 	RegWrite(ENC_REG_MACON3, (1<<ENC_BIT_PADCFG0) | (1<<ENC_BIT_TXCRCEN) | (1<<ENC_BIT_FRMLNEN));
 	#endif
 
-	RegWrite(ENC_REG_MAMXFLL, LO8(1518));
-	RegWrite(ENC_REG_MAMXFLH, HI8(1518));
+	RegWrite(ENC_REG_MAMXFLL, LO8(MAX_PACKET_SIZE));
+	RegWrite(ENC_REG_MAMXFLH, HI8(MAX_PACKET_SIZE));
 
 	#ifdef FULL_DUPLEX
 	// back-to-back inter packet gap delay time (0x15 for full duplex)

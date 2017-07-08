@@ -10,6 +10,7 @@
 
 #include <inttypes.h>
 #include "machine.h"
+#include "enc28j60.h"
 
 class StackData : public EventData
 {
@@ -27,46 +28,42 @@ public:
 	void Ack(StackData* pdata = NULL);
 	void Psh(StackData* pdata = NULL);
 private:
-	uint8_t EthTypeIsArpMyIP(uint8_t *buf, uint16_t len);
-	uint8_t EthTypeIsIPMyIP(uint8_t *buf, uint16_t len);
-	uint8_t EthTypeIsIcmp(uint8_t *buf);
-	void MakeArpReply(uint8_t *buf);
-	void MakeIcmpReply(uint8_t *buf, uint16_t len);
-	void MakeEthHeader(uint8_t *buf);
-	void MakeIpHeader(uint8_t *buf);
-	void MakeTcpHeader(uint8_t *buf, uint16_t rel_ack_num, uint8_t cp_seq);
-	void MakeTcpSynAckFromSyn(uint8_t *buf);
-	uint16_t Checksum(uint8_t *buf, uint16_t len, uint8_t type);
-	void FillIpHeaderChecksum(uint8_t *buf);
-	void StepSequence(uint8_t *buf, uint16_t rel_ack_num, uint8_t cp_seq);
-	uint16_t FillTcpData(uint8_t *buf,uint16_t pos, uint8_t *pdata, uint8_t len);
+	uint8_t EthTypeIsArpMyIP(uint8_t* buf, uint16_t len);
+	uint8_t EthTypeIsIPMyIP(uint8_t* buf, uint16_t len);
+	uint8_t EthTypeIsIcmp(uint8_t* buf);
+	void MakeArpReply(uint8_t* buf);
+	void MakeIcmpReply(uint8_t* buf, uint16_t len);
+	void MakeEthHeader(uint8_t* buf);
+	void MakeIpHeader(uint8_t* buf);
+	void MakeTcpHeader(uint8_t* buf, uint16_t rel_ack_num, uint8_t cp_seq);
+	void MakeTcpSynAckFromSyn(uint8_t* buf);
+	uint16_t Checksum(uint8_t* buf, uint16_t len, uint8_t type);
+	void FillIpHeaderChecksum(uint8_t* buf);
+	void StepSequence(uint8_t* buf, uint16_t rel_ack_num, uint8_t cp_seq);
+	uint16_t FillTcpData(uint8_t* buf,uint16_t pos, uint8_t* pdata, uint8_t len);
 	uint16_t GetTcpDataLen(uint8_t* buf);
-	void MakeTcpAckFromAny(uint8_t *buf, int16_t datlentoack, uint8_t addflags);
-	void MakeTcpAckWithDataNoFlags(uint8_t *buf, uint16_t dlen);
-	uint8_t Msb(uint16_t val) { return val >> 8; }
-	uint8_t Lsb(uint16_t val) { return val & 0xFF; }
-	uint8_t buf[1500];
-	uint16_t packet_len;
-	uint8_t seqnum;
-	uint16_t port;
-// States
+	void MakeTcpAckFromAny(uint8_t* buf, int16_t datlentoack, uint8_t addflags);
+	void MakeTcpAckWithDataNoFlags(uint8_t* buf, uint16_t dlen);
+
+	// States
 	void ST_Listen(StackData* pdata);
 	void ST_SynReceived(StackData* pdata);
 	void ST_Established(StackData* pdata);
 	void ST_Request(StackData* pdata);
 	enum States {ST_LISTEN = 0, ST_SYN_RECV, ST_ESTABLISHED, ST_REQUEST, ST_MAX_STATES};
-	const StateStruct* GetStateMap()
-	{
-		// to jest sprytne bo StateMap jest tworzone nie na stosie dzieki temu mozna zwrocic adres
-		static const StateStruct StateMap[] =
-		{
-			{reinterpret_cast<StateFunc>(&Stack::ST_Listen)},
-			{reinterpret_cast<StateFunc>(&Stack::ST_SynReceived)},
-			{reinterpret_cast<StateFunc>(&Stack::ST_Established)},
-			{reinterpret_cast<StateFunc>(&Stack::ST_Request)}
-		};
-		return &StateMap[0];
-	}
+	BEGIN_STATE_MAP
+		STATE_MAP_ENTRY(&Stack::ST_Listen)
+		STATE_MAP_ENTRY(&Stack::ST_SynReceived)
+		STATE_MAP_ENTRY(&Stack::ST_Established)
+		STATE_MAP_ENTRY(&Stack::ST_Request)
+	END_STATE_MAP
+
+	uint8_t Msb(uint16_t val) { return val >> 8; }
+	uint8_t Lsb(uint16_t val) { return val & 0xFF; }
+	uint8_t buf[MAX_PACKET_SIZE];
+	uint16_t packet_len;
+	uint8_t seqnum;
+	uint16_t port;
 };
 
 // ******* ETH *******
