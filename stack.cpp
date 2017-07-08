@@ -18,14 +18,13 @@ Stack::Stack() : Machine(ST_MAX_STATES)
 {
 	enc28j60.Init();
 	packet_len = 0;
-	seqnum  = 0xA; 				// my initial tcp sequence number
+	seqnum  = 0xA;
 	port = 502;
-	//display.Write(GetState());
 }
 
-void Stack::StackPoll()
+void Stack::Poll()
 {
-	packet_len = enc28j60.ReceivePacket(1500, buf);
+	packet_len = enc28j60.ReceivePacket(buf, 1500);
 	if(packet_len != 0)
 	{
 		// ARP
@@ -184,7 +183,7 @@ void Stack::MakeArpReply(uint8_t *buf)
 		i++;
 	}
 	// Eth + Arp is 42 bytes:
-	enc28j60.SendPacket(42, buf);
+	enc28j60.SendPacket(buf, 42);
 }
 
 
@@ -306,7 +305,7 @@ void Stack::MakeIcmpReply(uint8_t *buf, uint16_t len)
 		buf[ICMP_CHECKSUM_P + 1]++;
 	}
 	buf[ICMP_CHECKSUM_P]+= 0x08;
-	enc28j60.SendPacket(len,buf);
+	enc28j60.SendPacket(buf, len);
 }
 
 // ------------------------ TCP --------------------------
@@ -401,7 +400,7 @@ void Stack::MakeTcpSynAckFromSyn(uint8_t *buf)
 	buf[TCP_CHECKSUM_H_P] = ck >> 8;
 	buf[TCP_CHECKSUM_L_P] = ck & 0xFF;
 	// add 4 for option mss:
-	enc28j60.SendPacket(IP_HEADER_LEN + TCP_HEADER_LEN_PLAIN + 4 + ETH_HEADER_LEN, buf);
+	enc28j60.SendPacket(buf, IP_HEADER_LEN + TCP_HEADER_LEN_PLAIN + 4 + ETH_HEADER_LEN);
 }
 
 uint16_t Stack::FillTcpData(uint8_t *buf,uint16_t pos, uint8_t *pdata, uint8_t len)
@@ -465,7 +464,7 @@ void Stack::MakeTcpAckFromAny(uint8_t *buf, int16_t datlentoack, uint8_t addflag
 	j = Checksum(&buf[IP_SRC_P], 8 + TCP_HEADER_LEN_PLAIN, 2);
 	buf[TCP_CHECKSUM_H_P] = j >> 8;
 	buf[TCP_CHECKSUM_L_P] = j & 0xFF;
-	enc28j60.SendPacket(IP_HEADER_LEN + TCP_HEADER_LEN_PLAIN + ETH_HEADER_LEN, buf);
+	enc28j60.SendPacket(buf, IP_HEADER_LEN + TCP_HEADER_LEN_PLAIN + ETH_HEADER_LEN);
 }
 
 void Stack::MakeTcpAckWithDataNoFlags(uint8_t *buf, uint16_t dlen)
@@ -484,5 +483,5 @@ void Stack::MakeTcpAckWithDataNoFlags(uint8_t *buf, uint16_t dlen)
 	j = Checksum(&buf[IP_SRC_P], 8 + TCP_HEADER_LEN_PLAIN + dlen, 2);
 	buf[TCP_CHECKSUM_H_P] = j >> 8;
 	buf[TCP_CHECKSUM_L_P] = j & 0xFF;
-	enc28j60.SendPacket(IP_HEADER_LEN + TCP_HEADER_LEN_PLAIN + dlen + ETH_HEADER_LEN, buf);
+	enc28j60.SendPacket(buf, IP_HEADER_LEN + TCP_HEADER_LEN_PLAIN + dlen + ETH_HEADER_LEN);
 }

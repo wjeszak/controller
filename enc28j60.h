@@ -1,38 +1,36 @@
 /*
  * enc28j60.h
  *
- *  Created on: 25 maj 2017
- *      Author: tomek
+ * Created on: 25 maj 2017
+ * Author: tomek
  */
 
-/* UWAGI PRZY URUCHAMIANIU:
-1. Jesli adres MAC bedzie zle przypisany to poprawic definicje rejestrow!!
-bo sa ewidentnie zle
-2. Do przerobki: Nie ma konstruktora bo w funkcji OdbierzPakiet moze on byc wywolany.
-*/
 #ifndef ENC28J60_H_
 #define ENC28J60_H_
+
 #include <inttypes.h>
 
 class Enc28j60
 {
 public:
+	Enc28j60();
 	void Init();
-	uint16_t ReceivePacket(uint16_t rozmiar_buf, uint8_t *buf);
-	void SendPacket(uint16_t dl, uint8_t *buf);
-	void ZrzutRejestrow();
+	uint16_t ReceivePacket(uint8_t* buf, uint16_t buf_size);
+	void SendPacket(uint8_t* buf, uint16_t len);
 private:
 	void SPI_Init();
-	void SPI_Wyslij(uint8_t bajt);
-	uint8_t SPI_Odbierz();
+	void SPI_Send(uint8_t byte);
+	uint8_t SPI_Recv();
 	void Reset();
-	void RejWyczyscBity(uint8_t rejestr, uint8_t bity);
-	void RejUstawBity(uint8_t rejestr, uint8_t bity);
-	uint8_t RejCzytaj(uint8_t rejestr);
-	void RejZapisz(uint8_t rejestr, uint8_t wart_rejestru);
-	void ZapiszPhy(uint8_t rejPhy, uint16_t wartosc_rej);
-	void CzytajBuf(uint8_t *buf, uint16_t dl);
-	void ZapiszBuf(uint8_t *buf, uint16_t dl);
+	void RegClearBits(uint8_t reg, uint8_t bits);
+	void RegSetBits(uint8_t reg, uint8_t bits);
+	uint8_t RegRead(uint8_t reg);
+	void RegWrite(uint8_t reg, uint8_t val);
+	void PhyWrite(uint8_t reg, uint16_t val);
+	void BufRead(uint8_t* buf, uint16_t len);
+	void BufWrite(uint8_t* buf, uint16_t len);
+	uint8_t current_bank;
+	uint16_t next_packet;
 };
 
 #define FULL_DUPLEX
@@ -41,34 +39,32 @@ private:
 #define HI8(x) 						((uint8_t) (((x) >> 8) & 0xFF))
 
 // ENC28J60 Packet Control Byte Bit Definitions
-// Nie wiem jeszcze co to jest ??
 #define PKTCTRL_PHUGEEN 			0x08
 #define PKTCTRL_PPADEN 				0x04
 #define PKTCTRL_PCRCEN 				0x02
 #define PKTCTRL_POVERRIDE 			0x01
 
-// Kody rozkazów (s. 26)
-#define ENC28J60_CZYTAJ_REJ_KONTR 	0x00
-#define ENC28J60_CZYTAJ_BUFOR 		0x3A
-#define ENC28J60_ZAPISZ_REJ_KONTR 	0x40
-#define ENC28J60_ZAPISZ_BUFOR 		0x7A
-#define ENC28J60_USTAW_BITY 		0x80
-#define ENC28J60_WYCZYSC_BITY 		0xA0
-#define ENC28J60_RESET 				0xFF
+// (DT p. 26)
+#define ENC28J60_RCR 				0x00
+#define ENC28J60_RBM 				0x3A
+#define ENC28J60_WCR 				0x40
+#define ENC28J60_WBM 				0x7A
+#define ENC28J60_BFS 				0x80
+#define ENC28J60_BFC 				0xA0
+#define ENC28J60_SRC 				0xFF
 
-// SPOSÓB DOSTÊPU DO REJESTRÓW KONTROLNYCH
-// Adres rejestru: 				bity 0-4
-// Numer banku:	   				bity 5-6
-// Znacznik typu (ETH lub MAC i MII): bit 7
+// Reg address: 					 bits 0-4
+// No of bank:	   				     bits 5-6
+// type marker (ETH or MAC and MII): bit 7
 
-#define ADR_MASKA 					0x1F		// 0b00011111	wlasciwy adres rejestru
-#define BANK_MASKA 					0x60		// 0b01100000 	numer banku
-// patrz s. 27
-#define MAC_MII_MASKA 				0x80		// 0b10000000 	znacznik typu - do odczytu tego typu rejestru trzeba
-									// odczytac na poczatku dodatkowy bajt
+#define ADDR_MASK 					0x1F		// 0b00011111
+#define BANK_MASK 					0x60		// 0b01100000
+// (DT p. 27)
+#define MAC_MII_MASK 				0x80		// 0b10000000
+
 // -------------------------------------------------
 
-	/* enc registers bank 0 */
+// registers bank 0
 #define ENC_REG_ERDPTL 				(0x00 | 0x00)
 #define ENC_REG_ERDPTH 				(0x00 | 0x01)
 #define ENC_REG_EWRPTL 				(0x00 | 0x02)
@@ -94,7 +90,7 @@ private:
 #define ENC_REG_EDMACSL 			(0x00 | 0x16)
 #define ENC_REG_EDMACSH 			(0x00 | 0x17)
 
-	/* enc registers bank 1 */
+// registers bank 1
 #define ENC_REG_EHT0 				(0x20 | 0x00)
 #define ENC_REG_EHT1 				(0x20 | 0x01)
 #define ENC_REG_EHT2 				(0x20 | 0x02)
@@ -142,7 +138,7 @@ private:
 	 #define ENC_BIT_BCEN 			0
 #define ENC_REG_EPKTCNT 			(0x20 | 0x19)
 
-	/* enc registers bank 2 */
+// registers bank 2
 	#define ENC_REG_MACON1   (0x80 | 0x40 | 0x00)
 	 #define ENC_BIT_LOOPBK  4
 	 #define ENC_BIT_TXPAUS  3
@@ -192,7 +188,7 @@ private:
 	#define ENC_REG_MIRDL    (0x80 | 0x40 | 0x18)
 	#define ENC_REG_MIRDH    (0x80 | 0x40 | 0x19)
 
-	/* enc registers bank 3 */
+// registers bank 3
 	#define ENC_REG_MAADR1   (0x80 | 0x60 | 0x00)
 	#define ENC_REG_MAADR0   (0x80 | 0x60 | 0x01)
 	#define ENC_REG_MAADR3   (0x80 | 0x60 | 0x02)
@@ -227,7 +223,7 @@ private:
 	#define ENC_REG_EPAUSL   (0x60 | 0x18)
 	#define ENC_REG_EPAUSH   (0x60 | 0x19)
 
-	/* enc registers common in all banks */
+// enc registers common in all banks
 	#define ENC_REG_EIE      (0x00 | 0x1B)
 	 #define ENC_BIT_INTIE   7
 	 #define ENC_BIT_PKTIE   6
@@ -266,7 +262,7 @@ private:
 	 #define ENC_BIT_BSEL1   1
 	 #define ENC_BIT_BSEL0   0
 
-	/* phy registers */
+// phy registers
 	#define ENC_REG_PHCON1   0x00
 	 #define ENC_BIT_PRST    15
 	 #define ENC_BIT_PLOOPBK 14
@@ -303,25 +299,15 @@ private:
 	 #define ENC_BIT_LFRQ0   2
 	 #define ENC_BIT_STRCH   1
 
-// Wewnetrzny bufor nadawczy i odbiorczy
-// Poczatek odbiorczego
-	#define ENC_RX_BUFFER_START  0x0000
-	#define ENC_RX_BUFFER_END    0x19FF
-	// tx buffer 0x0600 = 1536 bytes
-	#define ENC_TX_BUFFER_START  0x1A00
-	#define ENC_TX_BUFFER_END    0x1FFF
 
-#define MAX_ROZMIAR_PAKIETU 		1500
+#define ENC_RX_BUFFER_START  0x0000
+#define ENC_RX_BUFFER_END    0x19FF
+// tx buffer 0x0600 = 1536 bytes
+#define ENC_TX_BUFFER_START  0x1A00
+#define ENC_TX_BUFFER_END    0x1FFF
 
-
-//extern uint8_t enc28j60getrev(void);
-#ifdef ENC28J60_BROADCAST
-extern void enc28j60EnableBroadcast(void);
-extern void enc28j60DisableBroadcast(void);
-#endif
+#define MAX_PACKET_SIZE 	1500
 
 extern Enc28j60 enc28j60;
-//extern uint8_t enc28j60linkup(void);
-
 
 #endif /* ENC28J60_H_ */

@@ -46,6 +46,6 @@ int main()
 	m = GetTypeOfMachine(TDynabox);
 	while(1)
 	{
-		stack.StackPoll();
+		stack.Poll();
 	}
 }

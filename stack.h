@@ -21,7 +21,7 @@ class Stack : public Machine
 {
 public:
 	Stack();
-	void StackPoll();
+	void Poll();
 	// Events
 	void Syn(StackData* pdata = NULL);
 	void Ack(StackData* pdata = NULL);
