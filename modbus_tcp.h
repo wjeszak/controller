@@ -84,23 +84,22 @@ public:
 	void Process(uint8_t* frame);
 	void ReadHoldingRegisters(uint8_t* frame);
 	void WriteMultipleRegisters(uint8_t* frame);
+	void UpdateHoldingRegisters(uint8_t address, uint16_t value);
 private:
 	void PrepareMBAPHeader(uint8_t* frame);
-	void UpdateHoldingRegisters(uint8_t address, uint16_t value);
-	void UpdateMultipleRegisters(uint8_t starting_address, uint16_t quantity);
 	void ReturnHoldingRegisters(uint8_t* frame, uint8_t starting_address, uint16_t quantity);
-	void SendErrorFrame(uint8_t* frame, uint8_t error_code);
+	void UpdateMultipleRegisters(uint8_t* frame, uint8_t starting_address, uint16_t quantity);
 	void ReadHoldingRegistersReply(uint8_t* frame);
 	void WriteMultipleRegistersReply(uint8_t* frame);
+	void SendErrorFrame(uint8_t* frame, uint8_t error_code);
 	uint16_t HoldingRegisters[MODBUS_TCP_NUMBER_OF_HOLDING_REG];
 	uint16_t MultipleRegisters[MODBUS_TCP_NUMBER_OF_MULTIPLE_REG];
 	uint16_t trans_id;
 	uint16_t prot_id;
-	uint8_t unit_id;
-	uint8_t function_code;
+	uint8_t  unit_id;
+	uint8_t  function_code;
 	uint16_t starting_address;
 	uint16_t quantity;
-	uint16_t length;
 };
 
 extern ModbusTCP modbus_tcp;
