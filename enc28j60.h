@@ -139,174 +139,174 @@ private:
 #define ENC_REG_EPKTCNT 			(0x20 | 0x19)
 
 // registers bank 2
-	#define ENC_REG_MACON1   (0x80 | 0x40 | 0x00)
-	 #define ENC_BIT_LOOPBK  4
-	 #define ENC_BIT_TXPAUS  3
-	 #define ENC_BIT_RXPAUS  2
-	 #define ENC_BIT_PASSALL 1
-	 #define ENC_BIT_MARXEN  0
-	#define ENC_REG_MACON2   (0x80 | 0x40 | 0x01)
-	 #define ENC_BIT_MARST   7
-	 #define ENC_BIT_RNDRST  6
-	 #define ENC_BIT_MARXRST 3
-	 #define ENC_BIT_RFUNRST 2
-	 #define ENC_BIT_MATXRST 1
-	 #define ENC_BIT_TFUNRST 0
-	#define ENC_REG_MACON3   (0x80 | 0x40 | 0x02)
-	 #define ENC_BIT_PADCFG2 7
-	 #define ENC_BIT_PADCFG1 6
-	 #define ENC_BIT_PADCFG0 5
-	 #define ENC_BIT_TXCRCEN 4
-	 #define ENC_BIT_PHDRLEN 3
-	 #define ENC_BIT_HFRMEN  2
-	 #define ENC_BIT_FRMLNEN 1
-	 #define ENC_BIT_FULDPX  0
-	#define ENC_REG_MACON4   (0x80 | 0x40 | 0x03)
-	 #define ENC_BIT_DEFER   6
-	 #define ENC_BIT_BPEN    5
-	 #define ENC_BIT_NOBKOFF 4
-	 #define ENC_BIT_LONGPRE 1
-	 #define ENC_BIT_PUREPRE 0
-	#define ENC_REG_MABBIPG  (0x80 | 0x40 | 0x04)
-	#define ENC_REG_MAIPGL   (0x80 | 0x40 | 0x06)
-	#define ENC_REG_MAIPGH   (0x80 | 0x40 | 0x07)
-	#define ENC_REG_MACLCON1 (0x80 | 0x40 | 0x08)
-	#define ENC_REG_MACLCON2 (0x80 | 0x40 | 0x09)
-	#define ENC_REG_MAMXFLL  (0x80 | 0x40 | 0x0A)
-	#define ENC_REG_MAMXFLH  (0x80 | 0x40 | 0x0B)
-	#define ENC_REG_MAPHSUP  (0x80 | 0x40 | 0x0D)
-	 #define ENC_BIT_RSTINTFC 7
-	 #define ENC_BIT_RSTRMII  3
-	#define ENC_REG_MICON    (0x80 | 0x40 | 0x11)
-	 #define ENC_BIT_RSTMII  7
-	#define ENC_REG_MICMD    (0x80 | 0x40 | 0x12)
-	 #define ENC_BIT_MIISCAN 1
-	 #define ENC_BIT_MIIRD   0
-	#define ENC_REG_MIREGADR (0x80 | 0x40 | 0x14)
-	#define ENC_REG_MIWRL    (0x80 | 0x40 | 0x16)
-	#define ENC_REG_MIWRH    (0x80 | 0x40 | 0x17)
-	#define ENC_REG_MIRDL    (0x80 | 0x40 | 0x18)
-	#define ENC_REG_MIRDH    (0x80 | 0x40 | 0x19)
+#define ENC_REG_MACON1   			(0x80 | 0x40 | 0x00)
+	 #define ENC_BIT_LOOPBK  		4
+ 	 #define ENC_BIT_TXPAUS  		3
+ 	 #define ENC_BIT_RXPAUS  		2
+ 	 #define ENC_BIT_PASSALL 		1
+ 	 #define ENC_BIT_MARXEN  		0
+#define ENC_REG_MACON2   			(0x80 | 0x40 | 0x01)
+ 	 #define ENC_BIT_MARST   		7
+ 	 #define ENC_BIT_RNDRST  		6
+ 	 #define ENC_BIT_MARXRST 		3
+ 	 #define ENC_BIT_RFUNRST 		2
+ 	 #define ENC_BIT_MATXRST 		1
+ 	 #define ENC_BIT_TFUNRST 		0
+#define ENC_REG_MACON3   			(0x80 | 0x40 | 0x02)
+ 	 #define ENC_BIT_PADCFG2 		7
+ 	 #define ENC_BIT_PADCFG1 		6
+ 	 #define ENC_BIT_PADCFG0 		5
+ 	 #define ENC_BIT_TXCRCEN 		4
+ 	 #define ENC_BIT_PHDRLEN 		3
+ 	 #define ENC_BIT_HFRMEN  		2
+ 	 #define ENC_BIT_FRMLNEN 		1
+ 	 #define ENC_BIT_FULDPX  		0
+#define ENC_REG_MACON4   			(0x80 | 0x40 | 0x03)
+ 	 #define ENC_BIT_DEFER   		6
+ 	 #define ENC_BIT_BPEN    		5
+ 	 #define ENC_BIT_NOBKOFF 		4
+ 	 #define ENC_BIT_LONGPRE 		1
+ 	 #define ENC_BIT_PUREPRE 		0
+#define ENC_REG_MABBIPG  			(0x80 | 0x40 | 0x04)
+#define ENC_REG_MAIPGL   			(0x80 | 0x40 | 0x06)
+#define ENC_REG_MAIPGH   			(0x80 | 0x40 | 0x07)
+#define ENC_REG_MACLCON1 			(0x80 | 0x40 | 0x08)
+#define ENC_REG_MACLCON2 			(0x80 | 0x40 | 0x09)
+#define ENC_REG_MAMXFLL 			(0x80 | 0x40 | 0x0A)
+#define ENC_REG_MAMXFLH  			(0x80 | 0x40 | 0x0B)
+#define ENC_REG_MAPHSUP  			(0x80 | 0x40 | 0x0D)
+ 	 #define ENC_BIT_RSTINTFC 		7
+ 	 #define ENC_BIT_RSTRMII  		3
+#define ENC_REG_MICON    			(0x80 | 0x40 | 0x11)
+ 	 #define ENC_BIT_RSTMII  		7
+#define ENC_REG_MICMD    			(0x80 | 0x40 | 0x12)
+ 	 #define ENC_BIT_MIISCAN 		1
+ 	 #define ENC_BIT_MIIRD   		0
+#define ENC_REG_MIREGADR 			(0x80 | 0x40 | 0x14)
+#define ENC_REG_MIWRL    			(0x80 | 0x40 | 0x16)
+#define ENC_REG_MIWRH    			(0x80 | 0x40 | 0x17)
+#define ENC_REG_MIRDL    			(0x80 | 0x40 | 0x18)
+#define ENC_REG_MIRDH    			(0x80 | 0x40 | 0x19)
 
 // registers bank 3
-	#define ENC_REG_MAADR1   (0x80 | 0x60 | 0x00)
-	#define ENC_REG_MAADR0   (0x80 | 0x60 | 0x01)
-	#define ENC_REG_MAADR3   (0x80 | 0x60 | 0x02)
-	#define ENC_REG_MAADR2   (0x80 | 0x60 | 0x03)
-	#define ENC_REG_MAADR5   (0x80 | 0x60 | 0x04)
-	#define ENC_REG_MAADR4   (0x80 | 0x60 | 0x05)
-	#define ENC_REG_EBSTSD   (0x60 | 0x06)
-	#define ENC_REG_EBSTCON  (0x60 | 0x07)
-	 #define ENC_BIT_PSV2    7
-	 #define ENC_BIT_PSV1    6
-	 #define ENC_BIT_PSV0    5
-	 #define ENC_BIT_PSEL    4
-	 #define ENC_BIT_TMSEL1  3
-	 #define ENC_BIT_TMSEL0  2
-	 #define ENC_BIT_TME     1
-	 #define ENC_BIT_BISTST  0
-	#define ENC_REG_EBSTCSL  (0x60 | 0x08)
-	#define ENC_REG_EBSTCSH  (0x60 | 0x09)
-	#define ENC_REG_MISTAT   (0x80 | 0x60 | 0x0A)
-	 #define ENC_BIT_NVALID  2
-	 #define ENC_BIT_SCAN    1
-	 #define ENC_BIT_BUSY    0
-	#define ENC_REG_EREVID   (0x60 | 0x12)
-	#define ENC_REG_ECOCON   (0x60 | 0x15)
-	 #define ENC_BIT_COCON2  2
-	 #define ENC_BIT_COCON1  1
-	 #define ENC_BIT_COCON0  0
-	#define ENC_REG_EFLOCON  (0x60 | 0x17)
-	 #define ENC_BIT_FULDPXS 2
-	 #define ENC_BIT_FCEN1   1
-	 #define ENC_BIT_FCEN0   0
-	#define ENC_REG_EPAUSL   (0x60 | 0x18)
-	#define ENC_REG_EPAUSH   (0x60 | 0x19)
+#define ENC_REG_MAADR1   			(0x80 | 0x60 | 0x00)
+#define ENC_REG_MAADR0   			(0x80 | 0x60 | 0x01)
+#define ENC_REG_MAADR3   			(0x80 | 0x60 | 0x02)
+#define ENC_REG_MAADR2   			(0x80 | 0x60 | 0x03)
+#define ENC_REG_MAADR5   			(0x80 | 0x60 | 0x04)
+#define ENC_REG_MAADR4   			(0x80 | 0x60 | 0x05)
+#define ENC_REG_EBSTSD   			(0x60 | 0x06)
+#define ENC_REG_EBSTCON  			(0x60 | 0x07)
+ 	 #define ENC_BIT_PSV2    		7
+ 	 #define ENC_BIT_PSV1    		6
+ 	 #define ENC_BIT_PSV0    		5
+ 	 #define ENC_BIT_PSEL    		4
+ 	 #define ENC_BIT_TMSEL1  		3
+ 	 #define ENC_BIT_TMSEL0  		2
+ 	 #define ENC_BIT_TME     		1
+ 	 #define ENC_BIT_BISTST  		0
+#define ENC_REG_EBSTCSL  			(0x60 | 0x08)
+#define ENC_REG_EBSTCSH  			(0x60 | 0x09)
+#define ENC_REG_MISTAT   			(0x80 | 0x60 | 0x0A)
+ 	 #define ENC_BIT_NVALID  		2
+ 	 #define ENC_BIT_SCAN    		1
+ 	 #define ENC_BIT_BUSY    		0
+#define ENC_REG_EREVID   			(0x60 | 0x12)
+#define ENC_REG_ECOCON   			(0x60 | 0x15)
+ 	 #define ENC_BIT_COCON2  		2
+ 	 #define ENC_BIT_COCON1  		1
+ 	 #define ENC_BIT_COCON0  		0
+#define ENC_REG_EFLOCON  			(0x60 | 0x17)
+ 	 #define ENC_BIT_FULDPXS 		2
+	 #define ENC_BIT_FCEN1   		1
+ 	 #define ENC_BIT_FCEN0  		0
+#define ENC_REG_EPAUSL   			(0x60 | 0x18)
+#define ENC_REG_EPAUSH   			(0x60 | 0x19)
 
-// enc registers common in all banks
-	#define ENC_REG_EIE      (0x00 | 0x1B)
-	 #define ENC_BIT_INTIE   7
-	 #define ENC_BIT_PKTIE   6
-	 #define ENC_BIT_DMAIE   5
-	 #define ENC_BIT_LINKIE  4
-	 #define ENC_BIT_TXIE    3
-	 #define ENC_BIT_WOLIE   2
-	 #define ENC_BIT_TXERIE  1
-	 #define ENC_BIT_RXERIE  0
-	#define ENC_REG_EIR      (0x00 | 0x1C)
-	 #define ENC_BIT_PKTIF   6
-	 #define ENC_BIT_DMAIF   5
-	 #define ENC_BIT_LINKIF  4
-	 #define ENC_BIT_TXIF    3
-	 #define ENC_BIT_WOLIF   2
-	 #define ENC_BIT_TXERIF  1
-	 #define ENC_BIT_RXERIF  0
-	#define ENC_REG_ESTAT    (0x00 | 0x1D)
-	 #define ENC_BIT_INT     7
-	 #define ENC_BIT_LATECOL 4
-	 #define ENC_BIT_RXBUSY  2
-	 #define ENC_BIT_TXABRT  1
-	 #define ENC_BIT_CLKRDY  0
-	#define ENC_REG_ECON2    (0x00 | 0x1E)
-	 #define ENC_BIT_AUTOINC 7
-	 #define ENC_BIT_PKTDEC  6
-	 #define ENC_BIT_PWRSV   5
-	 #define ENC_BIT_VRPS    3
-	#define ENC_REG_ECON1    (0x00 | 0x1F)
-	 #define ENC_BIT_TXRST   7
-	 #define ENC_BIT_RXRST   6
-	 #define ENC_BIT_DMAST   5
-	 #define ENC_BIT_CSUMEN  4
-	 #define ENC_BIT_TXRTS   3
-	 #define ENC_BIT_RXEN    2
-	 #define ENC_BIT_BSEL1   1
-	 #define ENC_BIT_BSEL0   0
+// registers common in all banks
+#define ENC_REG_EIE      			(0x00 | 0x1B)
+ 	 #define ENC_BIT_INTIE  		7
+ 	 #define ENC_BIT_PKTIE   		6
+ 	 #define ENC_BIT_DMAIE   		5
+ 	 #define ENC_BIT_LINKIE  		4
+ 	 #define ENC_BIT_TXIE    		3
+ 	 #define ENC_BIT_WOLIE   		2
+ 	 #define ENC_BIT_TXERIE  		1
+ 	 #define ENC_BIT_RXERIE  		0
+#define ENC_REG_EIR      			(0x00 | 0x1C)
+ 	 #define ENC_BIT_PKTIF   		6
+ 	 #define ENC_BIT_DMAIF   		5
+ 	 #define ENC_BIT_LINKIF  		4
+ 	 #define ENC_BIT_TXIF    		3
+ 	 #define ENC_BIT_WOLIF   		2
+ 	 #define ENC_BIT_TXERIF  		1
+ 	 #define ENC_BIT_RXERIF  		0
+#define ENC_REG_ESTAT    			(0x00 | 0x1D)
+ 	 #define ENC_BIT_INT     		7
+ 	 #define ENC_BIT_LATECOL 		4
+ 	 #define ENC_BIT_RXBUSY  		2
+ 	 #define ENC_BIT_TXABRT  		1
+ 	 #define ENC_BIT_CLKRDY  		0
+#define ENC_REG_ECON2    			(0x00 | 0x1E)
+ 	 #define ENC_BIT_AUTOINC 		7
+ 	 #define ENC_BIT_PKTDEC  		6
+ 	 #define ENC_BIT_PWRSV   		5
+ 	 #define ENC_BIT_VRPS    		3
+#define ENC_REG_ECON1    			(0x00 | 0x1F)
+ 	 #define ENC_BIT_TXRST   		7
+ 	 #define ENC_BIT_RXRST   		6
+ 	 #define ENC_BIT_DMAST   		5
+ 	 #define ENC_BIT_CSUMEN  		4
+	 #define ENC_BIT_TXRTS   		3
+ 	 #define ENC_BIT_RXEN    		2
+ 	 #define ENC_BIT_BSEL1   		1
+ 	 #define ENC_BIT_BSEL0   		0
 
 // phy registers
-	#define ENC_REG_PHCON1   0x00
-	 #define ENC_BIT_PRST    15
-	 #define ENC_BIT_PLOOPBK 14
-	 #define ENC_BIT_PPWRSV  11
-	 #define ENC_BIT_PDPXMD  8
-	#define ENC_REG_PHSTAT1  0x01
-	 #define ENC_BIT_PFDPX   12
-	 #define ENC_BIT_PHDPX   11
-	 #define ENC_BIT_LLSTAT  2
-	 #define ENC_BIT_JBSTAT  1
-	#define ENC_REG_PHID1    0x02
-	#define ENC_REG_PHID2    0x03
-	#define ENC_REG_PHCON2   0x10
-	 #define ENC_BIT_FRCLNK  14
-	 #define ENC_BIT_TXDIS   13
-	 #define ENC_BIT_JABBER  10
-	 #define ENC_BIT_HDLDIS  8
-	#define ENC_REG_PHSTAT2  0x11
-	 #define ENC_BIT_TXSTAT  13
-	 #define ENC_BIT_RXSTAT  12
-	 #define ENC_BIT_COLSTAT 11
-	 #define ENC_BIT_LSTAT   10
-	 #define ENC_BIT_DPXSTAT 9
-	 #define ENC_BIT_PLRITY  4
-	#define ENC_REG_PHIE     0x12
-	 #define ENC_BIT_PLNKIE  4
-	 #define ENC_BIT_PGEIE   1
-	#define ENC_REG_PHIR     0x13
-	 #define ENC_BIT_PLNKIF  4
-	 #define ENC_BIT_PGIF    2
-	#define ENC_REG_PHLCON   0x14
-	 #define ENC_BIT_LACFG0  8
-	 #define ENC_BIT_LBCFG0  4
-	 #define ENC_BIT_LFRQ0   2
-	 #define ENC_BIT_STRCH   1
+#define ENC_REG_PHCON1   			0x00
+ 	 #define ENC_BIT_PRST    		15
+ 	 #define ENC_BIT_PLOOPBK 		14
+ 	 #define ENC_BIT_PPWRSV  		11
+ 	 #define ENC_BIT_PDPXMD 		8
+#define ENC_REG_PHSTAT1  			0x01
+ 	 #define ENC_BIT_PFDPX   		12
+ 	 #define ENC_BIT_PHDPX   		11
+ 	 #define ENC_BIT_LLSTAT  		2
+ 	 #define ENC_BIT_JBSTAT  		1
+#define ENC_REG_PHID1    			0x02
+#define ENC_REG_PHID2    			0x03
+#define ENC_REG_PHCON2   			0x10
+ 	 #define ENC_BIT_FRCLNK  		14
+ 	 #define ENC_BIT_TXDIS   		13
+ 	 #define ENC_BIT_JABBER  		10
+ 	 #define ENC_BIT_HDLDIS  		8
+#define ENC_REG_PHSTAT2  			0x11
+ 	 #define ENC_BIT_TXSTAT  		13
+	 #define ENC_BIT_RXSTAT  		12
+ 	 #define ENC_BIT_COLSTAT 		11
+ 	 #define ENC_BIT_LSTAT   		10
+	 #define ENC_BIT_DPXSTAT 		9
+ 	 #define ENC_BIT_PLRITY  		4
+#define ENC_REG_PHIE     			0x12
+ 	 #define ENC_BIT_PLNKIE  		4
+ 	 #define ENC_BIT_PGEIE   		1
+#define ENC_REG_PHIR     			0x13
+ 	 #define ENC_BIT_PLNKIF  		4
+ 	 #define ENC_BIT_PGIF    		2
+#define ENC_REG_PHLCON   			0x14
+ 	 #define ENC_BIT_LACFG0  		8
+ 	 #define ENC_BIT_LBCFG0  		4
+ 	 #define ENC_BIT_LFRQ0   		2
+ 	 #define ENC_BIT_STRCH   		1
 
 
-#define ENC_RX_BUFFER_START  0x0000
-#define ENC_RX_BUFFER_END    0x19FF
+#define ENC_RX_BUFFER_START  		0x0000
+#define ENC_RX_BUFFER_END    		0x19FF
 // tx buffer 0x0600 = 1536 bytes
-#define ENC_TX_BUFFER_START  0x1A00
-#define ENC_TX_BUFFER_END    0x1FFF
+#define ENC_TX_BUFFER_START  		0x1A00
+#define ENC_TX_BUFFER_END    		0x1FFF
 
-#define MAX_PACKET_SIZE 	1500
+#define MAX_PACKET_SIZE 			1500
 
 extern Enc28j60 enc28j60;
 
