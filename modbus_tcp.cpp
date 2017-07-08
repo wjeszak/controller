@@ -49,9 +49,9 @@ void ModbusTCP::ReadHoldingRegisters(uint8_t* frame)
 {
 	uint8_t error_code = 0;
 
-	if((quantity > MODBUS_TCP_HOLDING_MAX_QUANTITY) || (quantity < 1)) error_code = 3;
-	if((starting_address + quantity - MODBUS_TCP_ADDR_OFFSET_HOLDING_REG) > MODBUS_TCP_NUMBER_OF_HOLDING_REG) error_code = 2;
-	if(starting_address < MODBUS_TCP_ADDR_OFFSET_HOLDING_REG) error_code = 2;
+	if((quantity > MODBUS_TCP_HOLDING_MAX_QUANTITY) || (quantity < 1)) error_code = MODBUS_TCP_ERROR_ILL_DATA_VAL;
+	if((starting_address + quantity - MODBUS_TCP_ADDR_OFFSET_HOLDING_REG) > MODBUS_TCP_NUMBER_OF_HOLDING_REG) error_code = MODBUS_TCP_ERROR_ILL_DATA_ADDR;
+	if(starting_address < MODBUS_TCP_ADDR_OFFSET_HOLDING_REG) error_code = MODBUS_TCP_ERROR_ILL_DATA_ADDR;
 	if(error_code)
 	{
 		SendErrorFrame(frame, error_code);
@@ -66,9 +66,9 @@ void ModbusTCP::WriteMultipleRegisters(uint8_t* frame)
 {
 	uint8_t error_code = 0;
 
-	if((quantity > MODBUS_TCP_MULTIPLE_MAX_QUANTITY) || (quantity < 1)) error_code = 3;
-	if((starting_address + quantity - MODBUS_TCP_ADDR_OFFSET_MULTIPLE_REG) > MODBUS_TCP_NUMBER_OF_MULTIPLE_REG) error_code = 2;
-	if(starting_address < MODBUS_TCP_ADDR_OFFSET_MULTIPLE_REG) error_code = 2;
+	if((quantity > MODBUS_TCP_MULTIPLE_MAX_QUANTITY) || (quantity < 1)) error_code = MODBUS_TCP_ERROR_ILL_DATA_VAL;
+	if((starting_address + quantity - MODBUS_TCP_ADDR_OFFSET_MULTIPLE_REG) > MODBUS_TCP_NUMBER_OF_MULTIPLE_REG) error_code = MODBUS_TCP_ERROR_ILL_DATA_ADDR;
+	if(starting_address < MODBUS_TCP_ADDR_OFFSET_MULTIPLE_REG) error_code = MODBUS_TCP_ERROR_ILL_DATA_ADDR;
 
 	if(error_code)
 	{
@@ -76,7 +76,6 @@ void ModbusTCP::WriteMultipleRegisters(uint8_t* frame)
 	}
 	else
 	{
-		//MultipleRegisters[1] = 23;
 		UpdateMultipleRegisters(frame, starting_address, quantity);
 		WriteMultipleRegistersReply(frame);
 		AnalizeMultipleRegisters();
@@ -155,5 +154,6 @@ void ModbusTCP::AnalizeMultipleRegisters()
 {
 	// ---------------- tutaj dziala polimorfizm ----------------
 	// testowo, dla pokazania idei
+	// w zaleznosci od ustawienia wskaznika 'm' w funcji main() uruchomi sie odpowiednia funkcja StartupTest()
 	if(MultipleRegisters[MULTIPLE_LOCATIONS_NUMBER] > 0) m->StartupTest();
 }

@@ -49,6 +49,9 @@
 
 #define MODBUS_TCP_HOLDING_MAX_QUANTITY 		125
 #define MODBUS_TCP_MULTIPLE_MAX_QUANTITY	 	123
+
+#define MODBUS_TCP_ERROR_ILL_DATA_ADDR 			2
+#define MODBUS_TCP_ERROR_ILL_DATA_VAL 			3
 // ------------------------------------------------
 #define HOLDING_ORDER_STATUS 					0
 	#define ORDER_STATUS_READY					0x0000
