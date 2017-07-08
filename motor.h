@@ -53,11 +53,11 @@ class Motor : public Machine
 {
 public:
 	Motor();
-
 	void EncoderAndHomeIrqInit();
 	void SetDirection(Direction dir);
 	void SetSpeed(uint8_t speed);
 	Direction GetDirection();
+	void Accelerate();
 	void EV_Homing(MotorData* pdata = NULL);
 	void EV_PhaseA(MotorData* pdata = NULL);
 	void EV_PhaseB(MotorData* pdata = NULL);

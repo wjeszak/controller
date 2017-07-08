@@ -142,7 +142,7 @@ void Motor::ST_Acceleration(MotorData* pdata)
 {
 	actual_speed = 0;
 	MOTOR_START;
-	timer.Assign(TIMER_MOTOR_ACCELERATE, 10, MotorAccelerate);
+	timer.Assign(TIMER_MOTOR_ACCELERATE, 500, MotorAccelerate);
 }
 
 void Motor::ST_Running(MotorData* pdata)
@@ -198,6 +198,20 @@ void Motor::EV_RunToPosition(MotorData* pdata)
 		Event(Transitions[current_state], pdata);
 	}
 }
+
+void Motor::Accelerate()
+{
+	OCR2A = motor.actual_speed++;
+//	display.Write(motor.actual_speed);
+	if(motor.actual_speed == motor.desired_speed)
+	{
+		timer.Disable(3);
+		motor.Event(2, NULL);
+	}
+}
+
+
+
 ISR(TIMER0_COMPA_vect)
 {
 	motor.EV_PhaseA(NULL);

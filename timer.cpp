@@ -96,13 +96,7 @@ void ModbusPoll()
 // TIMER_MOTOR_ACCELERATE
 void MotorAccelerate()
 {
-	OCR2A = motor.actual_speed++;
-//	display.Write(motor.actual_speed);
-	if(motor.actual_speed == motor.desired_speed)
-	{
-		timer.Disable(3);
-		motor.Event(2, NULL);
-	}
+	motor.Accelerate();
 }
 
 ISR(TIMER2_COMPB_vect)
