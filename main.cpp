@@ -43,6 +43,7 @@ int main()
 {
 	SystemInit();
 	m = GetTypeOfMachine(TDynabox);
+	display.Write(4764);
 	while(1)
 	{
 		stack.Poll();
