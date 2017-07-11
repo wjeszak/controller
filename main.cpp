@@ -3,6 +3,8 @@
  *
  * Created on: 25 maj 2017
  * Author: tomek
+ * Add compiler option: -std=c++11 (extended constructor list, display):
+ * Project's properties->C/C++ Build->Settings->AVR C++ Compiler->Miscellaneous->Other flags
  *
  */
 

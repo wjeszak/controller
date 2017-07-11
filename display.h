@@ -9,6 +9,7 @@
 #define DISPLAY_H_
 
 #include <avr/io.h>
+#include <avr/pgmspace.h>
 #include <inttypes.h>
 
 #define DISP1_DDR 				DDRD
@@ -40,13 +41,18 @@
 #define DISP_CHAR_8				0x00
 #define DISP_CHAR_9 			0x10
 #define DISP_CHAR_ALL_OFF		0x7F
+#define DISP_CHAR_F 			0x0E
+#define DISP_CHAR_L				0x47
+#define DISP_CHAR_P 			0x0C
+#define DISP_CHAR_b				0x03
 
 class Display
 {
 public:
 	Display();
 	void Refresh();
-	void Write(uint16_t value);
+	void Write(uint8_t val);
+	void Write(uint16_t val);
 private:
 	struct Disp
 	{
@@ -56,7 +62,7 @@ private:
 	};
 	Disp disp_tab[4];
 	uint8_t disp_number;
-	uint8_t digits[11];
+	const uint8_t digits[15];
 	uint8_t value[4];
 };
 

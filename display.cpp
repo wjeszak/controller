@@ -5,9 +5,12 @@
  *      Author: tomek
  */
 
+#include <avr/pgmspace.h>
 #include "display.h"
 
-Display::Display()
+Display::Display() : digits {DISP_CHAR_0, DISP_CHAR_1, DISP_CHAR_2, DISP_CHAR_3, DISP_CHAR_4,
+	DISP_CHAR_5, DISP_CHAR_6, DISP_CHAR_7, DISP_CHAR_8, DISP_CHAR_9, DISP_CHAR_ALL_OFF,
+	DISP_CHAR_F, DISP_CHAR_L, DISP_CHAR_P, DISP_CHAR_b}
 {
 	disp_tab[0].ddr =  &DISP1_DDR;
 	disp_tab[0].port = &DISP1_PORT;
@@ -30,17 +33,6 @@ Display::Display()
 
 	DISP_SEGM_DDR = 0b01111111;
 	disp_number = 0;
-	digits[0] =  DISP_CHAR_0;
-	digits[1] =  DISP_CHAR_1;
-	digits[2] =  DISP_CHAR_2;
-	digits[3] =  DISP_CHAR_3;
-	digits[4] =  DISP_CHAR_4;
-	digits[5] =  DISP_CHAR_5;
-	digits[6] =  DISP_CHAR_6;
-	digits[7] =  DISP_CHAR_7;
-	digits[8] =  DISP_CHAR_8;
-	digits[9] =  DISP_CHAR_9;
-	digits[10] = DISP_CHAR_ALL_OFF;
 	// Startup values
 	value[0] = digits[1];
 	value[1] = digits[2];
@@ -64,6 +56,14 @@ void Display::Write(uint16_t val)
 {
 	value[0] = digits[val / 1000]; 			// thousands
 	value[1] = digits[(val / 100) % 10]; 	// hundreds
+	value[2] = digits[(val % 100) / 10]; 	// dozens
+	value[3] = digits[val % 10]; 			// units
+}
+
+void Display::Write(uint8_t val)
+{
+	value[0] = digits[12];
+	value[1] = digits[10];
 	value[2] = digits[(val % 100) / 10]; 	// dozens
 	value[3] = digits[val % 10]; 			// units
 }
