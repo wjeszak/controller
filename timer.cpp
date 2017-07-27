@@ -9,6 +9,7 @@
 #include <avr/interrupt.h>
 #include <stdio.h>
 #include "timer.h"
+#include "system.h"
 #include "display.h"
 #include "usart.h"
 #include "modbus_rtu.h"
@@ -91,6 +92,22 @@ void LowLevelCountDown()
 		timer.Disable(TIMER_LOW_LEVEL_COUNTDOWN);
 	}
 	i--;
+}
+// TIMER_BUTTON_POLL
+void ButtonPoll()
+{
+	if(!(BUTTON_PIN & (1 << BUTTON_PIN_NUMBER)))
+	{
+		startup_config.EV_ButtonPress(&startup_config_data);
+	}
+}
+
+void EnterConfig()
+{
+	if(!(BUTTON_PIN & (1 << BUTTON_PIN_NUMBER)))
+	{
+		startup_config.EV_ButtonPress(&startup_config_data);
+	}
 }
 
 // TIMER_MODBUS_RTU_35T
