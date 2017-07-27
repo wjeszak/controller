@@ -34,10 +34,10 @@ Display::Display() : digits {DISP_CHAR_0, DISP_CHAR_1, DISP_CHAR_2, DISP_CHAR_3,
 	DISP_SEGM_DDR = 0b01111111;
 	disp_number = 0;
 	// Startup values
-	value[0] = digits[1];
-	value[1] = digits[2];
-	value[2] = digits[3];
-	value[3] = digits[4];
+	//value[0] = digits[1];
+	//value[1] = digits[2];
+	//value[2] = digits[3];
+	//value[3] = digits[4];
 }
 
 void Display::Refresh()

@@ -10,7 +10,7 @@
 #include "lockerbox.h"
 #include "dynabox.h"
 
-Machine* GetTypeOfMachine(MachineType type)
+Machine* GetPointerTypeOfMachine(MachineType type)
 {
 	Machine* p = NULL;
 	switch (type)

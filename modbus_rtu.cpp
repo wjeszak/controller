@@ -72,7 +72,7 @@ void ModbusRTU::ParseFrame(uint8_t* frame, uint8_t len)
 
 void ModbusRTU::ParseFrameRead(uint8_t* frame)
 {
-	uint8_t address = MULTIPLE_LOCATIONS_NUMBER + slave_addr - 1;
+	uint8_t address = 1 + slave_addr - 1;
 	uint16_t value = (frame[MODBUS_RTU_RES_HOLDING_REG_VAL_HI] << 8) | frame[MODBUS_RTU_RES_HOLDING_REG_VAL_LO];
 	// update master's holding registers
 	modbus_tcp.UpdateHoldingRegisters(address, value);

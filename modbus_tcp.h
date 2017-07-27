@@ -40,26 +40,23 @@
 
 #define MODBUS_TCP_HOLDING_FUNCTION 			3
 #define MODBUS_TCP_WRITE_MULTIPLE_FUNCTION		16
-
-#define MODBUS_TCP_ADDR_OFFSET_HOLDING_REG		100
-#define MODBUS_TCP_NUMBER_OF_HOLDING_REG 		49
-
-#define MODBUS_TCP_ADDR_OFFSET_MULTIPLE_REG		150
-#define MODBUS_TCP_NUMBER_OF_MULTIPLE_REG		37
-
+// ----------------------------------------------
+#define MODBUS_TCP_ADDR_OFFSET					100
+#define MODBUS_TCP_NUMBER_OF_REG 				100
+// ----------------------------------------------
 #define MODBUS_TCP_HOLDING_MAX_QUANTITY 		125
 #define MODBUS_TCP_MULTIPLE_MAX_QUANTITY	 	123
 
 #define MODBUS_TCP_ERROR_ILL_DATA_ADDR 			2
 #define MODBUS_TCP_ERROR_ILL_DATA_VAL 			3
 // ------------------------------------------------
-#define HOLDING_ORDER_STATUS 					0
+#define ORDER_STATUS		 					0
 	#define ORDER_STATUS_READY					0x0000
 	#define ORDER_STATUS_GO_ACK 				0x0001
 	#define ORDER_STATUS_PROCESSING 			0x0002
 	#define ORDER_STATUS_END_OF_MOVEMENT 		0x0003
 	#define ORDER_STATUS_NOT_READY 				0xFFFF
-#define HOLDING_GENERAL_ERROR_STATUS 			1
+#define GENERAL_ERROR_STATUS		 			1
 	#define GENERAL_ERROR_STATUS_F10			0
 	#define GENERAL_ERROR_STATUS_F11			1
 	#define GENERAL_ERROR_STATUS_F12			2
@@ -68,17 +65,16 @@
 	#define GENERAL_ERROR_STATUS_F15 			5
 	#define GENERAL_ERROR_STATUS_F16 			6
 	#define GENERAL_ERROR_STATUS_F17 			7
-#define HOLDING_ACTUAL_SPEED 					44
-#define HOLDING_TYPE_OF_MACHINE 				45
+#define ACTUAL_SPEED		 					44
+#define TYPE_OF_MACHINE			 				45
 	#define TYPE_OF_MACHINE_NOT_DEFINED 		0
 	#define TYPE_OF_MACHINE_LOCKERBOX			1
-#define HOLDING_SERIAL_NUMBER 					46
-#define HOLDING_IO_INFORMATIONS					47
-#define HOLDING_ENCODER_CURRENT_VALUE_HI 		48
-#define HOLDING_ENCODER_CURRENT_VALUE_LO 		49
+#define SERIAL_NUMBER		 					46
+#define IO_INFORMATIONS							47
+#define ENCODER_CURRENT_VALUE			 		49
 
-#define MULTIPLE_FIRST_DOOR_NUMBER 				0
-#define MULTIPLE_LOCATIONS_NUMBER 				1
+#define FIRST_DOOR_NUMBER 						50
+#define LOCATIONS_NUMBER 						51
 
 class ModbusTCP
 {
@@ -96,8 +92,7 @@ private:
 	void WriteMultipleRegistersReply(uint8_t* frame);
 	void SendErrorFrame(uint8_t* frame, uint8_t error_code);
 	void AnalizeMultipleRegisters();
-	uint16_t HoldingRegisters[MODBUS_TCP_NUMBER_OF_HOLDING_REG];
-	uint16_t MultipleRegisters[MODBUS_TCP_NUMBER_OF_MULTIPLE_REG];
+	uint16_t Registers[MODBUS_TCP_NUMBER_OF_REG];
 	uint16_t trans_id;
 	uint16_t prot_id;
 	uint8_t  unit_id;

@@ -11,6 +11,6 @@
 #include "machine.h"
 
 enum MachineType {TLockerbox, TDynabox};
-extern Machine* GetTypeOfMachine(MachineType type);
+extern Machine* GetPointerTypeOfMachine(MachineType type);
 
 #endif /* MACHINE_TYPE_H_ */

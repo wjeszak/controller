@@ -5,7 +5,10 @@
  * Author: tomek
  * Add compiler option: -std=c++11 (extended constructor list, display):
  * Project's properties->C/C++ Build->Settings->AVR C++ Compiler->Miscellaneous->Other flags
- *
+ * ------------------
+ * Zeby byl widoczny status drzwi (Control) w Testbox nalezy ustawic typ maszyny - Registers[45]
+ * Ustawic takze Registers[50] zeby nie bylo glupot
+ * W Testbox bez sensu jest to ze przy typie maszyny Lockerbox (Registers[145]) wyswietla Opened + 12 stops...
  */
 
 #include "system.h"
@@ -33,17 +36,20 @@ ModbusRTU modbus_rtu;
 Stack stack;
 ModbusTCP modbus_tcp;
 Motor motor;
-
+StartupConfig startup_config;
+StartupConfigData startup_config_data;
 UsartData usart_data;
 StackData stack_data;
 MotorData motor_data;
+
 Machine *m;
 
 int main()
 {
-	SystemInit();
-	m = GetTypeOfMachine(TDynabox);
-	display.Write(4764);
+//	LowLevelInit();
+	m = GetPointerTypeOfMachine(TDynabox);
+	//display.Write(4764);
+	//m->StartupTest();
 	while(1)
 	{
 		stack.Poll();

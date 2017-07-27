@@ -12,6 +12,33 @@
 ModbusTCP::ModbusTCP()
 {
 
+//	Registers[0] = 0;
+//	Registers[1] = 17;
+//	Registers[2] = (1 << 7) | (1 << 6);
+//	Registers[3] = 0x40;
+//	Registers[4] = (1 << 7) | (1 << 6) | (1 << 4);
+
+	//Registers[44] = 128;
+	//Registers[45] = 13 << 8 | 36;
+	Registers[45] = 7 << 8 | 1;
+	//Registers[46] = 666;
+	//Registers[47] = (1 << 0) | (1 << 2) | (1 << 3) | (1 << 4) | (1 << 5) | (1 << 6);
+	//Registers[49] = 3000;
+	Registers[50] = 1;
+
+//	Registers[88] = 4;
+//	Registers[89] = 2;
+//	Registers[90] = 12;
+//	Registers[91] = 15;
+//	Registers[92] = 120;
+//	Registers[93] = 200;
+//	Registers[94] = 3;
+//	Registers[95] = 9;
+//	Registers[96] = 1;
+//	Registers[97] = 75;
+//	Registers[98] = 5;
+//	Registers[99] = 8;
+
 }
 
 void ModbusTCP::Process(uint8_t* frame)
@@ -45,8 +72,8 @@ void ModbusTCP::ReadHoldingRegisters(uint8_t* frame)
 	uint8_t error_code = 0;
 
 	if((quantity > MODBUS_TCP_HOLDING_MAX_QUANTITY) || (quantity < 1)) error_code = MODBUS_TCP_ERROR_ILL_DATA_VAL;
-	if((starting_address + quantity - MODBUS_TCP_ADDR_OFFSET_HOLDING_REG) > MODBUS_TCP_NUMBER_OF_HOLDING_REG) error_code = MODBUS_TCP_ERROR_ILL_DATA_ADDR;
-	if(starting_address < MODBUS_TCP_ADDR_OFFSET_HOLDING_REG) error_code = MODBUS_TCP_ERROR_ILL_DATA_ADDR;
+	if((starting_address + quantity - MODBUS_TCP_ADDR_OFFSET) > MODBUS_TCP_NUMBER_OF_REG) error_code = MODBUS_TCP_ERROR_ILL_DATA_ADDR;
+	if(starting_address < MODBUS_TCP_ADDR_OFFSET) error_code = MODBUS_TCP_ERROR_ILL_DATA_ADDR;
 	if(error_code)
 	{
 		SendErrorFrame(frame, error_code);
@@ -62,9 +89,8 @@ void ModbusTCP::WriteMultipleRegisters(uint8_t* frame)
 	uint8_t error_code = 0;
 
 	if((quantity > MODBUS_TCP_MULTIPLE_MAX_QUANTITY) || (quantity < 1)) error_code = MODBUS_TCP_ERROR_ILL_DATA_VAL;
-	if((starting_address + quantity - MODBUS_TCP_ADDR_OFFSET_MULTIPLE_REG) > MODBUS_TCP_NUMBER_OF_MULTIPLE_REG) error_code = MODBUS_TCP_ERROR_ILL_DATA_ADDR;
-	if(starting_address < MODBUS_TCP_ADDR_OFFSET_MULTIPLE_REG) error_code = MODBUS_TCP_ERROR_ILL_DATA_ADDR;
-
+	if((starting_address + quantity - MODBUS_TCP_ADDR_OFFSET) > MODBUS_TCP_NUMBER_OF_REG) error_code = MODBUS_TCP_ERROR_ILL_DATA_ADDR;
+	if(starting_address < MODBUS_TCP_ADDR_OFFSET) error_code = MODBUS_TCP_ERROR_ILL_DATA_ADDR;
 	if(error_code)
 	{
 		SendErrorFrame(frame, error_code);
@@ -79,7 +105,7 @@ void ModbusTCP::WriteMultipleRegisters(uint8_t* frame)
 
 void ModbusTCP::UpdateHoldingRegisters(uint8_t address, uint16_t value)
 {
-	HoldingRegisters[address] = value;
+	Registers[address] = value;
 }
 
 void ModbusTCP::PrepareMBAPHeader(uint8_t* frame)	// without length
@@ -96,8 +122,8 @@ void ModbusTCP::ReturnHoldingRegisters(uint8_t* frame, uint16_t starting_address
 {
 	for(uint8_t i = 0; i < quantity; i++)
 	{
-		frame[MODBUS_RES_TCP_DATA + 2 * i]       = hi(HoldingRegisters[starting_address - MODBUS_TCP_ADDR_OFFSET_HOLDING_REG + i]);
-		frame[MODBUS_RES_TCP_DATA + (2 * i) + 1] = lo(HoldingRegisters[starting_address - MODBUS_TCP_ADDR_OFFSET_HOLDING_REG + i]);
+		frame[MODBUS_RES_TCP_DATA + 2 * i]       = hi(Registers[starting_address - MODBUS_TCP_ADDR_OFFSET + i]);
+		frame[MODBUS_RES_TCP_DATA + (2 * i) + 1] = lo(Registers[starting_address - MODBUS_TCP_ADDR_OFFSET + i]);
 	}
 }
 
@@ -105,7 +131,7 @@ void ModbusTCP::UpdateMultipleRegisters(uint8_t* frame, uint16_t starting_addres
 {
 	for(uint8_t i = 0; i < quantity; i++)
 	{
-		MultipleRegisters[starting_address - MODBUS_TCP_ADDR_OFFSET_MULTIPLE_REG + i] = (hi(frame[MODBUS_REQ_TCP_REG_VAL_HI + 2 * i])) | (lo(frame[MODBUS_REQ_TCP_REG_VAL_LO + 2 * i]));
+		Registers[starting_address - MODBUS_TCP_ADDR_OFFSET + i] = (hi(frame[MODBUS_REQ_TCP_REG_VAL_HI + 2 * i])) | (lo(frame[MODBUS_REQ_TCP_REG_VAL_LO + 2 * i]));
 	}
 }
 
@@ -150,5 +176,5 @@ void ModbusTCP::AnalizeMultipleRegisters()
 	// ---------------- tutaj dziala polimorfizm ----------------
 	// testowo, dla pokazania idei
 	// w zaleznosci od ustawienia wskaznika 'm' w funcji main() uruchomi sie odpowiednia funkcja StartupTest()
-	if(MultipleRegisters[MULTIPLE_LOCATIONS_NUMBER] > 0) m->StartupTest();
+	//if(Registers[LOCATIONS_NUMBER] > 0) m->StartupTest();
 }

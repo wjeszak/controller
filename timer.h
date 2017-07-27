@@ -7,7 +7,7 @@
  * PWM & Main system timer
  * PWMfreq = F_CPU / preskaler / 256	(DT p. 196)
  * PWMfreq = 9216000 / 1 / 256 = 36 kHz
- * tick time [ms] = 1 / PWMfreq * main_system_timer * 1000
+ * tick time [ms] = 1 / PWMfreq * MAIN_TIMER_PRESCALER * 1000
  */
 
 #ifndef TIMER_H_
@@ -20,9 +20,10 @@
 #define NUMBER_OF_TIMERS 				8
 
 #define TIMER_DISPLAY_REFRESH 			0
-#define TIMER_MODBUS_RTU_35T			1
-#define TIMER_MODBUS_RTU_POLL 			2
-#define TIMER_MOTOR_ACCELERATE 			3
+#define TIMER_LOW_LEVEL_COUNTDOWN 		1
+#define TIMER_MODBUS_RTU_35T			2
+#define TIMER_MODBUS_RTU_POLL 			3
+#define TIMER_MOTOR_ACCELERATE 			4
 
 enum T2Prescallers
 {
@@ -59,6 +60,7 @@ private:
 extern Timer timer;
 
 extern void DisplayRefresh();
+extern void LowLevelCountDown();
 extern void ModbusRTU35T();
 extern void ModbusPoll();
 extern void MotorAccelerate();

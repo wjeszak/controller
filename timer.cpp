@@ -81,6 +81,18 @@ void DisplayRefresh()
 	display.Refresh();
 }
 
+// TIMER_LOW_LEVEL_COUNTDOWN
+void LowLevelCountDown()
+{
+	static uint16_t i = 5;
+	display.Write(i);
+	if(i == 0)
+	{
+		timer.Disable(TIMER_LOW_LEVEL_COUNTDOWN);
+	}
+	i--;
+}
+
 // TIMER_MODBUS_RTU_35T
 void ModbusRTU35T()
 {

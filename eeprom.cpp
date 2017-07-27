@@ -35,6 +35,7 @@ Eeprom::Eeprom()
 {
 	Read();
 }
+
 void Eeprom::Read()
 {
 	eeprom_read_block(&cfg, &eem_cfg, sizeof(ConfigurationParams));
