@@ -23,6 +23,7 @@ class Machine
 public:
 	Machine(uint8_t max_states);
 	uint16_t GetState();
+	void InternalEvent(uint16_t new_state, EventData* pdata = NULL);
 	void Event(uint16_t new_state, EventData* pdata = NULL);
 	virtual uint16_t StartupTest() { return 0xFF; }
 //	virtual ~Machine();

@@ -53,5 +53,5 @@ void Button::ST_Down(ButtonData* pdata)
 void Button::ST_Action(ButtonData* pdata)
 {
 	startup_config.EV_ButtonPress(&startup_config_data);
-	// powrot do IDLE
+	InternalEvent(ST_IDLE, NULL);
 }

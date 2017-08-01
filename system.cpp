@@ -18,7 +18,7 @@ StartupConfig::StartupConfig() : Machine(ST_MAX_STATES)
 void StartupConfig::EV_ButtonPress(StartupConfigData* pdata)
 {
     BEGIN_TRANSITION_MAP								// current state
-        TRANSITION_MAP_ENTRY(ST_CHOOSING_PARAMETER)			// ST_START
+        TRANSITION_MAP_ENTRY(ST_CHOOSING_PARAMETER)		// ST_START
         TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_CONFIGURATION
     END_TRANSITION_MAP(pdata)
 }
