@@ -14,6 +14,7 @@
 #include "system.h"
 #include "timer.h"
 #include "display.h"
+#include "button.h"
 #include "encoder.h"
 #include "eeprom.h"
 #include "machine_type.h"
@@ -27,6 +28,7 @@
 
 Timer timer(T2_PS_1);
 Display display;
+Button button;
 Encoder encoder;
 Eeprom eprom;
 Lockerbox lockerbox;
@@ -36,6 +38,7 @@ ModbusRTU modbus_rtu;
 Stack stack;
 ModbusTCP modbus_tcp;
 Motor motor;
+ButtonData button_data;
 StartupConfig startup_config;
 StartupConfigData startup_config_data;
 UsartData usart_data;

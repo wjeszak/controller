@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include "timer.h"
 #include "system.h"
+#include "button.h"
 #include "display.h"
 #include "usart.h"
 #include "modbus_rtu.h"
@@ -94,22 +95,16 @@ void LowLevelCountDown()
 	i--;
 }
 
-// TIMER_BUTTON_POLL
-void ButtonPoll()
+// TIMER_BUTTON_DEBOUNCE
+void ButtonDebounce()
 {
-	if(!(BUTTON_PIN & (1 << BUTTON_PIN_NUMBER)))
-	{
-		startup_config.EV_ButtonPress(&startup_config_data);
-	}
+	if(button.CheckVal()) button.EV_Press(&button_data);
 }
 
 // TIMER_BUTTON_TIME_TO_ENTER
-void EnterConfig()
+void ButtonAction()
 {
-	if(!(BUTTON_PIN & (1 << BUTTON_PIN_NUMBER)))
-	{
-		startup_config.EV_ButtonPress(&startup_config_data);
-	}
+	if(button.CheckVal()) button.EV_Press(&button_data);
 }
 
 // TIMER_ENCODER_STATUS

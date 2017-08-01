@@ -11,11 +11,6 @@
 #include <inttypes.h>
 #include "machine.h"
 
-#define BUTTON_DDR 					DDRC
-#define BUTTON_PORT 				PORTC
-#define BUTTON_PIN					PINC
-#define BUTTON_PIN_NUMBER			7
-
 class StartupConfigData : public EventData
 {
 public:
@@ -30,15 +25,11 @@ public:
 private:
 	// States functions
 	void ST_Start(StartupConfigData* pdata);
-	void ST_ButtonDebounce(StartupConfigData* pdata);
-	void ST_ButtonDown(StartupConfigData* pdata);
-	void ST_Configuration(StartupConfigData* pdata);
-	enum States {ST_START = 0, ST_BUTTON_DEBOUNCE, ST_BUTTON_DOWN, ST_CONFIGURATION, ST_MAX_STATES};
+	void ST_ChoosingParameter(StartupConfigData* pdata);
+	enum States {ST_START = 0, ST_CHOOSING_PARAMETER, ST_MAX_STATES};
 	BEGIN_STATE_MAP
 		STATE_MAP_ENTRY(&StartupConfig::ST_Start)
-		STATE_MAP_ENTRY(&StartupConfig::ST_ButtonDebounce)
-		STATE_MAP_ENTRY(&StartupConfig::ST_ButtonDown)
-		STATE_MAP_ENTRY(&StartupConfig::ST_Configuration)
+		STATE_MAP_ENTRY(&StartupConfig::ST_ChoosingParameter)
 	END_STATE_MAP
 };
 

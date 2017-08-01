@@ -21,7 +21,7 @@
 
 #define TIMER_DISPLAY_REFRESH 			0
 #define TIMER_LOW_LEVEL_COUNTDOWN 		1
-#define TIMER_BUTTON_POLL 				2
+#define TIMER_BUTTON_DEBOUNCE			2
 #define TIMER_BUTTON_TIME_TO_ENTER 		3
 #define TIMER_ENCODER_STATUS 			4
 #define TIMER_MODBUS_RTU_35T			5
@@ -64,8 +64,8 @@ extern Timer timer;
 
 extern void DisplayRefresh();
 extern void LowLevelCountDown();
-extern void ButtonPoll();
-extern void EnterConfig();
+extern void ButtonDebounce();
+extern void ButtonAction();
 extern void EncoderStatus();
 extern void ModbusRTU35T();
 extern void ModbusPoll();
