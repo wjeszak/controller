@@ -46,10 +46,9 @@ Machine *m;
 
 int main()
 {
-//	LowLevelInit();
 	m = GetPointerTypeOfMachine(TDynabox);
-	//display.Write(4764);
 	//m->StartupTest();
+
 	while(1)
 	{
 		stack.Poll();

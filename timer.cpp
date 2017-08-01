@@ -39,7 +39,7 @@ void Timer::Irq()
 	if(main_timer_prescaler == MAIN_TIMER_PRESCALER)
 	{
 		main_timer_prescaler = 0;
-		for(uint8_t n = 0; n < 8; n++)
+		for(uint8_t n = 0; n < NUMBER_OF_TIMERS; n++)
 		{
 			if ((timer_handlers[n].active) && (timer_handlers[n].fp != NULL))
 			{
@@ -93,6 +93,7 @@ void LowLevelCountDown()
 	}
 	i--;
 }
+
 // TIMER_BUTTON_POLL
 void ButtonPoll()
 {
@@ -102,11 +103,31 @@ void ButtonPoll()
 	}
 }
 
+// TIMER_BUTTON_TIME_TO_ENTER
 void EnterConfig()
 {
 	if(!(BUTTON_PIN & (1 << BUTTON_PIN_NUMBER)))
 	{
 		startup_config.EV_ButtonPress(&startup_config_data);
+	}
+}
+
+// TIMER_ENCODER_STATUS
+void EncoderStatus()
+{
+	static uint8_t param = 1;
+	encoder.CheckStatus();
+	if (encoder.GetStatus() == 1)
+	{
+		param++;
+		display.Write(Parameter, param);
+		encoder.ResetStatus();
+	}
+	if (encoder.GetStatus() == 2)
+	{
+		param--;
+		display.Write(Parameter, param);
+		encoder.ResetStatus();
 	}
 }
 

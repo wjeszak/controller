@@ -10,16 +10,16 @@
 
 #include <avr/io.h>
 
-#define ENCODER_DDR 			DDRB
-#define ENCODER_PORT 			PORTB
-#define ENCODER_PIN 			PINB
+#define ENCODER_DDR 			DDRC
+#define ENCODER_PORT 			PORTC
+#define ENCODER_PIN 			PINC
 
 #define ENCODER_BUTTON_DDR		DDRD
 #define ENCODER_BUTTON_PORT		PORTD
 #define ENCODER_BUTTON_PIN 		PIND
 
-#define ENCODER_PA 				0
-#define ENCODER_PB 				1
+#define ENCODER_PA 				4
+#define ENCODER_PB 				5
 #define ENCODER_BUTTONP			2
 
 #define ROTA !(ENCODER_PIN & (1 << ENCODER_PA))

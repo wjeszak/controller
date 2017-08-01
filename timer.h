@@ -23,9 +23,10 @@
 #define TIMER_LOW_LEVEL_COUNTDOWN 		1
 #define TIMER_BUTTON_POLL 				2
 #define TIMER_BUTTON_TIME_TO_ENTER 		3
-#define TIMER_MODBUS_RTU_35T			4
-#define TIMER_MODBUS_RTU_POLL 			5
-#define TIMER_MOTOR_ACCELERATE 			6
+#define TIMER_ENCODER_STATUS 			4
+#define TIMER_MODBUS_RTU_35T			5
+#define TIMER_MODBUS_RTU_POLL 			6
+#define TIMER_MOTOR_ACCELERATE 			7
 
 enum T2Prescallers
 {
@@ -65,6 +66,7 @@ extern void DisplayRefresh();
 extern void LowLevelCountDown();
 extern void ButtonPoll();
 extern void EnterConfig();
+extern void EncoderStatus();
 extern void ModbusRTU35T();
 extern void ModbusPoll();
 extern void MotorAccelerate();

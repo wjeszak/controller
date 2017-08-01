@@ -11,8 +11,8 @@ Encoder::Encoder()
 {
 	ENCODER_DDR &= ~((1 << ENCODER_PA) | (1 << ENCODER_PB));
 	ENCODER_BUTTON_DDR &= ~(1 << ENCODER_BUTTONP);
-	ENCODER_PORT |= (1 << ENCODER_PA) | (1 << ENCODER_PB);
-	ENCODER_BUTTON_PORT |= (1 << ENCODER_BUTTON_PIN);
+	//ENCODER_PORT |= (1 << ENCODER_PA) | (1 << ENCODER_PB);
+	//ENCODER_BUTTON_PORT |= (1 << ENCODER_BUTTON_PIN);
 	rotarystatus = 0;
 	wait = 0;
 }

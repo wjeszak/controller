@@ -49,5 +49,6 @@ void StartupConfig::ST_ButtonDown(StartupConfigData* pdata)
 
 void StartupConfig::ST_Configuration(StartupConfigData* pdata)
 {
-	display.Write(Parameter, 45);
+	display.Write(Parameter, 1);
+	timer.Assign(TIMER_ENCODER_STATUS, 1, EncoderStatus);
 }
