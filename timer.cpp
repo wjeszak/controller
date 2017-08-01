@@ -9,8 +9,8 @@
 #include <avr/interrupt.h>
 #include <stdio.h>
 #include "timer.h"
-#include "system.h"
 #include "button.h"
+#include "config.h"
 #include "display.h"
 #include "usart.h"
 #include "modbus_rtu.h"

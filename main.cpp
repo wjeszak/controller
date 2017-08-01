@@ -11,10 +11,11 @@
  * W Testbox bez sensu jest to ze przy typie maszyny Lockerbox (Registers[145]) wyswietla Opened + 12 stops...
  */
 
-#include "system.h"
+#include "init.h"
 #include "timer.h"
 #include "display.h"
 #include "button.h"
+#include "config.h"
 #include "encoder.h"
 #include "eeprom.h"
 #include "machine_type.h"
@@ -39,8 +40,8 @@ Stack stack;
 ModbusTCP modbus_tcp;
 Motor motor;
 ButtonData button_data;
-StartupConfig startup_config;
-StartupConfigData startup_config_data;
+Config config;
+ConfigData config_data;
 UsartData usart_data;
 StackData stack_data;
 MotorData motor_data;
@@ -49,6 +50,7 @@ Machine *m;
 
 int main()
 {
+	Init();
 	m = GetPointerTypeOfMachine(TDynabox);
 	//m->StartupTest();
 

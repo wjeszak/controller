@@ -35,6 +35,8 @@ private:
 	void ST_Debounce(ButtonData* pdata);
 	void ST_Down(ButtonData* pdata);
 	void ST_Action(ButtonData* pdata);
+	// Help function
+	void Init();
 	enum States {ST_IDLE = 0, ST_DEBOUNCE, ST_DOWN, ST_ACTION, ST_MAX_STATES};
 	BEGIN_STATE_MAP
 		STATE_MAP_ENTRY(&Button::ST_Idle)
