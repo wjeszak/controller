@@ -32,5 +32,5 @@ void Config::ST_ChoosingParameter(ConfigData* pdata)
 {
 	timer.Disable(TIMER_LOW_LEVEL_COUNTDOWN);
 	display.Write(Parameter, 1);
-	timer.Assign(TIMER_ENCODER_STATUS, 5, EncoderStatus);
+	timer.Assign(TIMER_ENCODER_POLL, 5, EncoderPoll);
 }

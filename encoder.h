@@ -26,14 +26,16 @@
 #define ROTB !(ENCODER_PIN & (1 << ENCODER_PB))
 #define ROTCLICK !(ENCODER_BUTTON_PIN & (1 << ENCODER_BUTTONP))
 
+#define ENCODER_LEFT			1
+#define ENCODER_RIGHT			2
+#define ENCODER_CLICK			3
+
 class Encoder
 {
 public:
 	Encoder();
-	void CheckStatus();
-	void ResetStatus();
-	uint8_t GetStatus();
-	uint8_t rotarystatus;
+	void Poll();
+private:
 	uint8_t wait;
 };
 

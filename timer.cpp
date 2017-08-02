@@ -107,23 +107,10 @@ void ButtonAction()
 	if(button.CheckVal()) button.EV_Press(&button_data);
 }
 
-// TIMER_ENCODER_STATUS
-void EncoderStatus()
+// TIMER_ENCODER_POLL
+void EncoderPoll()
 {
-	static uint8_t param = 1;
-	encoder.CheckStatus();
-	if (encoder.GetStatus() == 1)
-	{
-		param++;
-		display.Write(Parameter, param);
-		encoder.ResetStatus();
-	}
-	if (encoder.GetStatus() == 2)
-	{
-		param--;
-		display.Write(Parameter, param);
-		encoder.ResetStatus();
-	}
+	encoder.Poll();
 }
 
 // TIMER_MODBUS_RTU_35T
