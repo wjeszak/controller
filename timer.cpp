@@ -77,20 +77,21 @@ void Timer::Disable(uint8_t handler_id)
 	timer_handlers[handler_id].active = false;
 }
 
+// ----------------------------------------------------------------------------------
 // TIMER_DISPLAY_REFRESH
 void DisplayRefresh()
 {
 	display.Refresh();
 }
 
-// TIMER_LOW_LEVEL_COUNTDOWN
-void LowLevelCountDown()
+// TIMER_INIT_COUNTDOWN
+void InitCountDown()
 {
 	static uint16_t i = 5;
 	display.Write(i);
 	if(i == 0)
 	{
-		timer.Disable(TIMER_LOW_LEVEL_COUNTDOWN);
+		timer.Disable(TIMER_INIT_COUNTDOWN);
 	}
 	i--;
 }

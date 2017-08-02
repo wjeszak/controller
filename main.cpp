@@ -31,7 +31,7 @@ Timer timer(T2_PS_1);
 Display display;
 Button button;
 Encoder encoder;
-Eeprom eprom;
+Eeprom eeprom;
 Lockerbox lockerbox;
 Dynabox dynabox;
 Usart usart;

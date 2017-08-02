@@ -20,7 +20,7 @@
 #define NUMBER_OF_TIMERS 				10
 
 #define TIMER_DISPLAY_REFRESH 			0
-#define TIMER_LOW_LEVEL_COUNTDOWN 		1
+#define TIMER_INIT_COUNTDOWN 			1
 #define TIMER_BUTTON_DEBOUNCE			2
 #define TIMER_BUTTON_ACTION		 		3
 #define TIMER_ENCODER_POLL	 			4
@@ -63,7 +63,7 @@ private:
 extern Timer timer;
 
 extern void DisplayRefresh();
-extern void LowLevelCountDown();
+extern void InitCountDown();
 extern void ButtonDebounce();
 extern void ButtonAction();
 extern void EncoderPoll();

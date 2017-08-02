@@ -33,7 +33,7 @@ ConfigurationParams cfg;
 
 Eeprom::Eeprom()
 {
-	Read();
+
 }
 
 void Eeprom::Read()

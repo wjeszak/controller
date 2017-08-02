@@ -7,6 +7,7 @@
 
 #include "encoder.h"
 #include "display.h"
+#include "config.h"
 
 Encoder::Encoder()
 {
@@ -17,19 +18,18 @@ Encoder::Encoder()
 
 void Encoder::Poll()
 {
-	static uint8_t param;
 	if(ROTA & (!wait))
 		wait = 1;
 	if(ROTB & ROTA & (wait))
 	{
-		param--;
-		display.Write(Parameter, param);
+		config.EV_EncoderLeft();
+		//display.Write(Parameter, param);
 		wait = 2;
 	}
 	else if(ROTA & (!ROTB) & wait)
 	{
-		param++;
-		display.Write(Parameter, param);
+		config.EV_EncoderRight();
+		//display.Write(Parameter, param);
 		wait = 2;
 	}
 	if((!ROTA) & !(ROTB) & (wait == 2))
