@@ -10,7 +10,7 @@
 
 Display::Display() : digits {DISP_CHAR_0, DISP_CHAR_1, DISP_CHAR_2, DISP_CHAR_3, DISP_CHAR_4,
 	DISP_CHAR_5, DISP_CHAR_6, DISP_CHAR_7, DISP_CHAR_8, DISP_CHAR_9, DISP_CHAR_ALL_OFF,
-	DISP_CHAR_L, DISP_CHAR_F, DISP_CHAR_P, DISP_CHAR_b}
+	DISP_CHAR_L, DISP_CHAR_F, DISP_CHAR_P, DISP_CHAR_b, DISP_CHAR_MINUS}
 {
 	disp_tab[0].ddr =  &DISP1_DDR;
 	disp_tab[0].port = &DISP1_PORT;
@@ -59,18 +59,25 @@ void Display::Write(InfoType type, uint8_t val)
 	{
 	case State:
 		value[0] = digits[11];
+		value[1] = digits[10];
 		break;
 	case Fault:
 		value[0] = digits[12];
+		value[1] = digits[10];
 		break;
 	case Parameter:
 		value[0] = digits[13];
+		value[1] = digits[10];
+		break;
+	case ParameterNotSupported:
+		value[0] = digits[13];
+		value[1] = digits[15];
 		break;
 	case ParameterValue:
 		value[0] = digits[14];
+		value[1] = digits[10];
 		break;
 	}
-	value[1] = digits[10];
 	value[2] = digits[(val % 100) / 10]; 	// dozens
 	value[3] = digits[val % 10]; 			// units
 }

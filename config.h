@@ -26,6 +26,7 @@ public:
 	// without state machine
 	void EV_EncoderLeft();
 	void EV_EncoderRight();
+	void EV_EncoderClick(ConfigData* pdata = NULL);
 private:
 	// States functions
 	void ST_Idle(ConfigData* pdata);

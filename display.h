@@ -45,8 +45,9 @@
 #define DISP_CHAR_F 			0x0E
 #define DISP_CHAR_P 			0x0C
 #define DISP_CHAR_b				0x03
+#define DISP_CHAR_MINUS			0x3F
 
-enum InfoType {State, Fault, Parameter, ParameterValue};
+enum InfoType {State, Fault, Parameter, ParameterNotSupported, ParameterValue};
 
 class Display
 {
@@ -64,7 +65,7 @@ private:
 	};
 	Disp disp_tab[4];
 	uint8_t disp_number;
-	const uint8_t digits[15];
+	const uint8_t digits[16];
 	uint8_t value[4];
 };
 

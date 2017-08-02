@@ -10,6 +10,16 @@
 
 #include "machine_type.h"
 
+#define MAX_FUNCTIONS 				30
+
+typedef void (*fp)();
+
+struct Function
+{
+	uint8_t param;
+	fp f;
+};
+
 struct ConfigurationParams
 {
 	MachineType machine_type;
@@ -24,7 +34,7 @@ public:
 	void Read();
 	void Write();
 };
-
+extern Function functions[MAX_FUNCTIONS];
 extern ConfigurationParams cfg;
 extern Eeprom eeprom;
 

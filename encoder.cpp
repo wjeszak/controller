@@ -14,6 +14,7 @@ Encoder::Encoder()
 	ENCODER_DDR &= ~((1 << ENCODER_PA) | (1 << ENCODER_PB));
 	ENCODER_BUTTON_DDR &= ~(1 << ENCODER_BUTTONP);
 	wait = 0;
+	debounce_click = 0;
 }
 
 void Encoder::Poll()
@@ -23,13 +24,11 @@ void Encoder::Poll()
 	if(ROTB & ROTA & (wait))
 	{
 		config.EV_EncoderLeft();
-		//display.Write(Parameter, param);
 		wait = 2;
 	}
 	else if(ROTA & (!ROTB) & wait)
 	{
 		config.EV_EncoderRight();
-		//display.Write(Parameter, param);
 		wait = 2;
 	}
 	if((!ROTA) & !(ROTB) & (wait == 2))
@@ -37,8 +36,12 @@ void Encoder::Poll()
 
 	if(ROTCLICK)
 	{
-		// debounce
-		for(volatile uint16_t x = 0; x < 0x0FFF; x++);
-		if (ROTCLICK) {};
+		debounce_click++;
+		// debounce 50 ms
+		if (ROTCLICK && debounce_click == 10)
+		{
+			debounce_click = 0;
+			config.EV_EncoderClick();
+		};
 	}
 }

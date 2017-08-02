@@ -33,6 +33,7 @@ public:
 	void Poll();
 private:
 	uint8_t wait;
+	uint8_t debounce_click;
 };
 
 extern Encoder encoder;
