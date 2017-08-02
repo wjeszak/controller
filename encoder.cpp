@@ -23,12 +23,12 @@ void Encoder::Poll()
 		wait = 1;
 	if(ROTB & ROTA & (wait))
 	{
-		config.EV_EncoderLeft();
+		config.EV_EncoderLeft(&config_data);
 		wait = 2;
 	}
 	else if(ROTA & (!ROTB) & wait)
 	{
-		config.EV_EncoderRight();
+		config.EV_EncoderRight(&config_data);
 		wait = 2;
 	}
 	if((!ROTA) & !(ROTB) & (wait == 2))

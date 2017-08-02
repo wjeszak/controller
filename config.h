@@ -23,18 +23,19 @@ public:
 	Config();
 	// Events
 	void EV_ButtonPress(ConfigData* pdata = NULL);
-	// without state machine
-	void EV_EncoderLeft();
-	void EV_EncoderRight();
+	void EV_EncoderLeft(ConfigData* pdata);
+	void EV_EncoderRight(ConfigData* pdata);
 	void EV_EncoderClick(ConfigData* pdata = NULL);
 private:
 	// States functions
+	void ST_Init(ConfigData* pdata);
 	void ST_Idle(ConfigData* pdata);
-	void ST_ChoosingParameter(ConfigData* pdata);
-	enum States {ST_START = 0, ST_CHOOSING_PARAMETER, ST_MAX_STATES};
+	void ST_ChoosingFunction(ConfigData* pdata);
+	enum States {ST_INIT = 0, ST_IDLE, ST_CHOOSING_FUNCTION, ST_EXECUTING_FUNCTION, ST_MAX_STATES};
 	BEGIN_STATE_MAP
+		STATE_MAP_ENTRY(&Config::ST_Init)
 		STATE_MAP_ENTRY(&Config::ST_Idle)
-		STATE_MAP_ENTRY(&Config::ST_ChoosingParameter)
+		STATE_MAP_ENTRY(&Config::ST_ChoosingFunction)
 	END_STATE_MAP
 	uint8_t index;
 };

@@ -13,51 +13,64 @@
 
 Config::Config() : Machine(ST_MAX_STATES)
 {
-	index = 1;
-	eeprom.Read();
-	ST_Idle(&config_data);
+	ST_Init(&config_data);
 }
 
 void Config::EV_ButtonPress(ConfigData* pdata)
 {
     BEGIN_TRANSITION_MAP								// current state
-        TRANSITION_MAP_ENTRY(ST_CHOOSING_PARAMETER)		// ST_IDLE
-        TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_CHOOSING_PARAMETER
+        TRANSITION_MAP_ENTRY(ST_IDLE)					// ST_INIT
+        TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_IDLE
     END_TRANSITION_MAP(pdata)
 }
 
-void Config::EV_EncoderLeft()
+void Config::EV_EncoderLeft(ConfigData* pdata)
 {
 	index--;
-	if(functions[index].f == NULL) display.Write(ParameterNotSupported, index);
-	else
-		display.Write(Parameter, index);
+    BEGIN_TRANSITION_MAP								// current state
+        TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_INIT
+    	TRANSITION_MAP_ENTRY(ST_CHOOSING_FUNCTION)		// ST_IDLE
+        TRANSITION_MAP_ENTRY(ST_CHOOSING_FUNCTION)		// ST_CHOOSING_FUNCTION
+    END_TRANSITION_MAP(pdata)
 }
 
-void Config::EV_EncoderRight()
+void Config::EV_EncoderRight(ConfigData* pdata)
 {
 	index++;
-	if(functions[index].f == NULL) display.Write(ParameterNotSupported, index);
-	else
-		display.Write(Parameter, index);
+    BEGIN_TRANSITION_MAP								// current state
+        TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_INIT
+    	TRANSITION_MAP_ENTRY(ST_CHOOSING_FUNCTION)		// ST_IDLE
+        TRANSITION_MAP_ENTRY(ST_CHOOSING_FUNCTION)		// ST_CHOOSING_FUNCTION
+    END_TRANSITION_MAP(pdata)
 }
 
 void Config::EV_EncoderClick(ConfigData* pdata)
 {
     BEGIN_TRANSITION_MAP								// current state
         TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_IDLE
-        TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_CHOOSING_PARAMETER
+        TRANSITION_MAP_ENTRY(ST_EXECUTING_FUNCTION)		// ST_CHOOSING_FUNCTION
     END_TRANSITION_MAP(pdata)
+}
+
+void Config::ST_Init(ConfigData* pdata)
+{
+	index = 1;
+	eeprom.Read();
+	timer.Assign(TIMER_DISPLAY_REFRESH, 4, DisplayRefresh);
+	timer.Assign(TIMER_INIT_COUNTDOWN, 1000, InitCountDown);
+	sei();
 }
 
 void Config::ST_Idle(ConfigData* pdata)
 {
-
+	timer.Disable(TIMER_INIT_COUNTDOWN);
+	timer.Assign(TIMER_ENCODER_POLL, 5, EncoderPoll);
 }
 
-void Config::ST_ChoosingParameter(ConfigData* pdata)
+void Config::ST_ChoosingFunction(ConfigData* pdata)
 {
-	timer.Disable(TIMER_INIT_COUNTDOWN);
-	display.Write(Parameter, index);
-	timer.Assign(TIMER_ENCODER_POLL, 5, EncoderPoll);
+
+	if(functions[index].f == NULL) display.Write(ParameterNotSupported, index);
+	else
+		display.Write(Parameter, index);
 }
