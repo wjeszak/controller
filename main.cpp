@@ -36,11 +36,11 @@ Lockerbox lockerbox;
 Dynabox dynabox;
 Usart usart;
 ModbusRTU modbus_rtu;
-Stack stack;
 ModbusTCP modbus_tcp;
 Motor motor;
 ButtonData button_data;
 Config config;
+Stack stack;
 ConfigData config_data;
 UsartData usart_data;
 StackData stack_data;
@@ -50,10 +50,8 @@ Machine *m;
 
 int main()
 {
-	//mk_encoder_init();
 	m = GetPointerTypeOfMachine(TDynabox);
 	//m->StartupTest();
-
 	while(1)
 	{
 		encoder.Poll();

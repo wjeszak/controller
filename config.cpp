@@ -55,7 +55,7 @@ void Config::EV_EncoderClick(ConfigData* pdata)
 
 void Config::ST_Init(ConfigData* pdata)
 {
-	index = 1;
+	index = 0;
 	eeprom.Read();
 	timer.Assign(TIMER_DISPLAY_REFRESH, 4, DisplayRefresh);
 	timer.Assign(TIMER_INIT_COUNTDOWN, 1000, InitCountDown);
@@ -70,9 +70,10 @@ void Config::ST_Idle(ConfigData* pdata)
 void Config::ST_ChoosingFunction(ConfigData* pdata)
 {
 	timer.Disable(TIMER_INIT_COUNTDOWN);
-	if(!GetTypeOfFunction(index)) display.Write(TFunctionNotSupported, index);
+	if(index >= MAX_FUNCTIONS) index = 0;
+	if(!GetTypeOfFunction(index)) display.Write(TFunctionNotSupported, index + 1);
 	else
-		display.Write(TFunction, index);
+		display.Write(TFunction, index + 1);
 }
 
 void Config::ST_ExecutingFunction(ConfigData* pdata)

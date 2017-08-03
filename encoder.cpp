@@ -80,7 +80,7 @@ void Encoder::Process()
 {
 	static uint8_t enc_stat;
 	register uint8_t pin = ENCODER_AB_PIN;
-	register uint8_t ABstate = ((pin & ENCODER_B)?2:0) | ((pin & ENCODER_A)?1:0);
+	register uint8_t ABstate = ((pin & ENCODER_B) ? 2:0) | ((pin & ENCODER_A) ? 1:0);
 	enc_stat = pgm_read_byte(&enc_tab[enc_stat & 0x0F][ABstate]);
 	ABstate = (enc_stat & 0x30);
 	if(ABstate)

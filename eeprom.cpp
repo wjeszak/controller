@@ -24,18 +24,36 @@
 
 Function EEMEM eem_functions[MAX_FUNCTIONS] =
 {
-	{0xFF, NULL},
-	{0xFF,  NULL},
-	{23, ModbusPoll},
-	{13, NULL},
-	{2,  NULL},
-	{23, ModbusPoll},
-	{0xFF, NULL},
-	{2,  NULL},
-	{23, ModbusPoll},
-	{0xFF, NULL},
-	{2,  NULL},
-	{23, ModbusPoll}
+	{0xFF, NULL},	// 1
+	{0xFF, NULL},	// 2
+	{0xFF, NULL},	// 3
+	{0xFF, NULL},	// 4
+	{0xFF, NULL},	// 5
+	{0xFF, NULL},	// 6
+	{0xFF, NULL},	// 7
+	{0xFF, NULL},	// 8
+	{0xFF, NULL},	// 9
+	{0xFF, NULL}, 	// 10
+	{0xFF, NULL},	// 11
+	{0xFF, NULL},	// 12
+	{0xFF, NULL},	// 13
+	{0xFF, NULL},	// 14
+	{0xFF, NULL},	// 15
+	{0xFF, NULL},	// 16
+	{0xFF, NULL},	// 17
+	{0xFF, NULL},	// 18
+	{0xFF, NULL},	// 19
+	{0xFF, NULL},	// 20
+	{0xFF, NULL},	// 21
+	{0xFF, NULL},	// 22
+	{0xFF, NULL},	// 23
+	{0xFF, NULL},	// 24
+	{0xFF, NULL},	// 25
+	{0xFF, NULL},	// 26
+	{0xFF, NULL},	// 27
+	{0x00, NULL},	// 28
+	{0xFF, NULL},	// 29
+	{0xFF, NULL},	// 30
 };
 
 Function functions[MAX_FUNCTIONS];
