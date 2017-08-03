@@ -111,7 +111,7 @@ void ButtonAction()
 // TIMER_ENCODER_POLL
 void EncoderPoll()
 {
-	encoder.Poll();
+//	encoder.Poll();
 }
 
 // TIMER_MODBUS_RTU_35T

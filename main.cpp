@@ -25,6 +25,7 @@
 #include "stack.h"
 #include "modbus_tcp.h"
 #include "motor.h"
+#include "encoder1.h"
 
 Timer timer(T2_PS_1);
 Display display;
@@ -49,11 +50,14 @@ Machine *m;
 
 int main()
 {
+	mk_encoder_init();
 	m = GetPointerTypeOfMachine(TDynabox);
 	//m->StartupTest();
 
 	while(1)
 	{
+		ENCODER_EVENT();
+		//encoder.Poll();
 		stack.Poll();
 	}
 }

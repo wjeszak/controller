@@ -30,10 +30,12 @@ class Encoder
 {
 public:
 	Encoder();
+	uint8_t ReadGray();
 	void Poll();
 private:
 	uint8_t wait;
 	uint8_t debounce_click;
+	uint8_t val, val_tmp;
 };
 
 extern Encoder encoder;
