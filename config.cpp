@@ -70,12 +70,20 @@ void Config::ST_Idle(ConfigData* pdata)
 void Config::ST_ChoosingFunction(ConfigData* pdata)
 {
 	timer.Disable(TIMER_INIT_COUNTDOWN);
-	if(functions[index].f == NULL && functions[index].param == 0xFF) display.Write(ParameterNotSupported, index);
+	if(!GetTypeOfFunction(index)) display.Write(TFunctionNotSupported, index);
 	else
-		display.Write(Parameter, index);
+		display.Write(TFunction, index);
 }
 
 void Config::ST_ExecutingFunction(ConfigData* pdata)
 {
 
+}
+
+uint8_t Config::GetTypeOfFunction(uint8_t id)
+{
+	if(functions[index].param == 0xFF && functions[index].f == NULL) return 0;
+	if(functions[index].param != 0xFF && functions[index].f == NULL) return 1;
+	if(functions[index].param == 0xFF && functions[index].f != NULL) return 2;
+	return 0; 	// if(functions[index].param != 0xFF && functions[index].f != NULL)
 }

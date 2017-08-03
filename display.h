@@ -47,7 +47,7 @@
 #define DISP_CHAR_b				0x03
 #define DISP_CHAR_MINUS			0x3F
 
-enum InfoType {State, Fault, Parameter, ParameterNotSupported, ParameterValue};
+enum InfoType {TState, TFault, TFunction, TFunctionNotSupported, TParameterValue};
 
 class Display
 {

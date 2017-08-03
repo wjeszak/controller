@@ -52,23 +52,23 @@ void Display::Write(InfoType type, uint8_t val)
 {
 	switch(type)
 	{
-	case State:
+	case TState:
 		value[0] = digits[11];
 		value[1] = digits[10];
 		break;
-	case Fault:
+	case TFault:
 		value[0] = digits[12];
 		value[1] = digits[10];
 		break;
-	case Parameter:
+	case TFunction:
 		value[0] = digits[13];
 		value[1] = digits[10];
 		break;
-	case ParameterNotSupported:
+	case TFunctionNotSupported:
 		value[0] = digits[13];
 		value[1] = digits[15];
 		break;
-	case ParameterValue:
+	case TParameterValue:
 		value[0] = digits[14];
 		value[1] = digits[10];
 		break;

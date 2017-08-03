@@ -58,10 +58,9 @@ public:
 };
 
 extern volatile uint8_t enco_dir;
-//void encoder_proc();
+
 int get_encoder();
 void set_encoder(int val);
-//void ENCODER_EVENT();
 
 extern Encoder encoder;
 

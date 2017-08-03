@@ -41,6 +41,7 @@ private:
 		STATE_MAP_ENTRY(&Config::ST_ChoosingFunction)
 		STATE_MAP_ENTRY(&Config::ST_ExecutingFunction)
 	END_STATE_MAP
+	uint8_t GetTypeOfFunction(uint8_t id);
 	uint8_t index;
 };
 
