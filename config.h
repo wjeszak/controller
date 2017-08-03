@@ -12,6 +12,8 @@
 #include "machine.h"
 #include "encoder.h"
 
+#define FUNCTION_NOT_SUPPORTED 			0xFF
+
 class ConfigData : public EventData
 {
 public:

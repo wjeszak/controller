@@ -20,12 +20,12 @@
 #include "machine_type.h"
 #include "lockerbox.h"
 #include "dynabox.h"
+#include "encoder.h"
 #include "usart.h"
 #include "modbus_rtu.h"
 #include "stack.h"
 #include "modbus_tcp.h"
 #include "motor.h"
-#include "encoder1.h"
 
 Timer timer(T2_PS_1);
 Display display;
@@ -50,14 +50,13 @@ Machine *m;
 
 int main()
 {
-	mk_encoder_init();
+	//mk_encoder_init();
 	m = GetPointerTypeOfMachine(TDynabox);
 	//m->StartupTest();
 
 	while(1)
 	{
-		ENCODER_EVENT();
-		//encoder.Poll();
+		encoder.Poll();
 		stack.Poll();
 	}
 }

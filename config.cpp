@@ -19,7 +19,7 @@ Config::Config() : Machine(ST_MAX_STATES)
 void Config::EV_ButtonPress(ConfigData* pdata)
 {
     BEGIN_TRANSITION_MAP								// current state
-        TRANSITION_MAP_ENTRY(ST_IDLE)					// ST_INIT
+        TRANSITION_MAP_ENTRY(ST_CHOOSING_FUNCTION)		// ST_INIT
         TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_IDLE
     END_TRANSITION_MAP(pdata)
 }
@@ -64,12 +64,12 @@ void Config::ST_Init(ConfigData* pdata)
 
 void Config::ST_Idle(ConfigData* pdata)
 {
-	timer.Disable(TIMER_INIT_COUNTDOWN);
-	timer.Assign(TIMER_ENCODER_POLL, 1, EncoderPoll);
+//	timer.Assign(TIMER_ENCODER_POLL, 1, EncoderPoll);
 }
 
 void Config::ST_ChoosingFunction(ConfigData* pdata)
 {
+	timer.Disable(TIMER_INIT_COUNTDOWN);
 	if(functions[index].f == NULL && functions[index].param == 0xFF) display.Write(ParameterNotSupported, index);
 	else
 		display.Write(Parameter, index);

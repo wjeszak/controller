@@ -108,12 +108,6 @@ void ButtonAction()
 	if(button.CheckVal()) button.EV_Press(&button_data);
 }
 
-// TIMER_ENCODER_POLL
-void EncoderPoll()
-{
-//	encoder.Poll();
-}
-
 // TIMER_MODBUS_RTU_35T
 void ModbusRTU35T()
 {

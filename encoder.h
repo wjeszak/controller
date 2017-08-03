@@ -1,7 +1,7 @@
 /*
  * encoder.h
  *
- *  Created on: 30 cze 2017
+ *  Created on: 3 sie 2017
  *      Author: tomek
  */
 
@@ -10,33 +10,58 @@
 
 #include <avr/io.h>
 
-#define ENCODER_DDR 			DDRC
-#define ENCODER_PORT 			PORTC
-#define ENCODER_PIN 			PINC
+#define HALF_STEP 						1 						// 0 - fullstep, 1 - halfstep
+#define USE_ENC_SWITCH 					0						// 0 - without switch, 1 -  with switch
+#define USE_INT_IRQ 					0						// 0 - polling, 1 - interrrupts
 
-#define ENCODER_BUTTON_DDR		DDRD
-#define ENCODER_BUTTON_PORT		PORTD
-#define ENCODER_BUTTON_PIN 		PIND
+#if USE_INT_IRQ == 1
 
-#define ENCODER_PA 				4
-#define ENCODER_PB 				5
-#define ENCODER_BUTTONP			2
+#define ENC_INT							-1
 
-#define ROTA !(ENCODER_PIN & (1 << ENCODER_PA))
-#define ROTB !(ENCODER_PIN & (1 << ENCODER_PB))
-#define ROTCLICK !(ENCODER_BUTTON_PIN & (1 << ENCODER_BUTTONP))
+#if ENC_INT == 2
+#define PCINT_IRQ_VECT 					PCINT2_vect
+#define PCMSK_REG 						PCMSK2
+#define PCINT_A							PCINT18
+#define PCINT_B 						PCINT19
+#endif
+
+#endif
+
+#define ENCODER_AB_PORT 				PORTC
+#define ENCODER_AB_PIN 					PINC
+#define ENCODER_A 						(1 << PC4)
+#define ENCODER_B 						(1 << PC5)
+
+#define ENCODER_SW_DIR 					DDRD
+#define ENCODER_SW_PORT					PORTD
+#define ENCODER_SW_PIN 					PIND
+#define ENCODER_SW 						(1 << PD2)
+
+#ifdef GIMSK
+#define GICR 							GIMSK
+#endif
+
+#define ENCODER_SW_ON 					(ENCODER_SW_PIN & ENCODER_SW)
+
+#define ENCODER_A_HI 					(ENCODER_AB_PIN & ENCODER_A)
+#define ENCODER_B_HI 					(ENCODER_AB_PIN & ENCODER_B)
+
+#define ENCODER_LEFT 					0x10
+#define ENCODER_RIGHT 					0x20
 
 class Encoder
 {
 public:
 	Encoder();
-	uint8_t ReadGray();
+	void Process();
 	void Poll();
-private:
-	uint8_t wait;
-	uint8_t debounce_click;
-	uint8_t val, val_tmp;
 };
+
+extern volatile uint8_t enco_dir;
+//void encoder_proc();
+int get_encoder();
+void set_encoder(int val);
+//void ENCODER_EVENT();
 
 extern Encoder encoder;
 

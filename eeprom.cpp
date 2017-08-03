@@ -30,10 +30,10 @@ Function EEMEM eem_functions[MAX_FUNCTIONS] =
 	{13, NULL},
 	{2,  NULL},
 	{23, ModbusPoll},
-	{13, NULL},
+	{0xFF, NULL},
 	{2,  NULL},
 	{23, ModbusPoll},
-	{13, NULL},
+	{0xFF, NULL},
 	{2,  NULL},
 	{23, ModbusPoll}
 };

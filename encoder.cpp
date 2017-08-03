@@ -1,85 +1,133 @@
 /*
  * encoder.cpp
  *
- *  Created on: 30 cze 2017
+ *  Created on: 3 sie 2017
  *      Author: tomek
  */
 
+#include <avr/interrupt.h>
+#include <avr/pgmspace.h>
 #include "encoder.h"
-#include "display.h"
 #include "config.h"
+
+volatile int enco_cnt;
+volatile uint8_t enco_dir;
+volatile uint8_t enco_flag;
+
+#if HALF_STEP == 1
+const uint8_t enc_tab[6][4] PROGMEM =
+{
+	{0x03, 0x02, 0x01, 0x00}, {0x23, 0x00, 0x01, 0x00},
+	{0x13, 0x02, 0x00, 0x00}, {0x03, 0x05, 0x04, 0x00},
+	{0x03, 0x03, 0x04, 0x10}, {0x03, 0x05, 0x04, 0x20}
+};
+#else
+const uint8_t enc_tab[7][4] PROGMEM =
+{
+	{0x00, 0x02, 0x04, 0x00}, {0x03, 0x00, 0x01, 0x10},
+	{0x03, 0x02, 0x00, 0x00}, {0x03, 0x02, 0x01, 0x00},
+	{0x06, 0x00, 0x04, 0x00}, {0x06, 0x05, 0x00, 0x20},
+	{0x06, 0x05, 0x04, 0x00},
+};
+#endif
 
 Encoder::Encoder()
 {
-	ENCODER_DDR &= ~((1 << ENCODER_PA) | (1 << ENCODER_PB));
-	ENCODER_BUTTON_DDR &= ~(1 << ENCODER_BUTTONP);
-	wait = 0;
-	debounce_click = 0;
-	uint8_t val=0, val_tmp =0;
-	ReadGray();
+#if USE_ENC_SWITCH == 1
+	ENCODER_SW_PORT |= ENCODER_SW;
+#endif
+	ENCODER_AB_PORT |= ENCODER_A | ENCODER_B;
+	Process();
+#if USE_INT_IRQ == 1
+
+#if ENC_INT == -1
+
+#ifndef GICR
+	EIMSK |= (1 << INT0);
+	EICRA |= (1 << ISC00);
+#else
+	GICR |= (1 << INT0);
+	MCUCR |= (1 << ISC00);
+#endif
+
+#endif
+
+#if ENC_INT == -1
+
+#ifndef GICR
+	EIMSK |= (1 << INT1);
+	EICRA |= (1 << ISC10);
+#else
+	GICR |= (1 << INT1);
+	MCUCR |= (1 << ISC10);
+#endif
+
+#endif
+
+#if ENC_INT == -2
+#ifndef GICR
+	PCICR |= (1 << PCIE2);
+#else
+	GICR |= (1 << PCIE);
+#endif
+	PCMSK_REG |= (1 << PCINT_B) | (1 << PCINT_A);
+#endif
+
+#endif
 }
 
-uint8_t Encoder::ReadGray()
+void Encoder::Process()
 {
-	uint8_t val = 0;
-	if(!bit_is_clear(ENCODER_PIN, ENCODER_PA))
-	val |= (1 << 1);
-
-	if(!bit_is_clear(ENCODER_PIN, ENCODER_PB))
-	val |= (1 << 0);
-	return val;
+	static uint8_t enc_stat;
+	register uint8_t pin = ENCODER_AB_PIN;
+	register uint8_t ABstate = ((pin & ENCODER_B)?2:0) | ((pin & ENCODER_A)?1:0);
+	enc_stat = pgm_read_byte(&enc_tab[enc_stat & 0x0F][ABstate]);
+	ABstate = (enc_stat & 0x30);
+	if(ABstate)
+	{
+		enco_dir = ABstate;
+		if(ABstate == ENCODER_RIGHT) enco_cnt++;
+		else enco_cnt--;
+		enco_flag = 1;
+	}
 }
-/*
+
 void Encoder::Poll()
 {
-	if(ROTA & (!wait))
-		wait = 1;
-	if(ROTB & ROTA & (wait))
+#if USE_INT_IRQ == 0
+	Process();
+#endif
+	if(enco_flag)
 	{
-		config.EV_EncoderLeft(&config_data);
-		wait = 2;
+		enco_flag = 0;
+		if(enco_dir == ENCODER_RIGHT) config.EV_EncoderRight(&config_data);
+		else config.EV_EncoderLeft(&config_data);
+		// tutaj co ma robic
 	}
-	else if(ROTA & (!ROTB) & wait)
+#if USE_ENC_SWITCH == 1
+	static uint16_t enc_key_lock;
+	if(!enc_key_lock && !(ENC_SW_PIN & ENC_SW))
 	{
-		config.EV_EncoderRight(&config_data);
-		wait = 2;
+		enc_key_lock = 65000;
+		// tutaj akcja od przycisku
 	}
-	if((!ROTA) & !(ROTB) & (wait == 2))
-		wait = 0;
+	else if(enc_key_lock && (ENC_SW_PIN & ENC_SW)) enc_key_lock++;
+#endif
+}
 
-	if(ROTCLICK)
-	{
-		debounce_click++;
-		// debounce 50 ms
-		if (ROTCLICK && debounce_click == 10)
-		{
-			debounce_click = 0;
-			config.EV_EncoderClick();
-		};
-	}
-} */
-void Encoder::Poll()
+int get_encoder()
 {
-	val_tmp = ReadGray();
-	if(val != val_tmp)
-	{
-		if( /*(val==2 && val_tmp==3) || */
-			   (val==3 && val_tmp==1) ||
-			 /*  (val==1 && val_tmp==0) || */
-			   (val==0 && val_tmp==2)
-			 )
-		   {
-			config.EV_EncoderRight(&config_data);
-		   }
-		   else if(/* (val==3 && val_tmp==2) || */
-			   (val==2 && val_tmp==0) ||
-			/*   (val==0 && val_tmp==1) || */
-			   (val==1 && val_tmp==3)
-			 )
-		   {
-			   config.EV_EncoderLeft(&config_data);
-		   }
+	uint8_t sreg = SREG;
+	cli();
+	int res = enco_cnt;
+	SREG = sreg;
+	return res;
+}
 
-		   val = val_tmp;
-	   }
+void set_encoder(int val)
+{
+	uint8_t sreg = SREG;
+	cli();
+	enco_cnt = val;
+	SREG = sreg;
 }
