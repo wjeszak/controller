@@ -23,17 +23,17 @@ class Machine
 public:
 	Machine(uint8_t max_states);
 	uint16_t GetState();
-	void InternalEvent(uint16_t new_state, EventData* pdata = NULL);
-	void Event(uint16_t new_state, EventData* pdata = NULL);
-	virtual uint16_t StartupTest() { return 0xFF; }
+	void InternalEvent(uint8_t new_state, EventData* pdata = NULL);
+	void Event(uint8_t new_state, EventData* pdata = NULL);
+	virtual uint8_t StartupTest() { return 0xFF; }
 //	virtual ~Machine();
 protected:
-	uint16_t current_state;
+	uint8_t current_state;
 	enum States {ST_NOT_ALLOWED = 0xFF};
 private:
 	const uint8_t _max_states;
 	bool _event_generated;
-	void ChangeState(uint16_t new_state);
+	void ChangeState(uint8_t new_state);
 	virtual const StateStruct* GetStateMap() { return NULL; }
 };
 

@@ -22,7 +22,6 @@ struct Function
 
 struct ConfigurationParams
 {
-	MachineType machine_type;
 	uint8_t mac_addr[6];
 	uint8_t ip_addr[4];
 };

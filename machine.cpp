@@ -11,7 +11,7 @@ Machine::Machine(uint8_t max_states) : current_state(0), _max_states(max_states)
 {
 }
 
-void Machine::ChangeState(uint16_t new_state)
+void Machine::ChangeState(uint8_t new_state)
 {
 	current_state = new_state;
 }
@@ -20,14 +20,14 @@ uint16_t Machine::GetState()
 {
 	return current_state;
 }
-void Machine::Event(uint16_t new_state, EventData *pdata)
+void Machine::Event(uint8_t new_state, EventData *pdata)
 {
 	if(new_state == ST_NOT_ALLOWED) {}
 	else
 		InternalEvent(new_state, pdata);
 }
 
-void Machine::InternalEvent(uint16_t new_state, EventData* pdata)
+void Machine::InternalEvent(uint8_t new_state, EventData* pdata)
 {
 	_event_generated = true;
 	ChangeState(new_state);
