@@ -31,12 +31,11 @@ const uint8_t tab[7][4] PROGMEM =
 
 Encoder::Encoder() : status(0), direction(0), counter(0), flag(0)
 {
-	ENCODER_AB_PORT |= ENCODER_A | ENCODER_B;
-//	ENCODER_SW_PORT |= (1 << ENCODER_SW);
+	ENCODER_AB_PORT |= (1 << ENCODER_A) | (1 << ENCODER_B);
 	Process();
 }
 
-bool Encoder::CheckVal()
+bool Encoder::CheckSwitch()
 {
 	if(!(ENCODER_SW_PIN & (1 << ENCODER_SW))) return true;
 	return false;
@@ -44,8 +43,7 @@ bool Encoder::CheckVal()
 
 void Encoder::Process()
 {
-	register uint8_t pin = ENCODER_AB_PIN;
-	register uint8_t ABstate = ((pin & ENCODER_B) ? 2 : 0) | ((pin & ENCODER_A) ? 1 : 0);
+	register uint8_t ABstate = ((ENCODER_B_HI) ? 2 : 0) | ((ENCODER_A_HI) ? 1 : 0);
 	status = pgm_read_byte(&tab[status & 0x0F][ABstate]);
 	ABstate = (status & 0x30);
 	if(ABstate)
@@ -61,8 +59,8 @@ void Encoder::Process()
 
 void Encoder::Poll()
 {
+	static uint8_t debounce;
 	Process();
-
 	if(flag)
 	{
 		flag = 0;
@@ -70,10 +68,15 @@ void Encoder::Poll()
 		config.EV_Encoder(&config_data);
 	}
 
-//	if(CheckVal())
-//	{
-//		timer.Assign(TIMER_ENCODER_CLICK_DEBOUNCE, 100, EncoderClickDebounce);
-//	}
+	if(CheckSwitch())
+	{
+		debounce++;
+		if(debounce == 50) // 50 ms
+		{
+			debounce = 0;
+			config.EV_EncoderClick(&config_data);
+		}
+	}
 }
 
 uint8_t Encoder::GetCounter()
