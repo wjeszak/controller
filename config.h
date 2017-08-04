@@ -17,6 +17,7 @@
 class ConfigData : public EventData
 {
 public:
+	uint8_t val;
 };
 
 class Config : public Machine
@@ -25,8 +26,7 @@ public:
 	Config();
 	// Events
 	void EV_ButtonPress(ConfigData* pdata = NULL);
-	void EV_EncoderLeft(ConfigData* pdata);
-	void EV_EncoderRight(ConfigData* pdata);
+	void EV_Encoder(ConfigData* pdata);
 	void EV_EncoderClick(ConfigData* pdata = NULL);
 private:
 	// States functions

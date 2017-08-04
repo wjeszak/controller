@@ -56,10 +56,10 @@ void Encoder::Poll()
 	if(flag)
 	{
 		flag = 0;
-		if(direction == ENCODER_RIGHT) config.EV_EncoderRight(&config_data);
-		else config.EV_EncoderLeft(&config_data);
+		config_data.val = counter;
+		config.EV_Encoder(&config_data);
 	}
-
+/*
 	static uint16_t enc_key_lock;
 	if(!enc_key_lock && !(ENCODER_SW_PIN & ENCODER_SW))
 	{
@@ -67,6 +67,7 @@ void Encoder::Poll()
 		// tutaj akcja od przycisku
 	}
 	else if(enc_key_lock && (ENCODER_SW_PIN & ENCODER_SW)) enc_key_lock++;
+*/
 }
 
 uint8_t Encoder::GetCounter()

@@ -24,19 +24,8 @@ void Config::EV_ButtonPress(ConfigData* pdata)
     END_TRANSITION_MAP(pdata)
 }
 
-void Config::EV_EncoderLeft(ConfigData* pdata)
+void Config::EV_Encoder(ConfigData* pdata)
 {
-	index--;
-    BEGIN_TRANSITION_MAP								// current state
-        TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_INIT
-    	TRANSITION_MAP_ENTRY(ST_CHOOSING_FUNCTION)		// ST_IDLE
-        TRANSITION_MAP_ENTRY(ST_CHOOSING_FUNCTION)		// ST_CHOOSING_FUNCTION
-    END_TRANSITION_MAP(pdata)
-}
-
-void Config::EV_EncoderRight(ConfigData* pdata)
-{
-	index++;
     BEGIN_TRANSITION_MAP								// current state
         TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_INIT
     	TRANSITION_MAP_ENTRY(ST_CHOOSING_FUNCTION)		// ST_IDLE
@@ -64,12 +53,13 @@ void Config::ST_Init(ConfigData* pdata)
 
 void Config::ST_Idle(ConfigData* pdata)
 {
-//	timer.Assign(TIMER_ENCODER_POLL, 1, EncoderPoll);
+
 }
 
 void Config::ST_ChoosingFunction(ConfigData* pdata)
 {
 	timer.Disable(TIMER_INIT_COUNTDOWN);
+	index = pdata->val;
 	if(index >= MAX_FUNCTIONS) index = 0;
 	if(!GetTypeOfFunction(index)) display.Write(TFunctionNotSupported, index + 1);
 	else
