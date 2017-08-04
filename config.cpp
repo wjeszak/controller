@@ -45,7 +45,8 @@ void Config::EV_EncoderClick(ConfigData* pdata)
 		if(current_state == ST_CHOOSING_FUNCTION)
 		{
 			index_cache = pdata->val;
-			display.Write(TParameterValue, functions[index].param);
+			pdata->val = functions[index].param;
+			encoder.SetCounter(functions[index].param);
 		}
 		if(current_state == ST_EXECUTING_FUNCTION)
 		{
@@ -74,14 +75,25 @@ void Config::ST_Init(ConfigData* pdata)
 void Config::ST_ChoosingFunction(ConfigData* pdata)
 {
 	index = pdata->val;
-	if(!GetTypeOfFunction(index)) display.Write(TFunctionNotSupported, index + 1);
+	if(index == 0xFF)
+	{
+		index = 0;
+		encoder.SetCounter(0);
+	}
+	if(index >= (MAX_FUNCTIONS - 1))
+	{
+		index = MAX_FUNCTIONS - 1;
+		encoder.SetCounter(MAX_FUNCTIONS - 1);
+	}
+	if(!GetTypeOfFunction(index))
+		display.Write(TFunctionNotSupported, index + 1);
 	else
 		display.Write(TFunction, index + 1);
 }
 
 void Config::ST_ExecutingFunction(ConfigData* pdata)
 {
-//	display.Write(1234);
+	display.Write(TParameterValue, pdata->val);
 }
 
 void Config::ST_Done(ConfigData* pdata)

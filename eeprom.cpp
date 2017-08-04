@@ -24,7 +24,7 @@
 
 Function EEMEM eem_functions[MAX_FUNCTIONS] =
 {
-	{0xFF, NULL},	// 1
+	{0x12, NULL},	// 1
 	{0xFF, NULL},	// 2
 	{0xFF, NULL},	// 3
 	{0xFF, NULL},	// 4

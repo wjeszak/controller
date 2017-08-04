@@ -70,7 +70,7 @@ void Display::Write(InfoType type, uint8_t val)
 		break;
 	case TParameterValue:
 		value[0] = digits[14];
-		value[1] = digits[10];
+		value[1] = digits[(val / 100) % 10]; 	// hundreds
 		break;
 	}
 	value[2] = digits[(val % 100) / 10]; 	// dozens

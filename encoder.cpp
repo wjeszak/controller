@@ -49,10 +49,10 @@ void Encoder::Process()
 	if(ABstate)
 	{
 		direction = ABstate;
-		if(direction == ENCODER_RIGHT) counter++;
-			else counter--;
-		if(counter == 0xFF) counter = 0;
-		if(counter >= (MAX_FUNCTIONS - 1)) counter = MAX_FUNCTIONS - 1;
+		if(direction == ENCODER_RIGHT)
+			counter++;
+		else
+			counter--;
 		flag = 1;
 	}
 }
