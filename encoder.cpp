@@ -71,7 +71,7 @@ void Encoder::Poll()
 	if(CheckSwitch())
 	{
 		debounce++;
-		if(debounce == 50) // 50 ms
+		if(debounce == 200) // 50 ms
 		{
 			debounce = 0;
 			config.EV_EncoderClick(&config_data);

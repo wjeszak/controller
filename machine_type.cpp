@@ -10,21 +10,19 @@
 #include "lockerbox.h"
 #include "dynabox.h"
 
-Machine* GetPointerTypeOfMachine(MachineType type)
+Machine* GetPointerTypeOfMachine(uint8_t type)
 {
 	Machine* p = NULL;
 	switch (type)
 	{
-	case TLockerbox:
-		p = &lockerbox;
-		break;
-	case TDynabox:
+	case MACHINE_DYNABOX:
 		p = &dynabox;
+		break;
+	case MACHINE_LOCKERBOX:
+		p = &lockerbox;
 		break;
 	default:
 		p = NULL;
 	}
 	return p;
 }
-
-

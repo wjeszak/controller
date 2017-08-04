@@ -47,5 +47,5 @@ private:
 
 extern Config config;
 extern ConfigData config_data;
-
+extern void test();
 #endif /* CONFIG_H_ */

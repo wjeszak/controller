@@ -11,6 +11,11 @@
 #include "display.h"
 #include "eeprom.h"
 
+void test()
+{
+	display.Write(4683);
+}
+
 Config::Config() : Machine(ST_MAX_STATES)
 {
 	ST_Init(&config_data);
@@ -93,11 +98,20 @@ void Config::ST_ChoosingFunction(ConfigData* pdata)
 
 void Config::ST_ExecutingFunction(ConfigData* pdata)
 {
-	display.Write(TParameterValue, pdata->val);
+	if(GetTypeOfFunction(index) == 1) display.Write(TParameterValue, pdata->val);
+	if(GetTypeOfFunction(index) == 2)
+	{
+		functions[index].f();
+//		encoder.SetCounter(index_cache);
+//		pdata->val = index_cache;
+//		InternalEvent(ST_CHOOSING_FUNCTION, NULL);
+	}
 }
 
 void Config::ST_Done(ConfigData* pdata)
 {
+	m = GetPointerTypeOfMachine(functions[27].param);
+	m->StartupTest();
 	display.Write(0);
 }
 

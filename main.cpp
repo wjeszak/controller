@@ -50,8 +50,6 @@ Machine *m;
 
 int main()
 {
-	m = GetPointerTypeOfMachine(TDynabox);
-	//m->StartupTest();
 	while(1)
 	{
 		stack.Poll();
