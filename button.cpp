@@ -14,7 +14,8 @@
 
 Button::Button() : Machine(ST_MAX_STATES)
 {
-	Init();
+	BUTTON_DDR &= ~(1 << BUTTON_PIN_NUMBER);
+	BUTTON_PORT |= (1 << BUTTON_PIN_NUMBER);
 	ST_Idle(&button_data);
 }
 
@@ -22,12 +23,6 @@ bool Button::CheckVal()
 {
 	if(!(BUTTON_PIN & (1 << BUTTON_PIN_NUMBER))) return true;
 	return false;
-}
-
-void Button::Init()
-{
-	BUTTON_DDR &= ~(1 << BUTTON_PIN_NUMBER);
-	BUTTON_PORT |= (1 << BUTTON_PIN_NUMBER);
 }
 
 void Button::EV_Press(ButtonData* pdata)
@@ -58,6 +53,7 @@ void Button::ST_Down(ButtonData* pdata)
 
 void Button::ST_Action(ButtonData* pdata)
 {
+	timer.Disable(TIMER_BUTTON_ACTION);
 	config.EV_ButtonPress(&config_data);
 	InternalEvent(ST_IDLE, NULL);
 }
