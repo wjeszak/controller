@@ -102,9 +102,6 @@ void Config::ST_ExecutingFunction(ConfigData* pdata)
 	if(GetTypeOfFunction(index) == 2)
 	{
 		functions[index].f();
-//		encoder.SetCounter(index_cache);
-//		pdata->val = index_cache;
-//		InternalEvent(ST_CHOOSING_FUNCTION, NULL);
 	}
 }
 
