@@ -51,7 +51,7 @@ Function EEMEM eem_functions[MAX_FUNCTIONS] =
 	{0xFF, NULL},	// 25
 	{0xFF, NULL},	// 26
 	{0xFF, NULL},	// 27
-	{0x00, NULL},	// 28
+	{0x45, NULL},	// 28
 	{0xFF, NULL},	// 29
 	{0xFF, NULL},	// 30
 };

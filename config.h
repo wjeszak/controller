@@ -31,15 +31,15 @@ public:
 private:
 	// States functions
 	void ST_Init(ConfigData* pdata);
-	void ST_Idle(ConfigData* pdata);
 	void ST_ChoosingFunction(ConfigData* pdata);
 	void ST_ExecutingFunction(ConfigData* pdata);
-	enum States {ST_INIT = 0, ST_IDLE, ST_CHOOSING_FUNCTION, ST_EXECUTING_FUNCTION, ST_MAX_STATES};
+	void ST_Done(ConfigData* pdata);
+	enum States {ST_INIT = 0, ST_CHOOSING_FUNCTION, ST_EXECUTING_FUNCTION, ST_DONE, ST_MAX_STATES};
 	BEGIN_STATE_MAP
 		STATE_MAP_ENTRY(&Config::ST_Init)
-		STATE_MAP_ENTRY(&Config::ST_Idle)
 		STATE_MAP_ENTRY(&Config::ST_ChoosingFunction)
 		STATE_MAP_ENTRY(&Config::ST_ExecutingFunction)
+		STATE_MAP_ENTRY(&Config::ST_Done)
 	END_STATE_MAP
 	uint8_t GetTypeOfFunction(uint8_t id);
 	uint8_t index;
