@@ -48,6 +48,7 @@ void Config::ST_Init(ConfigData* pdata)
 	eeprom.Read();
 	timer.Assign(TIMER_DISPLAY_REFRESH, 4, DisplayRefresh);
 	timer.Assign(TIMER_INIT_COUNTDOWN, 1000, InitCountDown);
+	timer.Assign(TIMER_ENCODER_POLL, 1, EncoderPoll);
 	sei();
 }
 
@@ -60,7 +61,6 @@ void Config::ST_ChoosingFunction(ConfigData* pdata)
 {
 	timer.Disable(TIMER_INIT_COUNTDOWN);
 	index = pdata->val;
-	if(index >= MAX_FUNCTIONS) index = 0;
 	if(!GetTypeOfFunction(index)) display.Write(TFunctionNotSupported, index + 1);
 	else
 		display.Write(TFunction, index + 1);
@@ -68,7 +68,7 @@ void Config::ST_ChoosingFunction(ConfigData* pdata)
 
 void Config::ST_ExecutingFunction(ConfigData* pdata)
 {
-
+	display.Write(1234);
 }
 
 uint8_t Config::GetTypeOfFunction(uint8_t id)

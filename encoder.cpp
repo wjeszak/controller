@@ -9,6 +9,8 @@
 #include <avr/pgmspace.h>
 #include "encoder.h"
 #include "config.h"
+#include "timer.h"
+#include "eeprom.h"
 
 #if HALF_STEP == 1
 const uint8_t tab[6][4] PROGMEM =
@@ -30,8 +32,14 @@ const uint8_t tab[7][4] PROGMEM =
 Encoder::Encoder() : status(0), direction(0), counter(0), flag(0)
 {
 	ENCODER_AB_PORT |= ENCODER_A | ENCODER_B;
-	ENCODER_SW_PORT |= ENCODER_SW;
+//	ENCODER_SW_PORT |= (1 << ENCODER_SW);
 	Process();
+}
+
+bool Encoder::CheckVal()
+{
+	if(!(ENCODER_SW_PIN & (1 << ENCODER_SW))) return true;
+	return false;
 }
 
 void Encoder::Process()
@@ -44,7 +52,9 @@ void Encoder::Process()
 	{
 		direction = ABstate;
 		if(direction == ENCODER_RIGHT) counter++;
-		else counter--;
+			else counter--;
+		if(counter == 0xFF) counter = 0;
+		if(counter >= (MAX_FUNCTIONS - 1)) counter = MAX_FUNCTIONS - 1;
 		flag = 1;
 	}
 }
@@ -59,15 +69,11 @@ void Encoder::Poll()
 		config_data.val = counter;
 		config.EV_Encoder(&config_data);
 	}
-/*
-	static uint16_t enc_key_lock;
-	if(!enc_key_lock && !(ENCODER_SW_PIN & ENCODER_SW))
-	{
-		enc_key_lock = 65000;
-		// tutaj akcja od przycisku
-	}
-	else if(enc_key_lock && (ENCODER_SW_PIN & ENCODER_SW)) enc_key_lock++;
-*/
+
+//	if(CheckVal())
+//	{
+//		timer.Assign(TIMER_ENCODER_CLICK_DEBOUNCE, 100, EncoderClickDebounce);
+//	}
 }
 
 uint8_t Encoder::GetCounter()

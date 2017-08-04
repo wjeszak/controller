@@ -54,7 +54,6 @@ int main()
 	//m->StartupTest();
 	while(1)
 	{
-		encoder.Poll();
 		stack.Poll();
 	}
 }

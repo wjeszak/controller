@@ -102,10 +102,16 @@ void ButtonDebounce()
 	if(button.CheckVal()) button.EV_Press(&button_data);
 }
 
-// TIMER_BUTTON_TIME_TO_ENTER
+// TIMER_BUTTON_ACTION
 void ButtonAction()
 {
 	if(button.CheckVal()) button.EV_Press(&button_data);
+}
+
+//TIMER_ENCODER_POLL
+void EncoderPoll()
+{
+	encoder.Poll();
 }
 
 // TIMER_MODBUS_RTU_35T
