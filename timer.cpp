@@ -87,13 +87,7 @@ void DisplayRefresh()
 // TIMER_INIT_COUNTDOWN
 void InitCountDown()
 {
-	static uint16_t i = 5;
-	display.Write(i);
-	if(i == 0)
-	{
-		timer.Disable(TIMER_INIT_COUNTDOWN);
-	}
-	i--;
+	config.CountDown(&config_data);
 }
 
 // TIMER_BUTTON_DEBOUNCE

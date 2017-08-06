@@ -21,6 +21,18 @@ Config::Config() : Machine(ST_MAX_STATES)
 	ST_Init(&config_data);
 }
 
+void Config::CountDown(ConfigData* pdata)
+{
+	static uint8_t i = CONFIG_INIT_TIME;
+	display.Write(i);
+	if(i == 0)
+	{
+		timer.Disable(TIMER_INIT_COUNTDOWN);
+		InternalEvent(ST_DONE);
+	}
+	i--;
+}
+
 void Config::EV_EnterConfig(ConfigData* pdata)
 {
 	if(current_state == ST_INIT) timer.Disable(TIMER_INIT_COUNTDOWN);
@@ -110,7 +122,7 @@ void Config::ST_Done(ConfigData* pdata)
 {
 	m = GetPointerTypeOfMachine(functions[27].param);
 	m->StartupTest();
-	display.Write(0);
+	display.Write(1111);
 }
 
 uint8_t Config::GetTypeOfFunction(uint8_t id)

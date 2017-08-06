@@ -11,8 +11,8 @@
 #include <inttypes.h>
 #include "machine.h"
 #include "encoder.h"
-
-#define FUNCTION_NOT_SUPPORTED 			0xFF
+#define CONFIG_INIT_TIME 						5
+#define FUNCTION_NOT_SUPPORTED 					0xFF
 
 class ConfigData : public EventData
 {
@@ -25,6 +25,7 @@ class Config : public Machine
 public:
 	Config();
 	// Events
+	void CountDown(ConfigData* pdata);
 	void EV_EnterConfig(ConfigData* pdata);
 	void EV_Encoder(ConfigData* pdata);
 	void EV_EncoderClick(ConfigData* pdata = NULL);

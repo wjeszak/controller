@@ -64,7 +64,6 @@ extern Timer timer;
 extern void DisplayRefresh();
 extern void InitCountDown();
 extern void ButtonDebounce();
-//extern void ButtonAction();
 void EncoderPoll();
 extern void ModbusRTU35T();
 extern void ModbusPoll();
