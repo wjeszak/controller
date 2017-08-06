@@ -12,7 +12,7 @@
 #define USART_H_
 
 #include <inttypes.h>
-#include "machine.h"
+#include "state_machine.h"
 
 #define USART_DE_DDR 			DDRC
 #define USART_DE_PORT 			PORTC
@@ -33,7 +33,7 @@ public:
 	uint8_t len;
 };
 
-class Usart : public Machine
+class Usart : public StateMachine
 {
 public:
 	Usart(uint16_t baud = 19400);

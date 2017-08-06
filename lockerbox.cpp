@@ -8,7 +8,7 @@
 #include "lockerbox.h"
 #include "timer.h"
 
-Lockerbox::Lockerbox() : Machine(ST_MAX_STATES)
+Lockerbox::Lockerbox()
 {
 
 }
@@ -18,3 +18,4 @@ uint8_t Lockerbox::StartupTest()
 	timer.Assign(TIMER_MODBUS_RTU_POLL, 1000, ModbusPoll);
 	return 1;
 }
+

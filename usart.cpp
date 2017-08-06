@@ -11,7 +11,7 @@
 #include "modbus_rtu.h"
 #include "timer.h"
 
-Usart::Usart(uint16_t baud) : Machine(ST_MAX_STATES)
+Usart::Usart(uint16_t baud) : StateMachine(ST_MAX_STATES)
 {
 	uint8_t ubrr = F_CPU / 16 / baud - 1;
 	UBRR0H = (uint8_t)(ubrr >> 8);

@@ -9,8 +9,9 @@
 #define CONFIG_H_
 
 #include <inttypes.h>
-#include "machine.h"
+#include "state_machine.h"
 #include "encoder.h"
+
 #define CONFIG_INIT_TIME 						5
 #define FUNCTION_NOT_SUPPORTED 					0xFF
 
@@ -20,7 +21,7 @@ public:
 	uint8_t val;
 };
 
-class Config : public Machine
+class Config : public StateMachine
 {
 public:
 	Config();

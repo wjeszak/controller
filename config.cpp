@@ -16,7 +16,7 @@ void test()
 	display.Write(4683);
 }
 
-Config::Config() : Machine(ST_MAX_STATES)
+Config::Config() : StateMachine(ST_MAX_STATES)
 {
 	ST_Init(&config_data);
 }
@@ -120,9 +120,12 @@ void Config::ST_ExecutingFunction(ConfigData* pdata)
 
 void Config::ST_Done(ConfigData* pdata)
 {
-	m = GetPointerTypeOfMachine(functions[27].param);
-	m->StartupTest();
+	timer.Disable(TIMER_BUTTON_DEBOUNCE);
+	timer.Disable(TIMER_ENCODER_POLL);
+//	m = GetPointerTypeOfMachine(functions[27].param);
 	display.Write(1111);
+//	m->StartupTest();
+
 }
 
 uint8_t Config::GetTypeOfFunction(uint8_t id)

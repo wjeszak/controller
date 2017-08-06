@@ -9,7 +9,7 @@
 #define BUTTON_H_
 
 #include <inttypes.h>
-#include "machine.h"
+#include "state_machine.h"
 #include "config.h"
 
 #define BUTTON_ENTER_CONFIG_DDR					DDRC
@@ -27,7 +27,7 @@ class ButtonData : public EventData
 public:
 };
 
-class Button : public Machine
+class Button : public StateMachine
 {
 public:
 	Button(volatile uint8_t *ddr, volatile uint8_t *port, volatile uint8_t *pin, uint8_t pin_number, uint16_t time_to_action, void (Config::*f)(ConfigData*));

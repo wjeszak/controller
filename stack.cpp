@@ -13,7 +13,7 @@
 
 Enc28j60 enc28j60;
 
-Stack::Stack() : Machine(ST_MAX_STATES)
+Stack::Stack() : StateMachine(ST_MAX_STATES)
 {
 	enc28j60.Init();
 	packet_len = 0;

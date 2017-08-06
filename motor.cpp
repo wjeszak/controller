@@ -11,7 +11,7 @@
 #include "timer.h"
 #include "display.h"
 
-Motor::Motor() : Machine(ST_MAX_STATES)
+Motor::Motor() : StateMachine(ST_MAX_STATES)
 {
 	MOTOR_INIT;
 	EncoderAndHomeIrqInit();

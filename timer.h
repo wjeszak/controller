@@ -14,7 +14,7 @@
 #define TIMER_H_
 
 #include <avr/io.h>
-#include "machine.h"
+//#include "state_machine.h"
 
 #define MAIN_TIMER_PRESCALER 			36
 #define NUMBER_OF_TIMERS 				8
@@ -64,7 +64,7 @@ extern Timer timer;
 extern void DisplayRefresh();
 extern void InitCountDown();
 extern void ButtonDebounce();
-void EncoderPoll();
+extern void EncoderPoll();
 extern void ModbusRTU35T();
 extern void ModbusPoll();
 extern void MotorAccelerate();

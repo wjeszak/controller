@@ -8,7 +8,7 @@
 #ifndef MOTOR_H_
 #define MOTOR_H_
 
-#include "machine.h"
+#include "state_machine.h"
 
 #define MOTOR_DDR 						DDRD
 #define MOTOR_PORT 						PORTD
@@ -47,7 +47,7 @@ public:
 	uint16_t pos;
 };
 
-class Motor : public Machine
+class Motor : public StateMachine
 {
 public:
 	Motor();

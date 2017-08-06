@@ -9,7 +9,7 @@
 #include "motor.h"
 #include "timer.h"
 
-Dynabox::Dynabox() : Machine(ST_MAX_STATES)
+Dynabox::Dynabox()
 {
 
 }

@@ -14,6 +14,7 @@ class Dynabox : public Machine
 {
 public:
 	Dynabox();
+//	void LoadSupportedFunctions();
 	uint8_t StartupTest();
 private:
 	enum States {ST_INIT = 0, ST_MAX_STATES};

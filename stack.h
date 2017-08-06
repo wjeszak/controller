@@ -9,7 +9,7 @@
 #define STACK_H_
 
 #include <inttypes.h>
-#include "machine.h"
+#include "state_machine.h"
 #include "enc28j60.h"
 
 class StackData : public EventData
@@ -18,7 +18,7 @@ public:
 	uint16_t len;
 };
 
-class Stack : public Machine
+class Stack : public StateMachine
 {
 public:
 	Stack();
