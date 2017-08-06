@@ -18,32 +18,43 @@ Button::Button(volatile uint8_t *ddr, volatile uint8_t *port, volatile uint8_t *
 	_pin_number = pin_number;
 	_time_to_action = time_to_action;
 	_f = f;
-
+	_time_to_action_tmp = 0;
 	*_ddr &= ~(1 << _pin_number);
 	*_port |= (1 << _pin_number);
 
+	timer.Assign(TIMER_BUTTON_DEBOUNCE, 100, ButtonDebounce);
 	ST_Idle(&button_data);
 }
 
-bool Button::CheckVal()
+bool Button::Pressed()
 {
 	if(!(*_pin & (1 << _pin_number))) return true;
 	return false;
 }
 
-void Button::EV_Press(ButtonData* pdata)
+void Button::EV_Pressed(ButtonData* pdata)
 {
     BEGIN_TRANSITION_MAP								// current state
         TRANSITION_MAP_ENTRY(ST_DEBOUNCE)				// ST_IDLE
         TRANSITION_MAP_ENTRY(ST_DOWN)					// ST_DEBOUNCE
         TRANSITION_MAP_ENTRY(ST_ACTION)					// ST_DOWN
-        TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_ACTION
+        TRANSITION_MAP_ENTRY(ST_ACTION)					// ST_ACTION
     END_TRANSITION_MAP(pdata)
+}
+
+void Button::EV_Released(ButtonData* pdata)
+{
+	if(_time_to_action_tmp == _time_to_action)
+	{
+		(config.*_f)(&config_data);
+		InternalEvent(ST_IDLE, NULL);
+		_time_to_action_tmp = 0;
+	}
 }
 
 void Button::ST_Idle(ButtonData* pdata)
 {
-	timer.Assign(TIMER_BUTTON_DEBOUNCE, 100, ButtonDebounce);
+
 }
 
 void Button::ST_Debounce(ButtonData* pdata)
@@ -53,13 +64,10 @@ void Button::ST_Debounce(ButtonData* pdata)
 
 void Button::ST_Down(ButtonData* pdata)
 {
-	timer.Disable(TIMER_BUTTON_DEBOUNCE);
-	timer.Assign(TIMER_BUTTON_ACTION, _time_to_action, ButtonAction);
+
 }
 
 void Button::ST_Action(ButtonData* pdata)
 {
-	timer.Disable(TIMER_BUTTON_ACTION);
-	(config.*_f)(NULL);
-	InternalEvent(ST_IDLE, NULL);
+	if(!(_time_to_action_tmp == _time_to_action)) _time_to_action_tmp++;
 }

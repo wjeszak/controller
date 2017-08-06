@@ -74,7 +74,7 @@ void Config::ST_Init(ConfigData* pdata)
 	timer.Assign(TIMER_DISPLAY_REFRESH, 4, DisplayRefresh);
 	timer.Assign(TIMER_INIT_COUNTDOWN, 1000, InitCountDown);
 	timer.Assign(TIMER_ENCODER_POLL, 1, EncoderPoll);
-	index = 0;
+	pdata->val = 0;
 }
 
 void Config::ST_ChoosingFunction(ConfigData* pdata)
@@ -90,6 +90,7 @@ void Config::ST_ChoosingFunction(ConfigData* pdata)
 		index = MAX_FUNCTIONS - 1;
 		encoder.SetCounter(MAX_FUNCTIONS - 1);
 	}
+
 	if(!GetTypeOfFunction(index))
 		display.Write(TFunctionNotSupported, index + 1);
 	else

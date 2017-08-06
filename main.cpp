@@ -29,9 +29,6 @@
 
 Timer timer(T2_PS_1);
 Display display;
-Button button_enter_config(&BUTTON_ENTER_CONFIG_DDR, &BUTTON_ENTER_CONFIG_PORT, &BUTTON_ENTER_CONFIG_PIN, BUTTON_ENTER_CONFIG_PIN_NUMBER, 5000, &Config::EV_EnterConfig);
-Button button_encoder_sw(&BUTTON_ENCODER_SW_DDR, &BUTTON_ENCODER_SW_PORT, &BUTTON_ENCODER_SW_PIN, BUTTON_ENCODER_SW_PIN_NUMBER, 500, &Config::EV_EncoderClick);
-Encoder encoder;
 Eeprom eeprom;
 Lockerbox lockerbox;
 Dynabox dynabox;
@@ -39,10 +36,14 @@ Usart usart;
 ModbusRTU modbus_rtu;
 ModbusTCP modbus_tcp;
 Motor motor;
-Config config;
-Stack stack;
+Encoder encoder;
 ButtonData button_data;
+Button button_enter_config(&BUTTON_ENTER_CONFIG_DDR, &BUTTON_ENTER_CONFIG_PORT, &BUTTON_ENTER_CONFIG_PIN, BUTTON_ENTER_CONFIG_PIN_NUMBER, 20, &Config::EV_EnterConfig);
+Button button_encoder_sw(&BUTTON_ENCODER_SW_DDR, &BUTTON_ENCODER_SW_PORT, &BUTTON_ENCODER_SW_PIN, BUTTON_ENCODER_SW_PIN_NUMBER, 2, &Config::EV_EncoderClick);
 ConfigData config_data;
+Config config;
+
+Stack stack;
 UsartData usart_data;
 StackData stack_data;
 MotorData motor_data;

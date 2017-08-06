@@ -32,9 +32,10 @@ class Button : public Machine
 public:
 	Button(volatile uint8_t *ddr, volatile uint8_t *port, volatile uint8_t *pin, uint8_t pin_number, uint16_t time_to_action, void (Config::*f)(ConfigData*));
 	// Events
-	void EV_Press(ButtonData* pdata = NULL);
+	void EV_Pressed(ButtonData* pdata = NULL);
+	void EV_Released(ButtonData* pdata = NULL);
 	// Help function
-	bool CheckVal();
+	bool Pressed();
 private:
 	// States functions
 	void ST_Idle(ButtonData* pdata);
@@ -53,6 +54,7 @@ private:
 	volatile uint8_t *_pin;
 	uint8_t _pin_number;
 	uint16_t _time_to_action;
+	uint16_t _time_to_action_tmp;
 	void (Config::*_f)(ConfigData*);
 };
 

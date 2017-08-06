@@ -17,16 +17,15 @@
 #include "machine.h"
 
 #define MAIN_TIMER_PRESCALER 			36
-#define NUMBER_OF_TIMERS 				10
+#define NUMBER_OF_TIMERS 				8
 
 #define TIMER_DISPLAY_REFRESH 			0
 #define TIMER_INIT_COUNTDOWN 			1
 #define TIMER_BUTTON_DEBOUNCE			2
-#define TIMER_BUTTON_ACTION		 		3
-#define TIMER_ENCODER_POLL			 	4
-#define TIMER_MODBUS_RTU_35T			5
-#define TIMER_MODBUS_RTU_POLL 			6
-#define TIMER_MOTOR_ACCELERATE 			7
+#define TIMER_ENCODER_POLL			 	3
+#define TIMER_MODBUS_RTU_35T			4
+#define TIMER_MODBUS_RTU_POLL 			5
+#define TIMER_MOTOR_ACCELERATE 			6
 
 enum T2Prescallers
 {
@@ -65,7 +64,7 @@ extern Timer timer;
 extern void DisplayRefresh();
 extern void InitCountDown();
 extern void ButtonDebounce();
-extern void ButtonAction();
+//extern void ButtonAction();
 void EncoderPoll();
 extern void ModbusRTU35T();
 extern void ModbusPoll();
