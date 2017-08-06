@@ -45,7 +45,7 @@ class Timer
 public:
 	Timer(T2Prescallers prescaller);
 	void Irq();
-	void Assign(uint8_t handler_id, uint64_t interval, void(*fp)());
+	void Assign(uint8_t handler_id, uint16_t interval, void(*fp)());
 	void Enable (uint8_t handler_id);
 	void Disable (uint8_t handler_id);
 private:
@@ -53,8 +53,8 @@ private:
 	{
 		void(*fp)();
 		bool active;
-		uint64_t interval;
-		uint64_t counter;
+		uint16_t interval;
+		uint16_t counter;
 	};
 	TimerHandler timer_handlers[NUMBER_OF_TIMERS];
 	uint16_t main_timer_prescaler;

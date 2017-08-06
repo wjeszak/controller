@@ -60,8 +60,6 @@ void Button::ST_Down(ButtonData* pdata)
 void Button::ST_Action(ButtonData* pdata)
 {
 	timer.Disable(TIMER_BUTTON_ACTION);
-
 	(config.*_f)(NULL);
-	//	config.EV_ButtonPress(&config_data);
 	InternalEvent(ST_IDLE, NULL);
 }

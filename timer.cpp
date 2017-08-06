@@ -58,7 +58,7 @@ void Timer::Irq()
 	}
 }
 
-void Timer::Assign(uint8_t handler_id, uint64_t interval, void(*fp)())
+void Timer::Assign(uint8_t handler_id, uint16_t interval, void(*fp)())
 {
 	timer_handlers[handler_id].interval = interval;
 	timer_handlers[handler_id].counter = 0;
