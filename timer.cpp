@@ -99,13 +99,15 @@ void InitCountDown()
 // TIMER_BUTTON_DEBOUNCE
 void ButtonDebounce()
 {
-	if(button.CheckVal()) button.EV_Press(&button_data);
+	if(button_enter_config.CheckVal()) button_enter_config.EV_Press(&button_data);
+	if(button_encoder_sw.CheckVal()) button_encoder_sw.EV_Press(&button_data);
 }
 
 // TIMER_BUTTON_ACTION
 void ButtonAction()
 {
-	if(button.CheckVal()) button.EV_Press(&button_data);
+	if(button_enter_config.CheckVal()) button_enter_config.EV_Press(&button_data);
+	if(button_encoder_sw.CheckVal()) button_encoder_sw.EV_Press(&button_data);
 }
 
 //TIMER_ENCODER_POLL

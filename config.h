@@ -25,7 +25,7 @@ class Config : public Machine
 public:
 	Config();
 	// Events
-	void EV_ButtonPress(ConfigData* pdata = NULL);
+	void EV_EnterConfig(ConfigData* pdata = NULL);
 	void EV_Encoder(ConfigData* pdata);
 	void EV_EncoderClick(ConfigData* pdata = NULL);
 private:

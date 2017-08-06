@@ -35,12 +35,6 @@ Encoder::Encoder() : status(0), direction(0), counter(0), flag(0)
 	Process();
 }
 
-bool Encoder::CheckSwitch()
-{
-	if(!(ENCODER_SW_PIN & (1 << ENCODER_SW))) return true;
-	return false;
-}
-
 void Encoder::Process()
 {
 	register uint8_t ABstate = ((ENCODER_B_HI) ? 2 : 0) | ((ENCODER_A_HI) ? 1 : 0);
@@ -59,23 +53,12 @@ void Encoder::Process()
 
 void Encoder::Poll()
 {
-	static uint8_t debounce;
 	Process();
 	if(flag)
 	{
 		flag = 0;
 		config_data.val = counter;
 		config.EV_Encoder(&config_data);
-	}
-
-	if(CheckSwitch())
-	{
-		debounce++;
-		if(debounce == 200) // 50 ms
-		{
-			debounce = 0;
-			config.EV_EncoderClick(&config_data);
-		}
 	}
 }
 

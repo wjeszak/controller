@@ -12,7 +12,7 @@
 
 #define MACHINE_DYNABOX 			0
 #define MACHINE_LOCKERBOX 			1
-//enum MachineType {TLockerbox, TDynabox};
+
 extern Machine* GetPointerTypeOfMachine(uint8_t type);
 
 #endif /* MACHINE_TYPE_H_ */

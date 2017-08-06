@@ -21,7 +21,7 @@ Config::Config() : Machine(ST_MAX_STATES)
 	ST_Init(&config_data);
 }
 
-void Config::EV_ButtonPress(ConfigData* pdata)
+void Config::EV_EnterConfig(ConfigData* pdata)
 {
 	if(current_state == ST_INIT) timer.Disable(TIMER_INIT_COUNTDOWN);
 	BEGIN_TRANSITION_MAP								// current state

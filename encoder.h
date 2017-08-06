@@ -17,11 +17,6 @@
 #define ENCODER_A 						4
 #define ENCODER_B 						5
 
-#define ENCODER_SW_DIR 					DDRD
-#define ENCODER_SW_PORT					PORTD
-#define ENCODER_SW_PIN 					PIND
-#define ENCODER_SW 						2
-
 #define ENCODER_A_HI 					(ENCODER_AB_PIN & (1 << ENCODER_A))
 #define ENCODER_B_HI 					(ENCODER_AB_PIN & (1 << ENCODER_B))
 
@@ -35,8 +30,6 @@ public:
 	void Poll();
 	uint8_t GetCounter();
 	void SetCounter(uint8_t cnt);
-	// Help function
-	bool CheckSwitch();
 private:
 	void Process();
 	uint8_t status;

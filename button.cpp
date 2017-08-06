@@ -10,18 +10,24 @@
 #include "display.h"
 #include "button.h"
 
-#include "config.h"
-
-Button::Button() : Machine(ST_MAX_STATES)
+Button::Button(volatile uint8_t *ddr, volatile uint8_t *port, volatile uint8_t *pin, uint8_t pin_number, uint64_t time_to_action, void (Config::*f)(ConfigData*)) : Machine(ST_MAX_STATES)
 {
-	BUTTON_DDR &= ~(1 << BUTTON_PIN_NUMBER);
-	BUTTON_PORT |= (1 << BUTTON_PIN_NUMBER);
+	_ddr = ddr;
+	_port = port;
+	_pin = pin;
+	_pin_number = pin_number;
+	_time_to_action = time_to_action;
+	_f = f;
+
+	*_ddr &= ~(1 << _pin_number);
+	*_port |= (1 << _pin_number);
+
 	ST_Idle(&button_data);
 }
 
 bool Button::CheckVal()
 {
-	if(!(BUTTON_PIN & (1 << BUTTON_PIN_NUMBER))) return true;
+	if(!(*_pin & (1 << _pin_number))) return true;
 	return false;
 }
 
@@ -48,12 +54,14 @@ void Button::ST_Debounce(ButtonData* pdata)
 void Button::ST_Down(ButtonData* pdata)
 {
 	timer.Disable(TIMER_BUTTON_DEBOUNCE);
-	timer.Assign(TIMER_BUTTON_ACTION, 2000, ButtonAction);
+	timer.Assign(TIMER_BUTTON_ACTION, _time_to_action, ButtonAction);
 }
 
 void Button::ST_Action(ButtonData* pdata)
 {
 	timer.Disable(TIMER_BUTTON_ACTION);
-	config.EV_ButtonPress(&config_data);
+
+	(config.*_f)(NULL);
+	//	config.EV_ButtonPress(&config_data);
 	InternalEvent(ST_IDLE, NULL);
 }
