@@ -57,7 +57,7 @@ private:
 		uint16_t counter;
 	};
 	TimerHandler timer_handlers[NUMBER_OF_TIMERS];
-	uint16_t main_timer_prescaler;
+	uint8_t main_timer_prescaler;
 };
 
 extern Timer timer;

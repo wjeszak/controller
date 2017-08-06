@@ -30,7 +30,7 @@ public:
 class Button : public Machine
 {
 public:
-	Button(volatile uint8_t *ddr, volatile uint8_t *port, volatile uint8_t *pin, uint8_t pin_number, uint64_t time_to_action, void (Config::*f)(ConfigData*));
+	Button(volatile uint8_t *ddr, volatile uint8_t *port, volatile uint8_t *pin, uint8_t pin_number, uint16_t time_to_action, void (Config::*f)(ConfigData*));
 	// Events
 	void EV_Press(ButtonData* pdata = NULL);
 	// Help function
@@ -52,7 +52,7 @@ private:
 	volatile uint8_t *_port;
 	volatile uint8_t *_pin;
 	uint8_t _pin_number;
-	uint64_t _time_to_action;
+	uint16_t _time_to_action;
 	void (Config::*_f)(ConfigData*);
 };
 
