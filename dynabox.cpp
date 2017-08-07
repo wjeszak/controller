@@ -15,14 +15,17 @@
 #include "config.h"
 
 #define DYNABOX_NUMBER_OF_FUNCTIONS 		4
-
+void f12()
+{
+	display.Write(5555);
+}
 // default values
 Function EEMEM dynabox_eem_functions[DYNABOX_NUMBER_OF_FUNCTIONS] =
 {
 // No. of function, default value, defualt function pointer
 	{1, 			25, 			NULL},		// 1
 	{2, 			3, 				NULL},		// 2
-	{12,			89, 			NULL},		// 12
+	{12,			0, 				f12},		// 12
 	{28,			1,  			NULL},		// 28
 };
 

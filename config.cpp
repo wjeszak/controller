@@ -61,7 +61,7 @@ void Config::EV_Encoder(ConfigData* pdata)
 
 void Config::EV_EncoderClick(ConfigData* pdata)
 {
-	if(GetTypeOfFunction(index))
+	if(functions[index].id != 0)
 	{
 		static uint8_t index_cache;
 		if(current_state == ST_CHOOSING_FUNCTION)
@@ -111,19 +111,16 @@ void Config::ST_ChoosingFunction(ConfigData* pdata)
 	}
 
 	if(functions[index].id != 0)
-	//if(_supported_functions & (1 << functions[index].id))
 		display.Write(TFunction, functions[index].id);
-//	else
-//		display.Write(TFunctionNotSupported, functions[index].id);
 }
 
 void Config::ST_ExecutingFunction(ConfigData* pdata)
 {
-	if(GetTypeOfFunction(index) == 1) display.Write(TParameterValue, pdata->val);
-	if(GetTypeOfFunction(index) == 2)
-	{
+	if(functions[index].param)
+		display.Write(TParameterValue, pdata->val);
+
+	if(functions[index].f)
 		functions[index].f();
-	}
 }
 
 void Config::ST_Done(ConfigData* pdata)
@@ -132,12 +129,4 @@ void Config::ST_Done(ConfigData* pdata)
 	timer.Disable(TIMER_ENCODER_POLL);
 //	m->StartupTest();
 
-}
-
-uint8_t Config::GetTypeOfFunction(uint8_t id)
-{
-	if(functions[index].param == 0xFF && functions[index].f == NULL) return 0;
-	if(functions[index].param != 0xFF && functions[index].f == NULL) return 1;
-	if(functions[index].param == 0xFF && functions[index].f != NULL) return 2;
-	return 0; 	// if(functions[index].param != 0xFF && functions[index].f != NULL)
 }
