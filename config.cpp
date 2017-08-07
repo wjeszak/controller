@@ -6,10 +6,13 @@
  */
 
 #include <avr/interrupt.h>
+#include <avr/eeprom.h>
 #include "config.h"
 #include "timer.h"
 #include "display.h"
 #include "eeprom.h"
+
+uint8_t machine_type EEMEM = MACHINE_DYNABOX;
 
 void test()
 {
@@ -83,11 +86,11 @@ void Config::EV_EncoderClick(ConfigData* pdata)
 		END_TRANSITION_MAP(pdata)
 	}
 }
-
+// --------- Boot
 void Config::ST_Init(ConfigData* pdata)
 {
-	m = GetPointerTypeOfMachine(0);
-	//	m = GetPointerTypeOfMachine(functions[27].param);
+	uint8_t mt = eeprom_read_byte(&machine_type);
+	m = GetPointerTypeOfMachine(mt);
 	m->LoadSupportedFunctions();
 	sei();
 	timer.Assign(TIMER_DISPLAY_REFRESH, 4, DisplayRefresh);

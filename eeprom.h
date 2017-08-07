@@ -10,7 +10,7 @@
 
 #include "machine_type.h"
 
-#define MAX_NUMBER_OF_FUNCTIONS 			30
+#define MAX_NUMBER_OF_FUNCTIONS 			28
 
 typedef void (*fp)();
 
