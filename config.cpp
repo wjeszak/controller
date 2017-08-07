@@ -33,6 +33,11 @@ void Config::CountDown(ConfigData* pdata)
 	i--;
 }
 
+void Config::SetSupportedFunctions(uint8_t number_of_functions)
+{
+	_number_of_functions = number_of_functions;
+}
+
 void Config::EV_EnterConfig(ConfigData* pdata)
 {
 	if(current_state == ST_INIT) timer.Disable(TIMER_INIT_COUNTDOWN);
@@ -81,7 +86,10 @@ void Config::EV_EncoderClick(ConfigData* pdata)
 
 void Config::ST_Init(ConfigData* pdata)
 {
-	eeprom.Read();
+//	eeprom.Read();
+	m = GetPointerTypeOfMachine(0);
+	//	m = GetPointerTypeOfMachine(functions[27].param);
+	m->LoadSupportedFunctions();
 	sei();
 	timer.Assign(TIMER_DISPLAY_REFRESH, 4, DisplayRefresh);
 	timer.Assign(TIMER_INIT_COUNTDOWN, 1000, InitCountDown);
@@ -97,16 +105,17 @@ void Config::ST_ChoosingFunction(ConfigData* pdata)
 		index = 0;
 		encoder.SetCounter(0);
 	}
-	if(index >= (MAX_FUNCTIONS - 1))
+	if(index >= (_number_of_functions - 1))
 	{
-		index = MAX_FUNCTIONS - 1;
-		encoder.SetCounter(MAX_FUNCTIONS - 1);
+		index = _number_of_functions - 1;
+		encoder.SetCounter(_number_of_functions - 1);
 	}
 
-	if(!GetTypeOfFunction(index))
-		display.Write(TFunctionNotSupported, index + 1);
-	else
-		display.Write(TFunction, index + 1);
+	if(functions[index].id != 0)
+	//if(_supported_functions & (1 << functions[index].id))
+		display.Write(TFunction, functions[index].id);
+//	else
+//		display.Write(TFunctionNotSupported, functions[index].id);
 }
 
 void Config::ST_ExecutingFunction(ConfigData* pdata)
@@ -122,8 +131,6 @@ void Config::ST_Done(ConfigData* pdata)
 {
 	timer.Disable(TIMER_BUTTON_DEBOUNCE);
 	timer.Disable(TIMER_ENCODER_POLL);
-//	m = GetPointerTypeOfMachine(functions[27].param);
-	display.Write(1111);
 //	m->StartupTest();
 
 }

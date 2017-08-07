@@ -25,8 +25,9 @@ class Config : public StateMachine
 {
 public:
 	Config();
-	// Events
 	void CountDown(ConfigData* pdata);
+	void SetSupportedFunctions(uint8_t number_of_functions);
+	// Events
 	void EV_EnterConfig(ConfigData* pdata);
 	void EV_Encoder(ConfigData* pdata);
 	void EV_EncoderClick(ConfigData* pdata = NULL);
@@ -43,6 +44,7 @@ private:
 		STATE_MAP_ENTRY(&Config::ST_ExecutingFunction)
 		STATE_MAP_ENTRY(&Config::ST_Done)
 	END_STATE_MAP
+	uint8_t _number_of_functions;
 	uint8_t GetTypeOfFunction(uint8_t id);
 	uint8_t index;
 };

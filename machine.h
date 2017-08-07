@@ -14,7 +14,7 @@ class Machine : public StateMachine
 {
 public:
 	Machine();
-	virtual uint8_t StartupTest() { return 0xFF; }
+	virtual uint8_t StartupTest() { return 0; }
 	virtual void LoadSupportedFunctions() {}
 private:
 	enum States {ST_INIT = 0, ST_MAX_STATES};
