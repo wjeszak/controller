@@ -10,6 +10,8 @@
 
 #include "state_machine.h"
 
+#define FUNCTION_RECORD_SIZE 			4
+
 class Machine : public StateMachine
 {
 public:

@@ -86,7 +86,6 @@ void Config::EV_EncoderClick(ConfigData* pdata)
 
 void Config::ST_Init(ConfigData* pdata)
 {
-//	eeprom.Read();
 	m = GetPointerTypeOfMachine(0);
 	//	m = GetPointerTypeOfMachine(functions[27].param);
 	m->LoadSupportedFunctions();
