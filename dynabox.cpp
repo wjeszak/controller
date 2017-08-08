@@ -22,11 +22,11 @@ void f12()
 // default values
 Function EEMEM dynabox_eem_functions[DYNABOX_NUMBER_OF_FUNCTIONS] =
 {
-// No. of function, default value, defualt function pointer
-	{1, 			25, 			NULL},		// 1
-	{2, 			3, 				NULL},		// 2
-	{12,			0, 				f12},		// 12
-	{28,			1,  			NULL},		// 28
+//   No.of function, 	default value,  function pointer
+	{1, 				25, 			NULL},		// 1
+	{2, 				3, 				NULL},		// 2
+	{12,				0, 				f12},		// 12
+	{28,				0,  			NULL},		// 28
 };
 
 Dynabox::Dynabox()
@@ -37,7 +37,12 @@ Dynabox::Dynabox()
 void Dynabox::LoadSupportedFunctions()
 {
 	eeprom_read_block(&functions, &dynabox_eem_functions, FUNCTION_RECORD_SIZE * DYNABOX_NUMBER_OF_FUNCTIONS);
-	config.SetSupportedFunctions(DYNABOX_NUMBER_OF_FUNCTIONS);
+	config.number_of_functions = DYNABOX_NUMBER_OF_FUNCTIONS;
+}
+
+void Dynabox::SaveParameters()
+{
+	eeprom_update_block(&dynabox_eem_functions, &functions, FUNCTION_RECORD_SIZE * DYNABOX_NUMBER_OF_FUNCTIONS);
 }
 
 uint8_t Dynabox::StartupTest()

@@ -40,7 +40,6 @@ private:
 	// States functions
 	void ST_Idle(ButtonData* pdata);
 	void ST_Debounce(ButtonData* pdata);
-//	void ST_Down(ButtonData* pdata);
 	void ST_Action(ButtonData* pdata);
 	enum States {ST_IDLE = 0, ST_DEBOUNCE, ST_ACTION, ST_MAX_STATES};
 	BEGIN_STATE_MAP

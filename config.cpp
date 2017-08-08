@@ -36,18 +36,14 @@ void Config::CountDown(ConfigData* pdata)
 	i--;
 }
 
-void Config::SetSupportedFunctions(uint8_t number_of_functions)
-{
-	_number_of_functions = number_of_functions;
-}
-
-void Config::EV_EnterConfig(ConfigData* pdata)
+void Config::EV_ButtonClick(ConfigData* pdata)
 {
 	if(current_state == ST_INIT) timer.Disable(TIMER_INIT_COUNTDOWN);
+	if(current_state == ST_CHOOSING_FUNCTION) m->SaveParameters();
 	BEGIN_TRANSITION_MAP								// current state
         TRANSITION_MAP_ENTRY(ST_CHOOSING_FUNCTION)		// ST_INIT
         TRANSITION_MAP_ENTRY(ST_DONE)					// ST_CHOOSING_FUNCTION
-        TRANSITION_MAP_ENTRY(ST_DONE)					// ST_EXECUTING_FUNCTION
+        TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_EXECUTING_FUNCTION
         TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_DONE
     END_TRANSITION_MAP(pdata)
 }
@@ -77,6 +73,7 @@ void Config::EV_EncoderClick(ConfigData* pdata)
 		{
 			encoder.SetCounter(index_cache);
 			pdata->val = index_cache;
+			timer.Assign(TIMER_ENCODER_POLL, 1, EncoderPoll);
 		}
 		BEGIN_TRANSITION_MAP								// current state
         	TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_INIT
@@ -107,23 +104,27 @@ void Config::ST_ChoosingFunction(ConfigData* pdata)
 		index = 0;
 		encoder.SetCounter(0);
 	}
-	if(index >= (_number_of_functions - 1))
+	if(index >= (number_of_functions - 1))
 	{
-		index = _number_of_functions - 1;
-		encoder.SetCounter(_number_of_functions - 1);
+		index = number_of_functions - 1;
+		encoder.SetCounter(number_of_functions - 1);
 	}
-
 	if(functions[index].id != 0)
 		display.Write(TFunction, functions[index].id);
 }
 
 void Config::ST_ExecutingFunction(ConfigData* pdata)
 {
-	if(functions[index].param)
-		display.Write(TParameterValue, pdata->val);
-
 	if(functions[index].f)
+	{
+		timer.Disable(TIMER_ENCODER_POLL);
 		functions[index].f();
+	}
+	else
+	{
+		display.Write(TParameterValue, pdata->val);
+		functions[index].param = pdata->val;
+	}
 }
 
 void Config::ST_Done(ConfigData* pdata)
