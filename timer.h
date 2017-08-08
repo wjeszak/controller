@@ -14,14 +14,13 @@
 #define TIMER_H_
 
 #include <avr/io.h>
-//#include "state_machine.h"
 
 #define MAIN_TIMER_PRESCALER 			36
 #define NUMBER_OF_TIMERS 				8
 
 #define TIMER_DISPLAY_REFRESH 			0
 #define TIMER_INIT_COUNTDOWN 			1
-#define TIMER_BUTTON_DEBOUNCE			2
+#define TIMER_BUTTON_POLL				2
 #define TIMER_ENCODER_POLL			 	3
 #define TIMER_MODBUS_RTU_35T			4
 #define TIMER_MODBUS_RTU_POLL 			5
@@ -63,7 +62,7 @@ extern Timer timer;
 
 extern void DisplayRefresh();
 extern void InitCountDown();
-extern void ButtonDebounce();
+extern void ButtonPoll();
 extern void EncoderPoll();
 extern void ModbusRTU35T();
 extern void ModbusPoll();

@@ -40,15 +40,15 @@ private:
 	// States functions
 	void ST_Idle(ButtonData* pdata);
 	void ST_Debounce(ButtonData* pdata);
-	void ST_Down(ButtonData* pdata);
+//	void ST_Down(ButtonData* pdata);
 	void ST_Action(ButtonData* pdata);
-	enum States {ST_IDLE = 0, ST_DEBOUNCE, ST_DOWN, ST_ACTION, ST_MAX_STATES};
+	enum States {ST_IDLE = 0, ST_DEBOUNCE, ST_ACTION, ST_MAX_STATES};
 	BEGIN_STATE_MAP
 		STATE_MAP_ENTRY(&Button::ST_Idle)
 		STATE_MAP_ENTRY(&Button::ST_Debounce)
-		STATE_MAP_ENTRY(&Button::ST_Down)
 		STATE_MAP_ENTRY(&Button::ST_Action)
 	END_STATE_MAP
+
 	volatile uint8_t *_ddr;
 	volatile uint8_t *_port;
 	volatile uint8_t *_pin;

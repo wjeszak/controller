@@ -128,7 +128,7 @@ void Config::ST_ExecutingFunction(ConfigData* pdata)
 
 void Config::ST_Done(ConfigData* pdata)
 {
-	timer.Disable(TIMER_BUTTON_DEBOUNCE);
+	timer.Disable(TIMER_BUTTON_POLL);
 	timer.Disable(TIMER_ENCODER_POLL);
 //	m->StartupTest();
 

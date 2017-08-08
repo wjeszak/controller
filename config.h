@@ -13,7 +13,6 @@
 #include "encoder.h"
 
 #define CONFIG_INIT_TIME 						5
-#define FUNCTION_NOT_SUPPORTED 					0xFF
 
 class ConfigData : public EventData
 {

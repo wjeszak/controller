@@ -90,8 +90,8 @@ void InitCountDown()
 	config.CountDown(&config_data);
 }
 
-// TIMER_BUTTON_DEBOUNCE
-void ButtonDebounce()
+// TIMER_BUTTON_POLL
+void ButtonPoll()
 {
 	if(button_enter_config.Pressed())
 		button_enter_config.EV_Pressed(&button_data);
