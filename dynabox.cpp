@@ -42,7 +42,7 @@ void Dynabox::LoadSupportedFunctions()
 
 void Dynabox::SaveParameters()
 {
-	eeprom_update_block(&dynabox_eem_functions, &functions, FUNCTION_RECORD_SIZE * DYNABOX_NUMBER_OF_FUNCTIONS);
+	eeprom_update_block(&functions, &dynabox_eem_functions, FUNCTION_RECORD_SIZE * DYNABOX_NUMBER_OF_FUNCTIONS);
 }
 
 uint8_t Dynabox::StartupTest()
