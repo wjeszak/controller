@@ -45,8 +45,3 @@ void Eeprom::Read()
 	eeprom_read_block(&cfg, &eem_cfg, sizeof(ConfigurationParams));
 //	eeprom_read_block(&functions, &eem_functions, sizeof(functions));
 }
-
-void Eeprom::Write()
-{
-	eeprom_update_block(&eem_cfg, &cfg, sizeof(ConfigurationParams));
-}

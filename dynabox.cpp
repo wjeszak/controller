@@ -14,7 +14,7 @@
 #include "display.h"
 #include "config.h"
 
-#define DYNABOX_NUMBER_OF_FUNCTIONS 		4
+#define DYNABOX_NUMBER_OF_FUNCTIONS 		10
 void f12()
 {
 	display.Write(5555);
@@ -23,10 +23,16 @@ void f12()
 Function EEMEM dynabox_eem_functions[DYNABOX_NUMBER_OF_FUNCTIONS] =
 {
 //   No.of function, 	default value,  function pointer
-	{1, 				25, 			NULL},		// 1
-	{2, 				3, 				NULL},		// 2
-	{12,				0, 				f12},		// 12
-	{28,				0,  			NULL},		// 28
+	{1, 				25, 			NULL},	// program address door or led
+	{2, 				13, 			NULL},	// max doors
+	{4,					0, 				f12},	// test led
+	{5,					170,  			NULL},	// IP master
+	{6,					0,  			f12},	// test door
+	{7,					0,  			f12},	// test led
+	{8,					100,  			NULL},	// offset
+	{9,					0,  			f12},	// load defaults
+	{10,				25,  			NULL},	// led brightness
+	{28, 				0,				NULL},	// type of machine
 };
 
 Dynabox::Dynabox()

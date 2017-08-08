@@ -32,7 +32,6 @@ class Eeprom
 public:
 	Eeprom();
 	void Read();
-	void Write();
 };
 extern Function functions[MAX_NUMBER_OF_FUNCTIONS];
 extern ConfigurationParams cfg;
