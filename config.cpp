@@ -8,11 +8,12 @@
 #include <avr/interrupt.h>
 #include <avr/eeprom.h>
 #include "config.h"
+#include "machine.h"
 #include "timer.h"
 #include "display.h"
-#include "eeprom.h"
 
 uint8_t machine_type EEMEM = MACHINE_DYNABOX;
+Function functions[MAX_NUMBER_OF_FUNCTIONS];
 
 void test()
 {
@@ -131,6 +132,6 @@ void Config::ST_Done(ConfigData* pdata)
 {
 	timer.Disable(TIMER_BUTTON_POLL);
 	timer.Disable(TIMER_ENCODER_POLL);
-//	m->StartupTest();
+	m->StartupTest();
 
 }

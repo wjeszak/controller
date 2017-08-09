@@ -10,6 +10,18 @@
 
 #include <inttypes.h>
 
+#define MAC_ADDR1 		0x00
+#define MAC_ADDR2 		0x20
+#define MAC_ADDR3 		0x18
+#define MAC_ADDR4 		0xB1
+#define MAC_ADDR5		0x15
+#define MAC_ADDR6 		0x6F
+
+#define IP_ADDR1 		192
+#define IP_ADDR2 		168
+#define IP_ADDR3 		1
+//#define IP_ADDR4 		170
+
 class Enc28j60
 {
 public:
@@ -17,6 +29,8 @@ public:
 	void Init();
 	uint16_t ReceivePacket(uint8_t* buf, uint16_t buf_size);
 	void SendPacket(uint8_t* buf, uint16_t len);
+	uint8_t mac_addr[6];
+	uint8_t ip_addr[4];
 private:
 	void SPI_Init();
 	void SPI_Send(uint8_t byte);

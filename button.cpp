@@ -6,9 +6,9 @@
  */
 
 #include <avr/io.h>
+#include "button.h"
 #include "timer.h"
 #include "display.h"
-#include "button.h"
 
 Button::Button(volatile uint8_t *ddr, volatile uint8_t *port, volatile uint8_t *pin, uint8_t pin_number, uint16_t time_to_action, void (Config::*f)(ConfigData*)) : StateMachine(ST_MAX_STATES)
 {

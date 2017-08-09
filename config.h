@@ -12,7 +12,22 @@
 #include "state_machine.h"
 #include "encoder.h"
 
-#define CONFIG_INIT_TIME 						5
+#define CONFIG_INIT_TIME 					5
+#define MAX_NUMBER_OF_FUNCTIONS 			28
+#define FUNCTION_RECORD_SIZE 				4
+
+#define MACHINE_DYNABOX 					0
+#define MACHINE_LOCKERBOX 					1
+
+typedef void (*fp)();
+
+struct Function
+{
+	uint8_t id;
+	uint8_t param;
+	fp f;
+};
+extern Function functions[MAX_NUMBER_OF_FUNCTIONS];
 
 class ConfigData : public EventData
 {

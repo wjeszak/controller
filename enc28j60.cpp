@@ -8,7 +8,7 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include "enc28j60.h"
-#include "eeprom.h"
+#include "config.h"
 
 #define ENC28J60_CS_DDR 		DDRC
 #define ENC28J60_CS_PORT		PORTC
@@ -25,9 +25,10 @@
 
 #define spi_wait() 				while(!(SPSR & (1 << SPIF)))
 
-Enc28j60::Enc28j60()
+Enc28j60::Enc28j60() : mac_addr {MAC_ADDR1, MAC_ADDR2, MAC_ADDR3, MAC_ADDR4, MAC_ADDR5, MAC_ADDR6},
+					   ip_addr {IP_ADDR1, IP_ADDR2, IP_ADDR3}
 {
-
+	ip_addr[3] = functions[4].param;
 }
 
 void Enc28j60::SPI_Init()
@@ -287,12 +288,12 @@ void Enc28j60::Init()
 	RegWrite(ENC_REG_MAIPGH, 0x0C);
 	#endif
 
-	RegWrite(ENC_REG_MAADR5, cfg.mac_addr[0]);
-	RegWrite(ENC_REG_MAADR4, cfg.mac_addr[1]);
-	RegWrite(ENC_REG_MAADR3, cfg.mac_addr[2]);
-	RegWrite(ENC_REG_MAADR2, cfg.mac_addr[3]);
-	RegWrite(ENC_REG_MAADR1, cfg.mac_addr[4]);
-	RegWrite(ENC_REG_MAADR0, cfg.mac_addr[5]);
+	RegWrite(ENC_REG_MAADR5, mac_addr[0]);
+	RegWrite(ENC_REG_MAADR4, mac_addr[1]);
+	RegWrite(ENC_REG_MAADR3, mac_addr[2]);
+	RegWrite(ENC_REG_MAADR2, mac_addr[3]);
+	RegWrite(ENC_REG_MAADR1, mac_addr[4]);
+	RegWrite(ENC_REG_MAADR0, mac_addr[5]);
 
 	RegWrite(ENC_REG_ECOCON, 0x00);
 	#ifdef FULL_DUPLEX

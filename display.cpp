@@ -5,7 +5,6 @@
  *      Author: tomek
  */
 
-#include <avr/pgmspace.h>
 #include "display.h"
 
 Display::Display() : digits {DISP_CHAR_0, DISP_CHAR_1, DISP_CHAR_2, DISP_CHAR_3, DISP_CHAR_4,

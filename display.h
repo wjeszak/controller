@@ -9,7 +9,6 @@
 #define DISPLAY_H_
 
 #include <avr/io.h>
-#include <avr/pgmspace.h>
 #include <inttypes.h>
 
 #define DISP1_DDR 				DDRD

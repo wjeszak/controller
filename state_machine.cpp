@@ -34,7 +34,7 @@ void StateMachine::InternalEvent(uint8_t new_state, EventData* pdata)
 	while(_event_generated)
 	{
 		const StateStruct* pStateMap = GetStateMap();
-		// run state function
+		// call state function
 		(this->*pStateMap[current_state].pStateFunc)(pdata);
 		_event_generated = false;
 	}

@@ -10,7 +10,6 @@
 #include "dynabox.h"
 #include "motor.h"
 #include "timer.h"
-#include "eeprom.h"
 #include "display.h"
 #include "config.h"
 

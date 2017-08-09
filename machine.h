@@ -10,8 +10,6 @@
 
 #include "state_machine.h"
 
-#define FUNCTION_RECORD_SIZE 			4
-
 class Machine : public StateMachine
 {
 public:
@@ -24,6 +22,7 @@ private:
 	enum States {ST_INIT = 0, ST_MAX_STATES};
 };
 
+extern Machine* GetPointerTypeOfMachine(uint8_t type);
 extern Machine *m;
 
 #endif /* MACHINE_H_ */

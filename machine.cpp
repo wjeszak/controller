@@ -5,12 +5,26 @@
  *      Author: tomek
  */
 
-#include <avr/eeprom.h>
-#include "state_machine.h"
-#include "machine_type.h"
-#include "machine.h"
+#include "dynabox.h"
+#include "lockerbox.h"
+#include "config.h"
 
-
+Machine* GetPointerTypeOfMachine(uint8_t type)
+{
+	Machine* p = NULL;
+	switch (type)
+	{
+	case MACHINE_DYNABOX:
+		p = &dynabox;
+		break;
+	case MACHINE_LOCKERBOX:
+		p = &lockerbox;
+		break;
+	default:
+		p = NULL;
+	}
+	return p;
+}
 
 Machine::Machine() : StateMachine(ST_MAX_STATES)
 {

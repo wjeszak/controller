@@ -8,9 +8,8 @@
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
 #include "encoder.h"
-#include "config.h"
 #include "timer.h"
-#include "eeprom.h"
+#include "config.h"
 
 #if HALF_STEP == 1
 const uint8_t tab[6][4] PROGMEM =

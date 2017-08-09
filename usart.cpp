@@ -8,8 +8,8 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "usart.h"
-#include "modbus_rtu.h"
 #include "timer.h"
+#include "modbus_rtu.h"
 
 Usart::Usart(uint16_t baud) : StateMachine(ST_MAX_STATES)
 {

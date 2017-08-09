@@ -6,9 +6,7 @@
  */
 
 #include "stack.h"
-#include "enc28j60.h"
 #include "usart.h"
-#include "eeprom.h"
 #include "modbus_tcp.h"
 
 Enc28j60 enc28j60;
@@ -131,7 +129,7 @@ uint8_t Stack::EthTypeIsArpMyIP(uint8_t* buf, uint16_t len)
 	}
  	while(i < 4)
 	{
-		if(buf[ETH_ARP_DST_IP_P + i] != cfg.ip_addr[i])
+		if(buf[ETH_ARP_DST_IP_P + i] != enc28j60.ip_addr[i])
 		{
 			return 0;
 		}
@@ -146,7 +144,7 @@ void Stack::MakeEthHeader(uint8_t* buf)
 	while(i < 6)
 	{
 		buf[ETH_DST_MAC + i] = buf[ETH_SRC_MAC + i];
-		buf[ETH_SRC_MAC + i] = cfg.mac_addr[i];
+		buf[ETH_SRC_MAC + i] = enc28j60.mac_addr[i];
 		i++;
 	}
 }
@@ -160,14 +158,14 @@ void Stack::MakeArpReply(uint8_t* buf)
 	while(i < 6)
 	{
 		buf[ETH_ARP_DST_MAC_P + i] = buf[ETH_ARP_SRC_MAC_P + i];
-		buf[ETH_ARP_SRC_MAC_P +i ] = cfg.mac_addr[i];
+		buf[ETH_ARP_SRC_MAC_P + i] = enc28j60.mac_addr[i];
 		i++;
 	}
 	i = 0;
 	while(i < 4)
 	{
 		buf[ETH_ARP_DST_IP_P + i] = buf[ETH_ARP_SRC_IP_P + i];
-		buf[ETH_ARP_SRC_IP_P + i] = cfg.ip_addr[i];
+		buf[ETH_ARP_SRC_IP_P + i] = enc28j60.ip_addr[i];
 		i++;
 	}
 	enc28j60.SendPacket(buf, 42);
@@ -179,7 +177,7 @@ void Stack::MakeIpHeader(uint8_t* buf)
 	while(i < 4)
 	{
 		buf[IP_DST_P + i] = buf[IP_SRC_P + i];
-		buf[IP_SRC_P + i] = cfg.ip_addr[i];
+		buf[IP_SRC_P + i] = enc28j60.ip_addr[i];
 		i++;
 	}
 	FillIpHeaderChecksum(buf);
@@ -203,7 +201,7 @@ uint8_t Stack::EthTypeIsIPMyIP(uint8_t* buf, uint16_t len)
 	}
 	while(i < 4)
 	{
-		if(buf[IP_DST_P + i] != cfg.ip_addr[i])
+		if(buf[IP_DST_P + i] != enc28j60.ip_addr[i])
 		{
 			return 0;
 		}

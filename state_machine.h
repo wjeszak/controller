@@ -25,7 +25,6 @@ public:
 	uint8_t GetState();
 	void InternalEvent(uint8_t new_state, EventData* pdata = NULL);
 	void Event(uint8_t new_state, EventData* pdata = NULL);
-//	virtual uint8_t StartupTest() { return 0xFF; }
 protected:
 	uint8_t current_state;
 	enum States {ST_NOT_ALLOWED = 0xFF};
@@ -42,8 +41,6 @@ struct StateStruct
 {
     StateFunc pStateFunc;
 };
-
-//extern StateMachine *m;
 
 // State map
 #define BEGIN_STATE_MAP \

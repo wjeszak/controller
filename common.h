@@ -11,6 +11,4 @@
 #define hi(x)			(x) >> 8
 #define lo(x) 			(x) & 0xFF
 
-
-
 #endif /* COMMON_H_ */
