@@ -31,6 +31,8 @@ ButtonData button_data;
 Button button_enter_config(&BUTTON_ENTER_CONFIG_DDR, &BUTTON_ENTER_CONFIG_PORT, &BUTTON_ENTER_CONFIG_PIN, BUTTON_ENTER_CONFIG_PIN_NUMBER, 20, &Config::EV_ButtonClick);
 Button button_encoder_sw(&BUTTON_ENCODER_SW_DDR, &BUTTON_ENCODER_SW_PORT, &BUTTON_ENCODER_SW_PIN, BUTTON_ENCODER_SW_PIN_NUMBER, 1, &Config::EV_EncoderClick);
 Encoder encoder;
+Dynabox dynabox;
+Lockerbox lockerbox;
 ConfigData config_data;
 Config config;
 UsartData usart_data;
@@ -41,8 +43,7 @@ ModbusRTU modbus_rtu;
 ModbusTCP modbus_tcp;
 MotorData motor_data;
 Motor motor;
-Dynabox dynabox;
-Lockerbox lockerbox;
+
 
 
 Machine *m;
