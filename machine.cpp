@@ -30,6 +30,3 @@ Machine::Machine() : StateMachine(ST_MAX_STATES)
 {
 
 }
-
-
-

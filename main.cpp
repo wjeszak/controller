@@ -41,8 +41,9 @@ ModbusRTU modbus_rtu;
 ModbusTCP modbus_tcp;
 MotorData motor_data;
 Motor motor;
-Lockerbox lockerbox;
 Dynabox dynabox;
+Lockerbox lockerbox;
+
 
 Machine *m;
 

@@ -52,7 +52,7 @@ void Dynabox::SaveParameters()
 
 uint8_t Dynabox::StartupTest()
 {
-	motor.EV_Homing();
+//	motor.EV_Homing();
 	timer.Assign(TIMER_MODBUS_RTU_POLL, 50, ModbusPoll);
 	return 2;
 }
