@@ -15,7 +15,7 @@ Lockerbox::Lockerbox()
 
 uint8_t Lockerbox::StartupTest()
 {
-	timer.Assign(TIMER_MODBUS_RTU_POLL, 1000, ModbusPoll);
+//	timer.Assign(TIMER_MODBUS_RTU_POLL, 1000, ModbusPoll);
 	return 1;
 }
 

@@ -14,13 +14,13 @@
 #include "timer.h"
 #include "display.h"
 #include "button.h"
+#include "comm_prot.h"
 #include "config.h"
 #include "encoder.h"
 #include "lockerbox.h"
 #include "dynabox.h"
 #include "encoder.h"
 #include "usart.h"
-#include "modbus_rtu.h"
 #include "stack.h"
 #include "modbus_tcp.h"
 #include "motor.h"
@@ -39,12 +39,10 @@ UsartData usart_data;
 Usart usart;
 StackData stack_data;
 Stack stack;
-ModbusRTU modbus_rtu;
+Comm_prot comm;
 ModbusTCP modbus_tcp;
 MotorData motor_data;
 Motor motor;
-
-
 
 Machine *m;
 

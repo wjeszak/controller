@@ -10,16 +10,16 @@
 #include <stdio.h>
 #include "timer.h"
 #include "button.h"
+#include "comm_prot.h"
 #include "config.h"
 #include "display.h"
 #include "usart.h"
-#include "modbus_rtu.h"
 #include "motor.h"
 #include "encoder.h"
 
 Timer::Timer(T2Prescallers prescaller)
 {
-	for(uint8_t n = 0; n < 8; n++)
+	for(uint8_t n = 0; n < NUMBER_OF_TIMERS; n++)
 	{
 		timer_handlers[n].active = false;
 		timer_handlers[n].counter = 0;
@@ -108,18 +108,6 @@ void ButtonPoll()
 void EncoderPoll()
 {
 	encoder.Poll();
-}
-
-// TIMER_MODBUS_RTU_35T
-void ModbusRTU35T()
-{
-	usart.RTU35T(&usart_data);
-}
-
-// TIMER_MODBUS_RTU_POLL
-void ModbusPoll()
-{
-	modbus_rtu.PollDoors();
 }
 
 // TIMER_MOTOR_ACCELERATE

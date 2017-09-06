@@ -36,12 +36,11 @@ public:
 class Usart : public StateMachine
 {
 public:
-	Usart(uint16_t baud = 19400);
+	Usart(uint16_t baud = 19200);
 	// Events
 	void EV_NewByte(UsartData* pdata);							// RX_vect callback
 	void EV_TXBufferEmpty(UsartData* pdata = NULL);				// UDRE_vect callback
 	void EV_TXComplete(UsartData* pdata = NULL);				// TX_vect callback
-	void RTU35T(UsartData* pdata = NULL);
 	void SendFrame(UsartData* pdata);
 private:
 	void RxEnable();
@@ -49,13 +48,11 @@ private:
 	void TxEnable();
 	void TxDisable();
 	// States functions
-	void ST_Init(UsartData* pdata);
 	void ST_Idle(UsartData* pdata);
 	void ST_ByteReceived(UsartData* pdata);
 	void ST_FrameReceived(UsartData* pdata);
-	enum States {ST_INIT = 0, ST_IDLE, ST_BYTE_RECEIVED, ST_FRAME_RECEIVED, ST_MAX_STATES};
+	enum States {ST_IDLE = 0, ST_BYTE_RECEIVED, ST_FRAME_RECEIVED, ST_MAX_STATES};
 	BEGIN_STATE_MAP
-		STATE_MAP_ENTRY(&Usart::ST_Init)
 		STATE_MAP_ENTRY(&Usart::ST_Idle)
 		STATE_MAP_ENTRY(&Usart::ST_ByteReceived)
 		STATE_MAP_ENTRY(&Usart::ST_FrameReceived)
