@@ -110,6 +110,11 @@ void EncoderPoll()
 	encoder.Poll();
 }
 
+void DoorsPoll()
+{
+	comm.Poll();
+}
+
 // TIMER_MOTOR_ACCELERATE
 void MotorAccelerate()
 {

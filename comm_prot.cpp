@@ -12,16 +12,37 @@
 
 Comm_prot::Comm_prot()
 {
-	slave_addr = 1;
+	addr_start = 1;
+	addr_stop = 10;
+	addr_curr = 1;
+}
+
+void Comm_prot::Prepare(uint8_t addr, uint8_t command)
+{
+	usart_data.frame[0] = addr;
+	usart_data.frame[1] = command;
+	usart_data.frame[2] = Crc8(usart_data.frame, 2);
+	usart_data.frame[3] = 0x0A;
+	usart_data.len = FRAME_LENGTH;
+	usart.SendFrame(&usart_data);
+}
+
+void Comm_prot::Poll()
+{
+	Prepare(addr_curr++, 0x01);
+	if(addr_curr == addr_stop + 1) addr_curr = addr_start;
 }
 
 void Comm_prot::Parse(uint8_t* frame)
 {
 	uint8_t crc = Crc8(frame, 2);
-	if((frame[0] == slave_addr) && (frame[2] == crc))
+	if((frame[0] == addr_curr - 1) && (frame[2] == crc))
 	{
 		switch(frame[1])
 		{
+		case 0x00:
+
+		break;
 		case 0x01:
 
 		break;
@@ -34,16 +55,6 @@ void Comm_prot::Parse(uint8_t* frame)
 
 		}
 	}
-}
-
-void Comm_prot::Prepare(uint8_t res)
-{
-	usart_data.frame[0] = slave_addr;
-	usart_data.frame[1] = res;
-	usart_data.frame[2] = Crc8(usart_data.frame, 2);
-	usart_data.frame[3] = 0x0A;
-	usart_data.len = FRAME_LENGTH;
-	usart.SendFrame(&usart_data);
 }
 
 uint8_t Comm_prot::Crc8(uint8_t *frame, uint8_t len)

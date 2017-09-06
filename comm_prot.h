@@ -16,11 +16,12 @@ class Comm_prot
 {
 public:
 	Comm_prot();
+	void Prepare(uint8_t addr, uint8_t command);
+	void Poll();
 	void Parse(uint8_t* frame);
-	void Prepare(uint8_t res);
 private:
 	uint8_t Crc8(uint8_t *frame, uint8_t len);
-	uint8_t slave_addr;
+	uint8_t addr_start, addr_stop, addr_curr;
 };
 
 extern Comm_prot comm;

@@ -22,8 +22,7 @@
 #define TIMER_INIT_COUNTDOWN 			1
 #define TIMER_BUTTON_POLL				2
 #define TIMER_ENCODER_POLL			 	3
-#define TIMER_MODBUS_RTU_35T			4
-#define TIMER_MODBUS_RTU_POLL 			5
+#define TIMER_DOORS_POLL 				4
 #define TIMER_MOTOR_ACCELERATE 			6
 
 enum T2Prescallers
@@ -64,8 +63,7 @@ extern void DisplayRefresh();
 extern void InitCountDown();
 extern void ButtonPoll();
 extern void EncoderPoll();
-extern void ModbusRTU35T();
-extern void ModbusPoll();
+extern void DoorsPoll();
 extern void MotorAccelerate();
 
 #endif /* TIMER_H_ */
