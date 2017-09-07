@@ -41,10 +41,10 @@ void Comm_prot::Parse(uint8_t* frame)
 		switch(frame[1])
 		{
 		case 0x00:
-
+			modbus_tcp.UpdateHoldingRegisters(2, 0x05 << 8);
 		break;
 		case 0x01:
-
+			modbus_tcp.UpdateHoldingRegisters(2, 0);
 		break;
 		case 0x02:
 

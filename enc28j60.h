@@ -20,7 +20,7 @@
 #define IP_ADDR1 		192
 #define IP_ADDR2 		168
 #define IP_ADDR3 		1
-//#define IP_ADDR4 		170
+#define IP_ADDR4 		170
 
 class Enc28j60
 {

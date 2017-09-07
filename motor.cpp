@@ -111,14 +111,14 @@ void Motor::EncoderAndHomeIrqInit()
 {
 	// phase A (timer 0)
 	MOTOR_ENCODER_DDR &= ~(1 << MOTOR_ENCODER_PHASEA_PIN);
-	MOTOR_ENCODER_PORT |= (1 << MOTOR_ENCODER_PHASEA_PIN);
+	//MOTOR_ENCODER_PORT |= (1 << MOTOR_ENCODER_PHASEA_PIN);
 	TCCR0A |= (1 << WGM01);
 	TCCR0B |= (1 << CS02) | (1 << CS01);  			// external source, falling edge
 	TCNT0 = 0;
 	OCR0A = 1;
 	// phase B (timer 1)
 	MOTOR_ENCODER_DDR &= ~(1 << MOTOR_ENCODER_PHASEB_PIN);
-	MOTOR_ENCODER_PORT |= (1 << MOTOR_ENCODER_PHASEB_PIN);
+	//MOTOR_ENCODER_PORT |= (1 << MOTOR_ENCODER_PHASEB_PIN);
 	TCCR1B |= (1 << WGM12);
 	TCCR1B |= (1<< CS12) | (1<< CS11) | (1 << CS10);  // external source, rising edge
 	TCNT1 = 0;

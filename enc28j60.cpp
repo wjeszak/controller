@@ -26,9 +26,9 @@
 #define spi_wait() 				while(!(SPSR & (1 << SPIF)))
 
 Enc28j60::Enc28j60() : mac_addr {MAC_ADDR1, MAC_ADDR2, MAC_ADDR3, MAC_ADDR4, MAC_ADDR5, MAC_ADDR6},
-					   ip_addr {IP_ADDR1, IP_ADDR2, IP_ADDR3}
+					   ip_addr {IP_ADDR1, IP_ADDR2, IP_ADDR3, IP_ADDR4}
 {
-	ip_addr[3] = functions[4].param;
+	//ip_addr[3] = functions[4].param;
 }
 
 void Enc28j60::SPI_Init()

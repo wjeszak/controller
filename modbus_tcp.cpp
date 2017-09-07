@@ -13,15 +13,15 @@ ModbusTCP::ModbusTCP()
 {
 
 //	Registers[0] = 0;
-//	Registers[1] = 17;
+//	Registers[1] = 0x43;
 //	Registers[2] = (1 << 7) | (1 << 6);
-//	Registers[3] = 0x40;
+//	Registers[3] = 0x05 << 8;
 //	Registers[4] = (1 << 7) | (1 << 6) | (1 << 4);
 
 	//Registers[44] = 128;
 	//Registers[45] = 13 << 8 | 36;
-	Registers[45] = 7 << 8 | 1;
-	//Registers[46] = 666;
+	Registers[45] = 13 << 8 | 36;
+	Registers[46] = 1;			// Serial number
 	//Registers[47] = (1 << 0) | (1 << 2) | (1 << 3) | (1 << 4) | (1 << 5) | (1 << 6);
 	//Registers[49] = 3000;
 	Registers[50] = 1;
