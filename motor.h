@@ -37,7 +37,7 @@
 #define MOTOR_HOME_IRQ_ENABLE 			EIMSK |=  (1 << INT2);
 #define MOTOR_HOME_IRQ_DISABLE 			EIMSK &= ~(1 << INT2);
 
-#define ENCODER_ROWS 					64
+#define ENCODER_ROWS 					3600
 
 
 

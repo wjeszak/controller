@@ -10,6 +10,7 @@
 #include "motor.h"
 #include "timer.h"
 #include "display.h"
+#include "modbus_tcp.h"
 
 Motor::Motor() : StateMachine(ST_MAX_STATES)
 {
@@ -37,7 +38,8 @@ void Motor::EV_PhaseA(MotorData* pdata)
 	else
 	{
 		// right
-		display.Write(actual_position++);
+		display.Write(actual_position);
+		modbus_tcp.UpdateHoldingRegisters(ENCODER_CURRENT_VALUE, actual_position++);
 		if(actual_position == motor_data.pos)
 		{
 			motor.Stop();
@@ -57,7 +59,8 @@ void Motor::EV_PhaseB(MotorData* pdata)
 	else
 	{
 		// right
-		display.Write(actual_position++);
+		display.Write(actual_position);
+		modbus_tcp.UpdateHoldingRegisters(ENCODER_CURRENT_VALUE, actual_position++);
 		if(actual_position == motor_data.pos)
 		{
 			motor.Stop();
@@ -85,6 +88,7 @@ void Motor::EV_Homing(MotorData* pdata)
         TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)		// ST_ACCELERATION
         TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)		// ST_RUNNING
     END_TRANSITION_MAP(pdata)
+	modbus_tcp.UpdateHoldingRegisters(IO_INFORMATIONS, (1 << 2) | (1 << 0));
 }
 
 void Motor::EV_RunToPosition(MotorData* pdata)
@@ -99,6 +103,8 @@ void Motor::EV_RunToPosition(MotorData* pdata)
 			TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)	// ST_DECELERATION
 			TRANSITION_MAP_ENTRY(ST_ACCELERATION)	// ST_POSITION_ACHIEVED
 	    END_TRANSITION_MAP(pdata)
+		modbus_tcp.UpdateHoldingRegisters(ORDER_STATUS, ORDER_STATUS_PROCESSING);
+		modbus_tcp.UpdateHoldingRegisters(IO_INFORMATIONS, (1 << 0) | (1 << 3));
 	}
 }
 
@@ -158,7 +164,7 @@ void Motor::ST_Idle(MotorData* pdata)
 void Motor::ST_Acceleration(MotorData* pdata)
 {
 	SetDirection(Forward);
-	SetSpeed(80);
+	SetSpeed(60);
 	MOTOR_ENCODER_ENABLE
 	MOTOR_HOME_IRQ_ENABLE;
 	actual_speed = 0;
@@ -178,7 +184,9 @@ void Motor::ST_Home(MotorData* pdata)
 	MOTOR_ENCODER_DISABLE;
 	actual_position = 0;
 	display.Write(actual_position);
+	modbus_tcp.UpdateHoldingRegisters(ENCODER_CURRENT_VALUE, actual_position);
 	home_ok = 1;
+	modbus_tcp.UpdateHoldingRegisters(IO_INFORMATIONS, (0 << 2) | (0 << 0) | (1 << 3));
 }
 
 void Motor::ST_Deceleration(MotorData* pdata)
@@ -189,6 +197,8 @@ void Motor::ST_Deceleration(MotorData* pdata)
 void Motor::ST_PositionAchieved(MotorData* pdata)
 {
 	motor_data.pos = 0;
+	modbus_tcp.UpdateHoldingRegisters(ORDER_STATUS, ORDER_STATUS_END_OF_MOVEMENT);
+	modbus_tcp.UpdateHoldingRegisters(IO_INFORMATIONS, (0 << 0) | (1 << 3));
 }
 
 ISR(TIMER0_COMPA_vect)

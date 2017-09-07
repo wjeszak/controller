@@ -6,14 +6,14 @@
  */
 
 #include "comm_prot.h"
-
+#include "timer.h"
 #include "usart.h"
 #include "modbus_tcp.h"
 
 Comm_prot::Comm_prot()
 {
 	addr_start = 1;
-	addr_stop = 10;
+	addr_stop = 13;
 	addr_curr = 1;
 }
 
@@ -30,7 +30,7 @@ void Comm_prot::Prepare(uint8_t addr, uint8_t command)
 void Comm_prot::Poll()
 {
 	Prepare(addr_curr++, 0x01);
-	if(addr_curr == addr_stop + 1) addr_curr = addr_start;
+	if(addr_curr == addr_stop + 1) timer.Disable(TIMER_DOORS_POLL);//addr_curr = addr_start;
 }
 
 void Comm_prot::Parse(uint8_t* frame)
@@ -41,10 +41,10 @@ void Comm_prot::Parse(uint8_t* frame)
 		switch(frame[1])
 		{
 		case 0x00:
-			modbus_tcp.UpdateHoldingRegisters(2, 0x05 << 8);
+			modbus_tcp.UpdateHoldingRegisters(addr_curr, 0x05 << 8);
 		break;
 		case 0x01:
-			modbus_tcp.UpdateHoldingRegisters(2, 0);
+			modbus_tcp.UpdateHoldingRegisters(addr_curr, 0);
 		break;
 		case 0x02:
 
