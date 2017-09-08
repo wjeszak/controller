@@ -13,7 +13,7 @@
 Comm_prot::Comm_prot()
 {
 	addr_start = 1;
-	addr_stop = 13;
+	addr_stop = 6;
 	addr_curr = 1;
 }
 
@@ -30,7 +30,11 @@ void Comm_prot::Prepare(uint8_t addr, uint8_t command)
 void Comm_prot::Poll()
 {
 	Prepare(addr_curr++, 0x01);
-	if(addr_curr == addr_stop + 1) timer.Disable(TIMER_DOORS_POLL);//addr_curr = addr_start;
+	if(addr_curr == addr_stop + 1)
+	{
+		Prepare(0xFF, 0x00);				// trigger LED
+		timer.Disable(TIMER_DOORS_POLL);
+	}
 }
 
 void Comm_prot::Parse(uint8_t* frame)
@@ -42,9 +46,11 @@ void Comm_prot::Parse(uint8_t* frame)
 		{
 		case 0x00:
 			modbus_tcp.UpdateHoldingRegisters(addr_curr, 0x05 << 8);
+			Prepare(addr_curr - 1 + 100, 0x04);
 		break;
 		case 0x01:
 			modbus_tcp.UpdateHoldingRegisters(addr_curr, 0);
+			Prepare(addr_curr - 1 + 100, 0x01);
 		break;
 		case 0x02:
 
