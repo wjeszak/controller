@@ -10,23 +10,34 @@
 
 #include "machine.h"
 
+class DynaboxData : public EventData
+{
+public:
+};
+
+
 class Dynabox : public Machine
 {
 public:
 	Dynabox();
 	void LoadSupportedFunctions();
 	void SaveParameters();
-	uint8_t StartupTest();
+	void SendToDoor();
+	uint8_t first_door, last_door, curr_door;
 private:
-	enum States {ST_INIT = 0, ST_MAX_STATES};
-	//	BEGIN_STATE_MAP
-	//		STATE_MAP_ENTRY(&Usart::ST_Init)
-	//		STATE_MAP_ENTRY(&Usart::ST_Idle)
-	//		STATE_MAP_ENTRY(&Usart::ST_ByteReceived)
-	//		STATE_MAP_ENTRY(&Usart::ST_FrameReceived)
-	//	END_STATE_MAP
+	void ST_Init(DynaboxData* pdata);
+	void ST_TestDoors(DynaboxData* pdata);
+	void ST_Homing(DynaboxData* pdata);
+	void StartupTest();
+	enum States {ST_INIT = 0, ST_TEST_DOORS, ST_HOMING, ST_MAX_STATES};
+	BEGIN_STATE_MAP
+		STATE_MAP_ENTRY(&Dynabox::ST_Init)
+		STATE_MAP_ENTRY(&Dynabox::ST_TestDoors)
+		STATE_MAP_ENTRY(&Dynabox::ST_Homing)
+	END_STATE_MAP
 };
 
 extern Dynabox dynabox;
+extern DynaboxData dynabox_data;
 
 #endif /* DYNABOX_H_ */

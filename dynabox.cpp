@@ -12,6 +12,7 @@
 #include "timer.h"
 #include "display.h"
 #include "config.h"
+#include "comm_prot.h"
 
 #define DYNABOX_NUMBER_OF_FUNCTIONS 		10
 void f12()
@@ -36,6 +37,40 @@ Function EEMEM dynabox_eem_functions[DYNABOX_NUMBER_OF_FUNCTIONS] =
 
 Dynabox::Dynabox()
 {
+	first_door = 1;
+	last_door = 6;
+	curr_door = 1;
+}
+
+void Dynabox::ST_Init(DynaboxData* pdata)
+{
+	// additional commands
+	InternalEvent(ST_TEST_DOORS, NULL);
+}
+
+void Dynabox::ST_TestDoors(DynaboxData* pdata)
+{
+	timer.Assign(TIMER_DOORS_POLL, 100, DoorsPoll);
+	comm.Prepare(curr_door++, 0x01);
+	if(curr_door == last_door + 1)
+	{
+		//Prepare(0xFF, 0x00);				// trigger LED
+		timer.Disable(TIMER_DOORS_POLL);
+		InternalEvent(ST_HOMING);
+	}
+}
+
+void Dynabox::ST_Homing(DynaboxData* pdata)
+{
+	for(uint8_t i = 1; i <= 6; i++)
+	{
+		comm.Prepare(i + LED_ADDRESS_OFFSET, 0x05);
+	}
+	motor.EV_Homing();
+}
+
+void Dynabox::StartupTest()
+{
 
 }
 
@@ -48,11 +83,4 @@ void Dynabox::LoadSupportedFunctions()
 void Dynabox::SaveParameters()
 {
 	eeprom_update_block(&functions, &dynabox_eem_functions, FUNCTION_RECORD_SIZE * DYNABOX_NUMBER_OF_FUNCTIONS);
-}
-
-uint8_t Dynabox::StartupTest()
-{
-//	motor.EV_Homing();
-	timer.Assign(TIMER_DOORS_POLL, 100, DoorsPoll);
-	return 2;
 }

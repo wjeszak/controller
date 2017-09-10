@@ -15,7 +15,6 @@ class Lockerbox : public Machine
 public:
 	Lockerbox();
 //	void LoadSupportedFunctions();
-	uint8_t StartupTest();
 private:
 	enum States {ST_INIT = 0, ST_MAX_STATES};
 	//	BEGIN_STATE_MAP

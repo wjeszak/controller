@@ -9,12 +9,11 @@
 #include "timer.h"
 #include "usart.h"
 #include "modbus_tcp.h"
+#include "machine.h"
 
 Comm_prot::Comm_prot()
 {
-	addr_start = 1;
-	addr_stop = 6;
-	addr_curr = 1;
+
 }
 
 void Comm_prot::Prepare(uint8_t addr, uint8_t command)
@@ -23,34 +22,24 @@ void Comm_prot::Prepare(uint8_t addr, uint8_t command)
 	usart_data.frame[1] = command;
 	usart_data.frame[2] = Crc8(usart_data.frame, 2);
 	usart_data.frame[3] = 0x0A;
-	usart_data.len = FRAME_LENGTH;
+	usart_data.len = FRAME_LENGTH_REQUEST;
 	usart.SendFrame(&usart_data);
 }
 
-void Comm_prot::Poll()
-{
-	Prepare(addr_curr++, 0x01);
-	if(addr_curr == addr_stop + 1)
-	{
-		Prepare(0xFF, 0x00);				// trigger LED
-		timer.Disable(TIMER_DOORS_POLL);
-	}
-}
-
-void Comm_prot::Parse(uint8_t* frame)
+void Comm_prot::Parse(uint8_t addr, uint8_t* frame)
 {
 	uint8_t crc = Crc8(frame, 2);
-	if((frame[0] == addr_curr - 1) && (frame[2] == crc))
+	if((frame[0] == addr - 1) && (frame[2] == crc))
 	{
 		switch(frame[1])
 		{
 		case 0x00:
-			modbus_tcp.UpdateHoldingRegisters(addr_curr, 0x05 << 8);
-			Prepare(addr_curr - 1 + 100, 0x04);
+			modbus_tcp.UpdateHoldingRegisters(addr, 0x05 << 8);
+			//Prepare(addr_curr - 1 + 100, 0x05);
 		break;
 		case 0x01:
-			modbus_tcp.UpdateHoldingRegisters(addr_curr, 0);
-			Prepare(addr_curr - 1 + 100, 0x01);
+			modbus_tcp.UpdateHoldingRegisters(addr, 0);
+			//Prepare(addr_curr - 1 + 100, 0x05);
 		break;
 		case 0x02:
 

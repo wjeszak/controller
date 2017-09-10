@@ -11,19 +11,18 @@
 #ifndef USART_H_
 #define USART_H_
 
-#include <inttypes.h>
 #include "state_machine.h"
 
 #define USART_DE_DDR 			DDRC
 #define USART_DE_PORT 			PORTC
 #define USART_DE_PIN	 		2
 
-#define USART_DE_INIT 			USART_DE_DDR  |=  (1 << USART_DE_PIN)
 #define USART_DE_RECEIVE 		USART_DE_PORT &= ~(1 << USART_DE_PIN)
 #define USART_DE_SEND 			USART_DE_PORT |=  (1 << USART_DE_PIN)
+#define USART_DE_INIT 			USART_DE_DDR  |=  (1 << USART_DE_PIN)
 
-#define UART_BUF_SIZE 		16
-#define UART_BUF_MASK 		(UART_BUF_SIZE - 1)
+#define UART_BUF_SIZE 			16
+#define UART_BUF_MASK 			(UART_BUF_SIZE - 1)
 
 class UsartData : public EventData
 {

@@ -132,5 +132,5 @@ void Config::ST_Done(ConfigData* pdata)
 {
 	timer.Disable(TIMER_BUTTON_POLL);
 	timer.Disable(TIMER_ENCODER_POLL);
-	m->StartupTest();
+	m->InternalEvent(ST_INIT, NULL);
 }

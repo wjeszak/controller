@@ -33,6 +33,7 @@ Button button_encoder_sw(&BUTTON_ENCODER_SW_DDR, &BUTTON_ENCODER_SW_PORT, &BUTTO
 Encoder encoder;
 MotorData motor_data;
 Motor motor;
+DynaboxData dynabox_data;
 Dynabox dynabox;
 Lockerbox lockerbox;
 ConfigData config_data;
@@ -43,7 +44,6 @@ StackData stack_data;
 Stack stack;
 Comm_prot comm;
 ModbusTCP modbus_tcp;
-
 
 Machine *m;
 

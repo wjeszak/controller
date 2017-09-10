@@ -16,10 +16,8 @@ public:
 	Machine();
 	virtual void LoadSupportedFunctions() {}
 	virtual void SaveParameters() {}
-	virtual uint8_t StartupTest() { return 0; }
-
 private:
-	enum States {ST_INIT = 0, ST_MAX_STATES};
+	enum States {ST_MAX_STATES};
 };
 
 extern Machine* GetPointerTypeOfMachine(uint8_t type);

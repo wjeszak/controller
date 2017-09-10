@@ -5,11 +5,9 @@
  *      Author: tomek
  */
 
-#include <avr/io.h>
 #include <avr/interrupt.h>
 #include "usart.h"
 #include "comm_prot.h"
-#include "timer.h"
 
 Usart::Usart(uint16_t baud) : StateMachine(ST_MAX_STATES)
 {
@@ -67,7 +65,7 @@ void Usart::ST_ByteReceived(UsartData* pdata)
 	{
 		rx_head = tmp_head;
 		rx_buf[tmp_head] = pdata->c;
-		//pdata->len++;
+		pdata->len++;
 	}
 }
 
@@ -80,6 +78,7 @@ void Usart::ST_FrameReceived(UsartData* pdata)
 		pdata->frame[i] = rx_buf[rx_tail];
 		i++;
 	}
+	pdata->len = 0;
 	InternalEvent(ST_IDLE, pdata);
 	comm.Parse(pdata->frame);
 }
@@ -91,7 +90,7 @@ void Usart::EV_NewByte(UsartData* pdata)
 		TRANSITION_MAP_ENTRY(ST_BYTE_RECEIVED)			// ST_BYTE_RECEIVED
     END_TRANSITION_MAP(pdata)
 
-	if(pdata->c == 0x0A) InternalEvent(ST_FRAME_RECEIVED, pdata);
+	if((pdata->c == 0x0A) && (pdata->len == FRAME_LENGTH_RESPONSE)) InternalEvent(ST_FRAME_RECEIVED, pdata);
 }
 
 void Usart::EV_TXBufferEmpty(UsartData* pdata)
@@ -117,7 +116,6 @@ void Usart::SendFrame(UsartData* pdata)
 	RxDisable();
 	uint8_t tmp_tx_head;
 	uint8_t *w = pdata->frame;
-	//uint8_t len = pdata->len;
 	while(pdata->len)
 	{
 		tmp_tx_head = (tx_head  + 1) & UART_BUF_MASK;
