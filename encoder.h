@@ -10,7 +10,7 @@
 
 #include <avr/io.h>
 
-#define HALF_STEP 						1 						// 0 - fullstep, 1 - halfstep
+#define HALF_STEP 						0 						// 0 - fullstep, 1 - halfstep
 
 #define ENCODER_AB_PORT 				PORTC
 #define ENCODER_AB_PIN 					PINC

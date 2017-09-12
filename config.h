@@ -12,7 +12,7 @@
 #include "state_machine.h"
 #include "encoder.h"
 
-#define CONFIG_INIT_TIME 					2
+#define CONFIG_INIT_TIME 					5
 #define MAX_NUMBER_OF_FUNCTIONS 			28
 #define FUNCTION_RECORD_SIZE 				4
 
