@@ -51,6 +51,6 @@ int main()
 {
 	while(1)
 	{
-		stack.Poll();
+	stack.Poll();
 	}
 }
