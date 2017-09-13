@@ -118,15 +118,16 @@ void DoorsPoll()
 	timer.Assign(TIMER_REPLY_TIMEOUT, 20, ReplyTimeout);
 	if(m->curr_door == m->last_door + 1)
 	{
+		m->curr_door = 1; 		// na wszelki wypadek...
 		timer.Disable(TIMER_DOORS_POLL);
 	}
 }
 
 void ReplyTimeout()
 {
-	modbus_tcp.UpdateHoldingRegisters(m->curr_door, 0x02 << 8);
-	comm.Prepare(m->curr_door - 1 + 100, 0x07);
 	timer.Disable(TIMER_REPLY_TIMEOUT);
+	modbus_tcp.UpdateHoldingRegisters(m->curr_door, F02_DOOR_FAULT);
+	comm.Prepare(m->curr_door - 1 + 100, COMM_RED_1PULSE);
 	if(m->curr_door == m->last_door + 1) { comm.Prepare(0xFF, 0x00); }
 }
 

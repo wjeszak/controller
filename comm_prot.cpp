@@ -26,21 +26,21 @@ void Comm_prot::Prepare(uint8_t addr, uint8_t command)
 	usart.SendFrame(&usart_data);
 }
 
-void Comm_prot::Parse(uint8_t addr, uint8_t* frame)
+void Comm_prot::Parse(uint8_t* frame)
 {
 	uint8_t crc = Crc8(frame, 2);
-	if((frame[0] == addr) && (frame[2] == crc))
+	if((frame[0] == m->curr_door - 1) && (frame[2] == crc))
 	{
 		switch(frame[1])
 		{
 		case 0x00:
-			modbus_tcp.UpdateHoldingRegisters(addr + 1, 0);
-			Prepare(addr + 100, 0x01);
+			modbus_tcp.UpdateHoldingRegisters(m->curr_door, 0);
+			Prepare(m->curr_door - 1 + LED_ADDRESS_OFFSET, COMM_GREEN_ON);
 			timer.Disable(TIMER_REPLY_TIMEOUT);
 		break;
 		case 0x01:
-			modbus_tcp.UpdateHoldingRegisters(addr + 1, 0x05 << 8);
-			Prepare(addr + 100, 0x0B);
+			modbus_tcp.UpdateHoldingRegisters(m->curr_door, F05_ELECTROMAGNET_FAULT);
+			Prepare(m->curr_door - 1 + LED_ADDRESS_OFFSET, COMM_RED_3PULSES);
 			timer.Disable(TIMER_REPLY_TIMEOUT);
 		break;
 		case 0x02:
