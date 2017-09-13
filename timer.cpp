@@ -16,6 +16,7 @@
 #include "usart.h"
 #include "motor.h"
 #include "encoder.h"
+#include "machine.h"
 
 Timer::Timer(T2Prescallers prescaller)
 {
@@ -112,7 +113,11 @@ void EncoderPoll()
 
 void DoorsPoll()
 {
-//	comm.Poll();
+	comm.Prepare(m->curr_door++, COMM_CHECK_ELECTROMAGNET);
+	if(m->curr_door == m->last_door + 1)
+	{
+		timer.Disable(TIMER_DOORS_POLL);
+	}
 }
 
 // TIMER_MOTOR_ACCELERATE

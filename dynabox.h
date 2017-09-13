@@ -23,12 +23,11 @@ public:
 	void LoadSupportedFunctions();
 	void SaveParameters();
 	void SendToDoor();
-	uint8_t first_door, last_door, curr_door;
+//	uint8_t first_door, last_door, curr_door;
 private:
 	void ST_Init(DynaboxData* pdata);
 	void ST_TestDoors(DynaboxData* pdata);
 	void ST_Homing(DynaboxData* pdata);
-	void StartupTest();
 	enum States {ST_INIT = 0, ST_TEST_DOORS, ST_HOMING, ST_MAX_STATES};
 	BEGIN_STATE_MAP
 		STATE_MAP_ENTRY(&Dynabox::ST_Init)

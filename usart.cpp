@@ -8,6 +8,7 @@
 #include <avr/interrupt.h>
 #include "usart.h"
 #include "comm_prot.h"
+#include "dynabox.h"
 
 Usart::Usart(uint16_t baud) : StateMachine(ST_MAX_STATES)
 {
@@ -80,7 +81,7 @@ void Usart::ST_FrameReceived(UsartData* pdata)
 	}
 	pdata->len = 0;
 	InternalEvent(ST_IDLE, pdata);
-//	comm.Parse(pdata->frame);
+	comm.Parse((dynabox.curr_door - 1), pdata->frame);
 }
 
 void Usart::EV_NewByte(UsartData* pdata)

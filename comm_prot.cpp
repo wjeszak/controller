@@ -29,17 +29,17 @@ void Comm_prot::Prepare(uint8_t addr, uint8_t command)
 void Comm_prot::Parse(uint8_t addr, uint8_t* frame)
 {
 	uint8_t crc = Crc8(frame, 2);
-	if((frame[0] == addr - 1) && (frame[2] == crc))
+	if((frame[0] == addr) && (frame[2] == crc))
 	{
 		switch(frame[1])
 		{
 		case 0x00:
-			modbus_tcp.UpdateHoldingRegisters(addr, 0x05 << 8);
-			//Prepare(addr_curr - 1 + 100, 0x05);
+			modbus_tcp.UpdateHoldingRegisters(addr + 1, 0);
+			Prepare(addr + 100, 0x01);
 		break;
 		case 0x01:
-			modbus_tcp.UpdateHoldingRegisters(addr, 0);
-			//Prepare(addr_curr - 1 + 100, 0x05);
+			modbus_tcp.UpdateHoldingRegisters(addr + 1, 0x05 << 8);
+			Prepare(addr + 100, 0x0B);
 		break;
 		case 0x02:
 

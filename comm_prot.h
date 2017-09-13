@@ -10,10 +10,14 @@
 
 #include <inttypes.h>
 
-#define FRAME_LENGTH_REQUEST 		4
-#define FRAME_LENGTH_RESPONSE 		4
+#define FRAME_LENGTH_REQUEST 				4
+#define FRAME_LENGTH_RESPONSE 				4
 
-#define LED_ADDRESS_OFFSET 			100
+#define LED_ADDRESS_OFFSET 					100
+
+#define COMM_CHECK_ELECTROMAGNET 			0x01
+#define COMM_CHECK_TRANSOPTORS_GET_STATE 	0x02
+#define COMM_SET_STATE 						0x03
 
 class Comm_prot
 {

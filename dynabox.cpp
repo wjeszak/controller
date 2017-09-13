@@ -50,14 +50,8 @@ void Dynabox::ST_Init(DynaboxData* pdata)
 
 void Dynabox::ST_TestDoors(DynaboxData* pdata)
 {
-	timer.Assign(TIMER_DOORS_POLL, 100, DoorsPoll);
-	comm.Prepare(curr_door++, 0x01);
-	if(curr_door == last_door + 1)
-	{
-		//Prepare(0xFF, 0x00);				// trigger LED
-		timer.Disable(TIMER_DOORS_POLL);
-		InternalEvent(ST_HOMING);
-	}
+	// begin...
+	timer.Assign(TIMER_DOORS_POLL, 1000, DoorsPoll);
 }
 
 void Dynabox::ST_Homing(DynaboxData* pdata)
@@ -67,11 +61,6 @@ void Dynabox::ST_Homing(DynaboxData* pdata)
 		comm.Prepare(i + LED_ADDRESS_OFFSET, 0x05);
 	}
 	motor.EV_Homing();
-}
-
-void Dynabox::StartupTest()
-{
-
 }
 
 void Dynabox::LoadSupportedFunctions()
