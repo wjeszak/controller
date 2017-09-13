@@ -36,10 +36,12 @@ void Comm_prot::Parse(uint8_t addr, uint8_t* frame)
 		case 0x00:
 			modbus_tcp.UpdateHoldingRegisters(addr + 1, 0);
 			Prepare(addr + 100, 0x01);
+			timer.Disable(TIMER_REPLY_TIMEOUT);
 		break;
 		case 0x01:
 			modbus_tcp.UpdateHoldingRegisters(addr + 1, 0x05 << 8);
 			Prepare(addr + 100, 0x0B);
+			timer.Disable(TIMER_REPLY_TIMEOUT);
 		break;
 		case 0x02:
 
@@ -47,6 +49,7 @@ void Comm_prot::Parse(uint8_t addr, uint8_t* frame)
 		case 0x03:
 
 		break;
+		//if(addr == m->last_door) { timer.Disable(TIMER_REPLY_TIMEOUT); Prepare(0xFF, 0x00); }
 
 		}
 	}

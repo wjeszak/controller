@@ -17,6 +17,7 @@
 #include "motor.h"
 #include "encoder.h"
 #include "machine.h"
+#include "modbus_tcp.h"
 
 Timer::Timer(T2Prescallers prescaller)
 {
@@ -114,10 +115,19 @@ void EncoderPoll()
 void DoorsPoll()
 {
 	comm.Prepare(m->curr_door++, COMM_CHECK_ELECTROMAGNET);
+	timer.Assign(TIMER_REPLY_TIMEOUT, 20, ReplyTimeout);
 	if(m->curr_door == m->last_door + 1)
 	{
 		timer.Disable(TIMER_DOORS_POLL);
 	}
+}
+
+void ReplyTimeout()
+{
+	modbus_tcp.UpdateHoldingRegisters(m->curr_door, 0x02 << 8);
+	comm.Prepare(m->curr_door - 1 + 100, 0x07);
+	timer.Disable(TIMER_REPLY_TIMEOUT);
+	if(m->curr_door == m->last_door + 1) { comm.Prepare(0xFF, 0x00); }
 }
 
 // TIMER_MOTOR_ACCELERATE

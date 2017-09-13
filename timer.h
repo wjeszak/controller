@@ -23,6 +23,7 @@
 #define TIMER_BUTTON_POLL				2
 #define TIMER_ENCODER_POLL			 	3
 #define TIMER_DOORS_POLL 				4
+#define TIMER_REPLY_TIMEOUT 			5
 #define TIMER_MOTOR_ACCELERATE 			6
 
 enum T2Prescallers
@@ -64,6 +65,7 @@ extern void InitCountDown();
 extern void ButtonPoll();
 extern void EncoderPoll();
 extern void DoorsPoll();
+extern void ReplyTimeout();
 extern void MotorAccelerate();
 
 #endif /* TIMER_H_ */

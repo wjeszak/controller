@@ -56,11 +56,11 @@ void Dynabox::ST_TestDoors(DynaboxData* pdata)
 
 void Dynabox::ST_Homing(DynaboxData* pdata)
 {
-	for(uint8_t i = 1; i <= 6; i++)
-	{
-		comm.Prepare(i + LED_ADDRESS_OFFSET, 0x05);
-	}
-	motor.EV_Homing();
+//	for(uint8_t i = 1; i <= 6; i++)
+//	{
+//		comm.Prepare(i + LED_ADDRESS_OFFSET, 0x05);
+//	}
+//	motor.EV_Homing();
 }
 
 void Dynabox::LoadSupportedFunctions()

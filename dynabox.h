@@ -23,7 +23,6 @@ public:
 	void LoadSupportedFunctions();
 	void SaveParameters();
 	void SendToDoor();
-//	uint8_t first_door, last_door, curr_door;
 private:
 	void ST_Init(DynaboxData* pdata);
 	void ST_TestDoors(DynaboxData* pdata);
