@@ -47,6 +47,7 @@ public:
 	Comm_prot();
 	void Prepare(uint8_t addr, uint8_t command);
 	void Parse(uint8_t* frame);
+	uint8_t curr_command;
 private:
 	uint8_t Crc8(uint8_t *frame, uint8_t len);
 };

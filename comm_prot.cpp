@@ -10,6 +10,7 @@
 #include "usart.h"
 #include "modbus_tcp.h"
 #include "machine.h"
+#include "display.h"
 
 Comm_prot::Comm_prot()
 {
@@ -29,31 +30,37 @@ void Comm_prot::Prepare(uint8_t addr, uint8_t command)
 void Comm_prot::Parse(uint8_t* frame)
 {
 	uint8_t crc = Crc8(frame, 2);
+	// reply from door
 	if((frame[0] == m->curr_door - 1) && (frame[2] == crc))
 	{
-		switch(frame[1])
+		uint8_t result = frame[1];
+		switch(curr_command)
 		{
-		case 0x00:
-			modbus_tcp.UpdateHoldingRegisters(m->curr_door, 0);
-			Prepare(m->curr_door - 1 + LED_ADDRESS_OFFSET, COMM_GREEN_ON);
+		case COMM_CHECK_ELECTROMAGNET:
+			if(result == 0x00)
+			{
+				modbus_tcp.UpdateHoldingRegisters(m->curr_door, 0);
+				Prepare(m->curr_door - 1 + LED_ADDRESS_OFFSET, COMM_GREEN_ON);
+			}
+			if(result == 0x01)
+			{
+				display.Write(TFault, 0x05);
+				modbus_tcp.UpdateHoldingRegisters(m->curr_door, F05_ELECTROMAGNET_FAULT);
+				Prepare(m->curr_door - 1 + LED_ADDRESS_OFFSET, COMM_RED_3PULSES);
+			}
 			timer.Disable(TIMER_REPLY_TIMEOUT);
+			if(m->curr_door == m->last_door + 1) { Prepare(0xFF, 0x00); }
 		break;
-		case 0x01:
-			modbus_tcp.UpdateHoldingRegisters(m->curr_door, F05_ELECTROMAGNET_FAULT);
-			Prepare(m->curr_door - 1 + LED_ADDRESS_OFFSET, COMM_RED_3PULSES);
-			timer.Disable(TIMER_REPLY_TIMEOUT);
-		break;
-		case 0x02:
-
-		break;
-		case 0x03:
-
-		break;
-		//if(addr == m->last_door) { timer.Disable(TIMER_REPLY_TIMEOUT); Prepare(0xFF, 0x00); }
-
 		}
 	}
+	// reply from led
+	if((frame[0] == m->curr_door - 1 + LED_ADDRESS_OFFSET) && (frame[2] == crc))
+	{
+		uint8_t result = frame[1];
+		if(result != 0x80) modbus_tcp.UpdateHoldingRegisters(m->curr_door, F01_LED_FAULT);
+	}
 }
+
 
 uint8_t Comm_prot::Crc8(uint8_t *frame, uint8_t len)
 {

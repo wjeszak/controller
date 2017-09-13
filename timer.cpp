@@ -118,7 +118,7 @@ void DoorsPoll()
 	timer.Assign(TIMER_REPLY_TIMEOUT, 20, ReplyTimeout);
 	if(m->curr_door == m->last_door + 1)
 	{
-		m->curr_door = 1; 		// na wszelki wypadek...
+		//m->curr_door = 1; 		// na wszelki wypadek...
 		timer.Disable(TIMER_DOORS_POLL);
 	}
 }
@@ -126,6 +126,7 @@ void DoorsPoll()
 void ReplyTimeout()
 {
 	timer.Disable(TIMER_REPLY_TIMEOUT);
+	display.Write(TFault, 0x02);
 	modbus_tcp.UpdateHoldingRegisters(m->curr_door, F02_DOOR_FAULT);
 	comm.Prepare(m->curr_door - 1 + 100, COMM_RED_1PULSE);
 	if(m->curr_door == m->last_door + 1) { comm.Prepare(0xFF, 0x00); }

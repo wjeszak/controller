@@ -41,7 +41,7 @@
 #define DISP_CHAR_9 			0x10
 #define DISP_CHAR_ALL_OFF		0x7F
 #define DISP_CHAR_L				0x47
-#define DISP_CHAR_F 			0x0E
+#define DISP_CHAR_E 			0x06
 #define DISP_CHAR_P 			0x0C
 #define DISP_CHAR_b				0x03
 #define DISP_CHAR_MINUS			0x3F

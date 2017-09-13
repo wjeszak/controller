@@ -51,7 +51,8 @@ void Dynabox::ST_Init(DynaboxData* pdata)
 void Dynabox::ST_TestDoors(DynaboxData* pdata)
 {
 	// begin...
-	timer.Assign(TIMER_DOORS_POLL, 1000, DoorsPoll);
+	comm.curr_command = COMM_CHECK_ELECTROMAGNET;
+	timer.Assign(TIMER_DOORS_POLL, 100, DoorsPoll);
 }
 
 void Dynabox::ST_Homing(DynaboxData* pdata)
