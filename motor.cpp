@@ -183,7 +183,7 @@ void Motor::ST_Home(MotorData* pdata)
 	Stop();
 	MOTOR_ENCODER_DISABLE;
 	actual_position = 0;
-	display.Write(actual_position);
+	//display.Write(actual_position);
 	modbus_tcp.UpdateHoldingRegisters(ENCODER_CURRENT_VALUE, actual_position);
 	home_ok = 1;
 	modbus_tcp.UpdateHoldingRegisters(IO_INFORMATIONS, (0 << 2) | (0 << 0) | (1 << 3));

@@ -32,6 +32,7 @@ void Config::CountDown(ConfigData* pdata)
 	if(i == 0)
 	{
 		timer.Disable(TIMER_INIT_COUNTDOWN);
+		display.Write(TNoError, 0);
 		InternalEvent(ST_DONE);
 	}
 	i--;

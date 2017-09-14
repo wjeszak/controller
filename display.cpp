@@ -55,9 +55,16 @@ void Display::Write(InfoType type, uint8_t val)
 		value[0] = digits[11];
 		value[1] = digits[10];
 		break;
-	case TFault:
+	case TError:
 		value[0] = digits[12];
 		value[1] = digits[10];
+		break;
+	case TNoError:
+		value[0] = digits[15];
+		value[1] = digits[10];
+		value[2] = digits[10];
+		value[3] = digits[10];
+		return;
 		break;
 	case TFunction:
 		value[0] = digits[13];
