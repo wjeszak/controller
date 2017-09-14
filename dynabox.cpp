@@ -112,7 +112,10 @@ void Dynabox::ParseCommandCheckElectromagnet(uint8_t res)
 void Dynabox::ParseCommandCheckTransoptorsGetStatus(uint8_t res)
 {
 	if(res == 0xF0)
+	{
+		display.Write(TError, F03_OPTICAL_SWITCHES_FAULT);
 		modbus_tcp.UpdateHoldingRegisters(m->curr_addr + 1, F03_OPTICAL_SWITCHES_FAULT << 8);
+	}
 	else
 		modbus_tcp.UpdateHoldingRegisters(m->curr_addr + 1, res);
 }
