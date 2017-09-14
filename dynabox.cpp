@@ -56,36 +56,42 @@ void Dynabox::EV_LEDChecked(DynaboxData* pdata)
 void Dynabox::Parse(uint8_t* frame)
 {
 	uint8_t crc = comm.Crc8(frame, 2);
-	// reply from door
-	if((frame[0] == m->curr_addr) && (frame[2] == crc))
-	{
-		uint8_t result = frame[1];
-		switch(comm.curr_command)
-		{
-		case COMM_CHECK_ELECTROMAGNET:
-			if(result == 0x00)
-			{
-				modbus_tcp.UpdateHoldingRegisters(m->curr_addr + 1, NO_FAULT << 8);
-				comm.Prepare(TLed, m->curr_addr, COMM_GREEN_ON);
-			}
-			if(result == 0x01)
-			{
-				display.Write(TFault, F05_ELECTROMAGNET_FAULT);
-				modbus_tcp.UpdateHoldingRegisters(m->curr_addr + 1, F05_ELECTROMAGNET_FAULT << 8);
-				comm.Prepare(TLed, m->curr_addr, COMM_RED_3PULSES);
-			}
-			m->curr_addr++;
-			if(m->curr_addr == m->last_addr + 1) { comm.LedTrigger(); }
-		break;
-		}
-	}
 	// reply from led
 	if((frame[0] == m->curr_addr + LED_ADDRESS_OFFSET) && (frame[2] == crc))
 	{
 		m->curr_addr++;
-		if(m->curr_addr == m->last_addr + 1) EV_LEDChecked(NULL); 	// pozniej inkrementuje :/ 2 linijki nizej
+		if(m->curr_addr == m->last_addr + 1) EV_LEDChecked(NULL);
 	}
 
+	// reply from door
+	if((frame[0] == m->curr_addr) && (frame[2] == crc))
+	{
+		uint8_t result = frame[1];
+
+		switch(comm.curr_command)
+		{
+		case COMM_CHECK_ELECTROMAGNET:
+			ParseCommandCheckElectromagnet(result);
+			m->curr_addr++;
+			if(m->curr_addr == m->last_addr + 1) comm.LedTrigger();
+		break;
+		}
+	}
+}
+
+void Dynabox::ParseCommandCheckElectromagnet(uint8_t res)
+{
+	if(res == 0x00)
+	{
+		modbus_tcp.UpdateHoldingRegisters(m->curr_addr + 1, NO_FAULT << 8);
+		comm.Prepare(TLed, m->curr_addr, COMM_GREEN_ON);
+	}
+	if(res == 0x01)
+	{
+		display.Write(TFault, F05_ELECTROMAGNET_FAULT);
+		modbus_tcp.UpdateHoldingRegisters(m->curr_addr + 1, F05_ELECTROMAGNET_FAULT << 8);
+		comm.Prepare(TLed, m->curr_addr, COMM_RED_3PULSES);
+	}
 }
 
 void Dynabox::ReplyTimeout()

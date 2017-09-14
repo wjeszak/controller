@@ -25,6 +25,8 @@ public:
 	void SaveParameters();
 	void SendToDoor();
 	void Parse(uint8_t* frame);
+	void ParseCommandCheckLed(uint8_t res);
+	void ParseCommandCheckElectromagnet(uint8_t res);
 	void ReplyTimeout();
 private:
 	void ST_Init(DynaboxData* pdata);
