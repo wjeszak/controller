@@ -37,22 +37,22 @@ Function EEMEM dynabox_eem_functions[DYNABOX_NUMBER_OF_FUNCTIONS] =
 
 Dynabox::Dynabox()
 {
+	curr_door = 1;
 	first_door = 1;
 	last_door = 6;
-	curr_door = 1;
 }
 
 void Dynabox::ST_Init(DynaboxData* pdata)
 {
-	// additional commands
-	InternalEvent(ST_TEST_DOORS, NULL);
+	// additional init commands
+	InternalEvent(ST_CHECK_LED, NULL);
 }
 
-void Dynabox::ST_TestDoors(DynaboxData* pdata)
+void Dynabox::ST_CheckLED(DynaboxData* pdata)
 {
-	// begin...
-	comm.curr_command = COMM_CHECK_ELECTROMAGNET;
-	timer.Assign(TIMER_DOORS_POLL, 100, DoorsPoll);
+	// begin... checking LED
+	comm.curr_command = COMM_DIAG;
+	timer.Assign(TIMER_SLAVES_POLL, 1000, SlavesPoll);
 }
 
 void Dynabox::ST_Homing(DynaboxData* pdata)

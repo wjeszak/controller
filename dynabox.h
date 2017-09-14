@@ -25,12 +25,12 @@ public:
 	void SendToDoor();
 private:
 	void ST_Init(DynaboxData* pdata);
-	void ST_TestDoors(DynaboxData* pdata);
+	void ST_CheckLED(DynaboxData* pdata);
 	void ST_Homing(DynaboxData* pdata);
-	enum States {ST_INIT = 0, ST_TEST_DOORS, ST_HOMING, ST_MAX_STATES};
+	enum States {ST_INIT = 0, ST_CHECK_LED, ST_HOMING, ST_MAX_STATES};
 	BEGIN_STATE_MAP
 		STATE_MAP_ENTRY(&Dynabox::ST_Init)
-		STATE_MAP_ENTRY(&Dynabox::ST_TestDoors)
+		STATE_MAP_ENTRY(&Dynabox::ST_CheckLED)
 		STATE_MAP_ENTRY(&Dynabox::ST_Homing)
 	END_STATE_MAP
 };

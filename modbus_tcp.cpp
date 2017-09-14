@@ -184,4 +184,8 @@ void ModbusTCP::AnalizeMultipleRegisters()
 		motor_data.pos = 100 * (Registers[LOCATIONS_NUMBER] - 1);
 		motor.EV_RunToPosition(&motor_data);
 	}
+	for(uint8_t i = 52; i < 65; i++)
+	{
+		//if(Registers[i] > 0)
+	}
 }
