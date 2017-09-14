@@ -74,14 +74,14 @@ void Dynabox::Parse(uint8_t* frame)
 				modbus_tcp.UpdateHoldingRegisters(m->curr_addr + 1, F05_ELECTROMAGNET_FAULT << 8);
 				comm.Prepare(TLed, m->curr_addr, COMM_RED_3PULSES);
 			}
-			if(m->curr_addr == m->last_addr) { comm.LedTrigger(); return; }
+			if(m->curr_addr == m->last_addr) { comm.LedTrigger(); }
 		break;
 		}
 	}
 	// reply from led
 	if((frame[0] == m->curr_addr + LED_ADDRESS_OFFSET) && (frame[2] == crc))
 	{
-		if(m->curr_addr == m->last_addr) { EV_LEDChecked(NULL); return; }
+		if(m->curr_addr == m->last_addr) { EV_LEDChecked(NULL); }
 	}
 	m->curr_addr++;
 }
