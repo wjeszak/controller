@@ -16,7 +16,9 @@ public:
 	Machine();
 	virtual void LoadSupportedFunctions() {}
 	virtual void SaveParameters() {}
-	uint8_t first_door, last_door, curr_door;
+	virtual void Parse(uint8_t* frame) {}
+	virtual void ReplyTimeout() {}
+	uint8_t first_addr, last_addr, curr_addr;
 private:
 	enum States {ST_MAX_STATES};
 };

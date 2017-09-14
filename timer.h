@@ -65,7 +65,7 @@ extern void InitCountDown();
 extern void ButtonPoll();
 extern void EncoderPoll();
 extern void SlavesPoll();
-extern void ReplyTimeout();
+extern void ReplyTimeoutGeneral();
 extern void MotorAccelerate();
 
 #endif /* TIMER_H_ */

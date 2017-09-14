@@ -20,9 +20,12 @@ class Dynabox : public Machine
 {
 public:
 	Dynabox();
+	void EV_LEDChecked(DynaboxData* pdata);
 	void LoadSupportedFunctions();
 	void SaveParameters();
 	void SendToDoor();
+	void Parse(uint8_t* frame);
+	void ReplyTimeout();
 private:
 	void ST_Init(DynaboxData* pdata);
 	void ST_CheckLED(DynaboxData* pdata);

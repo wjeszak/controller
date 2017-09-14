@@ -114,39 +114,24 @@ void EncoderPoll()
 
 void SlavesPoll()
 {
-	if(m->curr_door == m->last_door + 1)
+	if(m->curr_addr == m->last_addr + 1)
 	{
 		if(comm.repeat)
-			m->curr_door = m->first_door;
+			m->curr_addr = m->first_addr;
 		else
 		{
 			timer.Disable(TIMER_SLAVES_POLL);
 			return;
 		}
 	}
-	comm.Prepare(comm.dest, m->curr_door, comm.curr_command);
-	timer.Assign(TIMER_REPLY_TIMEOUT, 20, ReplyTimeout);
+	comm.Prepare(comm.dest, m->curr_addr, comm.curr_command);
+	timer.Assign(TIMER_REPLY_TIMEOUT, 20, ReplyTimeoutGeneral);
 }
 
-void ReplyTimeout()
+void ReplyTimeoutGeneral()
 {
 	timer.Disable(TIMER_REPLY_TIMEOUT);
-	switch(comm.curr_command)
-	{
-	case COMM_DIAG:
-		display.Write(TFault, F01_LED_FAULT);
-		modbus_tcp.UpdateHoldingRegisters(GENERAL_ERROR_STATUS, F01_LED_FAULT);
-		modbus_tcp.UpdateHoldingRegisters(m->curr_door + 1, F01_LED_FAULT << 8);
-	break;
-	default:
-		display.Write(TFault, F02_DOOR_FAULT);
-		//modbus_tcp.UpdateHoldingRegisters(GENERAL_ERROR_STATUS, F02_DOOR_FAULT);
-		modbus_tcp.UpdateHoldingRegisters(m->curr_door + 1, F02_DOOR_FAULT << 8);
-		comm.Prepare(TLed, m->curr_door, COMM_RED_1PULSE);
-		if(m->curr_door == m->last_door) { comm.Prepare(TLed); }
-	break;
-	}
-	m->curr_door++;
+	m->ReplyTimeout();
 }
 
 // TIMER_MOTOR_ACCELERATE
