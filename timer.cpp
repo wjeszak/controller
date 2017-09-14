@@ -116,17 +116,16 @@ void SlavesPoll()
 {
 	if(m->curr_door == m->last_door + 1)
 	{
-		m->curr_door = m->first_door;
+		if(comm.repeat)
+			m->curr_door = m->first_door;
+		else
+		{
+			timer.Disable(TIMER_SLAVES_POLL);
+			return;
+		}
 	}
-		comm.Prepare(TLed, m->curr_door, comm.curr_command);
-		timer.Assign(TIMER_REPLY_TIMEOUT, 20, ReplyTimeout);
-		//timer.Disable(TIMER_SLAVES_POLL);
-
-	//else
-	//{
-	//	comm.Prepare(TLed, m->curr_door, comm.curr_command);
-	//	timer.Assign(TIMER_REPLY_TIMEOUT, 20, ReplyTimeout);
-	//}
+	comm.Prepare(comm.dest, m->curr_door, comm.curr_command);
+	timer.Assign(TIMER_REPLY_TIMEOUT, 20, ReplyTimeout);
 }
 
 void ReplyTimeout()

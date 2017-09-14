@@ -51,6 +51,8 @@ void Dynabox::ST_Init(DynaboxData* pdata)
 void Dynabox::ST_CheckLED(DynaboxData* pdata)
 {
 	// begin... checking LED
+	comm.repeat = true;
+	comm.dest = TLed;
 	comm.curr_command = COMM_DIAG;
 	timer.Assign(TIMER_SLAVES_POLL, 100, SlavesPoll);
 }

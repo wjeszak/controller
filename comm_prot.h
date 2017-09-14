@@ -52,6 +52,8 @@ public:
 	Comm_prot();
 	void Prepare(DestType t, uint8_t addr = 0xFF, uint8_t command = 0x00);
 	void Parse(uint8_t* frame);
+	bool repeat;
+	DestType dest;
 	uint8_t curr_command;
 private:
 	uint8_t Crc8(uint8_t *frame, uint8_t len);
