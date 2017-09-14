@@ -38,7 +38,7 @@ void Motor::EV_PhaseA(MotorData* pdata)
 	else
 	{
 		// right
-		display.Write(actual_position);
+		//display.Write(actual_position);
 		modbus_tcp.UpdateHoldingRegisters(ENCODER_CURRENT_VALUE, actual_position++);
 		if(actual_position == motor_data.pos)
 		{
@@ -59,7 +59,7 @@ void Motor::EV_PhaseB(MotorData* pdata)
 	else
 	{
 		// right
-		display.Write(actual_position);
+		//display.Write(actual_position);
 		modbus_tcp.UpdateHoldingRegisters(ENCODER_CURRENT_VALUE, actual_position++);
 		if(actual_position == motor_data.pos)
 		{
@@ -164,7 +164,7 @@ void Motor::ST_Idle(MotorData* pdata)
 void Motor::ST_Acceleration(MotorData* pdata)
 {
 	SetDirection(Forward);
-	SetSpeed(60);
+	SetSpeed(10);
 	MOTOR_ENCODER_ENABLE
 	MOTOR_HOME_IRQ_ENABLE;
 	actual_speed = 0;
