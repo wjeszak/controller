@@ -52,7 +52,7 @@ void Dynabox::ST_CheckLED(DynaboxData* pdata)
 {
 	// begin... checking LED
 	comm.curr_command = COMM_DIAG;
-	timer.Assign(TIMER_SLAVES_POLL, 1000, SlavesPoll);
+	timer.Assign(TIMER_SLAVES_POLL, 100, SlavesPoll);
 }
 
 void Dynabox::ST_Homing(DynaboxData* pdata)

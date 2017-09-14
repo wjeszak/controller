@@ -32,7 +32,7 @@ void Comm_prot::Parse(uint8_t* frame)
 {
 	uint8_t crc = Crc8(frame, 2);
 	// reply from door
-	if((frame[0] == m->curr_door - 1) && (frame[2] == crc))
+	if((frame[0] == m->curr_door) && (frame[2] == crc))
 	{
 		uint8_t result = frame[1];
 		switch(curr_command)
@@ -40,32 +40,34 @@ void Comm_prot::Parse(uint8_t* frame)
 		case COMM_CHECK_ELECTROMAGNET:
 			if(result == 0x00)
 			{
-				modbus_tcp.UpdateHoldingRegisters(m->curr_door, NO_FAULT << 8);
-				Prepare(TLed, m->curr_door - 1, COMM_GREEN_ON);
+				modbus_tcp.UpdateHoldingRegisters(m->curr_door + 1, NO_FAULT << 8);
+				Prepare(TLed, m->curr_door, COMM_GREEN_ON);
 			}
 			if(result == 0x01)
 			{
 				display.Write(TFault, F05_ELECTROMAGNET_FAULT);
-				modbus_tcp.UpdateHoldingRegisters(m->curr_door, F05_ELECTROMAGNET_FAULT << 8);
-				Prepare(TLed, m->curr_door - 1, COMM_RED_3PULSES);
+				modbus_tcp.UpdateHoldingRegisters(m->curr_door + 1, F05_ELECTROMAGNET_FAULT << 8);
+				Prepare(TLed, m->curr_door, COMM_RED_3PULSES);
 			}
-			if(m->curr_door == m->last_door + 1) { Prepare(TLed); }
+			if(m->curr_door == m->last_door) { Prepare(TLed); }
 		break;
 		timer.Disable(TIMER_REPLY_TIMEOUT);
 		}
 	}
 	// reply from led
-	if((frame[0] == m->curr_door - 1 + LED_ADDRESS_OFFSET) && (frame[2] == crc))
+	if((frame[0] == m->curr_door + LED_ADDRESS_OFFSET) && (frame[2] == crc))
 	{
-		uint8_t result = frame[1];
-		if(result == 0x80)
-		{
-			display.Write(TFault, NO_FAULT);
-			modbus_tcp.UpdateHoldingRegisters(GENERAL_ERROR_STATUS, NO_FAULT);
-			modbus_tcp.UpdateHoldingRegisters(m->curr_door, NO_FAULT << 8);
-		}
+		//uint8_t result = frame[1];
+		//if(result == 0x80)
+		//{
+			//display.Write(TFault, NO_FAULT);
+			//modbus_tcp.UpdateHoldingRegisters(GENERAL_ERROR_STATUS, NO_FAULT);
+			//modbus_tcp.UpdateHoldingRegisters(m->curr_door + 1, NO_FAULT << 8);
+		//}
+		m->curr_door++;
 		timer.Disable(TIMER_REPLY_TIMEOUT);
 	}
+
 }
 
 

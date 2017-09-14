@@ -15,7 +15,7 @@ ModbusTCP::ModbusTCP()
 {
 
 //	Registers[0] = 0;
-//	Registers[1] = 0x43;
+//	Registers[1] = 0x11;;
 //	Registers[2] = (1 << 7) | (1 << 6);
 //	Registers[3] = 0x05 << 8;
 //	Registers[4] = (1 << 7) | (1 << 6) | (1 << 4);
