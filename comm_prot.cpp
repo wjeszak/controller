@@ -28,6 +28,16 @@ void Comm_prot::Prepare(DestType t, uint8_t addr, uint8_t command)
 	usart.SendFrame(&usart_data);
 }
 
+void Comm_prot::LedTrigger()
+{
+	usart_data.frame[0] = LED_ADDRESS_TRIGGER;
+	usart_data.frame[1] = 0x00;
+	usart_data.frame[2] = Crc8(usart_data.frame, 2);
+	usart_data.frame[3] = 0x0A;
+	usart_data.len = FRAME_LENGTH_REQUEST;
+	usart.SendFrame(&usart_data);
+}
+
 void Comm_prot::ParseGeneral(uint8_t* frame)
 {
 	timer.Disable(TIMER_REPLY_TIMEOUT);

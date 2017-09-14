@@ -51,7 +51,8 @@ class Comm_prot
 public:
 	Comm_prot();
 	uint8_t Crc8(uint8_t *frame, uint8_t len);
-	void Prepare(DestType t, uint8_t addr = 0xFF, uint8_t command = 0x00);
+	void Prepare(DestType t, uint8_t addr, uint8_t command);
+	void LedTrigger();
 	void ParseGeneral(uint8_t* frame);
 	bool repeat;
 	DestType dest;

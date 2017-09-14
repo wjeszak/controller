@@ -45,7 +45,12 @@ Dynabox::Dynabox()
 
 void Dynabox::EV_LEDChecked(DynaboxData* pdata)
 {
-
+	BEGIN_TRANSITION_MAP								// current state
+        TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_INIT
+		TRANSITION_MAP_ENTRY(ST_CHECK_TRANSOPTORS)		// ST_CHECK_LED
+		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_CHECK_TRANSOPTORS
+		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_HOMING
+	END_TRANSITION_MAP(pdata)
 }
 
 void Dynabox::Parse(uint8_t* frame)
@@ -69,14 +74,14 @@ void Dynabox::Parse(uint8_t* frame)
 				modbus_tcp.UpdateHoldingRegisters(m->curr_addr + 1, F05_ELECTROMAGNET_FAULT << 8);
 				comm.Prepare(TLed, m->curr_addr, COMM_RED_3PULSES);
 			}
-			if(m->curr_addr == m->last_addr) { comm.Prepare(TLed); }
+			if(m->curr_addr == m->last_addr) { comm.LedTrigger(); return; }
 		break;
 		}
 	}
 	// reply from led
 	if((frame[0] == m->curr_addr + LED_ADDRESS_OFFSET) && (frame[2] == crc))
 	{
-		if(m->curr_addr == m->last_addr) { comm.Prepare(TLed); }
+		if(m->curr_addr == m->last_addr) { EV_LEDChecked(NULL); return; }
 	}
 	m->curr_addr++;
 }
@@ -96,7 +101,7 @@ void Dynabox::ReplyTimeout()
 		//modbus_tcp.UpdateHoldingRegisters(GENERAL_ERROR_STATUS, F02_DOOR_FAULT);
 		modbus_tcp.UpdateHoldingRegisters(m->curr_addr + 1, F02_DOOR_FAULT << 8);
 		comm.Prepare(TLed, m->curr_addr, COMM_RED_1PULSE);
-		if(m->curr_addr == m->last_addr) { comm.Prepare(TLed); }
+		if(m->curr_addr == m->last_addr) { comm.LedTrigger(); }
 	break;
 	}
 	m->curr_addr++;
@@ -111,10 +116,21 @@ void Dynabox::ST_Init(DynaboxData* pdata)
 void Dynabox::ST_CheckLED(DynaboxData* pdata)
 {
 	// begin... checking LED
+	curr_addr = 1;
 	comm.repeat = false;
 	comm.dest = TLed;
 	comm.curr_command = COMM_DIAG;
-	timer.Assign(TIMER_SLAVES_POLL, 100, SlavesPoll);
+	timer.Assign(TIMER_SLAVES_POLL, 500, SlavesPoll);
+}
+
+void Dynabox::ST_CheckTransoptors(DynaboxData* pdata)
+{
+	// checking transoptors
+	curr_addr = 1;
+	comm.repeat = false;
+	comm.dest = TDoor;
+	comm.curr_command = COMM_CHECK_ELECTROMAGNET;
+	timer.Assign(TIMER_SLAVES_POLL, 500, SlavesPoll);
 }
 
 void Dynabox::ST_Homing(DynaboxData* pdata)
