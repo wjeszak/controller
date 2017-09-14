@@ -118,7 +118,8 @@ void SlavesPoll()
 	timer.Assign(TIMER_REPLY_TIMEOUT, 20, ReplyTimeout);
 	if(m->curr_door == m->last_door + 1)
 	{
-		timer.Disable(TIMER_SLAVES_POLL);
+		m->curr_door = m->first_door;
+		//timer.Disable(TIMER_SLAVES_POLL);
 	}
 }
 

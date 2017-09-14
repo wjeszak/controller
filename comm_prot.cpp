@@ -60,6 +60,7 @@ void Comm_prot::Parse(uint8_t* frame)
 		uint8_t result = frame[1];
 		if(result == 0x80)
 		{
+			display.Write(TFault, NO_FAULT);
 			modbus_tcp.UpdateHoldingRegisters(GENERAL_ERROR_STATUS, NO_FAULT);
 			modbus_tcp.UpdateHoldingRegisters(m->curr_door, NO_FAULT << 8);
 		}
