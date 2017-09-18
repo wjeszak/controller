@@ -24,10 +24,11 @@ public:
 			F10_MechanicalWarning, F11_MechanicalFault, F12_Positioning, F13_MainDoor, F14_HomingFailed,
 			F15_IllegalRotation, F16_OrderRefused, F17_24VMissing};
 	Machine();
-//	void SetFault(FaultsType fault);
-//	void ClearFault(FaultsType fault);
-	void SetFault(uint8_t fault);
-	void ClearFault(uint8_t fault);
+	void SetFault(FaultsType fault);
+	void ClearFault(FaultsType fault);
+//	void SetFault(uint8_t fault);
+//	void ClearFault(uint8_t fault);
+	bool CheckFault(FaultsType fault);
 	virtual void LoadSupportedFunctions() {}
 	virtual void SaveParameters() {}
 	virtual void Parse(uint8_t* frame) {}
