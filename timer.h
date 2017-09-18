@@ -25,6 +25,7 @@
 #define TIMER_SLAVES_POLL 				4
 #define TIMER_REPLY_TIMEOUT 			5
 #define TIMER_MOTOR_ACCELERATE 			6
+#define TIMER_SHOW_FAULT 				7
 
 enum T2Prescallers
 {
@@ -67,5 +68,6 @@ extern void EncoderPoll();
 extern void SlavesPoll();
 extern void ReplyTimeoutGeneral();
 extern void MotorAccelerate();
+extern void ShowFault();
 
 #endif /* TIMER_H_ */

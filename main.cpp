@@ -25,6 +25,8 @@
 #include "modbus_tcp.h"
 #include "motor.h"
 
+Machine* m;
+MachineData* d;
 Timer timer(T2_PS_1);
 Display display;
 ButtonData button_data;
@@ -35,6 +37,7 @@ MotorData motor_data;
 Motor motor;
 DynaboxData dynabox_data;
 Dynabox dynabox;
+LockerboxData lockerbox_data;
 Lockerbox lockerbox;
 ConfigData config_data;
 Config config;
@@ -45,13 +48,10 @@ Stack stack;
 Comm_prot comm;
 ModbusTCP modbus_tcp;
 
-Machine *m;
-MachineData *d;
-
 int main()
 {
 	while(1)
 	{
-	stack.Poll();
+		stack.Poll();
 	}
 }

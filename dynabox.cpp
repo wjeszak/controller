@@ -41,6 +41,7 @@ Dynabox::Dynabox()
 	curr_addr =  1;
 	first_addr = 1;
 	last_addr =  6;
+	dynabox_data.faults = 0;
 }
 
 void Dynabox::EV_LEDChecked(DynaboxData* pdata)
@@ -103,7 +104,7 @@ void Dynabox::ParseCommandCheckElectromagnet(uint8_t res)
 	}
 	if(res == 0x01)
 	{
-		display.Write(TError, F05_ELECTROMAGNET_FAULT);
+		//display.Write(TFault, F05_ELECTROMAGNET_FAULT);
 		modbus_tcp.UpdateHoldingRegisters(m->curr_addr + 1, F05_ELECTROMAGNET_FAULT << 8);
 		comm.Prepare(TLed, m->curr_addr, COMM_RED_3PULSES);
 	}
@@ -113,7 +114,7 @@ void Dynabox::ParseCommandCheckTransoptorsGetStatus(uint8_t res)
 {
 	if(res == 0xF0)
 	{
-		display.Write(TError, F03_OPTICAL_SWITCHES_FAULT);
+		//display.Write(TFault, F03_OPTICAL_SWITCHES_FAULT);
 		modbus_tcp.UpdateHoldingRegisters(m->curr_addr + 1, F03_OPTICAL_SWITCHES_FAULT << 8);
 	}
 	else
@@ -125,13 +126,13 @@ void Dynabox::ReplyTimeout()
 	switch(comm.curr_command)
 	{
 	case COMM_DIAG:
-		display.Write(TError, F01_LED_FAULT);
+		//display.Write(TFault, F01_LED_FAULT);
 		modbus_tcp.UpdateHoldingRegisters(GENERAL_ERROR_STATUS, F01_LED_FAULT);
 		modbus_tcp.UpdateHoldingRegisters(m->curr_addr + 1, F01_LED_FAULT << 8);
 		if(m->curr_addr == m->last_addr) EV_LEDChecked(NULL);
 	break;
 	default:
-		display.Write(TError, F02_DOOR_FAULT);
+		//display.Write(TFault, F02_DOOR_FAULT);
 		//modbus_tcp.UpdateHoldingRegisters(GENERAL_ERROR_STATUS, F02_DOOR_FAULT);
 		modbus_tcp.UpdateHoldingRegisters(m->curr_addr + 1, F02_DOOR_FAULT << 8);
 		comm.Prepare(TLed, m->curr_addr, COMM_RED_1PULSE);
@@ -144,6 +145,9 @@ void Dynabox::ReplyTimeout()
 void Dynabox::ST_Init(DynaboxData* pdata)
 {
 	// additional init commands
+	//SetFault(F03_OpticalSwitches);
+	//SetFault(F13_MainDoor);
+	//SetFault(F01_SlaveLed);
 	InternalEvent(ST_CHECK_LED, NULL);
 }
 

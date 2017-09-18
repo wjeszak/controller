@@ -10,6 +10,7 @@
 
 #include <avr/io.h>
 #include <inttypes.h>
+#include "timer.h"
 
 #define DISP1_DDR 				DDRD
 #define DISP2_DDR 				DDRC
@@ -46,7 +47,7 @@
 #define DISP_CHAR_b				0x03
 #define DISP_CHAR_MINUS			0x3F
 
-enum InfoType {TState, TError, TNoError, TFunction, TFunctionNotSupported, TParameterValue};
+enum InfoType {TState, TFault, TNoFault, TFunction, TFunctionNotSupported, TParameterValue};
 
 class Display
 {
@@ -55,6 +56,7 @@ public:
 	void Refresh();
 	void Write(InfoType type, uint8_t val);
 	void Write(uint16_t val);
+//	void ShowFaults();
 private:
 	struct Disp
 	{
@@ -66,6 +68,8 @@ private:
 	uint8_t disp_number;
 	const uint8_t digits[16];
 	uint8_t value[4];
+	uint8_t fault_index;
+	friend void ShowFault();
 };
 
 extern Display display;

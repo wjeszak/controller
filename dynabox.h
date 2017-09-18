@@ -10,6 +10,8 @@
 
 #include "machine.h"
 
+//#define NUMBER_OF_FAULTS 				17
+
 class DynaboxData : public MachineData
 {
 public:
@@ -29,10 +31,7 @@ public:
 	void ParseCommandCheckElectromagnet(uint8_t res);
 	void ParseCommandCheckTransoptorsGetStatus(uint8_t res);
 	void ReplyTimeout();
-	enum FaultsType {NoFault, F01_SlaveLed, F02_SlaveDoor, F03_OpticalSwitches, F04_DoorOpenedTooFar,
-		F05_ElectromagnetFault, F06_CloseTheDoor, F07_DoorNotOpen, F08_IllegalOpening, F09_None,
-		F10_MechanicalWarning, F11_MechanicalFault, F12_Positioning, F13_MainDoor, F14_HomingFailed,
-		F15_IllegalRotation, F16_OrderRefused, F17_24VMissing};
+
 private:
 	void ST_Init(DynaboxData* pdata);
 	void ST_CheckLED(DynaboxData* pdata);

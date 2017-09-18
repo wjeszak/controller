@@ -11,6 +11,7 @@
 #include "machine.h"
 #include "timer.h"
 #include "display.h"
+#include "dynabox.h"
 
 uint8_t machine_type EEMEM = MACHINE_DYNABOX;
 Function functions[MAX_NUMBER_OF_FUNCTIONS];
@@ -32,7 +33,7 @@ void Config::CountDown(ConfigData* pdata)
 	if(i == 0)
 	{
 		timer.Disable(TIMER_INIT_COUNTDOWN);
-		display.Write(TNoError, 0);
+		display.Write(TNoFault, 0);
 		InternalEvent(ST_DONE);
 	}
 	i--;
@@ -89,7 +90,7 @@ void Config::EV_EncoderClick(ConfigData* pdata)
 void Config::ST_Init(ConfigData* pdata)
 {
 	uint8_t mt = eeprom_read_byte(&machine_type);
-	GetPointerTypeOfMachine(mt, m, d);
+	GetPointerTypeOfMachine(mt);
 	m->LoadSupportedFunctions();
 	sei();
 	timer.Assign(TIMER_DISPLAY_REFRESH, 4, DisplayRefresh);
@@ -133,5 +134,6 @@ void Config::ST_Done(ConfigData* pdata)
 {
 	timer.Disable(TIMER_BUTTON_POLL);
 	timer.Disable(TIMER_ENCODER_POLL);
+	timer.Assign(TIMER_SHOW_FAULT, 1000, ShowFault);
 	m->InternalEvent(ST_INIT, NULL);
 }

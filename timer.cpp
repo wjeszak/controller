@@ -140,6 +140,24 @@ void MotorAccelerate()
 	motor.Accelerate();
 }
 
+// TIMER_SHOW_FAULT
+void ShowFault()
+{
+	static uint8_t i = 1;
+	if(d->faults == 0) { display.Write(TNoFault, 0); return; }
+	while(i <= 18)
+	{
+		if(i == 18) i = 1;
+		if(d->faults & (1ULL << i))
+		{
+			display.Write(TFault, i);
+			i++;
+			break;
+		}
+		i++;
+	}
+}
+
 ISR(TIMER2_COMPB_vect)
 {
 	timer.Irq();

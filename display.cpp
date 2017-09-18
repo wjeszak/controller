@@ -6,6 +6,7 @@
  */
 
 #include "display.h"
+#include "machine.h"
 
 Display::Display() : digits {DISP_CHAR_0, DISP_CHAR_1, DISP_CHAR_2, DISP_CHAR_3, DISP_CHAR_4,
 	DISP_CHAR_5, DISP_CHAR_6, DISP_CHAR_7, DISP_CHAR_8, DISP_CHAR_9, DISP_CHAR_ALL_OFF,
@@ -32,6 +33,8 @@ Display::Display() : digits {DISP_CHAR_0, DISP_CHAR_1, DISP_CHAR_2, DISP_CHAR_3,
 
 	DISP_SEGM_DDR = 0b01111111;
 	disp_number = 0;
+
+	fault_index = 1;
 }
 
 void Display::Refresh()
@@ -55,11 +58,11 @@ void Display::Write(InfoType type, uint8_t val)
 		value[0] = digits[11];
 		value[1] = digits[10];
 		break;
-	case TError:
+	case TFault:
 		value[0] = digits[12];
 		value[1] = digits[10];
 		break;
-	case TNoError:
+	case TNoFault:
 		value[0] = digits[15];
 		value[1] = digits[10];
 		value[2] = digits[10];
