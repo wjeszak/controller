@@ -46,6 +46,7 @@ Comm_prot comm;
 ModbusTCP modbus_tcp;
 
 Machine *m;
+MachineData *d;
 
 int main()
 {

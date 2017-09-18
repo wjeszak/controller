@@ -9,24 +9,35 @@
 #include "lockerbox.h"
 #include "config.h"
 
-Machine* GetPointerTypeOfMachine(uint8_t type)
+void GetPointerTypeOfMachine(uint8_t type, Machine* mach, MachineData* mach_data)
 {
-	Machine* p = NULL;
 	switch (type)
 	{
 	case MACHINE_DYNABOX:
-		p = &dynabox;
+		mach = &dynabox;
+		mach_data = &dynabox_data;
 		break;
 	case MACHINE_LOCKERBOX:
-		p = &lockerbox;
+		mach = &lockerbox;
+		mach_data = &lockerbox_data;
 		break;
 	default:
-		p = NULL;
+		mach = NULL;
+		mach_data = NULL;
 	}
-	return p;
 }
 
 Machine::Machine() : StateMachine(ST_MAX_STATES)
 {
 
+}
+
+void Machine::SetFault(FaultsType fault)
+{
+	d->errors |= (1 << fault);
+}
+
+void Machine::ClearFault(FaultsType fault)
+{
+	d->errors &= ~(1 << fault);
 }

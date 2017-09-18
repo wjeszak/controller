@@ -18,7 +18,7 @@
 #define DYNABOX_NUMBER_OF_FUNCTIONS 		10
 void f12()
 {
-	display.Write(5555);
+	//display.Write(5555);
 }
 // default values
 Function EEMEM dynabox_eem_functions[DYNABOX_NUMBER_OF_FUNCTIONS] =

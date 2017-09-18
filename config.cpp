@@ -89,7 +89,7 @@ void Config::EV_EncoderClick(ConfigData* pdata)
 void Config::ST_Init(ConfigData* pdata)
 {
 	uint8_t mt = eeprom_read_byte(&machine_type);
-	m = GetPointerTypeOfMachine(mt);
+	GetPointerTypeOfMachine(mt, m, d);
 	m->LoadSupportedFunctions();
 	sei();
 	timer.Assign(TIMER_DISPLAY_REFRESH, 4, DisplayRefresh);

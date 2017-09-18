@@ -10,6 +10,11 @@
 
 #include "machine.h"
 
+class LockerboxData : public MachineData
+{
+public:
+};
+
 class Lockerbox : public Machine
 {
 public:
@@ -26,5 +31,6 @@ private:
 };
 
 extern Lockerbox lockerbox;
+extern LockerboxData lockerbox_data;
 
 #endif /* LOCKERBOX_H_ */
