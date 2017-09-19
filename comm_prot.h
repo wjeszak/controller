@@ -32,7 +32,9 @@
 #define COMM_RED_2PULSES 					0x09
 #define COMM_GREEN_3PULSES 					0x0A
 #define COMM_RED_3PULSES 					0x0B
-#define COMM_DIAG 							0x0C
+#define COMM_GREEN_ON_FOR_TIME 				0x0C
+#define COMM_LED_DIAG						0x0D
+#define COMM_NEED_QUEUE_BIT					7
 
 #define NO_FAULT 							0x00
 #define F01_LED_FAULT	 					0x01

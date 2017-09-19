@@ -25,7 +25,6 @@ public:
 	void EV_ElectromagnetChecked(DynaboxData* pdata);
 	void LoadSupportedFunctions();
 	void SaveParameters();
-	void SendToDoor();
 	void Parse(uint8_t* frame);
 //	void ParseCommandCheckLed(uint8_t res);
 	void ParseCommandCheckElectromagnet(uint8_t res);
@@ -34,14 +33,14 @@ public:
 
 private:
 	void ST_Init(DynaboxData* pdata);
-	void ST_CheckLED(DynaboxData* pdata);
-	void ST_CheckElectromagnet(DynaboxData* pdata);
+	void ST_CheckingLED(DynaboxData* pdata);
+	void ST_CheckingElectromagnet(DynaboxData* pdata);
 	void ST_Homing(DynaboxData* pdata);
-	enum States {ST_INIT = 0, ST_CHECK_LED, ST_CHECK_ELECTROMAGNET, ST_HOMING, ST_MAX_STATES};
+	enum States {ST_INIT = 0, ST_CHECKING_LED, ST_CHECKING_ELECTROMAGNET, ST_HOMING, ST_MAX_STATES};
 	BEGIN_STATE_MAP
 		STATE_MAP_ENTRY(&Dynabox::ST_Init)
-		STATE_MAP_ENTRY(&Dynabox::ST_CheckLED)
-		STATE_MAP_ENTRY(&Dynabox::ST_CheckElectromagnet)
+		STATE_MAP_ENTRY(&Dynabox::ST_CheckingLED)
+		STATE_MAP_ENTRY(&Dynabox::ST_CheckingElectromagnet)
 		STATE_MAP_ENTRY(&Dynabox::ST_Homing)
 	END_STATE_MAP
 };

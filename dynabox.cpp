@@ -48,8 +48,8 @@ void Dynabox::EV_LEDChecked(DynaboxData* pdata)
 {
 	BEGIN_TRANSITION_MAP								// current state
         TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_INIT
-		TRANSITION_MAP_ENTRY(ST_CHECK_ELECTROMAGNET)	// ST_CHECK_LED
-		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_CHECK_ELECTROMAGNET
+		TRANSITION_MAP_ENTRY(ST_CHECKING_ELECTROMAGNET)	// ST_CHECKING_LED
+		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_CHECKING_ELECTROMAGNET
 		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_HOMING
 	END_TRANSITION_MAP(pdata)
 }
@@ -58,8 +58,8 @@ void Dynabox::EV_ElectromagnetChecked(DynaboxData* pdata)
 {
 	BEGIN_TRANSITION_MAP								// current state
         TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_INIT
-		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_CHECK_LED
-		TRANSITION_MAP_ENTRY(ST_HOMING)					// ST_CHECK_ELECTROMAGNET
+		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_CHECKING_LED
+		TRANSITION_MAP_ENTRY(ST_HOMING)					// ST_CHECKING_ELECTROMAGNET
 		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_HOMING
 	END_TRANSITION_MAP(pdata)
 }
@@ -70,10 +70,9 @@ void Dynabox::Parse(uint8_t* frame)
 	// reply from led
 	if((frame[0] == m->curr_addr + LED_ADDRESS_OFFSET) && (frame[2] == crc))
 	{
+		if(m->curr_addr == m->last_addr) { EV_LEDChecked(NULL); return; }
 		m->curr_addr++;
-		if(m->curr_addr == m->last_addr + 1) EV_LEDChecked(NULL);
 	}
-
 	// reply from door
 	if((frame[0] == m->curr_addr) && (frame[2] == crc))
 	{
@@ -84,7 +83,7 @@ void Dynabox::Parse(uint8_t* frame)
 		case COMM_CHECK_ELECTROMAGNET:
 			ParseCommandCheckElectromagnet(result);
 			m->curr_addr++;
-			if(m->curr_addr == m->last_addr + 1) { comm.LedTrigger(); EV_ElectromagnetChecked(NULL); }
+			if(m->curr_addr == m->last_addr + 1) { EV_ElectromagnetChecked(NULL); }
 		break;
 
 		case COMM_CHECK_TRANSOPTORS_GET_STATUS:
@@ -95,18 +94,39 @@ void Dynabox::Parse(uint8_t* frame)
 	}
 }
 
+void Dynabox::ReplyTimeout()
+{
+	switch(comm.curr_command)
+	{
+	case COMM_LED_DIAG:
+		m->SetFault(F01_SlaveLed);
+		modbus_tcp.UpdateHoldingRegisters(GENERAL_ERROR_STATUS, F01_LED_FAULT);
+		modbus_tcp.UpdateHoldingRegisters(m->curr_addr + 1, F01_LED_FAULT << 8);
+		if(m->curr_addr == m->last_addr) EV_LEDChecked(NULL);
+	break;
+	default:
+		//m->SetFault(F02_SlaveDoor);
+		//modbus_tcp.UpdateHoldingRegisters(GENERAL_ERROR_STATUS, F02_DOOR_FAULT);
+		modbus_tcp.UpdateHoldingRegisters(m->curr_addr + 1, F02_DOOR_FAULT << 8);
+		//comm.Prepare(TLed, m->curr_addr, COMM_RED_1PULSE);
+		//if(m->curr_addr == m->last_addr) { comm.LedTrigger(); }
+	break;
+	}
+	m->curr_addr++;
+}
+
 void Dynabox::ParseCommandCheckElectromagnet(uint8_t res)
 {
 	if(res == 0x00)
 	{
 		modbus_tcp.UpdateHoldingRegisters(m->curr_addr + 1, NO_FAULT << 8);
-		comm.Prepare(TLed, m->curr_addr, COMM_GREEN_ON);
+		//comm.Prepare(TLed, m->curr_addr, COMM_GREEN_ON);
 	}
 	if(res == 0x01)
 	{
 		//display.Write(TFault, F05_ELECTROMAGNET_FAULT);
 		modbus_tcp.UpdateHoldingRegisters(m->curr_addr + 1, F05_ELECTROMAGNET_FAULT << 8);
-		comm.Prepare(TLed, m->curr_addr, COMM_RED_3PULSES);
+		//comm.Prepare(TLed, m->curr_addr, COMM_RED_3PULSES);
 	}
 }
 
@@ -121,51 +141,30 @@ void Dynabox::ParseCommandCheckTransoptorsGetStatus(uint8_t res)
 		modbus_tcp.UpdateHoldingRegisters(m->curr_addr + 1, res);
 }
 
-void Dynabox::ReplyTimeout()
-{
-	switch(comm.curr_command)
-	{
-	case COMM_DIAG:
-		m->SetFault(F01_SlaveLed);
-		modbus_tcp.UpdateHoldingRegisters(GENERAL_ERROR_STATUS, F01_LED_FAULT);
-		modbus_tcp.UpdateHoldingRegisters(m->curr_addr + 1, F01_LED_FAULT << 8);
-		if(m->curr_addr == m->last_addr) EV_LEDChecked(NULL);
-	break;
-	default:
-		m->SetFault(F02_SlaveDoor);
-		//modbus_tcp.UpdateHoldingRegisters(GENERAL_ERROR_STATUS, F02_DOOR_FAULT);
-		modbus_tcp.UpdateHoldingRegisters(m->curr_addr + 1, F02_DOOR_FAULT << 8);
-		comm.Prepare(TLed, m->curr_addr, COMM_RED_1PULSE);
-		if(m->curr_addr == m->last_addr) { comm.LedTrigger(); }
-	break;
-	}
-	m->curr_addr++;
-}
-
 void Dynabox::ST_Init(DynaboxData* pdata)
 {
 	// additional init commands
-	InternalEvent(ST_CHECK_LED, NULL);
+	InternalEvent(ST_CHECKING_LED, NULL);
 }
 
-void Dynabox::ST_CheckLED(DynaboxData* pdata)
+void Dynabox::ST_CheckingLED(DynaboxData* pdata)
 {
 	// begin... checking LED
 	curr_addr = 1;
 	comm.repeat = false;
-	comm.dest = TLed;
-	comm.curr_command = COMM_DIAG;
-	timer.Assign(TIMER_SLAVES_POLL, 100, SlavesPoll);
+	//comm.dest = TLed;
+	comm.curr_command = COMM_LED_DIAG;
+	SLAVES_POLL_START;
 }
 
-void Dynabox::ST_CheckElectromagnet(DynaboxData* pdata)
+void Dynabox::ST_CheckingElectromagnet(DynaboxData* pdata)
 {
 	// checking transoptors
 	curr_addr = 1;
 	comm.repeat = false;
-	comm.dest = TDoor;
+	//comm.dest = TDoor;
 	comm.curr_command = COMM_CHECK_ELECTROMAGNET;
-	timer.Assign(TIMER_SLAVES_POLL, 100, SlavesPoll);
+	SLAVES_POLL_START;
 }
 
 void Dynabox::ST_Homing(DynaboxData* pdata)
@@ -174,7 +173,7 @@ void Dynabox::ST_Homing(DynaboxData* pdata)
 	comm.repeat = true;
 	comm.dest = TDoor;
 	comm.curr_command = COMM_CHECK_TRANSOPTORS_GET_STATUS;
-	timer.Assign(TIMER_SLAVES_POLL, 100, SlavesPoll);
+	SLAVES_POLL_START;
 	motor.EV_Homing();
 }
 

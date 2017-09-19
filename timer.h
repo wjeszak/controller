@@ -27,6 +27,13 @@
 #define TIMER_MOTOR_ACCELERATE 			6
 #define TIMER_SHOW_FAULT 				7
 
+#define SLAVES_POLL_INTERVAL 			100
+#define SLAVES_REPLY_TIMEOUT 			20
+
+#define SLAVES_POLL_START 				timer.Assign(TIMER_SLAVES_POLL, SLAVES_POLL_INTERVAL, SlavesPoll)
+#define SLAVES_POLL_STOP				timer.Disable(TIMER_SLAVES_POLL);
+#define SLAVES_POLL_TIMEOUT_SET			timer.Assign(TIMER_REPLY_TIMEOUT, SLAVES_REPLY_TIMEOUT, ReplyTimeoutGeneral);
+#define SLAVES_POLL_TIMEOUT_OFF			timer.Disable(TIMER_REPLY_TIMEOUT);
 enum T2Prescallers
 {
 	T2_PS_0    = 0,

@@ -120,17 +120,30 @@ void SlavesPoll()
 			m->curr_addr = m->first_addr;
 		else
 		{
-			timer.Disable(TIMER_SLAVES_POLL);
+			SLAVES_POLL_STOP;
 			return;
 		}
 	}
-	comm.Prepare(comm.dest, m->curr_addr, comm.curr_command);
-	timer.Assign(TIMER_REPLY_TIMEOUT, 20, ReplyTimeoutGeneral);
+
+	switch(comm.curr_command)
+	{
+	case COMM_LED_DIAG:
+		comm.Prepare(TLed, m->curr_addr, comm.curr_command);
+	break;
+	case COMM_CHECK_ELECTROMAGNET:
+		comm.Prepare(TDoor, m->curr_addr, COMM_CHECK_ELECTROMAGNET);
+		comm.Prepare(TLed, m->curr_addr, COMM_GREEN_ON_FOR_TIME);
+	break;
+	default:
+	break;
+	}
+
+	SLAVES_POLL_TIMEOUT_SET;
 }
 
 void ReplyTimeoutGeneral()
 {
-	timer.Disable(TIMER_REPLY_TIMEOUT);
+	SLAVES_POLL_TIMEOUT_OFF;
 	m->ReplyTimeout();
 }
 
