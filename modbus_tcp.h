@@ -57,14 +57,6 @@
 	#define ORDER_STATUS_END_OF_MOVEMENT 		0x0003
 	#define ORDER_STATUS_NOT_READY 				0xFFFF
 #define GENERAL_ERROR_STATUS		 			1
-	#define GENERAL_ERROR_STATUS_F10			0
-	#define GENERAL_ERROR_STATUS_F11			1
-	#define GENERAL_ERROR_STATUS_F12			2
-	#define GENERAL_ERROR_STATUS_F13			3
-	#define GENERAL_ERROR_STATUS_F14			4
-	#define GENERAL_ERROR_STATUS_F15 			5
-	#define GENERAL_ERROR_STATUS_F16 			6
-	#define GENERAL_ERROR_STATUS_F17 			7
 #define ACTUAL_SPEED		 					44
 #define TYPE_OF_MACHINE			 				45
 	#define TYPE_OF_MACHINE_NOT_DEFINED 		0
@@ -101,6 +93,6 @@ private:
 	uint16_t quantity;
 };
 
-extern ModbusTCP modbus_tcp;
+extern ModbusTCP mb;
 
 #endif /* MODBUS_TCP_H_ */

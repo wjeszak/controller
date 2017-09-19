@@ -137,7 +137,6 @@ void SlavesPoll()
 	default:
 	break;
 	}
-
 	SLAVES_POLL_TIMEOUT_SET;
 }
 

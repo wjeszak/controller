@@ -23,6 +23,7 @@ public:
 			F05_ElectromagnetFault, F06_CloseTheDoor, F07_DoorNotOpen, F08_IllegalOpening, F09_None,
 			F10_MechanicalWarning, F11_MechanicalFault, F12_Positioning, F13_MainDoor, F14_HomingFailed,
 			F15_IllegalRotation, F16_OrderRefused, F17_24VMissing};
+	enum DestType {TDoor, TLed};
 	Machine();
 	void SetFault(FaultsType fault);
 	void ClearFault(FaultsType fault);
@@ -31,9 +32,13 @@ public:
 	bool CheckFault(FaultsType fault);
 	virtual void LoadSupportedFunctions() {}
 	virtual void SaveParameters() {}
+	virtual void SetCurrentCommand(uint8_t command) {}
 	virtual void Parse(uint8_t* frame) {}
 	virtual void ReplyTimeout() {}
 	uint8_t first_addr, last_addr, curr_addr;
+	DestType dest;
+	uint8_t current_command;
+	bool repeat;
 private:
 	enum States {ST_MAX_STATES};
 };

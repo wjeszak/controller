@@ -25,6 +25,7 @@ public:
 	void EV_ElectromagnetChecked(DynaboxData* pdata);
 	void LoadSupportedFunctions();
 	void SaveParameters();
+	void SetCurrentCommand(uint8_t command);
 	void Parse(uint8_t* frame);
 //	void ParseCommandCheckLed(uint8_t res);
 	void ParseCommandCheckElectromagnet(uint8_t res);

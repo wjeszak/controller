@@ -46,19 +46,14 @@
 #define F07_DOOR_NOT_OPEN 					0x07
 #define F08_ILLEGAL_OPENING 				0x08
 
-enum DestType {TDoor, TLed};
-
 class Comm_prot
 {
 public:
 	Comm_prot();
 	uint8_t Crc8(uint8_t *frame, uint8_t len);
-	void Prepare(DestType t, uint8_t addr, uint8_t command);
+	void Prepare(uint8_t addr, uint8_t command);
 	void LedTrigger();
 	void ParseGeneral(uint8_t* frame);
-	bool repeat;
-	DestType dest;
-	uint8_t curr_command;
 };
 
 extern Comm_prot comm;

@@ -17,9 +17,8 @@ Comm_prot::Comm_prot()
 
 }
 
-void Comm_prot::Prepare(DestType t, uint8_t addr, uint8_t command)
+void Comm_prot::Prepare(uint8_t addr, uint8_t command)
 {
-	if(t == TLed) addr += LED_ADDRESS_OFFSET;
 	usart_data.frame[0] = addr;
 	usart_data.frame[1] = command;
 	usart_data.frame[2] = Crc8(usart_data.frame, 2);

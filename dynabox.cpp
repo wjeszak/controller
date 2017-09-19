@@ -64,6 +64,11 @@ void Dynabox::EV_ElectromagnetChecked(DynaboxData* pdata)
 	END_TRANSITION_MAP(pdata)
 }
 
+void Dynabox::SetCurrentCommand(uint8_t command)
+{
+
+}
+
 void Dynabox::Parse(uint8_t* frame)
 {
 	uint8_t crc = comm.Crc8(frame, 2);
@@ -100,14 +105,14 @@ void Dynabox::ReplyTimeout()
 	{
 	case COMM_LED_DIAG:
 		m->SetFault(F01_SlaveLed);
-		modbus_tcp.UpdateHoldingRegisters(GENERAL_ERROR_STATUS, F01_LED_FAULT);
-		modbus_tcp.UpdateHoldingRegisters(m->curr_addr + 1, F01_LED_FAULT << 8);
+		mb.UpdateHoldingRegisters(GENERAL_ERROR_STATUS, F01_LED_FAULT);
+		mb.UpdateHoldingRegisters(m->curr_addr + 1, F01_LED_FAULT << 8);
 		if(m->curr_addr == m->last_addr) EV_LEDChecked(NULL);
 	break;
 	default:
-		//m->SetFault(F02_SlaveDoor);
+		m->SetFault(F02_SlaveDoor);
 		//modbus_tcp.UpdateHoldingRegisters(GENERAL_ERROR_STATUS, F02_DOOR_FAULT);
-		modbus_tcp.UpdateHoldingRegisters(m->curr_addr + 1, F02_DOOR_FAULT << 8);
+		mb.UpdateHoldingRegisters(m->curr_addr + 1, F02_DOOR_FAULT << 8);
 		//comm.Prepare(TLed, m->curr_addr, COMM_RED_1PULSE);
 		//if(m->curr_addr == m->last_addr) { comm.LedTrigger(); }
 	break;
@@ -119,13 +124,13 @@ void Dynabox::ParseCommandCheckElectromagnet(uint8_t res)
 {
 	if(res == 0x00)
 	{
-		modbus_tcp.UpdateHoldingRegisters(m->curr_addr + 1, NO_FAULT << 8);
+		mb.UpdateHoldingRegisters(m->curr_addr + 1, NO_FAULT << 8);
 		//comm.Prepare(TLed, m->curr_addr, COMM_GREEN_ON);
 	}
 	if(res == 0x01)
 	{
 		//display.Write(TFault, F05_ELECTROMAGNET_FAULT);
-		modbus_tcp.UpdateHoldingRegisters(m->curr_addr + 1, F05_ELECTROMAGNET_FAULT << 8);
+		mb.UpdateHoldingRegisters(m->curr_addr + 1, F05_ELECTROMAGNET_FAULT << 8);
 		//comm.Prepare(TLed, m->curr_addr, COMM_RED_3PULSES);
 	}
 }
@@ -135,10 +140,10 @@ void Dynabox::ParseCommandCheckTransoptorsGetStatus(uint8_t res)
 	if(res == 0xF0)
 	{
 		//display.Write(TFault, F03_OPTICAL_SWITCHES_FAULT);
-		modbus_tcp.UpdateHoldingRegisters(m->curr_addr + 1, F03_OPTICAL_SWITCHES_FAULT << 8);
+		mb.UpdateHoldingRegisters(m->curr_addr + 1, F03_OPTICAL_SWITCHES_FAULT << 8);
 	}
 	else
-		modbus_tcp.UpdateHoldingRegisters(m->curr_addr + 1, res);
+		mb.UpdateHoldingRegisters(m->curr_addr + 1, res);
 }
 
 void Dynabox::ST_Init(DynaboxData* pdata)
@@ -152,7 +157,6 @@ void Dynabox::ST_CheckingLED(DynaboxData* pdata)
 	// begin... checking LED
 	curr_addr = 1;
 	comm.repeat = false;
-	//comm.dest = TLed;
 	comm.curr_command = COMM_LED_DIAG;
 	SLAVES_POLL_START;
 }
@@ -173,8 +177,8 @@ void Dynabox::ST_Homing(DynaboxData* pdata)
 	comm.repeat = true;
 	comm.dest = TDoor;
 	comm.curr_command = COMM_CHECK_TRANSOPTORS_GET_STATUS;
-	SLAVES_POLL_START;
-	motor.EV_Homing();
+//	SLAVES_POLL_START;
+//	motor.EV_Homing();
 }
 
 void Dynabox::LoadSupportedFunctions()

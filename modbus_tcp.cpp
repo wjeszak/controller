@@ -29,18 +29,18 @@ ModbusTCP::ModbusTCP()
 	//Registers[49] = 3000;
 	Registers[50] = 1;
 
-//	Registers[88] = 4;
+	Registers[88] = 20;
 //	Registers[89] = 2;
-//	Registers[90] = 12;
-//	Registers[91] = 15;
-//	Registers[92] = 120;
-//	Registers[93] = 200;
-//	Registers[94] = 3;
+	Registers[90] = 20;
+	Registers[91] = 75;
+	Registers[92] = 50;
+	Registers[93] = 400;
+	Registers[94] = 3;
 //	Registers[95] = 9;
 //	Registers[96] = 1;
 //	Registers[97] = 75;
-//	Registers[98] = 5;
-//	Registers[99] = 8;
+	Registers[98] = 5;
+	Registers[99] = 10;
 
 }
 

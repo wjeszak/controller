@@ -46,7 +46,7 @@ Usart usart;
 StackData stack_data;
 Stack stack;
 Comm_prot comm;
-ModbusTCP modbus_tcp;
+ModbusTCP mb;
 
 int main()
 {
