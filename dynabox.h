@@ -29,6 +29,7 @@ public:
 	void CommandCheckLed();
 	void Parse(uint8_t* frame);
 	void ParseCheckLed(uint8_t* frame);
+	void TimeoutCheckLed();
 	void PCCheckElectromagnet(uint8_t res);
 	void PCCheckTransoptorsGetStatus(uint8_t res);
 	void SlavesPoll();
@@ -47,6 +48,7 @@ private:
 	END_STATE_MAP
 	void (Dynabox::*pcommand)();
 	void (Dynabox::*pparse)(uint8_t* frame);
+	void (Dynabox::*ptimeout)();
 };
 
 extern Dynabox dynabox;

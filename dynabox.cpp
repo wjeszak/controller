@@ -74,6 +74,7 @@ void Dynabox::SetCurrentCommand(uint8_t command, bool rep)
 		case COMM_LED_DIAG:
 			pcommand = &Dynabox::CommandCheckLed;
 			pparse = &Dynabox::ParseCheckLed;
+			ptimeout = &Dynabox::TimeoutCheckLed;
 		break;
 
 		default:
@@ -91,9 +92,17 @@ void Dynabox::ParseCheckLed(uint8_t* frame)
 	uint8_t crc = comm.Crc8(frame, 2);
 	if((frame[0] == current_address + LED_ADDRESS_OFFSET) && (frame[2] == crc))
 	{
-		if(current_address == last_address) { EV_LEDChecked(NULL); }
+		if(current_address == last_address) EV_LEDChecked(NULL);
 		current_address++;
 	}
+}
+
+void Dynabox::TimeoutCheckLed()
+{
+	m->SetFault(F01_SlaveLed);
+	mb.UpdateHoldingRegisters(GENERAL_ERROR_STATUS, F01_LED_FAULT);
+	mb.UpdateHoldingRegisters(current_address + 1, F01_LED_FAULT << 8);
+	if(current_address == last_address) EV_LEDChecked(NULL);
 }
 
 void Dynabox::SlavesPoll()
@@ -106,6 +115,7 @@ void Dynabox::Parse(uint8_t* frame)
 {
 
 	// reply from led
+	SLAVES_POLL_TIMEOUT_OFF;
 	(this->*pparse)(frame);
 	// reply from door
 //	if((frame[0] == current_address) && (frame[2] == crc))
@@ -131,14 +141,9 @@ void Dynabox::Parse(uint8_t* frame)
 
 void Dynabox::ReplyTimeout()
 {
-/*	switch(comm.curr_command)
-	{
-	case COMM_LED_DIAG:
-		m->SetFault(F01_SlaveLed);
-		mb.UpdateHoldingRegisters(GENERAL_ERROR_STATUS, F01_LED_FAULT);
-		mb.UpdateHoldingRegisters(current_address + 1, F01_LED_FAULT << 8);
-		if(current_address == last_address) EV_LEDChecked(NULL);
-	break;
+	(this->*ptimeout)();
+	current_address++;
+	/*
 	default:
 		m->SetFault(F02_SlaveDoor);
 		//modbus_tcp.UpdateHoldingRegisters(GENERAL_ERROR_STATUS, F02_DOOR_FAULT);
