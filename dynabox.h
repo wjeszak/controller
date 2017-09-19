@@ -25,13 +25,14 @@ public:
 	void EV_ElectromagnetChecked(DynaboxData* pdata);
 	void LoadSupportedFunctions();
 	void SaveParameters();
-	void SetCurrentCommand(uint8_t command);
+	void SetCurrentCommand(uint8_t command, bool rep);
+	void CommandCheckLed();
 	void Parse(uint8_t* frame);
-//	void ParseCommandCheckLed(uint8_t res);
-	void ParseCommandCheckElectromagnet(uint8_t res);
-	void ParseCommandCheckTransoptorsGetStatus(uint8_t res);
+	void ParseCheckLed(uint8_t* frame);
+	void PCCheckElectromagnet(uint8_t res);
+	void PCCheckTransoptorsGetStatus(uint8_t res);
+	void SlavesPoll();
 	void ReplyTimeout();
-
 private:
 	void ST_Init(DynaboxData* pdata);
 	void ST_CheckingLED(DynaboxData* pdata);
@@ -44,6 +45,8 @@ private:
 		STATE_MAP_ENTRY(&Dynabox::ST_CheckingElectromagnet)
 		STATE_MAP_ENTRY(&Dynabox::ST_Homing)
 	END_STATE_MAP
+	void (Dynabox::*pcommand)();
+	void (Dynabox::*pparse)(uint8_t* frame);
 };
 
 extern Dynabox dynabox;

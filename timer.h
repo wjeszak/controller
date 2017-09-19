@@ -27,10 +27,10 @@
 #define TIMER_MOTOR_ACCELERATE 			6
 #define TIMER_SHOW_FAULT 				7
 
-#define SLAVES_POLL_INTERVAL 			100
+#define SLAVES_POLL_INTERVAL 			1000
 #define SLAVES_REPLY_TIMEOUT 			20
 
-#define SLAVES_POLL_START 				timer.Assign(TIMER_SLAVES_POLL, SLAVES_POLL_INTERVAL, SlavesPoll)
+#define SLAVES_POLL_START 				timer.Assign(TIMER_SLAVES_POLL, SLAVES_POLL_INTERVAL, SlavesPollGeneral)
 #define SLAVES_POLL_STOP				timer.Disable(TIMER_SLAVES_POLL);
 #define SLAVES_POLL_TIMEOUT_SET			timer.Assign(TIMER_REPLY_TIMEOUT, SLAVES_REPLY_TIMEOUT, ReplyTimeoutGeneral);
 #define SLAVES_POLL_TIMEOUT_OFF			timer.Disable(TIMER_REPLY_TIMEOUT);
@@ -74,6 +74,7 @@ extern void ButtonPoll();
 extern void EncoderPoll();
 extern void SlavesPoll();
 extern void ReplyTimeoutGeneral();
+extern void SlavesPollGeneral();
 extern void MotorAccelerate();
 extern void ShowFault();
 

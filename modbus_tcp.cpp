@@ -187,7 +187,7 @@ void ModbusTCP::AnalizeMultipleRegisters()
 	//}
 	//for(uint8_t i = 52; i < 65; i++)
 	//{
-		if(Registers[52] > 0) comm.Prepare(TDoor, 1, Registers[52] + 0x80);
+//		if(Registers[52] > 0) comm.Prepare(TDoor, 1, Registers[52] + 0x80);
 	//}
 	//	if(Registers[0] > 0) m->SetFault(Registers[0]);
 	//	if(Registers[1] > 0) m->ClearFault(Registers[1]);

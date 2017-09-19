@@ -81,7 +81,7 @@ void Usart::ST_FrameReceived(UsartData* pdata)
 	}
 	pdata->len = 0;
 	InternalEvent(ST_IDLE, pdata);
-	comm.ParseGeneral(pdata->frame);
+	m->Parse(pdata->frame);
 }
 
 void Usart::EV_NewByte(UsartData* pdata)

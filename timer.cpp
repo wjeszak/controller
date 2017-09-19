@@ -112,32 +112,19 @@ void EncoderPoll()
 	encoder.Poll();
 }
 
-void SlavesPoll()
+void SlavesPollGeneral()
 {
-	if(m->curr_addr == m->last_addr + 1)
+	if(m->current_address == m->last_address + 1)
 	{
-		if(comm.repeat)
-			m->curr_addr = m->first_addr;
+		if(m->repeat)
+			m->current_address = m->first_address;
 		else
 		{
 			SLAVES_POLL_STOP;
 			return;
 		}
 	}
-
-	switch(comm.curr_command)
-	{
-	case COMM_LED_DIAG:
-		comm.Prepare(TLed, m->curr_addr, comm.curr_command);
-	break;
-	case COMM_CHECK_ELECTROMAGNET:
-		comm.Prepare(TDoor, m->curr_addr, COMM_CHECK_ELECTROMAGNET);
-		comm.Prepare(TLed, m->curr_addr, COMM_GREEN_ON_FOR_TIME);
-	break;
-	default:
-	break;
-	}
-	SLAVES_POLL_TIMEOUT_SET;
+	m->SlavesPoll();
 }
 
 void ReplyTimeoutGeneral()

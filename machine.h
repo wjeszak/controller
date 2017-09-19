@@ -32,10 +32,11 @@ public:
 	bool CheckFault(FaultsType fault);
 	virtual void LoadSupportedFunctions() {}
 	virtual void SaveParameters() {}
-	virtual void SetCurrentCommand(uint8_t command) {}
+	virtual void SetCurrentCommand(uint8_t command, bool rep) {}
 	virtual void Parse(uint8_t* frame) {}
+	virtual void SlavesPoll() {}
 	virtual void ReplyTimeout() {}
-	uint8_t first_addr, last_addr, curr_addr;
+	uint8_t first_address, last_address, current_address;
 	DestType dest;
 	uint8_t current_command;
 	bool repeat;

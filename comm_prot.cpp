@@ -37,11 +37,11 @@ void Comm_prot::LedTrigger()
 	usart.SendFrame(&usart_data);
 }
 
-void Comm_prot::ParseGeneral(uint8_t* frame)
-{
-	timer.Disable(TIMER_REPLY_TIMEOUT);
-	m->Parse(frame);
-}
+//void Comm_prot::ParseGeneral(uint8_t* frame)
+//{
+//	timer.Disable(TIMER_REPLY_TIMEOUT);
+//	m->Parse(frame);
+//}
 
 uint8_t Comm_prot::Crc8(uint8_t *frame, uint8_t len)
 {

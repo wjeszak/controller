@@ -53,7 +53,7 @@ public:
 	uint8_t Crc8(uint8_t *frame, uint8_t len);
 	void Prepare(uint8_t addr, uint8_t command);
 	void LedTrigger();
-	void ParseGeneral(uint8_t* frame);
+//	void ParseGeneral(uint8_t* frame);
 };
 
 extern Comm_prot comm;
