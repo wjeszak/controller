@@ -106,9 +106,14 @@ void ModbusTCP::WriteMultipleRegisters(uint8_t* frame)
 	}
 }
 
-void ModbusTCP::UpdateHoldingRegisters(uint8_t address, uint16_t value)
+void ModbusTCP::UpdateHoldingRegister(uint8_t address, uint16_t value)
 {
 	Registers[address] = value;
+}
+
+uint16_t ModbusTCP::GetHoldingRegister(uint8_t address)
+{
+	return Registers[address];
 }
 
 void ModbusTCP::PrepareMBAPHeader(uint8_t* frame)	// without length

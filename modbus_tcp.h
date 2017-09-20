@@ -75,7 +75,8 @@ public:
 	void Process(uint8_t* frame);
 	void ReadHoldingRegisters(uint8_t* frame);
 	void WriteMultipleRegisters(uint8_t* frame);
-	void UpdateHoldingRegisters(uint8_t address, uint16_t value);
+	void UpdateHoldingRegister(uint8_t address, uint16_t value);
+	uint16_t GetHoldingRegister(uint8_t address);
 private:
 	void PrepareMBAPHeader(uint8_t* frame);
 	void ReturnHoldingRegisters(uint8_t* frame, uint16_t starting_address, uint16_t quantity);

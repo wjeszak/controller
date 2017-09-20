@@ -45,6 +45,7 @@ public:
 	void SetCurrentCommand(uint8_t command);
 	void CommandCheckLed();
 	void CommandCheckElectromagnet();
+	void CommandShowStatusOnLed();
 	void Parse(uint8_t* frame);
 	void ParseCheckLed(uint8_t* frame);
 	void ParseCheckElectromagnet(uint8_t* frame);
@@ -65,6 +66,7 @@ private:
 		STATE_MAP_ENTRY(&Dynabox::ST_CheckingElectromagnet)
 		STATE_MAP_ENTRY(&Dynabox::ST_Homing)
 	END_STATE_MAP
+	uint8_t faults_to_led_map[NUMBER_OF_FAULTS + 1];
 	void (Dynabox::*pcommand)();
 	void (Dynabox::*pparse)(uint8_t* frame);
 	void (Dynabox::*ptimeout)();

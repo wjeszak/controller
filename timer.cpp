@@ -115,7 +115,6 @@ void EncoderPoll()
 void SlavesPollGeneral()
 {
 	m->SlavesPoll();
-	SLAVES_POLL_TIMEOUT_SET;
 }
 
 void ReplyTimeoutGeneral()

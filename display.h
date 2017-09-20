@@ -56,7 +56,6 @@ public:
 	void Refresh();
 	void Write(InfoType type, uint8_t val);
 	void Write(uint16_t val);
-//	void ShowFaults();
 private:
 	struct Disp
 	{
@@ -68,8 +67,6 @@ private:
 	uint8_t disp_number;
 	const uint8_t digits[16];
 	uint8_t value[4];
-	uint8_t fault_index;
-	friend void ShowFault();
 };
 
 extern Display display;

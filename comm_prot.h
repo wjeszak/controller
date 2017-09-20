@@ -12,14 +12,14 @@
 
 #define FRAME_LENGTH_REQUEST 				4
 #define FRAME_LENGTH_RESPONSE 				4
-
+// door's commands
 #define COMM_CHECK_ELECTROMAGNET 			0x01
 #define COMM_CHECK_TRANSOPTORS_GET_STATUS 	0x02
 #define COMM_SET_STATE 						0x03
 
 #define LED_ADDRESS_OFFSET 					100
 #define LED_ADDRESS_TRIGGER 				0xFF
-
+// led's commands
 #define COMM_GREEN_RED_OFF 					0x00
 #define COMM_GREEN_ON 						0x01
 #define COMM_RED_ON 						0x02
@@ -35,6 +35,10 @@
 #define COMM_GREEN_ON_FOR_TIME 				0x0C
 #define COMM_LED_DIAG						0x0D
 #define COMM_NEED_QUEUE_BIT					7
+
+#define COMM_SHOW_STATUS_ON_LED 			0x10
+
+#define COMM_F05_ELECTROMAGNET 				0x01
 
 class Comm_prot
 {

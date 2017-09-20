@@ -36,7 +36,26 @@ Function EEMEM dynabox_eem_functions[DYNABOX_NUMBER_OF_FUNCTIONS] =
 	{28, 				0,				NULL},	// type of machine
 };
 
-Dynabox::Dynabox()
+Dynabox::Dynabox() : faults_to_led_map {
+	0,									// not used
+	0,									// F01, impossible
+	COMM_RED_1PULSE,					// F02
+	COMM_RED_2PULSES,					// F03
+	COMM_RED_ON,						// F04
+	COMM_RED_3PULSES,					// F05
+	COMM_GREEN_RED_BLINK, 				// F06
+	COMM_GREEN_RED_BLINK,				// F07
+	COMM_GREEN_RED_BLINK,				// F08
+	0,									// not used
+	0, 									// F10, not used
+	COMM_RED_BLINK,						// F11
+	COMM_RED_BLINK, 					// F12
+	COMM_RED_ON, 						// F13
+	COMM_RED_BLINK, 					// F14
+	0,									// F15, not used
+	0, 									// F16, not used
+	COMM_RED_BLINK	 					// F17
+}
 {
 	current_address =  1;
 	first_address = 1;
@@ -56,6 +75,7 @@ void Dynabox::EV_LEDChecked(DynaboxData* pdata)
 
 void Dynabox::EV_ElectromagnetChecked(DynaboxData* pdata)
 {
+	SetCurrentCommand(COMM_SHOW_STATUS_ON_LED);
 	BEGIN_TRANSITION_MAP								// current state
         TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_INIT
 		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_CHECKING_LED
@@ -102,6 +122,10 @@ void Dynabox::SetCurrentCommand(uint8_t command)
 			ptimeout = &Dynabox::TimeoutDoor;
 		break;
 
+		case COMM_SHOW_STATUS_ON_LED:
+			pcommand = &Dynabox::CommandShowStatusOnLed;
+		break;
+
 		default:
 		break;
 	}
@@ -122,6 +146,7 @@ void Dynabox::Parse(uint8_t* frame)
 // -----------------------------------------------------------
 void Dynabox::CommandCheckLed()
 {
+	SLAVES_POLL_TIMEOUT_SET;
 	comm.Prepare(current_address + LED_ADDRESS_OFFSET, current_command);
 }
 
@@ -142,8 +167,8 @@ void Dynabox::ParseCheckLed(uint8_t* frame)
 void Dynabox::TimeoutLed()
 {
 	m->SetFault(F01_LED);
-	mb.UpdateHoldingRegisters(GENERAL_ERROR_STATUS, F01_LED);
-	mb.UpdateHoldingRegisters(current_address + 1, F01_LED << 8);
+	mb.UpdateHoldingRegister(GENERAL_ERROR_STATUS, F01_LED);
+	mb.UpdateHoldingRegister(current_address + 1, F01_LED << 8);
 	if(current_address == last_address)
 	{
 		SLAVES_POLL_STOP;
@@ -155,6 +180,7 @@ void Dynabox::TimeoutLed()
 // -----------------------------------------------------------
 void Dynabox::CommandCheckElectromagnet()
 {
+	SLAVES_POLL_TIMEOUT_SET;
 	comm.Prepare(current_address, current_command);
 	comm.Prepare(current_address + LED_ADDRESS_OFFSET, COMM_GREEN_ON_FOR_TIME);
 }
@@ -163,15 +189,10 @@ void Dynabox::ParseCheckElectromagnet(uint8_t* frame)
 {
 	if(frame[0] == current_address)
 	{
-		if(frame[1] == 0x00)
+		if(frame[1] == COMM_F05_ELECTROMAGNET)
 		{
-			//mb.UpdateHoldingRegisters(current_address + 1, NO_FAULT << 8);
-			//comm.Prepare(current_address + LED_ADDRESS_OFFSET, 0x00); 		// poprawic green red off
-		}
-		if(frame[1] == 0x01)
-		{
-			mb.UpdateHoldingRegisters(current_address + 1, F05_ELECTROMAGNET << 8);
-			//comm.Prepare(current_address, COMM_RED_3PULSES);
+			m->SetFault(F05_ELECTROMAGNET);
+			mb.UpdateHoldingRegister(current_address + 1, F05_ELECTROMAGNET << 8);
 		}
 		if(current_address == last_address)
 		{
@@ -186,12 +207,25 @@ void Dynabox::ParseCheckElectromagnet(uint8_t* frame)
 void Dynabox::TimeoutDoor()
 {
 	m->SetFault(F02_DOOR);
-	mb.UpdateHoldingRegisters(GENERAL_ERROR_STATUS, F02_DOOR);
-	mb.UpdateHoldingRegisters(current_address + 1, F02_DOOR << 8);
+	mb.UpdateHoldingRegister(GENERAL_ERROR_STATUS, F02_DOOR);
+	mb.UpdateHoldingRegister(current_address + 1, F02_DOOR << 8);
 	if(current_address == last_address)
 	{
 		SLAVES_POLL_STOP;
-		EV_LEDChecked(NULL);
+	}
+	else
+		current_address++;
+}
+// -----------------------------------------------------------
+void Dynabox::CommandShowStatusOnLed()
+{
+	uint16_t status = mb.GetHoldingRegister(current_address + 1);
+	uint8_t command = faults_to_led_map[status >> 8];
+	comm.Prepare(current_address + LED_ADDRESS_OFFSET, command + 0x80);
+	if(current_address == last_address)
+	{
+		SLAVES_POLL_STOP;
+		comm.LedTrigger();
 	}
 	else
 		current_address++;
@@ -206,10 +240,10 @@ void Dynabox::PCCheckTransoptorsGetStatus(uint8_t res)
 {
 	if(res == 0xF0)
 	{
-		mb.UpdateHoldingRegisters(current_address + 1, F03_OPTICAL_SWITCHES << 8);
+		mb.UpdateHoldingRegister(current_address + 1, F03_OPTICAL_SWITCHES << 8);
 	}
 	else
-		mb.UpdateHoldingRegisters(current_address + 1, res);
+		mb.UpdateHoldingRegister(current_address + 1, res);
 }
 
 void Dynabox::LoadSupportedFunctions()
