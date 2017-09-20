@@ -64,24 +64,62 @@ void Dynabox::EV_ElectromagnetChecked(DynaboxData* pdata)
 	END_TRANSITION_MAP(pdata)
 }
 
-void Dynabox::SetCurrentCommand(uint8_t command, bool rep)
+void Dynabox::ST_Init(DynaboxData* pdata)
+{
+	InternalEvent(ST_CHECKING_LED, NULL);
+}
+
+void Dynabox::ST_CheckingLED(DynaboxData* pdata)
+{
+	SetCurrentCommand(COMM_LED_DIAG);
+}
+
+void Dynabox::ST_CheckingElectromagnet(DynaboxData* pdata)
+{
+	SetCurrentCommand(COMM_CHECK_ELECTROMAGNET);
+}
+
+void Dynabox::ST_Homing(DynaboxData* pdata)
+{
+//	motor.EV_Homing();
+}
+// -----------------------------------------------------------
+void Dynabox::SetCurrentCommand(uint8_t command)
 {
 	current_address = 1;
 	current_command = command;
-	repeat = rep;
 	switch(command)
 	{
 		case COMM_LED_DIAG:
 			pcommand = &Dynabox::CommandCheckLed;
-			pparse = &Dynabox::ParseCheckLed;
-			ptimeout = &Dynabox::TimeoutCheckLed;
+			pparse   = &Dynabox::ParseCheckLed;
+			ptimeout = &Dynabox::TimeoutLed;
+		break;
+
+		case COMM_CHECK_ELECTROMAGNET:
+			pcommand = &Dynabox::CommandCheckElectromagnet;
+			pparse   = &Dynabox::ParseCheckElectromagnet;
+			ptimeout = &Dynabox::TimeoutDoor;
 		break;
 
 		default:
 		break;
 	}
+	SLAVES_POLL_START;
 }
 
+void Dynabox::SlavesPoll()
+{
+	(this->*pcommand)();
+}
+
+void Dynabox::Parse(uint8_t* frame)
+{
+	SLAVES_POLL_TIMEOUT_OFF;
+	if(comm.Crc8(frame, 2) == frame[2])
+		(this->*pparse)(frame);
+}
+// -----------------------------------------------------------
 void Dynabox::CommandCheckLed()
 {
 	comm.Prepare(current_address + LED_ADDRESS_OFFSET, current_command);
@@ -89,129 +127,89 @@ void Dynabox::CommandCheckLed()
 
 void Dynabox::ParseCheckLed(uint8_t* frame)
 {
-	uint8_t crc = comm.Crc8(frame, 2);
-	if((frame[0] == current_address + LED_ADDRESS_OFFSET) && (frame[2] == crc))
+	if(frame[0] == current_address + LED_ADDRESS_OFFSET)
 	{
-		if(current_address == last_address) EV_LEDChecked(NULL);
-		current_address++;
+		if(current_address == last_address)
+		{
+			SLAVES_POLL_STOP;
+			EV_LEDChecked(NULL);
+		}
+		else
+			current_address++;
 	}
 }
 
-void Dynabox::TimeoutCheckLed()
+void Dynabox::TimeoutLed()
 {
-	m->SetFault(F01_SlaveLed);
-	mb.UpdateHoldingRegisters(GENERAL_ERROR_STATUS, F01_LED_FAULT);
-	mb.UpdateHoldingRegisters(current_address + 1, F01_LED_FAULT << 8);
-	if(current_address == last_address) EV_LEDChecked(NULL);
+	m->SetFault(F01_LED);
+	mb.UpdateHoldingRegisters(GENERAL_ERROR_STATUS, F01_LED);
+	mb.UpdateHoldingRegisters(current_address + 1, F01_LED << 8);
+	if(current_address == last_address)
+	{
+		SLAVES_POLL_STOP;
+		EV_LEDChecked(NULL);
+	}
+	else
+		current_address++;
+}
+// -----------------------------------------------------------
+void Dynabox::CommandCheckElectromagnet()
+{
+	comm.Prepare(current_address, current_command);
+	comm.Prepare(current_address + LED_ADDRESS_OFFSET, COMM_GREEN_ON_FOR_TIME);
 }
 
-void Dynabox::SlavesPoll()
+void Dynabox::ParseCheckElectromagnet(uint8_t* frame)
 {
-	(this->*pcommand)();
-	SLAVES_POLL_TIMEOUT_SET;
-}
-
-void Dynabox::Parse(uint8_t* frame)
-{
-
-	// reply from led
-	SLAVES_POLL_TIMEOUT_OFF;
-	(this->*pparse)(frame);
-	// reply from door
-//	if((frame[0] == current_address) && (frame[2] == crc))
-//	{
-//		uint8_t result = frame[1];
-/*
-		switch(comm.curr_command)
+	if(frame[0] == current_address)
+	{
+		if(frame[1] == 0x00)
 		{
-		case COMM_CHECK_ELECTROMAGNET:
-			ParseCommandCheckElectromagnet(result);
+			//mb.UpdateHoldingRegisters(current_address + 1, NO_FAULT << 8);
+			//comm.Prepare(current_address + LED_ADDRESS_OFFSET, 0x00); 		// poprawic green red off
+		}
+		if(frame[1] == 0x01)
+		{
+			mb.UpdateHoldingRegisters(current_address + 1, F05_ELECTROMAGNET << 8);
+			//comm.Prepare(current_address, COMM_RED_3PULSES);
+		}
+		if(current_address == last_address)
+		{
+			SLAVES_POLL_STOP;
+			EV_ElectromagnetChecked(NULL);
+		}
+		else
 			current_address++;
-			if(current_address == last_address + 1) { EV_ElectromagnetChecked(NULL); }
-		break;
-
-		case COMM_CHECK_TRANSOPTORS_GET_STATUS:
-			ParseCommandCheckTransoptorsGetStatus(result);
-			current_address++;
-		break;
-
-		} */
-//	}
+	}
+}
+// -----------------------------------------------------------
+void Dynabox::TimeoutDoor()
+{
+	m->SetFault(F02_DOOR);
+	mb.UpdateHoldingRegisters(GENERAL_ERROR_STATUS, F02_DOOR);
+	mb.UpdateHoldingRegisters(current_address + 1, F02_DOOR << 8);
+	if(current_address == last_address)
+	{
+		SLAVES_POLL_STOP;
+		EV_LEDChecked(NULL);
+	}
+	else
+		current_address++;
 }
 
 void Dynabox::ReplyTimeout()
 {
 	(this->*ptimeout)();
-	current_address++;
-	/*
-	default:
-		m->SetFault(F02_SlaveDoor);
-		//modbus_tcp.UpdateHoldingRegisters(GENERAL_ERROR_STATUS, F02_DOOR_FAULT);
-		mb.UpdateHoldingRegisters(current_address + 1, F02_DOOR_FAULT << 8);
-		//comm.Prepare(TLed, m->curr_addr, COMM_RED_1PULSE);
-		//if(m->curr_addr == m->last_addr) { comm.LedTrigger(); }
-	break;
-	}
-	current_address++;
-*/
-}
-
-void Dynabox::PCCheckElectromagnet(uint8_t res)
-{
-	if(res == 0x00)
-	{
-		mb.UpdateHoldingRegisters(current_address + 1, NO_FAULT << 8);
-		//comm.Prepare(TLed, m->curr_addr, COMM_GREEN_ON);
-	}
-	if(res == 0x01)
-	{
-		//display.Write(TFault, F05_ELECTROMAGNET_FAULT);
-		mb.UpdateHoldingRegisters(current_address + 1, F05_ELECTROMAGNET_FAULT << 8);
-		//comm.Prepare(TLed, m->curr_addr, COMM_RED_3PULSES);
-	}
 }
 
 void Dynabox::PCCheckTransoptorsGetStatus(uint8_t res)
 {
 	if(res == 0xF0)
 	{
-		//display.Write(TFault, F03_OPTICAL_SWITCHES_FAULT);
-		mb.UpdateHoldingRegisters(current_address + 1, F03_OPTICAL_SWITCHES_FAULT << 8);
+		mb.UpdateHoldingRegisters(current_address + 1, F03_OPTICAL_SWITCHES << 8);
 	}
 	else
 		mb.UpdateHoldingRegisters(current_address + 1, res);
-}
-
-void Dynabox::ST_Init(DynaboxData* pdata)
-{
-	// additional init commands
-	InternalEvent(ST_CHECKING_LED, NULL);
-}
-
-void Dynabox::ST_CheckingLED(DynaboxData* pdata)
-{
-	SetCurrentCommand(COMM_LED_DIAG, false);
-	SLAVES_POLL_START;
-}
-
-void Dynabox::ST_CheckingElectromagnet(DynaboxData* pdata)
-{
-	// checking transoptors
-	//current_address = 1;
-	//comm.repeat = false;
-	//comm.dest = TDoor;
-	//comm.curr_command = COMM_CHECK_ELECTROMAGNET;
-	//SLAVES_POLL_START;
-}
-
-void Dynabox::ST_Homing(DynaboxData* pdata)
-{
-//	current_address = 1;
-	//comm.repeat = true;
-	//comm.dest = TDoor;
-	//comm.curr_command = COMM_CHECK_TRANSOPTORS_GET_STATUS;
-//	SLAVES_POLL_START;
-//	motor.EV_Homing();
 }
 
 void Dynabox::LoadSupportedFunctions()

@@ -114,17 +114,8 @@ void EncoderPoll()
 
 void SlavesPollGeneral()
 {
-	if(m->current_address == m->last_address + 1)
-	{
-		if(m->repeat)
-			m->current_address = m->first_address;
-		else
-		{
-			SLAVES_POLL_STOP;
-			return;
-		}
-	}
 	m->SlavesPoll();
+	SLAVES_POLL_TIMEOUT_SET;
 }
 
 void ReplyTimeoutGeneral()

@@ -19,17 +19,12 @@ public:
 class Machine : public StateMachine
 {
 public:
-	enum FaultsType {NoFault, F01_SlaveLed, F02_SlaveDoor, F03_OpticalSwitches, F04_DoorOpenedTooFar,
-			F05_ElectromagnetFault, F06_CloseTheDoor, F07_DoorNotOpen, F08_IllegalOpening, F09_None,
-			F10_MechanicalWarning, F11_MechanicalFault, F12_Positioning, F13_MainDoor, F14_HomingFailed,
-			F15_IllegalRotation, F16_OrderRefused, F17_24VMissing};
-	enum DestType {TDoor, TLed};
 	Machine();
-	void SetFault(FaultsType fault);
-	void ClearFault(FaultsType fault);
-//	void SetFault(uint8_t fault);
-//	void ClearFault(uint8_t fault);
-	bool CheckFault(FaultsType fault);
+//	void SetFault(FaultsType fault);
+//	void ClearFault(FaultsType fault);
+	void SetFault(uint8_t fault);
+	void ClearFault(uint8_t fault);
+	bool CheckFault(uint8_t fault);
 	virtual void LoadSupportedFunctions() {}
 	virtual void SaveParameters() {}
 	virtual void SetCurrentCommand(uint8_t command, bool rep) {}
@@ -37,9 +32,7 @@ public:
 	virtual void SlavesPoll() {}
 	virtual void ReplyTimeout() {}
 	uint8_t first_address, last_address, current_address;
-	DestType dest;
 	uint8_t current_command;
-	bool repeat;
 private:
 	enum States {ST_MAX_STATES};
 };

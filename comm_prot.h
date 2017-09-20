@@ -36,16 +36,6 @@
 #define COMM_LED_DIAG						0x0D
 #define COMM_NEED_QUEUE_BIT					7
 
-#define NO_FAULT 							0x00
-#define F01_LED_FAULT	 					0x01
-#define F02_DOOR_FAULT 						0x02
-#define F03_OPTICAL_SWITCHES_FAULT			0x03
-#define F04_DOOR_OPENED_TOO_FAR 			0x04
-#define F05_ELECTROMAGNET_FAULT				0x05
-#define F06_CLOSE_THE_DOOR 					0x06
-#define F07_DOOR_NOT_OPEN 					0x07
-#define F08_ILLEGAL_OPENING 				0x08
-
 class Comm_prot
 {
 public:
@@ -53,7 +43,6 @@ public:
 	uint8_t Crc8(uint8_t *frame, uint8_t len);
 	void Prepare(uint8_t addr, uint8_t command);
 	void LedTrigger();
-//	void ParseGeneral(uint8_t* frame);
 };
 
 extern Comm_prot comm;

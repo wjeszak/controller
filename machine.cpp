@@ -33,22 +33,6 @@ Machine::Machine() : StateMachine(ST_MAX_STATES)
 
 }
 
-void Machine::SetFault(Machine::FaultsType fault)
-{
-	d->faults |= (1ULL << fault);
-}
-
-void Machine::ClearFault(FaultsType fault)
-{
-	d->faults &= ~(1ULL << fault);
-}
-
-bool Machine::CheckFault(FaultsType fault)
-{
-	if(d->faults & (1ULL << fault))	return true;
-	return false;
-}
-/*
 void Machine::SetFault(uint8_t fault)
 {
 	d->faults |= (1ULL << fault);
@@ -58,4 +42,9 @@ void Machine::ClearFault(uint8_t fault)
 {
 	d->faults &= ~(1ULL << fault);
 }
-*/
+
+bool Machine::CheckFault(uint8_t fault)
+{
+	if(d->faults & (1ULL << fault))	return true;
+	return false;
+}
