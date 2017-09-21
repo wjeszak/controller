@@ -73,7 +73,7 @@ void Dynabox::EV_LEDChecked(DynaboxData* pdata)
 	END_TRANSITION_MAP(pdata)
 }
 
-void Dynabox::EV_ElectromagnetChecked(DynaboxData* pdata)
+void Dynabox::EV_DoorsChecked(DynaboxData* pdata)
 {
 	SetCurrentCommand(COMM_SHOW_STATUS_ON_LED);
 	BEGIN_TRANSITION_MAP								// current state
@@ -197,7 +197,7 @@ void Dynabox::ParseCheckElectromagnet(uint8_t* frame)
 		if(current_address == last_address)
 		{
 			SLAVES_POLL_STOP;
-			EV_ElectromagnetChecked(NULL);
+			EV_DoorsChecked(NULL);
 		}
 		else
 			current_address++;
@@ -212,6 +212,7 @@ void Dynabox::TimeoutDoor()
 	if(current_address == last_address)
 	{
 		SLAVES_POLL_STOP;
+		EV_DoorsChecked(NULL);
 	}
 	else
 		current_address++;

@@ -39,7 +39,7 @@ class Dynabox : public Machine
 public:
 	Dynabox();
 	void EV_LEDChecked(DynaboxData* pdata);
-	void EV_ElectromagnetChecked(DynaboxData* pdata);
+	void EV_DoorsChecked(DynaboxData* pdata);
 	void LoadSupportedFunctions();
 	void SaveParameters();
 	void SetCurrentCommand(uint8_t command);
