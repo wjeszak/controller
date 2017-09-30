@@ -20,8 +20,6 @@ class Machine : public StateMachine
 {
 public:
 	Machine();
-//	void SetFault(FaultsType fault);
-//	void ClearFault(FaultsType fault);
 	void SetFault(uint8_t fault);
 	void ClearFault(uint8_t fault);
 	bool CheckFault(uint8_t fault);

@@ -39,16 +39,18 @@ class Dynabox : public Machine
 public:
 	Dynabox();
 	void EV_LEDChecked(DynaboxData* pdata);
-	void EV_DoorsChecked(DynaboxData* pdata);
+	void EV_ElectromagnetChecked(DynaboxData* pdata);
 	void LoadSupportedFunctions();
 	void SaveParameters();
 	void SetCurrentCommand(uint8_t command);
 	void CommandCheckLed();
 	void CommandCheckElectromagnet();
 	void CommandShowStatusOnLed();
+	void CommandGetSetState();
 	void Parse(uint8_t* frame);
 	void ParseCheckLed(uint8_t* frame);
 	void ParseCheckElectromagnet(uint8_t* frame);
+	void ParseGetSetState(uint8_t* frame);
 	void TimeoutLed();
 	void TimeoutDoor();
 	void PCCheckTransoptorsGetStatus(uint8_t res);
