@@ -74,6 +74,7 @@ private:
 	void (Dynabox::*pcommand)();
 	void (Dynabox::*pparse)(uint8_t* frame);
 	void (Dynabox::*ptimeout)();
+	uint8_t led_same_for_all;
 };
 
 extern Dynabox dynabox;
