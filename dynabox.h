@@ -57,6 +57,7 @@ public:
 	void PCCheckTransoptorsGetStatus(uint8_t res);
 	void SlavesPoll();
 	void ReplyTimeout();
+	uint8_t led_same_for_all;
 private:
 	void ST_Init(DynaboxData* pdata);
 	void ST_CheckingLED(DynaboxData* pdata);
@@ -74,7 +75,7 @@ private:
 	void (Dynabox::*pcommand)();
 	void (Dynabox::*pparse)(uint8_t* frame);
 	void (Dynabox::*ptimeout)();
-	uint8_t led_same_for_all;
+
 };
 
 extern Dynabox dynabox;

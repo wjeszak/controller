@@ -11,6 +11,8 @@
 #include "timer.h"
 #include "display.h"
 #include "modbus_tcp.h"
+#include "dynabox.h"
+#include "comm_prot.h"
 
 Motor::Motor() : StateMachine(ST_MAX_STATES)
 {
@@ -188,6 +190,8 @@ void Motor::ST_Home(MotorData* pdata)
 	mb.UpdateHoldingRegister(ENCODER_CURRENT_VALUE, actual_position);
 	home_ok = 1;
 	mb.UpdateHoldingRegister(IO_INFORMATIONS, (0 << 2) | (0 << 0) | (1 << 3));
+	dynabox.led_same_for_all = COMM_GREEN_RED_OFF;
+	dynabox.SetCurrentCommand(COMM_SHOW_STATUS_ON_LED);
 }
 
 void Motor::ST_Deceleration(MotorData* pdata)

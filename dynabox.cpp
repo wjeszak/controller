@@ -267,7 +267,7 @@ void Dynabox::TimeoutDoor()
 void Dynabox::CommandShowStatusOnLed()
 {
 	static bool need_send_to_led = false;
-	if(led_same_for_all == 0)
+	if(led_same_for_all == 0xFF)
 	{
 		uint16_t status = mb.GetHoldingRegister(current_address + 1);
 		if((status >> 8) != last_fault[current_address])
@@ -291,7 +291,7 @@ void Dynabox::CommandShowStatusOnLed()
 			comm.LedTrigger();
 			need_send_to_led = false;
 		}
-		led_same_for_all = 0;
+		led_same_for_all = 0xFF;
 		SetCurrentCommand(COMM_CHECK_TRANSOPTORS_GET_SET_STATUS);
 	}
 	else
