@@ -108,11 +108,13 @@ void Dynabox::SlavesPoll()
 void Dynabox::Parse(uint8_t* frame)
 {
 	SLAVES_POLL_TIMEOUT_OFF;
-	if(comm.Crc8(frame, 2) == frame[2])
-		(this->*pparse)(frame);
+	if(comm.Crc8(frame, 2) == frame[2]) (this->*pparse)(frame);
 }
-// -----------------------------------------------------------
 
+void Dynabox::ReplyTimeout()
+{
+	(this->*ptimeout)();
+}
 
 void Dynabox::TimeoutLed()
 {
@@ -134,13 +136,6 @@ void Dynabox::TimeoutDoor()
 	mb.UpdateHoldingRegister(GENERAL_ERROR_STATUS, F02_DOOR);
 	mb.UpdateHoldingRegister(current_address + 1, F02_DOOR << 8);
 	current_address++;
-}
-// -----------------------------------------------------------
-
-
-void Dynabox::ReplyTimeout()
-{
-	(this->*ptimeout)();
 }
 
 void Dynabox::LoadSupportedFunctions()

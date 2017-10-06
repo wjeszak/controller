@@ -12,6 +12,7 @@
 #define USART_H_
 
 #include "state_machine.h"
+#include "comm_prot.h"
 
 #define USART_DE_DDR 			DDRC
 #define USART_DE_PORT 			PORTC
