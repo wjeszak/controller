@@ -72,8 +72,6 @@ void Dynabox::CommandGetSetState()
 	if(position > 0)
 	{
 		comm.Prepare(current_address, 0xC0 + position);
-		// clear command
-		//mb.UpdateHoldingRegister(LOCATIONS_NUMBER + current_address, 0);
 	}
 	else
 	{
@@ -113,18 +111,24 @@ void Dynabox::CommandShowStatusOnLed()
 			need_send_to_led = true;
 		}
 
-		//if((status & 0xFF) != 0)
-		//{
-		//	comm.Prepare(current_address + LED_ADDRESS_OFFSET, 0x01);
-		//	need_send_to_led = true;
-		//}
+		if((status & 0xFF) == 0x80)
+		{
+			comm.Prepare(current_address + LED_ADDRESS_OFFSET, 0x01 + 0x80);
+			need_send_to_led = true;
+		}
+
+		if((status & 0xFF) == mb.GetHoldingRegister(LOCATIONS_NUMBER + current_address + 1))
+		{
+			comm.Prepare(current_address + LED_ADDRESS_OFFSET, 0x00 + 0x80);
+			need_send_to_led = true;
+		}
 	}
 	else
 	{
 		comm.Prepare(current_address + LED_ADDRESS_OFFSET, led_same_for_all + 0x80);
 		need_send_to_led = true;
 	}
-
+	mb.UpdateHoldingRegister(LOCATIONS_NUMBER + current_address + 1, 0);
 	if(current_address == last_address)
 	{
 		if(need_send_to_led)
@@ -137,6 +141,4 @@ void Dynabox::CommandShowStatusOnLed()
 	}
 	else
 		current_address++;
-
-	for(uint8_t i = 1; i <= last_address; i++) mb.UpdateHoldingRegister(LOCATIONS_NUMBER + i, 0);
 }
