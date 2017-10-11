@@ -56,6 +56,7 @@ void Stack::Poll()
 				if(buf[TCP_FLAGS_P] & TCP_FLAGS_FIN_V)
 				{
 					MakeTcpAckFromAny(buf, 0, 0);
+					InternalEvent(ST_LISTEN, NULL);
 				}
 			}
 		}
