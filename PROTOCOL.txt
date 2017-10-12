@@ -1,14 +1,18 @@
-# Communication
-### Door
-Request: | ADDRESS | COMMAND | CRC | 0x0A    
+Communication
 
-Commands:
-1. CHECK ELECTROMAGNET 0x01  
-2. TRANSOPTORS GET SET STATUS 0x02  
+-> Door
+Request: | ADDRESS | COMMAND | CRC | 0x0A |
 
-Reply COMM_CHECK_ELECTROMAGNET:
-[ADDRESS][0x00][CRC][0x0A]					OK
-[ADDRESS][0x01][CRC][0x0A]					FAILED
+* Commands:
+1. CHECK ELECTROMAGNET 			0x01  
+2. TRANSOPTORS GET SET STATUS 	0x02  
+
+Reply: | ADDRESS | RESULT | CRC | 0x0A |
+
+* Results:
+1. 0x00 					Electromagnet OK
+2. 0x01 					Electromagnet FAIL
+
 Reply COMM_CHECK_TRANSOPTORS_GET_STATUS:
 [ADDRESS][0x00 – 0x0F][CRC][0x0A]			OK
 [ADDRESS][0xF0][CRC][0x0A]					Transoptor failed
