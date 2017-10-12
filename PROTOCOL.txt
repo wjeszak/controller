@@ -1,18 +1,43 @@
 Communication
 
 -> Door
+Door must reply on every request.
+
 Request: | ADDRESS | COMMAND | CRC | 0x0A |
 
 * Commands:
-1. CHECK ELECTROMAGNET 			0x01  
-2. TRANSOPTORS GET SET STATUS 	0x02  
+1. COMM_CHECK_ELECTROMAGNET 				0x01  
+2. COMM_CHECK_TRANSOPTORS_GET_SET_STATUS:
+	a) get position: 0x80 (set 7 bit)
+	b) set position: 0xC0 (set 7, 6 bit) + desired position  
 
 Reply: | ADDRESS | RESULT | CRC | 0x0A |
 
 * Results:
-1. 0x00 					Electromagnet OK
-2. 0x01 					Electromagnet FAIL
+1. Electromagnet OK: 0x00, Electromagnet FAIL: 0x01
+2. See door's state table, Transoptor FAIL:  0xF0
 
-Reply COMM_CHECK_TRANSOPTORS_GET_STATUS:
-[ADDRESS][0x00 – 0x0F][CRC][0x0A]			OK
-[ADDRESS][0xF0][CRC][0x0A]					Transoptor failed
+-> Led
+Led reply only on diagnostic request (COMM_LED_DIAG)
+Result: 0x80 (set 7 bit)
+Led address offset: 100d
+
+* Commands:
+1. COMM_GREEN_RED_OFF 					0x00
+2. COMM_GREEN_ON 						0x01
+3. COMM_RED_ON 							0x02
+4. COMM_GREEN_BLINK 					0x03
+5. COMM_RED_BLINK 						0x04
+6. COMM_GREEN_RED_BLINK 				0x05
+7. COMM_GREEN_1PULSE 					0x06
+8. COMM_RED_1PULSE 						0x07
+9. COMM_GREEN_2PULSES 					0x08
+10.COMM_RED_2PULSES 					0x09
+11.COMM_GREEN_3PULSES 					0x0A
+12.COMM_RED_3PULSES 					0x0B
+13.COMM_GREEN_ON_FOR_TIME 				0x0C
+14.COMM_LED_DIAG						0x0D 
+
+Need enqueue command: 0x80 (set 7 bit) + command
+Led trigger frame: | 0xFF | 0x00 | CRC | 0x0A |
+
