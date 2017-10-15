@@ -29,7 +29,7 @@
 #define TIMER_SHOW_FAULT 				8
 
 #define SLAVES_POLL_INTERVAL 			1000
-#define SLAVES_REPLY_TIMEOUT 			20
+#define SLAVES_REPLY_TIMEOUT 			500
 
 #define SLAVES_POLL_START 				timer.Assign(TIMER_SLAVES_POLL, SLAVES_POLL_INTERVAL, SlavesPollGeneral)
 #define SLAVES_POLL_STOP				timer.Disable(TIMER_SLAVES_POLL);

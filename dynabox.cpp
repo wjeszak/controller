@@ -108,14 +108,20 @@ void Dynabox::SlavesPoll()
 void Dynabox::Parse(uint8_t* frame)
 {
 	SLAVES_POLL_TIMEOUT_OFF;
-//	if(comm.Crc8(frame, 2) == frame[2]) (this->*pparse)(frame);
-}
-/*
-void Dynabox::ReplyTimeout()
-{
-	(this->*ptimeout)();
+	if(comm.Crc8(frame, 2) == frame[2])
+	{
+		dynabox_data.reply_type = ReplyTypeOK;
+		(this->*pstate)(&dynabox_data);
+	}
 }
 
+void Dynabox::ReplyTimeout()
+{
+	//SLAVES_POLL_TIMEOUT_OFF;
+	//dynabox_data.reply_type = ReplyTypeTimeout;
+	//(this->*pstate)(NULL);
+}
+/*
 void Dynabox::TimeoutLed()
 {
 	m->SetFault(F01_LED);

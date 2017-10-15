@@ -10,20 +10,41 @@
 #include "dynabox.h"
 #include "motor.h"
 #include "timer.h"
+#include "display.h"
 
 // ----------------------- States -----------------------
 
 void Dynabox::ST_Init(DynaboxData* pdata)
 {
-	EV_TestLed(NULL);
+	// ponizsze przypisanie dlatego, ze w config.cpp: m->InternalEvent(ST_INIT, NULL);
+	pdata = &dynabox_data;
+	pdata->reply_type = ReplyTypeNone;
+	EV_TestLed(pdata);
 }
 
 void Dynabox::ST_TestingLed(DynaboxData* pdata)
 {
-	static uint8_t addr = 1;
+//	if(current_address == last_address + 1)
+//	{
+//		SLAVES_POLL_TIMEOUT_OFF; SLAVES_POLL_STOP;
+//		return;
+//	}
+	if(pdata->reply_type == ReplyTypeNone)
+	{
+		comm.Prepare(current_address++ + LED_ADDRESS_OFFSET, COMM_LED_DIAG);
+		SLAVES_POLL_TIMEOUT_SET;
+		return;
+	}
 
-	SLAVES_POLL_TIMEOUT_SET;
-	comm.Prepare(addr++ + LED_ADDRESS_OFFSET, COMM_LED_DIAG);
+	if(pdata->reply_type == ReplyTypeOK)
+	{
+		pdata->reply_type = ReplyTypeNone;
+		//current_address++;
+		return;
+	}
+	//if(pdata->reply_type == ReplyTypeTimeout) { display.Write(current_address); return; }
+
+
 }
 
 void Dynabox::ST_CheckingElectromagnet(DynaboxData* pdata)
@@ -44,6 +65,7 @@ void Dynabox::ST_Homing(DynaboxData* pdata)
 void Dynabox::EV_TestLed(DynaboxData* pdata)
 {
 	pstate = &Dynabox::ST_TestingLed;
+	current_address = 1;
 	SLAVES_POLL_START;
 	BEGIN_TRANSITION_MAP								// current state
         TRANSITION_MAP_ENTRY(ST_TESTING_LED)			// ST_INIT

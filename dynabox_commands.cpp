@@ -10,11 +10,6 @@
 #include "comm_prot.h"
 #include "modbus_tcp.h"
 /*
-void Dynabox::CommandCheckLed()
-{
-	SLAVES_POLL_TIMEOUT_SET;
-	comm.Prepare(current_address + LED_ADDRESS_OFFSET, current_command);
-}
 
 void Dynabox::ParseCheckLed(uint8_t* frame)
 {

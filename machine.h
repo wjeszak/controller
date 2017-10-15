@@ -9,10 +9,14 @@
 #define MACHINE_H_
 
 #include "state_machine.h"
+#include "usart.h"
+
+enum ReplyType {ReplyTypeNone, ReplyTypeOK, ReplyTypeTimeout};
 
 class MachineData : public EventData
 {
 public:
+	ReplyType reply_type;
 	uint32_t faults;
 };
 

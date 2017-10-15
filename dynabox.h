@@ -33,6 +33,7 @@
 class DynaboxData : public MachineData
 {
 public:
+	uint8_t frame[UART_BUF_SIZE];
 };
 
 class Dynabox : public Machine
@@ -57,7 +58,7 @@ public:
 	void TimeoutDoor();
 	void PCCheckTransoptorsGetStatus(uint8_t res);
 	void SlavesPoll();
-//	void ReplyTimeout();
+	void ReplyTimeout();
 	uint8_t led_same_for_all;
 private:
 	void ST_Init(DynaboxData* pdata);

@@ -134,7 +134,7 @@ void Config::ST_Done(ConfigData* pdata)
 {
 	timer.Disable(TIMER_BUTTON_POLL);
 	timer.Disable(TIMER_ENCODER_POLL);
-	timer.Assign(TIMER_SHOW_FAULT, 1000, ShowFault);
+	//timer.Assign(TIMER_SHOW_FAULT, 1000, ShowFault);
 	// odpalenie maszyny
 	m->InternalEvent(ST_INIT, NULL);
 }

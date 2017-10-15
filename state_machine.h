@@ -35,7 +35,7 @@ private:
 	virtual const StateStruct* GetStateMap() { return NULL; }
 };
 
-typedef void (StateMachine::*StateFunc)(EventData *);
+typedef void (StateMachine::*StateFunc)(EventData*);
 
 struct StateStruct
 {
