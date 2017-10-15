@@ -9,7 +9,7 @@
 #include "timer.h"
 #include "comm_prot.h"
 #include "modbus_tcp.h"
-
+/*
 void Dynabox::CommandCheckLed()
 {
 	SLAVES_POLL_TIMEOUT_SET;
@@ -23,19 +23,19 @@ void Dynabox::ParseCheckLed(uint8_t* frame)
 		if(current_address == last_address)
 		{
 			SLAVES_POLL_STOP;
-			EV_LEDChecked(NULL);
+			EV_TestedLed(NULL);
 		}
 		else
 			current_address++;
 	}
 }
-
+*/
 void Dynabox::CommandCheckElectromagnet()
 {
 	if(current_address == last_address + 1)
 	{
 		SLAVES_POLL_STOP;
-		EV_ElectromagnetChecked(NULL);
+		EV_TestedElm(NULL);
 	}
 	else
 	{
@@ -62,7 +62,7 @@ void Dynabox::CommandGetSetState()
 {
 	if(current_address == last_address + 1)
 	{
-		SetCurrentCommand(COMM_SHOW_STATUS_ON_LED);
+//		SetCurrentCommand(COMM_SHOW_STATUS_ON_LED);
 		current_address = first_address;
 		return;
 	}
@@ -137,7 +137,7 @@ void Dynabox::CommandShowStatusOnLed()
 			need_send_to_led = false;
 		}
 		led_same_for_all = 0xFF;
-		SetCurrentCommand(COMM_CHECK_TRANSOPTORS_GET_SET_STATUS);
+//		SetCurrentCommand(COMM_CHECK_TRANSOPTORS_GET_SET_STATUS);
 	}
 	else
 		current_address++;

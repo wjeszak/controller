@@ -191,7 +191,7 @@ void Motor::ST_Home(MotorData* pdata)
 	home_ok = 1;
 	mb.UpdateHoldingRegister(IO_INFORMATIONS, (0 << 2) | (0 << 0) | (1 << 3));
 	dynabox.led_same_for_all = COMM_GREEN_RED_OFF;
-	dynabox.SetCurrentCommand(COMM_SHOW_STATUS_ON_LED);
+//	dynabox.SetCurrentCommand(COMM_SHOW_STATUS_ON_LED);
 }
 
 void Motor::ST_Deceleration(MotorData* pdata)

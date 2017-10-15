@@ -39,42 +39,43 @@ class Dynabox : public Machine
 {
 public:
 	Dynabox();
-	void EV_LEDChecked(DynaboxData* pdata);
-	void EV_ElectromagnetChecked(DynaboxData* pdata);
+	void EV_TestLed(DynaboxData* pdata);
+	void EV_TestedLed(DynaboxData* pdata);
+	void EV_TestedElm(DynaboxData* pdata);
 	void LoadSupportedFunctions();
 	void SaveParameters();
-	void SetCurrentCommand(uint8_t command);
-	void CommandCheckLed();
+//	void SetCurrentCommand(uint8_t command);
+//	void CommandCheckLed();
 	void CommandCheckElectromagnet();
 	void CommandShowStatusOnLed();
 	void CommandGetSetState();
 	void Parse(uint8_t* frame);
-	void ParseCheckLed(uint8_t* frame);
+//	void ParseCheckLed(uint8_t* frame);
 	void ParseCheckElectromagnet(uint8_t* frame);
 	void ParseGetSetState(uint8_t* frame);
-	void TimeoutLed();
+//	void TimeoutLed();
 	void TimeoutDoor();
 	void PCCheckTransoptorsGetStatus(uint8_t res);
 	void SlavesPoll();
-	void ReplyTimeout();
+//	void ReplyTimeout();
 	uint8_t led_same_for_all;
 private:
 	void ST_Init(DynaboxData* pdata);
-	void ST_CheckingLED(DynaboxData* pdata);
+	void ST_TestingLed(DynaboxData* pdata);
 	void ST_CheckingElectromagnet(DynaboxData* pdata);
 	void ST_Homing(DynaboxData* pdata);
-	enum States {ST_INIT = 0, ST_CHECKING_LED, ST_CHECKING_ELECTROMAGNET, ST_HOMING, ST_MAX_STATES};
+	enum States {ST_INIT = 0, ST_TESTING_LED, ST_TESTING_ELM, ST_HOMING, ST_MAX_STATES};
 	BEGIN_STATE_MAP
 		STATE_MAP_ENTRY(&Dynabox::ST_Init)
-		STATE_MAP_ENTRY(&Dynabox::ST_CheckingLED)
+		STATE_MAP_ENTRY(&Dynabox::ST_TestingLed)
 		STATE_MAP_ENTRY(&Dynabox::ST_CheckingElectromagnet)
 		STATE_MAP_ENTRY(&Dynabox::ST_Homing)
 	END_STATE_MAP
 	uint8_t faults_to_led_map[NUMBER_OF_FAULTS + 1];
 	uint8_t last_fault[MAX_DOORS + 1];
-	void (Dynabox::*pcommand)();
-	void (Dynabox::*pparse)(uint8_t* frame);
-	void (Dynabox::*ptimeout)();
+	void (Dynabox::*pstate)(DynaboxData *pdata);
+//	void (Dynabox::*pparse)(uint8_t* frame);
+//	void (Dynabox::*ptimeout)();
 
 };
 

@@ -67,7 +67,7 @@ Dynabox::Dynabox() : faults_to_led_map {
 
 
 // -----------------------------------------------------------
-void Dynabox::SetCurrentCommand(uint8_t command)
+/*void Dynabox::SetCurrentCommand(uint8_t command)
 {
 	current_address = 1;
 	current_command = command;
@@ -99,18 +99,18 @@ void Dynabox::SetCurrentCommand(uint8_t command)
 	}
 	SLAVES_POLL_START;
 }
-
+*/
 void Dynabox::SlavesPoll()
 {
-	(this->*pcommand)();
+	(this->*pstate)(NULL);
 }
 
 void Dynabox::Parse(uint8_t* frame)
 {
 	SLAVES_POLL_TIMEOUT_OFF;
-	if(comm.Crc8(frame, 2) == frame[2]) (this->*pparse)(frame);
+//	if(comm.Crc8(frame, 2) == frame[2]) (this->*pparse)(frame);
 }
-
+/*
 void Dynabox::ReplyTimeout()
 {
 	(this->*ptimeout)();
@@ -124,7 +124,7 @@ void Dynabox::TimeoutLed()
 	if(current_address == last_address)
 	{
 		SLAVES_POLL_STOP;
-		EV_LEDChecked(NULL);
+		EV_TestedLed(NULL);
 	}
 	else
 		current_address++;
@@ -137,7 +137,7 @@ void Dynabox::TimeoutDoor()
 	mb.UpdateHoldingRegister(current_address + 1, F02_DOOR << 8);
 	current_address++;
 }
-
+*/
 void Dynabox::LoadSupportedFunctions()
 {
 	eeprom_read_block(&functions, &dynabox_eem_functions, FUNCTION_RECORD_SIZE * DYNABOX_NUMBER_OF_FUNCTIONS);
