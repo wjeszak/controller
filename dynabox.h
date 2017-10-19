@@ -53,10 +53,8 @@ public:
 	void CommandShowStatusOnLed();
 	void CommandGetSetState();
 	void Parse(uint8_t* frame);
-//	void ParseCheckLed(uint8_t* frame);
 	void ParseCheckElectromagnet(uint8_t* frame);
 	void ParseGetSetState(uint8_t* frame);
-//	void TimeoutLed();
 	void TimeoutDoor();
 	void PCCheckTransoptorsGetStatus(uint8_t res);
 	void SlavesPoll();
