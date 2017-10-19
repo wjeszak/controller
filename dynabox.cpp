@@ -83,6 +83,11 @@ void Dynabox::Init()
 	EV_TestLed(&dynabox_data);
 }
 
+void Dynabox::EV_EnterToConfig()
+{
+	SLAVES_POLL_STOP;
+}
+
 void Dynabox::SlavesPoll()
 {
 	(this->*pstate)(&dynabox_data);
@@ -100,9 +105,9 @@ void Dynabox::Parse(uint8_t* frame)
 
 void Dynabox::ReplyTimeout()
 {
-	//SLAVES_POLL_TIMEOUT_OFF;
-	//dynabox_data.reply_type = ReplyTypeTimeout;
-	//(this->*pstate)(NULL);
+	SLAVES_POLL_TIMEOUT_OFF;
+	dynabox_data.comm_status = CommStatusTimeout;
+	(this->*pstate)(&dynabox_data);
 }
 /*
 void Dynabox::TimeoutLed()

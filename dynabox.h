@@ -43,7 +43,7 @@ class Dynabox : public Machine
 public:
 	Dynabox();
 	void Init();
-//	void EV_EnterToConfig();
+	void EV_EnterToConfig();
 	void EV_TestLed(DynaboxData* pdata);
 	void EV_TestedLed(DynaboxData* pdata);
 	void EV_TestedElm(DynaboxData* pdata);
@@ -63,13 +63,11 @@ public:
 	void ReplyTimeout();
 	uint8_t led_same_for_all;
 private:
-//	void ST_Init(DynaboxData* pdata);
 	void ST_TestingLed(DynaboxData* pdata);
 	void ST_CheckingElectromagnet(DynaboxData* pdata);
 	void ST_Homing(DynaboxData* pdata);
 	enum States {ST_TESTING_LED, ST_TESTING_ELM, ST_HOMING, ST_MAX_STATES};
 	BEGIN_STATE_MAP
-//		STATE_MAP_ENTRY(&Dynabox::ST_Init)
 		STATE_MAP_ENTRY(&Dynabox::ST_TestingLed)
 		STATE_MAP_ENTRY(&Dynabox::ST_CheckingElectromagnet)
 		STATE_MAP_ENTRY(&Dynabox::ST_Homing)

@@ -16,11 +16,12 @@
 
 void Dynabox::ST_TestingLed(DynaboxData* pdata)
 {
-	if(current_address == last_address + 1)
+/*	if(current_address == last_address + 1)
 	{
 		SLAVES_POLL_TIMEOUT_OFF; SLAVES_POLL_STOP;
 		return;
 	}
+*/
 	if(pdata->comm_status == CommStatusRequest)
 	{
 		comm.Prepare(current_address++ + LED_ADDRESS_OFFSET, COMM_LED_DIAG);
@@ -31,12 +32,14 @@ void Dynabox::ST_TestingLed(DynaboxData* pdata)
 	if(pdata->comm_status == CommStatusReply)
 	{
 		pdata->comm_status = CommStatusRequest;
-		//current_address++;
 		return;
 	}
-	//if(pdata->reply_type == ReplyTypeTimeout) { display.Write(current_address); return; }
-
-
+	if(pdata->comm_status == CommStatusTimeout)
+	{
+		display.Write(current_address);
+		pdata->comm_status = CommStatusRequest;
+		return;
+	}
 }
 
 void Dynabox::ST_CheckingElectromagnet(DynaboxData* pdata)

@@ -25,11 +25,11 @@ class Machine : public StateMachine
 {
 public:
 	Machine();
-	virtual void Init() {}
-	virtual void EV_EnterToConfig() {}
 	void SetFault(uint8_t fault);
 	void ClearFault(uint8_t fault);
 	bool CheckFault(uint8_t fault);
+	virtual void Init() {}
+	virtual void EV_EnterToConfig() {}
 	virtual void LoadSupportedFunctions() {}
 	virtual void SaveParameters() {}
 	virtual void Parse(uint8_t* frame) {}

@@ -27,7 +27,7 @@ Config::Config() : StateMachine(ST_MAX_STATES)
 
 void Config::EV_ButtonClick(ConfigData* pdata)
 {
-	// m->EV_EnterToConfig...
+	m->EV_EnterToConfig();
 	if(current_state == ST_CHOOSING_FUNCTION) m->SaveParameters();
 	BEGIN_TRANSITION_MAP								// current state
         TRANSITION_MAP_ENTRY(ST_CHOOSING_FUNCTION)		// ST_INIT
