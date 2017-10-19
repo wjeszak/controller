@@ -12,7 +12,6 @@
 #include "state_machine.h"
 #include "encoder.h"
 
-#define CONFIG_INIT_TIME 					2
 #define MAX_NUMBER_OF_FUNCTIONS 			28
 #define FUNCTION_RECORD_SIZE 				4
 
@@ -24,6 +23,7 @@ struct Function
 	uint8_t param;
 	fp f;
 };
+
 extern Function functions[MAX_NUMBER_OF_FUNCTIONS];
 
 class ConfigData : public EventData

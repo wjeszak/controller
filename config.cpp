@@ -27,7 +27,7 @@ Config::Config() : StateMachine(ST_MAX_STATES)
 
 void Config::EV_ButtonClick(ConfigData* pdata)
 {
-	if(current_state == ST_INIT) timer.Disable(TIMER_INIT_COUNTDOWN);
+	// m->EV_EnterToConfig...
 	if(current_state == ST_CHOOSING_FUNCTION) m->SaveParameters();
 	BEGIN_TRANSITION_MAP								// current state
         TRANSITION_MAP_ENTRY(ST_CHOOSING_FUNCTION)		// ST_INIT
@@ -72,7 +72,7 @@ void Config::EV_EncoderClick(ConfigData* pdata)
 		END_TRANSITION_MAP(pdata)
 	}
 }
-// --------- Boot
+
 void Config::ST_Init(ConfigData* pdata)
 {
 
