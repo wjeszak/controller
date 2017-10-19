@@ -13,7 +13,7 @@
 #include "display.h"
 #include "dynabox.h"
 
-uint8_t machine_type EEMEM = MACHINE_DYNABOX;
+//uint8_t machine_type EEMEM = MACHINE_DYNABOX;
 Function functions[MAX_NUMBER_OF_FUNCTIONS];
 
 void test()
@@ -89,14 +89,14 @@ void Config::EV_EncoderClick(ConfigData* pdata)
 // --------- Boot
 void Config::ST_Init(ConfigData* pdata)
 {
-	uint8_t mt = eeprom_read_byte(&machine_type);
-	GetPointerTypeOfMachine(mt);
-	m->LoadSupportedFunctions();
-	sei();
-	timer.Assign(TIMER_DISPLAY_REFRESH, 4, DisplayRefresh);
-	timer.Assign(TIMER_INIT_COUNTDOWN, 1000, InitCountDown);
-	timer.Assign(TIMER_ENCODER_POLL, 1, EncoderPoll);
-	pdata->val = 0;
+//	uint8_t mt = eeprom_read_byte(&machine_type);
+//	GetPointerTypeOfMachine(mt);
+//	m->LoadSupportedFunctions();
+//	sei();
+//	timer.Assign(TIMER_DISPLAY_REFRESH, 4, DisplayRefresh);
+//	timer.Assign(TIMER_INIT_COUNTDOWN, 1000, InitCountDown);
+//	timer.Assign(TIMER_ENCODER_POLL, 1, EncoderPoll);
+//	pdata->val = 0;
 }
 
 void Config::ST_ChoosingFunction(ConfigData* pdata)
@@ -132,9 +132,9 @@ void Config::ST_ExecutingFunction(ConfigData* pdata)
 
 void Config::ST_Done(ConfigData* pdata)
 {
-	timer.Disable(TIMER_BUTTON_POLL);
-	timer.Disable(TIMER_ENCODER_POLL);
+//	timer.Disable(TIMER_BUTTON_POLL);
+//	timer.Disable(TIMER_ENCODER_POLL);
 	//timer.Assign(TIMER_SHOW_FAULT, 1000, ShowFault);
 	// odpalenie maszyny
-	m->InternalEvent(ST_INIT, NULL);
+	//m->InternalEvent(ST_INIT, NULL);
 }

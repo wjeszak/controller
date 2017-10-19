@@ -18,7 +18,7 @@ void Dynabox::ST_Init(DynaboxData* pdata)
 {
 	// ponizsze przypisanie dlatego, ze w config.cpp: m->InternalEvent(ST_INIT, NULL);
 	pdata = &dynabox_data;
-	pdata->reply_type = ReplyTypeNone;
+	pdata->comm_status = CommStatusRequest;
 	EV_TestLed(pdata);
 }
 
@@ -29,16 +29,16 @@ void Dynabox::ST_TestingLed(DynaboxData* pdata)
 //		SLAVES_POLL_TIMEOUT_OFF; SLAVES_POLL_STOP;
 //		return;
 //	}
-	if(pdata->reply_type == ReplyTypeNone)
+	if(pdata->comm_status == CommStatusRequest)
 	{
 		comm.Prepare(current_address++ + LED_ADDRESS_OFFSET, COMM_LED_DIAG);
 		SLAVES_POLL_TIMEOUT_SET;
 		return;
 	}
 
-	if(pdata->reply_type == ReplyTypeOK)
+	if(pdata->comm_status == CommStatusReply)
 	{
-		pdata->reply_type = ReplyTypeNone;
+		pdata->comm_status = CommStatusRequest;
 		//current_address++;
 		return;
 	}

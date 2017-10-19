@@ -16,8 +16,8 @@
 #define MAX_NUMBER_OF_FUNCTIONS 			28
 #define FUNCTION_RECORD_SIZE 				4
 
-#define MACHINE_DYNABOX 					0
-#define MACHINE_LOCKERBOX 					1
+//#define MACHINE_TYPE_DYNABOX 					0
+//#define MACHINE_TYPE_LOCKERBOX 					1
 
 typedef void (*fp)();
 

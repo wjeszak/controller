@@ -35,7 +35,7 @@ void Dynabox::CommandCheckElectromagnet()
 	else
 	{
 		SLAVES_POLL_TIMEOUT_SET;
-		comm.Prepare(current_address, current_command);
+//		comm.Prepare(current_address, current_command);
 		comm.Prepare(current_address + LED_ADDRESS_OFFSET, COMM_GREEN_ON_FOR_TIME);
 	}
 }

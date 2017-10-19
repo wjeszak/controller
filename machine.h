@@ -9,14 +9,15 @@
 #define MACHINE_H_
 
 #include "state_machine.h"
-#include "usart.h"
+#include "comm_prot.h"
 
-enum ReplyType {ReplyTypeNone, ReplyTypeOK, ReplyTypeTimeout};
+#define MACHINE_TYPE_DYNABOX 					0
+#define MACHINE_TYPE_LOCKERBOX 					1
 
 class MachineData : public EventData
 {
 public:
-	ReplyType reply_type;
+	CommStatus comm_status;
 	uint32_t faults;
 };
 
@@ -24,17 +25,18 @@ class Machine : public StateMachine
 {
 public:
 	Machine();
+	virtual void EV_EnterToConfig() {}
 	void SetFault(uint8_t fault);
 	void ClearFault(uint8_t fault);
 	bool CheckFault(uint8_t fault);
 	virtual void LoadSupportedFunctions() {}
 	virtual void SaveParameters() {}
-	virtual void SetCurrentCommand(uint8_t command, bool rep) {}
+//	virtual void SetCurrentCommand(uint8_t command, bool rep) {}
 	virtual void Parse(uint8_t* frame) {}
 	virtual void SlavesPoll() {}
 	virtual void ReplyTimeout() {}
 	uint8_t first_address, last_address, current_address;
-	uint8_t current_command;
+//	uint8_t current_command;
 private:
 	enum States {ST_MAX_STATES};
 };

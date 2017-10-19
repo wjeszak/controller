@@ -9,6 +9,8 @@
 #define DYNABOX_H_
 
 #include "machine.h"
+#include "usart.h"
+
 #define MAX_DOORS 						7
 
 #define NUMBER_OF_FAULTS 				17
@@ -40,6 +42,7 @@ class Dynabox : public Machine
 {
 public:
 	Dynabox();
+//	void EV_EnterToConfig();
 	void EV_TestLed(DynaboxData* pdata);
 	void EV_TestedLed(DynaboxData* pdata);
 	void EV_TestedElm(DynaboxData* pdata);
@@ -77,7 +80,6 @@ private:
 	void (Dynabox::*pstate)(DynaboxData *pdata);
 //	void (Dynabox::*pparse)(uint8_t* frame);
 //	void (Dynabox::*ptimeout)();
-
 };
 
 extern Dynabox dynabox;

@@ -16,6 +16,7 @@
 #include "modbus_tcp.h"
 
 #define DYNABOX_NUMBER_OF_FUNCTIONS 		10
+
 void f12()
 {
 	//display.Write(5555);
@@ -67,42 +68,10 @@ Dynabox::Dynabox() : faults_to_led_map {
 
 
 // -----------------------------------------------------------
-/*void Dynabox::SetCurrentCommand(uint8_t command)
-{
-	current_address = 1;
-	current_command = command;
-	switch(command)
-	{
-		case COMM_LED_DIAG:
-			pcommand = &Dynabox::CommandCheckLed;
-			pparse   = &Dynabox::ParseCheckLed;
-			ptimeout = &Dynabox::TimeoutLed;
-		break;
 
-		case COMM_CHECK_ELECTROMAGNET:
-			pcommand = &Dynabox::CommandCheckElectromagnet;
-			pparse   = &Dynabox::ParseCheckElectromagnet;
-			ptimeout = &Dynabox::TimeoutDoor;
-		break;
-
-		case COMM_SHOW_STATUS_ON_LED:
-			pcommand = &Dynabox::CommandShowStatusOnLed;
-		break;
-
-		case COMM_CHECK_TRANSOPTORS_GET_SET_STATUS:
-			pcommand = &Dynabox::CommandGetSetState;
-			pparse   = &Dynabox::ParseGetSetState;
-		break;
-
-		default:
-		break;
-	}
-	SLAVES_POLL_START;
-}
-*/
 void Dynabox::SlavesPoll()
 {
-	(this->*pstate)(NULL);
+	(this->*pstate)(&dynabox_data);
 }
 
 void Dynabox::Parse(uint8_t* frame)
@@ -110,7 +79,7 @@ void Dynabox::Parse(uint8_t* frame)
 	SLAVES_POLL_TIMEOUT_OFF;
 	if(comm.Crc8(frame, 2) == frame[2])
 	{
-		dynabox_data.reply_type = ReplyTypeOK;
+		dynabox_data.comm_status = CommStatusReply;
 		(this->*pstate)(&dynabox_data);
 	}
 }

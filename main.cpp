@@ -11,6 +11,7 @@
  * W Testbox bez sensu jest to ze przy typie maszyny Lockerbox (Registers[145]) wyswietla Opened + 12 stops...
  */
 
+#include "boot.h"
 #include "timer.h"
 #include "display.h"
 #include "button.h"
@@ -50,6 +51,7 @@ ModbusTCP mb;
 
 int main()
 {
+	//Boot1();
 	while(1)
 	{
 		stack.Poll();
