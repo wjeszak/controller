@@ -42,6 +42,7 @@ class Dynabox : public Machine
 {
 public:
 	Dynabox();
+	void Init();
 //	void EV_EnterToConfig();
 	void EV_TestLed(DynaboxData* pdata);
 	void EV_TestedLed(DynaboxData* pdata);

@@ -16,9 +16,6 @@
 #define MAX_NUMBER_OF_FUNCTIONS 			28
 #define FUNCTION_RECORD_SIZE 				4
 
-//#define MACHINE_TYPE_DYNABOX 					0
-//#define MACHINE_TYPE_LOCKERBOX 					1
-
 typedef void (*fp)();
 
 struct Function
@@ -39,7 +36,6 @@ class Config : public StateMachine
 {
 public:
 	Config();
-	void CountDown(ConfigData* pdata);
 	void SetSupportedFunctions(uint8_t number_of_functions);
 	// Events
 	void EV_ButtonClick(ConfigData* pdata);

@@ -8,6 +8,6 @@
 #ifndef BOOT_H_
 #define BOOT_H_
 
-extern void Boot1();
+extern void Boot();
 
 #endif /* BOOT_H_ */

@@ -51,7 +51,7 @@ ModbusTCP mb;
 
 int main()
 {
-	//Boot1();
+	Boot();
 	while(1)
 	{
 		stack.Poll();

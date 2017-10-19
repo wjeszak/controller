@@ -70,7 +70,6 @@ private:
 extern Timer timer;
 
 extern void DisplayRefresh();
-extern void InitCountDown();
 extern void ButtonPoll();
 extern void EncoderPoll();
 extern void SlavesPoll();

@@ -8,7 +8,6 @@
 #include "machine.h"
 #include "dynabox.h"
 #include "lockerbox.h"
-//#include "config.h"
 
 void GetPointerTypeOfMachine(uint8_t type)
 {

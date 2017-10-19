@@ -10,12 +10,14 @@
 #include "machine.h"
 #include "timer.h"
 
+// default value in EEPROM
 uint8_t machine_type EEMEM = MACHINE_TYPE_DYNABOX;
 
-void Boot1()
+void Boot()
 {
 	uint8_t mt = eeprom_read_byte(&machine_type);
 	GetPointerTypeOfMachine(mt);
+	m->Init();
 	m->LoadSupportedFunctions();
 	sei();
 	timer.Assign(TIMER_DISPLAY_REFRESH, 4, DisplayRefresh);

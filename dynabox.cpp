@@ -66,7 +66,10 @@ Dynabox::Dynabox() : faults_to_led_map {
 	led_same_for_all = 0;
 }
 
-
+void Dynabox::Init()
+{
+	display.Write(1234);
+}
 // -----------------------------------------------------------
 
 void Dynabox::SlavesPoll()

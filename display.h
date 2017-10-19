@@ -10,7 +10,6 @@
 
 #include <avr/io.h>
 #include <inttypes.h>
-#include "timer.h"
 
 #define DISP1_DDR 				DDRD
 #define DISP2_DDR 				DDRC

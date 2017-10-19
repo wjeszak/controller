@@ -85,12 +85,6 @@ void DisplayRefresh()
 	display.Refresh();
 }
 
-// TIMER_INIT_COUNTDOWN
-void InitCountDown()
-{
-	config.CountDown(&config_data);
-}
-
 // TIMER_FAULTS_HANDLING
 void FaultsHandling()
 {
