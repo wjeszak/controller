@@ -45,13 +45,13 @@ public:
 	bool need_stack_poll;
 private:
 	// States functions
-	void ST_Init(ConfigData* pdata);
+	void ST_Idle(ConfigData* pdata);
 	void ST_ChoosingFunction(ConfigData* pdata);
 	void ST_ExecutingFunction(ConfigData* pdata);
 	void ST_Done(ConfigData* pdata);
-	enum States {ST_INIT = 0, ST_CHOOSING_FUNCTION, ST_EXECUTING_FUNCTION, ST_DONE, ST_MAX_STATES};
+	enum States {ST_IDLE = 0, ST_CHOOSING_FUNCTION, ST_EXECUTING_FUNCTION, ST_DONE, ST_MAX_STATES};
 	BEGIN_STATE_MAP
-		STATE_MAP_ENTRY(&Config::ST_Init)
+		STATE_MAP_ENTRY(&Config::ST_Idle)
 		STATE_MAP_ENTRY(&Config::ST_ChoosingFunction)
 		STATE_MAP_ENTRY(&Config::ST_ExecutingFunction)
 		STATE_MAP_ENTRY(&Config::ST_Done)

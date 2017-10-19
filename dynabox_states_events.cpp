@@ -6,6 +6,7 @@
  */
 
 #include "machine.h"
+#include "config.h"
 #include "comm_prot.h"
 #include "dynabox.h"
 #include "motor.h"
@@ -17,7 +18,7 @@
 
 void Dynabox::ST_TestingLed(DynaboxData* pdata)
 {
-	if(current_address == last_address + 1)
+	if(current_address == functions[1].param + 1)
 	{
 		SLAVES_POLL_TIMEOUT_OFF; SLAVES_POLL_STOP;
 		//EV_TestedLed(NULL);

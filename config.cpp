@@ -28,7 +28,12 @@ Config::Config() : StateMachine(ST_MAX_STATES)
 void Config::EV_ButtonClick(ConfigData* pdata)
 {
 	m->EV_EnterToConfig();
-	if(current_state == ST_CHOOSING_FUNCTION) m->SaveParameters();
+	if(current_state == ST_CHOOSING_FUNCTION)
+	{
+		// exit from configuration
+		m->SaveParameters();
+		timer.Assign(TIMER_SHOW_FAULT, 1000, ShowFault);
+	}
 	BEGIN_TRANSITION_MAP								// current state
         TRANSITION_MAP_ENTRY(ST_CHOOSING_FUNCTION)		// ST_INIT
         TRANSITION_MAP_ENTRY(ST_DONE)					// ST_CHOOSING_FUNCTION
@@ -73,7 +78,7 @@ void Config::EV_EncoderClick(ConfigData* pdata)
 	}
 }
 
-void Config::ST_Init(ConfigData* pdata)
+void Config::ST_Idle(ConfigData* pdata)
 {
 
 }
