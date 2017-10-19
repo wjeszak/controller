@@ -54,6 +54,6 @@ int main()
 	Boot();
 	while(1)
 	{
-		stack.Poll();
+		if(config.need_stack_poll)	stack.Poll();
 	}
 }

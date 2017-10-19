@@ -22,7 +22,7 @@ void test()
 
 Config::Config() : StateMachine(ST_MAX_STATES)
 {
-
+	need_stack_poll = true;
 }
 
 void Config::EV_ButtonClick(ConfigData* pdata)

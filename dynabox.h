@@ -49,8 +49,6 @@ public:
 	void EV_TestedElm(DynaboxData* pdata);
 	void LoadSupportedFunctions();
 	void SaveParameters();
-//	void SetCurrentCommand(uint8_t command);
-//	void CommandCheckLed();
 	void CommandCheckElectromagnet();
 	void CommandShowStatusOnLed();
 	void CommandGetSetState();
@@ -65,13 +63,13 @@ public:
 	void ReplyTimeout();
 	uint8_t led_same_for_all;
 private:
-	void ST_Init(DynaboxData* pdata);
+//	void ST_Init(DynaboxData* pdata);
 	void ST_TestingLed(DynaboxData* pdata);
 	void ST_CheckingElectromagnet(DynaboxData* pdata);
 	void ST_Homing(DynaboxData* pdata);
-	enum States {ST_INIT = 0, ST_TESTING_LED, ST_TESTING_ELM, ST_HOMING, ST_MAX_STATES};
+	enum States {ST_TESTING_LED, ST_TESTING_ELM, ST_HOMING, ST_MAX_STATES};
 	BEGIN_STATE_MAP
-		STATE_MAP_ENTRY(&Dynabox::ST_Init)
+//		STATE_MAP_ENTRY(&Dynabox::ST_Init)
 		STATE_MAP_ENTRY(&Dynabox::ST_TestingLed)
 		STATE_MAP_ENTRY(&Dynabox::ST_CheckingElectromagnet)
 		STATE_MAP_ENTRY(&Dynabox::ST_Homing)

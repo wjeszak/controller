@@ -42,6 +42,7 @@ public:
 	void EV_Encoder(ConfigData* pdata);
 	void EV_EncoderClick(ConfigData* pdata = NULL);
 	uint8_t number_of_functions;
+	bool need_stack_poll;
 private:
 	// States functions
 	void ST_Init(ConfigData* pdata);

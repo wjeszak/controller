@@ -37,6 +37,17 @@ Function EEMEM dynabox_eem_functions[DYNABOX_NUMBER_OF_FUNCTIONS] =
 	{28, 				0,				NULL},	// type of machine
 };
 
+void Dynabox::LoadSupportedFunctions()
+{
+	eeprom_read_block(&functions, &dynabox_eem_functions, FUNCTION_RECORD_SIZE * DYNABOX_NUMBER_OF_FUNCTIONS);
+	config.number_of_functions = DYNABOX_NUMBER_OF_FUNCTIONS;
+}
+
+void Dynabox::SaveParameters()
+{
+	eeprom_update_block(&functions, &dynabox_eem_functions, FUNCTION_RECORD_SIZE * DYNABOX_NUMBER_OF_FUNCTIONS);
+}
+// ------------------------------------------------------------------
 Dynabox::Dynabox() : faults_to_led_map {
 	0,									// not used
 	0,									// F01, impossible
@@ -68,9 +79,9 @@ Dynabox::Dynabox() : faults_to_led_map {
 
 void Dynabox::Init()
 {
-	display.Write(1234);
+	dynabox_data.comm_status = CommStatusRequest;
+	EV_TestLed(&dynabox_data);
 }
-// -----------------------------------------------------------
 
 void Dynabox::SlavesPoll()
 {
@@ -116,13 +127,4 @@ void Dynabox::TimeoutDoor()
 	current_address++;
 }
 */
-void Dynabox::LoadSupportedFunctions()
-{
-	eeprom_read_block(&functions, &dynabox_eem_functions, FUNCTION_RECORD_SIZE * DYNABOX_NUMBER_OF_FUNCTIONS);
-	config.number_of_functions = DYNABOX_NUMBER_OF_FUNCTIONS;
-}
 
-void Dynabox::SaveParameters()
-{
-	eeprom_update_block(&functions, &dynabox_eem_functions, FUNCTION_RECORD_SIZE * DYNABOX_NUMBER_OF_FUNCTIONS);
-}
