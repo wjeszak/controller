@@ -11,6 +11,7 @@
 #include "motor.h"
 #include "timer.h"
 #include "display.h"
+#include "modbus_tcp.h"
 
 // ----------------------- States -----------------------
 
@@ -19,6 +20,7 @@ void Dynabox::ST_TestingLed(DynaboxData* pdata)
 	if(current_address == last_address + 1)
 	{
 		SLAVES_POLL_TIMEOUT_OFF; SLAVES_POLL_STOP;
+		//EV_TestedLed(NULL);
 		return;
 	}
 
@@ -37,6 +39,8 @@ void Dynabox::ST_TestingLed(DynaboxData* pdata)
 	if(pdata->comm_status == CommStatusTimeout)
 	{
 		m->SetFault(F01_LED);
+		mb.UpdateHoldingRegister(GENERAL_ERROR_STATUS, F01_LED);
+		mb.UpdateHoldingRegister(current_address, F01_LED << 8);
 		pdata->comm_status = CommStatusRequest;
 		return;
 	}
@@ -50,9 +54,6 @@ void Dynabox::ST_CheckingElectromagnet(DynaboxData* pdata)
 void Dynabox::ST_Homing(DynaboxData* pdata)
 {
 	led_same_for_all = COMM_GREEN_RED_BLINK;
-//	SetCurrentCommand(COMM_SHOW_STATUS_ON_LED);
-
-	//SetCurrentCommand(COMM_CHECK_TRANSOPTORS_GET_SET_STATUS);
 	motor.EV_Homing();
 }
 
@@ -73,7 +74,6 @@ void Dynabox::EV_TestLed(DynaboxData* pdata)
 void Dynabox::EV_TestedLed(DynaboxData* pdata)
 {
 	BEGIN_TRANSITION_MAP								// current state
-//        TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_INIT
 		TRANSITION_MAP_ENTRY(ST_TESTING_ELM)			// ST_TESTING_LED
 		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_TESTING_ELM
 		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_HOMING

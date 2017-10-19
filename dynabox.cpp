@@ -86,6 +86,7 @@ void Dynabox::Init()
 void Dynabox::EV_EnterToConfig()
 {
 	SLAVES_POLL_STOP;
+	timer.Disable(TIMER_SHOW_FAULT);
 }
 
 void Dynabox::SlavesPoll()
@@ -110,20 +111,6 @@ void Dynabox::ReplyTimeout()
 	(this->*pstate)(&dynabox_data);
 }
 /*
-void Dynabox::TimeoutLed()
-{
-	m->SetFault(F01_LED);
-	mb.UpdateHoldingRegister(GENERAL_ERROR_STATUS, F01_LED);
-	mb.UpdateHoldingRegister(current_address + 1, F01_LED << 8);
-	if(current_address == last_address)
-	{
-		SLAVES_POLL_STOP;
-		EV_TestedLed(NULL);
-	}
-	else
-		current_address++;
-}
-
 void Dynabox::TimeoutDoor()
 {
 	m->SetFault(F02_DOOR);

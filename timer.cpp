@@ -85,12 +85,6 @@ void DisplayRefresh()
 	display.Refresh();
 }
 
-// TIMER_FAULTS_HANDLING
-void FaultsHandling()
-{
-
-}
-
 // TIMER_BUTTON_POLL
 void ButtonPoll()
 {
