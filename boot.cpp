@@ -21,8 +21,8 @@ void Boot()
 	m->LoadSupportedFunctions();
 	sei();
 	timer.Assign(TIMER_DISPLAY_REFRESH, 4, DisplayRefresh);
-//	timer.Assign(TIMER_INIT_COUNTDOWN, 1000, InitCountDown);
 	timer.Assign(TIMER_ENCODER_POLL, 1, EncoderPoll);
+	timer.Assign(TIMER_FAULTS_HANDLING, 1000, ShowFault);
 }
 
 
