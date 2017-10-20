@@ -18,16 +18,12 @@ class MachineData : public EventData
 {
 public:
 	CommStatus comm_status;
-	uint32_t faults;
 };
 
 class Machine : public StateMachine
 {
 public:
 	Machine();
-	void SetFault(uint8_t fault);
-	void ClearFault(uint8_t fault);
-	bool CheckFault(uint8_t fault);
 	virtual void Init() {}
 	virtual void EV_EnterToConfig() {}
 	virtual void LoadSupportedFunctions() {}

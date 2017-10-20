@@ -12,6 +12,7 @@
  */
 
 #include "boot.h"
+#include "fault.h"
 #include "timer.h"
 #include "display.h"
 #include "button.h"
@@ -28,6 +29,7 @@
 
 Machine* m;
 MachineData* d;
+Fault fault;
 Timer timer(T2_PS_1);
 Display display;
 ButtonData button_data;

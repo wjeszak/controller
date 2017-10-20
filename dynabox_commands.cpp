@@ -46,7 +46,7 @@ void Dynabox::ParseCheckElectromagnet(uint8_t* frame)
 	{
 		if(frame[1] == COMM_F05_ELECTROMAGNET)
 		{
-			m->SetFault(F05_ELECTROMAGNET);
+//			m->SetFault(F05_ELECTROMAGNET);
 			mb.UpdateHoldingRegister(current_address + 1, F05_ELECTROMAGNET << 8);
 		}
 		current_address++;
@@ -80,7 +80,7 @@ void Dynabox::ParseGetSetState(uint8_t* frame)
 	{
 		if(frame[1] == 0xF0)
 		{
-			m->SetFault(F03_OPTICAL_SWITCHES);
+//			m->SetFault(F03_OPTICAL_SWITCHES);
 			mb.UpdateHoldingRegister(current_address + 1, F03_OPTICAL_SWITCHES << 8);
 		}
 		else

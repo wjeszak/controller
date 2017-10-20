@@ -19,13 +19,13 @@
 #define NUMBER_OF_TIMERS 				10
 
 #define TIMER_DISPLAY_REFRESH 			0
-#define TIMER_INIT_COUNTDOWN 			1
+//#define TIMER_INIT_COUNTDOWN 			1
 #define TIMER_BUTTON_POLL				2
 #define TIMER_ENCODER_POLL			 	3
 #define TIMER_SLAVES_POLL 				4
 #define TIMER_REPLY_TIMEOUT 			5
 #define TIMER_MOTOR_ACCELERATE 			6
-#define TIMER_SHOW_FAULT 				7
+#define TIMER_FAULT_SHOW 				7
 
 #define SLAVES_POLL_INTERVAL 			1000
 #define SLAVES_REPLY_TIMEOUT 			500
@@ -67,7 +67,7 @@ private:
 };
 
 extern Timer timer;
-
+// --------------------------------------------------------------------
 extern void DisplayRefresh();
 extern void ButtonPoll();
 extern void EncoderPoll();
@@ -75,6 +75,6 @@ extern void SlavesPoll();
 extern void ReplyTimeoutGeneral();
 extern void SlavesPollGeneral();
 extern void MotorAccelerate();
-extern void ShowFault();
+extern void FaultShow();
 
 #endif /* TIMER_H_ */

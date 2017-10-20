@@ -5,17 +5,14 @@
  *      Author: tomek
  */
 
-#include "machine.h"
+#include "timer.h"
 #include "config.h"
 #include "comm_prot.h"
 #include "dynabox.h"
 #include "motor.h"
-#include "timer.h"
-#include "display.h"
 #include "modbus_tcp.h"
 
 // ----------------------- States -----------------------
-
 void Dynabox::ST_TestingLed(DynaboxData* pdata)
 {
 	if(current_address == functions[1].param + 1)
@@ -39,8 +36,7 @@ void Dynabox::ST_TestingLed(DynaboxData* pdata)
 	}
 	if(pdata->comm_status == CommStatusTimeout)
 	{
-		m->SetFault(F01_LED);
-		mb.UpdateHoldingRegister(GENERAL_ERROR_STATUS, F01_LED);
+//		m->SetFault(F01_LED);
 		mb.UpdateHoldingRegister(current_address, F01_LED << 8);
 		pdata->comm_status = CommStatusRequest;
 		return;
@@ -83,7 +79,6 @@ void Dynabox::EV_TestedLed(DynaboxData* pdata)
 
 void Dynabox::EV_TestedElm(DynaboxData* pdata)
 {
-//	SetCurrentCommand(COMM_SHOW_STATUS_ON_LED);
 	BEGIN_TRANSITION_MAP								// current state
  //       TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_INIT
 		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_TESTING_LED

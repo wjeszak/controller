@@ -32,7 +32,7 @@ void Config::EV_ButtonClick(ConfigData* pdata)
 	{
 		// exit from configuration
 		m->SaveParameters();
-		timer.Assign(TIMER_SHOW_FAULT, 1000, ShowFault);
+		timer.Assign(TIMER_FAULT_SHOW, 1000, FaultShow);
 	}
 	BEGIN_TRANSITION_MAP								// current state
         TRANSITION_MAP_ENTRY(ST_CHOOSING_FUNCTION)		// ST_INIT

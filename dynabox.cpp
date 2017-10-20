@@ -32,7 +32,6 @@ Dynabox::Dynabox() : faults_to_led_map {
 {
 	current_address =  1;
 	first_address = 1;
-	d->faults = 0;
 //	for(uint8_t i = 0; i <= MAX_DOORS; i++) last_fault[i] = 0;
 	led_same_for_all = 0;
 	pstate = NULL;
@@ -47,7 +46,7 @@ void Dynabox::Init()
 void Dynabox::EV_EnterToConfig()
 {
 	SLAVES_POLL_STOP;
-	timer.Disable(TIMER_SHOW_FAULT);
+	timer.Disable(TIMER_FAULT_SHOW);
 }
 
 void Dynabox::SlavesPoll()
@@ -80,4 +79,3 @@ void Dynabox::TimeoutDoor()
 	current_address++;
 }
 */
-

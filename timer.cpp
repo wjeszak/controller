@@ -8,6 +8,7 @@
 #include <avr/interrupt.h>
 #include <stdio.h>
 #include "timer.h"
+#include "fault.h"
 #include "button.h"
 #include "comm_prot.h"
 #include "config.h"
@@ -16,7 +17,6 @@
 #include "motor.h"
 #include "encoder.h"
 #include "machine.h"
-#include "modbus_tcp.h"
 
 Timer::Timer(T2Prescallers prescaller)
 {
@@ -122,22 +122,10 @@ void MotorAccelerate()
 	motor.Accelerate();
 }
 
-// TIMER_SHOW_FAULT
-void ShowFault()
+// TIMER_FAULT_SHOW
+void FaultShow()
 {
-	static uint8_t i = 1;
-	if(d->faults == 0) { display.Write(TNoFault, 0); return; }
-	while(i <= 18)
-	{
-		if(i == 18) i = 1;
-		if(d->faults & (1ULL << i))
-		{
-			display.Write(TFault, i);
-			i++;
-			break;
-		}
-		i++;
-	}
+	fault.Show();
 }
 
 ISR(TIMER2_COMPB_vect)
