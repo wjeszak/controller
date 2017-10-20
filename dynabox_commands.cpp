@@ -11,19 +11,6 @@
 #include "modbus_tcp.h"
 /*
 
-void Dynabox::ParseCheckElectromagnet(uint8_t* frame)
-{
-	if(frame[0] == current_address)
-	{
-		if(frame[1] == COMM_F05_ELECTROMAGNET)
-		{
-//			m->SetFault(F05_ELECTROMAGNET);
-			mb.UpdateHoldingRegister(current_address + 1, F05_ELECTROMAGNET << 8);
-		}
-		current_address++;
-	}
-}
-
 void Dynabox::CommandGetSetState()
 {
 	if(current_address == last_address + 1)

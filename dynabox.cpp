@@ -67,12 +67,3 @@ void Dynabox::SlaveTimeout()
 	dynabox_data.comm_status = CommStatusTimeout;
 	(this->*pstate)(&dynabox_data);
 }
-/*
-void Dynabox::TimeoutDoor()
-{
-	m->SetFault(F02_DOOR);
-	mb.UpdateHoldingRegister(GENERAL_ERROR_STATUS, F02_DOOR);
-	mb.UpdateHoldingRegister(current_address + 1, F02_DOOR << 8);
-	current_address++;
-}
-*/

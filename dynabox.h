@@ -33,7 +33,6 @@
 class DynaboxData : public MachineData
 {
 public:
-	uint8_t frame[UART_BUF_SIZE];
 };
 
 class Dynabox : public Machine
@@ -45,8 +44,8 @@ public:
 	void Init();
 	void EV_EnterToConfig();
 	void EV_TestLed(DynaboxData* pdata);
-	void EV_TestedLed(DynaboxData* pdata);
 	void EV_TestElm(DynaboxData* pdata);
+	void EV_NeedMovement(DynaboxData* pdata);
 	void SlavePoll();
 	void SlaveParse(uint8_t* frame);
 	void SlaveTimeout();

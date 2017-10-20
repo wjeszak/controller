@@ -11,7 +11,9 @@
 #include "dynabox.h"
 #include "motor.h"
 #include "modbus_tcp.h"
+#include "usart.h"
 #include "fault.h"
+#include <util/delay.h>
 
 // ----------------------- States -----------------------
 void Dynabox::ST_TestingLed(DynaboxData* pdata)
@@ -49,7 +51,7 @@ void Dynabox::ST_TestingElm(DynaboxData* pdata)
 	if(current_address == functions[1].param + 1)
 	{
 		SLAVE_POLL_TIMEOUT_OFF; SLAVE_POLL_STOP;
-	//	EV_TestedLed(pdata);
+		EV_NeedMovement(pdata);
 		return;
 	}
 
@@ -63,7 +65,14 @@ void Dynabox::ST_TestingElm(DynaboxData* pdata)
 		return;
 	break;
 	case CommStatusReply:
-		//if(frame[0] == current_address + LED_ADDRESS_OFFSET)
+		if(usart_data.frame[0] == current_address - 1)
+		{
+			if(usart_data.frame[1] == COMM_F05_ELECTROMAGNET)
+			{
+				fault.Set(F05_ELECTROMAGNET);
+				mb.UpdateHoldingRegister(current_address, F05_ELECTROMAGNET << 8);
+			}
+		}
 		pdata->comm_status = CommStatusRequest;
 		return;
 	break;
@@ -95,16 +104,7 @@ void Dynabox::EV_TestLed(DynaboxData* pdata)
 //		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_HOMING
 //	END_TRANSITION_MAP(pdata)
 }
-/*
-void Dynabox::EV_TestedLed(DynaboxData* pdata)
-{
-	BEGIN_TRANSITION_MAP								// current state
-		TRANSITION_MAP_ENTRY(ST_TESTING_ELM)			// ST_TESTING_LED
-		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_TESTING_ELM
-		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_HOMING
-	END_TRANSITION_MAP(pdata)
-}
-*/
+
 void Dynabox::EV_TestElm(DynaboxData* pdata)
 {
 	pstate = &Dynabox::ST_TestingElm;
@@ -116,4 +116,18 @@ void Dynabox::EV_TestElm(DynaboxData* pdata)
 		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_TESTING_ELM
 		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_HOMING
 	END_TRANSITION_MAP(pdata)
+}
+
+void Dynabox::EV_NeedMovement(DynaboxData* pdata)
+{
+	for(uint8_t i = 1; i <= 7; i++)
+	{
+		_delay_ms(500);
+		comm.Prepare(i + LED_ADDRESS_OFFSET, COMM_LED_GREEN_3PULSES); //+ 0x80);
+	}
+//	BEGIN_TRANSITION_MAP								// current state
+//		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_TESTING_LED
+//		TRANSITION_MAP_ENTRY(ST_HOMING)					// ST_TESTING_ELM
+//		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_HOMING
+//	END_TRANSITION_MAP(pdata)
 }
