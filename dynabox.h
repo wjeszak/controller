@@ -46,19 +46,19 @@ public:
 	void EV_EnterToConfig();
 	void EV_TestLed(DynaboxData* pdata);
 	void EV_TestedLed(DynaboxData* pdata);
-	void EV_TestedElm(DynaboxData* pdata);
+	void EV_TestElm(DynaboxData* pdata);
 	void SlavePoll();
 	void SlaveParse(uint8_t* frame);
 	void SlaveTimeout();
 	uint8_t led_same_for_all;
 private:
 	void ST_TestingLed(DynaboxData* pdata);
-	void ST_CheckingElectromagnet(DynaboxData* pdata);
+	void ST_TestingElm(DynaboxData* pdata);
 	void ST_Homing(DynaboxData* pdata);
 	enum States {ST_TESTING_LED, ST_TESTING_ELM, ST_HOMING, ST_MAX_STATES};
 	BEGIN_STATE_MAP
 		STATE_MAP_ENTRY(&Dynabox::ST_TestingLed)
-		STATE_MAP_ENTRY(&Dynabox::ST_CheckingElectromagnet)
+		STATE_MAP_ENTRY(&Dynabox::ST_TestingElm)
 		STATE_MAP_ENTRY(&Dynabox::ST_Homing)
 	END_STATE_MAP
 	uint8_t faults_to_led_map[NUMBER_OF_FAULTS + 1];

@@ -19,7 +19,7 @@ void Dynabox::ST_TestingLed(DynaboxData* pdata)
 	if(current_address == functions[1].param + 1)
 	{
 		SLAVE_POLL_TIMEOUT_OFF; SLAVE_POLL_STOP;
-		//EV_TestedLed(NULL);
+		EV_TestElm(pdata);
 		return;
 	}
 
@@ -44,14 +44,41 @@ void Dynabox::ST_TestingLed(DynaboxData* pdata)
 	}
 }
 
-void Dynabox::ST_CheckingElectromagnet(DynaboxData* pdata)
+void Dynabox::ST_TestingElm(DynaboxData* pdata)
 {
+	if(current_address == functions[1].param + 1)
+	{
+		SLAVE_POLL_TIMEOUT_OFF; SLAVE_POLL_STOP;
+	//	EV_TestedLed(pdata);
+		return;
+	}
 
+	switch(pdata->comm_status)
+	{
+	case CommStatusRequest:
+		comm.Prepare(current_address, COMM_DOOR_CHECK_ELECTROMAGNET);
+		comm.Prepare(current_address + LED_ADDRESS_OFFSET, COMM_LED_GREEN_ON_FOR_TIME);
+		current_address++;
+		SLAVE_POLL_TIMEOUT_SET;
+		return;
+	break;
+	case CommStatusReply:
+		//if(frame[0] == current_address + LED_ADDRESS_OFFSET)
+		pdata->comm_status = CommStatusRequest;
+		return;
+	break;
+	case CommStatusTimeout:
+		fault.Set(F02_DOOR);
+		mb.UpdateHoldingRegister(current_address, F02_DOOR << 8);
+		pdata->comm_status = CommStatusRequest;
+		return;
+	break;
+	}
 }
 
 void Dynabox::ST_Homing(DynaboxData* pdata)
 {
-	led_same_for_all = COMM_GREEN_RED_BLINK;
+	led_same_for_all = COMM_LED_GREEN_RED_BLINK;
 	motor.EV_Homing();
 }
 
@@ -68,7 +95,7 @@ void Dynabox::EV_TestLed(DynaboxData* pdata)
 //		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_HOMING
 //	END_TRANSITION_MAP(pdata)
 }
-
+/*
 void Dynabox::EV_TestedLed(DynaboxData* pdata)
 {
 	BEGIN_TRANSITION_MAP								// current state
@@ -77,13 +104,16 @@ void Dynabox::EV_TestedLed(DynaboxData* pdata)
 		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_HOMING
 	END_TRANSITION_MAP(pdata)
 }
-
-void Dynabox::EV_TestedElm(DynaboxData* pdata)
+*/
+void Dynabox::EV_TestElm(DynaboxData* pdata)
 {
+	pstate = &Dynabox::ST_TestingElm;
+	current_address = 1;
+	SLAVE_POLL_START;
+
 	BEGIN_TRANSITION_MAP								// current state
- //       TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_INIT
-		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_TESTING_LED
-		TRANSITION_MAP_ENTRY(ST_HOMING)					// ST_TESTING_ELM
+		TRANSITION_MAP_ENTRY(ST_TESTING_ELM)			// ST_TESTING_LED
+		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_TESTING_ELM
 		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_HOMING
 	END_TRANSITION_MAP(pdata)
 }

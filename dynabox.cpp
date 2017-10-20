@@ -12,22 +12,22 @@
 Dynabox::Dynabox() : faults_to_led_map {
 	0,									// not used
 	0,									// F01, impossible
-	COMM_RED_1PULSE,					// F02
-	COMM_RED_2PULSES,					// F03
-	COMM_RED_ON,						// F04
-	COMM_RED_3PULSES,					// F05
-	COMM_GREEN_RED_BLINK, 				// F06
-	COMM_GREEN_RED_BLINK,				// F07
-	COMM_GREEN_RED_BLINK,				// F08
+	COMM_LED_RED_1PULSE,					// F02
+	COMM_LED_RED_2PULSES,					// F03
+	COMM_LED_RED_ON,						// F04
+	COMM_LED_RED_3PULSES,					// F05
+	COMM_LED_GREEN_RED_BLINK, 				// F06
+	COMM_LED_GREEN_RED_BLINK,				// F07
+	COMM_LED_GREEN_RED_BLINK,				// F08
 	0,									// not used
 	0, 									// F10, not used
-	COMM_RED_BLINK,						// F11
-	COMM_RED_BLINK, 					// F12
-	COMM_RED_ON, 						// F13
-	COMM_RED_BLINK, 					// F14
+	COMM_LED_RED_BLINK,						// F11
+	COMM_LED_RED_BLINK, 					// F12
+	COMM_LED_RED_ON, 						// F13
+	COMM_LED_RED_BLINK, 					// F14
 	0,									// F15, not used
 	0, 									// F16, not used
-	COMM_RED_BLINK	 					// F17
+	COMM_LED_RED_BLINK	 					// F17
 }
 {
 	led_same_for_all = 0;

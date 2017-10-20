@@ -11,36 +11,6 @@
 #include "modbus_tcp.h"
 /*
 
-void Dynabox::ParseCheckLed(uint8_t* frame)
-{
-	if(frame[0] == current_address + LED_ADDRESS_OFFSET)
-	{
-		if(current_address == last_address)
-		{
-			SLAVES_POLL_STOP;
-			EV_TestedLed(NULL);
-		}
-		else
-			current_address++;
-	}
-}
-
-
-void Dynabox::CommandCheckElectromagnet()
-{
-	if(current_address == last_address + 1)
-	{
-		SLAVES_POLL_STOP;
-		EV_TestedElm(NULL);
-	}
-	else
-	{
-		SLAVES_POLL_TIMEOUT_SET;
-//		comm.Prepare(current_address, current_command);
-		comm.Prepare(current_address + LED_ADDRESS_OFFSET, COMM_GREEN_ON_FOR_TIME);
-	}
-}
-
 void Dynabox::ParseCheckElectromagnet(uint8_t* frame)
 {
 	if(frame[0] == current_address)
