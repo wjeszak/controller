@@ -98,13 +98,13 @@ void Dynabox::CommandShowStatusOnLed()
 	if(led_same_for_all == 0xFF)
 	{
 		uint16_t status = mb.GetHoldingRegister(current_address + 1);
-		if((status >> 8) != last_fault[current_address])
-		{
-			uint8_t command = faults_to_led_map[status >> 8];
-			comm.Prepare(current_address + LED_ADDRESS_OFFSET, command + 0x80);
-			last_fault[current_address] = status >> 8;
-			need_send_to_led = true;
-		}
+//		if((status >> 8) != last_fault[current_address])
+//		{
+//			uint8_t command = faults_to_led_map[status >> 8];
+//			comm.Prepare(current_address + LED_ADDRESS_OFFSET, command + 0x80);
+//			last_fault[current_address] = status >> 8;
+//			need_send_to_led = true;
+//		}
 
 		if((status & 0xFF) == 0x80)
 		{

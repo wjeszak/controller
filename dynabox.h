@@ -11,8 +11,6 @@
 #include "machine.h"
 #include "usart.h"
 
-#define MAX_DOORS 						7
-
 #define NUMBER_OF_FAULTS 				17
 #define NO_FAULT						0x00
 #define F01_LED							0x01
@@ -71,7 +69,7 @@ private:
 		STATE_MAP_ENTRY(&Dynabox::ST_Homing)
 	END_STATE_MAP
 	uint8_t faults_to_led_map[NUMBER_OF_FAULTS + 1];
-	uint8_t last_fault[MAX_DOORS + 1];
+//	uint8_t last_fault[MAX_DOORS + 1];
 	void (Dynabox::*pstate)(DynaboxData *pdata);
 //	void (Dynabox::*pparse)(uint8_t* frame);
 //	void (Dynabox::*ptimeout)();

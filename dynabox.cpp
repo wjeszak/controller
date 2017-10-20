@@ -5,49 +5,10 @@
  *      Author: tomek
  */
 
-#include <avr/pgmspace.h>
-#include <avr/eeprom.h>
-#include "dynabox.h"
-#include "motor.h"
 #include "timer.h"
-#include "display.h"
-#include "config.h"
 #include "comm_prot.h"
-#include "modbus_tcp.h"
+#include "dynabox.h"
 
-#define DYNABOX_NUMBER_OF_FUNCTIONS 		10
-
-void f12()
-{
-	//display.Write(5555);
-}
-// default values
-Function EEMEM dynabox_eem_functions[DYNABOX_NUMBER_OF_FUNCTIONS] =
-{
-//   No.of function, 	default value,  function pointer
-	{1, 				25, 			NULL},	// program address door or led
-	{2, 				13, 			NULL},	// max doors
-	{4,					0, 				f12},	// test led
-	{5,					170,  			NULL},	// IP master
-	{6,					0,  			f12},	// test door
-	{7,					0,  			f12},	// test led
-	{8,					100,  			NULL},	// offset
-	{9,					0,  			f12},	// load defaults
-	{10,				25,  			NULL},	// led brightness
-	{28, 				0,				NULL},	// type of machine
-};
-
-void Dynabox::LoadSupportedFunctions()
-{
-	eeprom_read_block(&functions, &dynabox_eem_functions, FUNCTION_RECORD_SIZE * DYNABOX_NUMBER_OF_FUNCTIONS);
-	config.number_of_functions = DYNABOX_NUMBER_OF_FUNCTIONS;
-}
-
-void Dynabox::SaveParameters()
-{
-	eeprom_update_block(&functions, &dynabox_eem_functions, FUNCTION_RECORD_SIZE * DYNABOX_NUMBER_OF_FUNCTIONS);
-}
-// ------------------------------------------------------------------
 Dynabox::Dynabox() : faults_to_led_map {
 	0,									// not used
 	0,									// F01, impossible
@@ -71,10 +32,10 @@ Dynabox::Dynabox() : faults_to_led_map {
 {
 	current_address =  1;
 	first_address = 1;
-	last_address =  MAX_DOORS;
 	d->faults = 0;
-	for(uint8_t i = 0; i <= MAX_DOORS; i++) last_fault[i] = 0;
+//	for(uint8_t i = 0; i <= MAX_DOORS; i++) last_fault[i] = 0;
 	led_same_for_all = 0;
+	pstate = NULL;
 }
 
 void Dynabox::Init()
