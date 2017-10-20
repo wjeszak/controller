@@ -30,9 +30,6 @@ Dynabox::Dynabox() : faults_to_led_map {
 	COMM_RED_BLINK	 					// F17
 }
 {
-	current_address =  1;
-	first_address = 1;
-//	for(uint8_t i = 0; i <= MAX_DOORS; i++) last_fault[i] = 0;
 	led_same_for_all = 0;
 	pstate = NULL;
 }
@@ -45,18 +42,18 @@ void Dynabox::Init()
 
 void Dynabox::EV_EnterToConfig()
 {
-	SLAVES_POLL_STOP;
+	SLAVE_POLL_STOP;
 	timer.Disable(TIMER_FAULT_SHOW);
 }
 
-void Dynabox::SlavesPoll()
+void Dynabox::SlavePoll()
 {
 	(this->*pstate)(&dynabox_data);
 }
 
-void Dynabox::Parse(uint8_t* frame)
+void Dynabox::SlaveParse(uint8_t* frame)
 {
-	SLAVES_POLL_TIMEOUT_OFF;
+	SLAVE_POLL_TIMEOUT_OFF;
 	if(comm.Crc8(frame, 2) == frame[2])
 	{
 		dynabox_data.comm_status = CommStatusReply;
@@ -64,9 +61,9 @@ void Dynabox::Parse(uint8_t* frame)
 	}
 }
 
-void Dynabox::ReplyTimeout()
+void Dynabox::SlaveTimeout()
 {
-	SLAVES_POLL_TIMEOUT_OFF;
+	SLAVE_POLL_TIMEOUT_OFF;
 	dynabox_data.comm_status = CommStatusTimeout;
 	(this->*pstate)(&dynabox_data);
 }

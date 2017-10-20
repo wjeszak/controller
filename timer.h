@@ -19,21 +19,21 @@
 #define NUMBER_OF_TIMERS 				10
 
 #define TIMER_DISPLAY_REFRESH 			0
-//#define TIMER_INIT_COUNTDOWN 			1
-#define TIMER_BUTTON_POLL				2
-#define TIMER_ENCODER_POLL			 	3
-#define TIMER_SLAVES_POLL 				4
-#define TIMER_REPLY_TIMEOUT 			5
-#define TIMER_MOTOR_ACCELERATE 			6
-#define TIMER_FAULT_SHOW 				7
+#define TIMER_BUTTON_POLL				1
+#define TIMER_ENCODER_POLL			 	2
+#define TIMER_SLAVE_POLL 				3
+#define TIMER_SLAVE_TIMEOUT 			4
+#define TIMER_MOTOR_ACCELERATE 			5
+#define TIMER_FAULT_SHOW 				6
 
-#define SLAVES_POLL_INTERVAL 			1000
-#define SLAVES_REPLY_TIMEOUT 			500
+#define SLAVE_POLL_INTERVAL 			1000
+#define SLAVE_TIMEOUT_INTERVAL 			500
 
-#define SLAVES_POLL_START 				timer.Assign(TIMER_SLAVES_POLL, SLAVES_POLL_INTERVAL, SlavesPollGeneral)
-#define SLAVES_POLL_STOP				timer.Disable(TIMER_SLAVES_POLL);
-#define SLAVES_POLL_TIMEOUT_SET			timer.Assign(TIMER_REPLY_TIMEOUT, SLAVES_REPLY_TIMEOUT, ReplyTimeoutGeneral);
-#define SLAVES_POLL_TIMEOUT_OFF			timer.Disable(TIMER_REPLY_TIMEOUT);
+#define SLAVE_POLL_START 				timer.Assign(TIMER_SLAVE_POLL, SLAVE_POLL_INTERVAL, SlavePollGeneral)
+#define SLAVE_POLL_STOP					timer.Disable(TIMER_SLAVE_POLL);
+#define SLAVE_POLL_TIMEOUT_SET			timer.Assign(TIMER_SLAVE_TIMEOUT, SLAVE_TIMEOUT_INTERVAL, SlaveTimeoutGeneral);
+#define SLAVE_POLL_TIMEOUT_OFF			timer.Disable(TIMER_SLAVE_TIMEOUT);
+
 enum T2Prescallers
 {
 	T2_PS_0    = 0,
@@ -71,9 +71,8 @@ extern Timer timer;
 extern void DisplayRefresh();
 extern void ButtonPoll();
 extern void EncoderPoll();
-extern void SlavesPoll();
-extern void ReplyTimeoutGeneral();
-extern void SlavesPollGeneral();
+extern void SlavePollGeneral();
+extern void SlaveTimeoutGeneral();
 extern void MotorAccelerate();
 extern void FaultShow();
 

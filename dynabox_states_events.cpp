@@ -17,7 +17,7 @@ void Dynabox::ST_TestingLed(DynaboxData* pdata)
 {
 	if(current_address == functions[1].param + 1)
 	{
-		SLAVES_POLL_TIMEOUT_OFF; SLAVES_POLL_STOP;
+		SLAVE_POLL_TIMEOUT_OFF; SLAVE_POLL_STOP;
 		//EV_TestedLed(NULL);
 		return;
 	}
@@ -25,7 +25,7 @@ void Dynabox::ST_TestingLed(DynaboxData* pdata)
 	if(pdata->comm_status == CommStatusRequest)
 	{
 		comm.Prepare(current_address++ + LED_ADDRESS_OFFSET, COMM_LED_DIAG);
-		SLAVES_POLL_TIMEOUT_SET;
+		SLAVE_POLL_TIMEOUT_SET;
 		return;
 	}
 
@@ -59,7 +59,7 @@ void Dynabox::EV_TestLed(DynaboxData* pdata)
 {
 	pstate = &Dynabox::ST_TestingLed;
 	current_address = 1;
-	SLAVES_POLL_START;
+	SLAVE_POLL_START;
 //	BEGIN_TRANSITION_MAP								// current state
 //        TRANSITION_MAP_ENTRY(ST_TESTING_LED)			// ST_INIT
 //		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_TESTING_LED

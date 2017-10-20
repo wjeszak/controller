@@ -40,23 +40,16 @@ class Dynabox : public Machine
 {
 public:
 	Dynabox();
+	void LoadSupportedFunctions();
+	void SaveParameters();
 	void Init();
 	void EV_EnterToConfig();
 	void EV_TestLed(DynaboxData* pdata);
 	void EV_TestedLed(DynaboxData* pdata);
 	void EV_TestedElm(DynaboxData* pdata);
-	void LoadSupportedFunctions();
-	void SaveParameters();
-	void CommandCheckElectromagnet();
-	void CommandShowStatusOnLed();
-	void CommandGetSetState();
-	void Parse(uint8_t* frame);
-	void ParseCheckElectromagnet(uint8_t* frame);
-	void ParseGetSetState(uint8_t* frame);
-	void TimeoutDoor();
-	void PCCheckTransoptorsGetStatus(uint8_t res);
-	void SlavesPoll();
-	void ReplyTimeout();
+	void SlavePoll();
+	void SlaveParse(uint8_t* frame);
+	void SlaveTimeout();
 	uint8_t led_same_for_all;
 private:
 	void ST_TestingLed(DynaboxData* pdata);
@@ -69,10 +62,7 @@ private:
 		STATE_MAP_ENTRY(&Dynabox::ST_Homing)
 	END_STATE_MAP
 	uint8_t faults_to_led_map[NUMBER_OF_FAULTS + 1];
-//	uint8_t last_fault[MAX_DOORS + 1];
 	void (Dynabox::*pstate)(DynaboxData *pdata);
-//	void (Dynabox::*pparse)(uint8_t* frame);
-//	void (Dynabox::*ptimeout)();
 };
 
 extern Dynabox dynabox;

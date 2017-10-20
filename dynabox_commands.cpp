@@ -24,7 +24,8 @@ void Dynabox::ParseCheckLed(uint8_t* frame)
 			current_address++;
 	}
 }
-*/
+
+
 void Dynabox::CommandCheckElectromagnet()
 {
 	if(current_address == last_address + 1)
@@ -137,3 +138,4 @@ void Dynabox::CommandShowStatusOnLed()
 	else
 		current_address++;
 }
+*/

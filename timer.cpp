@@ -6,14 +6,12 @@
  */
 
 #include <avr/interrupt.h>
-#include <stdio.h>
 #include "timer.h"
 #include "fault.h"
 #include "button.h"
 #include "comm_prot.h"
 #include "config.h"
 #include "display.h"
-#include "usart.h"
 #include "motor.h"
 #include "encoder.h"
 #include "machine.h"
@@ -78,6 +76,10 @@ void Timer::Disable(uint8_t handler_id)
 	timer_handlers[handler_id].active = false;
 }
 
+ISR(TIMER2_COMPB_vect)
+{
+	timer.Irq();
+}
 // ----------------------------------------------------------------------------------
 // TIMER_DISPLAY_REFRESH
 void DisplayRefresh()
@@ -105,15 +107,15 @@ void EncoderPoll()
 	encoder.Poll();
 }
 
-void SlavesPollGeneral()
+void SlavePollGeneral()
 {
-	m->SlavesPoll();
+	m->SlavePoll();
 }
 
-void ReplyTimeoutGeneral()
+void SlaveTimeoutGeneral()
 {
-	SLAVES_POLL_TIMEOUT_OFF;
-	m->ReplyTimeout();
+	SLAVE_POLL_TIMEOUT_OFF;
+	m->SlaveTimeout();
 }
 
 // TIMER_MOTOR_ACCELERATE
@@ -126,9 +128,4 @@ void MotorAccelerate()
 void FaultShow()
 {
 	fault.Show();
-}
-
-ISR(TIMER2_COMPB_vect)
-{
-	timer.Irq();
 }

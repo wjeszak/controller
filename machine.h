@@ -24,20 +24,19 @@ class Machine : public StateMachine
 {
 public:
 	Machine();
-	virtual void Init() {}
-	virtual void EV_EnterToConfig() {}
 	virtual void LoadSupportedFunctions() {}
 	virtual void SaveParameters() {}
-	virtual void Parse(uint8_t* frame) {}
-	virtual void SlavesPoll() {}
-	virtual void ReplyTimeout() {}
-	uint8_t first_address, last_address, current_address;
+	virtual void Init() {}
+	virtual void EV_EnterToConfig() {}
+	virtual void SlavePoll() {}
+	virtual void SlaveParse(uint8_t* frame) {}
+	virtual void SlaveTimeout() {}
+	uint8_t current_address;
 private:
 	enum States {ST_MAX_STATES};
 };
 
 extern Machine* m;
-extern MachineData* d;
 
 extern void GetPointerTypeOfMachine(uint8_t type);
 
