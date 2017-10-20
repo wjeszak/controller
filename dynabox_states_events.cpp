@@ -11,6 +11,7 @@
 #include "dynabox.h"
 #include "motor.h"
 #include "modbus_tcp.h"
+#include "fault.h"
 
 // ----------------------- States -----------------------
 void Dynabox::ST_TestingLed(DynaboxData* pdata)
@@ -22,24 +23,24 @@ void Dynabox::ST_TestingLed(DynaboxData* pdata)
 		return;
 	}
 
-	if(pdata->comm_status == CommStatusRequest)
+	switch(pdata->comm_status)
 	{
+	case CommStatusRequest:
 		comm.Prepare(current_address++ + LED_ADDRESS_OFFSET, COMM_LED_DIAG);
 		SLAVE_POLL_TIMEOUT_SET;
 		return;
-	}
-
-	if(pdata->comm_status == CommStatusReply)
-	{
+	break;
+	case CommStatusReply:
+		//if(frame[0] == current_address + LED_ADDRESS_OFFSET)
 		pdata->comm_status = CommStatusRequest;
 		return;
-	}
-	if(pdata->comm_status == CommStatusTimeout)
-	{
-//		m->SetFault(F01_LED);
+	break;
+	case CommStatusTimeout:
+		fault.Set(F01_LED);
 		mb.UpdateHoldingRegister(current_address, F01_LED << 8);
 		pdata->comm_status = CommStatusRequest;
 		return;
+	break;
 	}
 }
 
