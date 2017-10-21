@@ -167,7 +167,7 @@ void Motor::ST_Acceleration(MotorData* pdata)
 {
 	SetDirection(Forward);
 	//SetDirection(Backward);
-	SetSpeed(60);
+	SetSpeed(20);
 	MOTOR_ENCODER_ENABLE
 	MOTOR_HOME_IRQ_ENABLE;
 	actual_speed = 0;

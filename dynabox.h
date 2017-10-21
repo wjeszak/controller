@@ -45,6 +45,7 @@ public:
 	void EV_EnterToConfig();
 	void EV_TestLed(DynaboxData* pdata);
 	void EV_TestElm(DynaboxData* pdata);
+	void EV_GetDoorsState(DynaboxData* pdata);
 	void EV_NeedMovement(DynaboxData* pdata);
 	void SlavePoll();
 	void SlaveParse(uint8_t* frame);
@@ -53,11 +54,13 @@ public:
 private:
 	void ST_TestingLed(DynaboxData* pdata);
 	void ST_TestingElm(DynaboxData* pdata);
+	void ST_CheckingDoorsState(DynaboxData* pdata);
 	void ST_Homing(DynaboxData* pdata);
-	enum States {ST_TESTING_LED, ST_TESTING_ELM, ST_HOMING, ST_MAX_STATES};
+	enum States {ST_TESTING_LED, ST_TESTING_ELM, ST_CHECKING_DOORS_STATE, ST_HOMING, ST_MAX_STATES};
 	BEGIN_STATE_MAP
 		STATE_MAP_ENTRY(&Dynabox::ST_TestingLed)
 		STATE_MAP_ENTRY(&Dynabox::ST_TestingElm)
+		STATE_MAP_ENTRY(&Dynabox::ST_CheckingDoorsState)
 		STATE_MAP_ENTRY(&Dynabox::ST_Homing)
 	END_STATE_MAP
 	uint8_t faults_to_led_map[NUMBER_OF_FAULTS + 1];
