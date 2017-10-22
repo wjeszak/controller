@@ -39,7 +39,7 @@ class Dynabox : public Machine
 {
 public:
 	Dynabox();
-	void LoadSupportedFunctions();
+	void LoadParameters();
 	void SaveParameters();
 	void Init();
 	void EV_EnterToConfig();

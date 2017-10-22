@@ -24,7 +24,7 @@ class Machine : public StateMachine
 {
 public:
 	Machine();
-	virtual void LoadSupportedFunctions() {}
+	virtual void LoadParameters() {}
 	virtual void SaveParameters() {}
 	virtual void Init() {}
 	virtual void EV_EnterToConfig() {}

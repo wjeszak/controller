@@ -25,7 +25,7 @@ ModbusTCP::ModbusTCP()
 
 	//Registers[44] = 128;
 	//Registers[45] = 13 << 8 | 36;
-	Registers[45] = 13 << 8 | 36;
+
 	Registers[46] = 1;			// Serial number
 	//Registers[47] = (1 << 0) | (1 << 2) | (1 << 3) | (1 << 4) | (1 << 5) | (1 << 6);
 	//Registers[49] = 3000;

@@ -18,7 +18,7 @@ void Boot()
 	uint8_t mt = eeprom_read_byte(&machine_type);
 	GetPointerTypeOfMachine(mt);
 	m->Init();
-	m->LoadSupportedFunctions();
+	m->LoadParameters();
 	sei();
 	timer.Assign(TIMER_DISPLAY_REFRESH, 4, DisplayRefresh);
 	timer.Assign(TIMER_ENCODER_POLL, 1, EncoderPoll);

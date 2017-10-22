@@ -8,6 +8,7 @@
 #include <avr/eeprom.h>
 #include "config.h"
 #include "dynabox.h"
+#include "modbus_tcp.h"
 
 #define DYNABOX_NUMBER_OF_FUNCTIONS 		10
 
@@ -33,13 +34,15 @@ Function EEMEM dynabox_eem_functions[DYNABOX_NUMBER_OF_FUNCTIONS] =
 	{28, 				0,				NULL},	// type of machine
 };
 
-void Dynabox::LoadSupportedFunctions()
+void Dynabox::LoadParameters()
 {
 	eeprom_read_block(&functions, &dynabox_eem_functions, FUNCTION_RECORD_SIZE * DYNABOX_NUMBER_OF_FUNCTIONS);
 	config.number_of_functions = DYNABOX_NUMBER_OF_FUNCTIONS;
+	mb.UpdateHoldingRegister(TYPE_OF_MACHINE, (functions[1].param << 8 | 36));
 }
 
 void Dynabox::SaveParameters()
 {
 	eeprom_update_block(&functions, &dynabox_eem_functions, FUNCTION_RECORD_SIZE * DYNABOX_NUMBER_OF_FUNCTIONS);
+	mb.UpdateHoldingRegister(TYPE_OF_MACHINE, (functions[1].param << 8 | 36));
 }
