@@ -19,12 +19,7 @@
 // ----------------------- States -----------------------
 void Dynabox::ST_TestingLed(DynaboxData* pdata)
 {
-	if(current_address == functions[1].param + 1)
-	{
-		SLAVE_POLL_TIMEOUT_OFF; SLAVE_POLL_STOP;
-		EV_TestElm(pdata);
-		return;
-	}
+
 
 	switch(pdata->comm_status)
 	{
@@ -44,6 +39,13 @@ void Dynabox::ST_TestingLed(DynaboxData* pdata)
 		pdata->comm_status = CommStatusRequest;
 		return;
 	break;
+	}
+
+	if(current_address == functions[1].param + 1)
+	{
+		SLAVE_POLL_TIMEOUT_OFF; SLAVE_POLL_STOP;
+		EV_TestElm(pdata);
+		return;
 	}
 }
 
