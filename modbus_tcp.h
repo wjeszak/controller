@@ -84,7 +84,6 @@ private:
 	void ReadHoldingRegistersReply(uint8_t* frame);
 	void WriteMultipleRegistersReply(uint8_t* frame);
 	void SendErrorFrame(uint8_t* frame, uint8_t error_code);
-	void AnalizeMultipleRegisters();
 	uint16_t Registers[MODBUS_TCP_NUMBER_OF_REG];
 	uint16_t trans_id;
 	uint16_t prot_id;

@@ -183,8 +183,8 @@ void ModbusTCP::SendErrorFrame(uint8_t* frame, uint8_t error_code)
 	stack_data.len = 9;
 }
 
-void ModbusTCP::AnalizeMultipleRegisters()
-{
+//void ModbusTCP::AnalizeMultipleRegisters()
+//{
 	// ---------------- tutaj dziala polimorfizm ----------------
 	// testowo, dla pokazania idei
 	// w zaleznosci od ustawienia wskaznika 'm' w funcji main() uruchomi sie odpowiednia funkcja StartupTest()
@@ -200,4 +200,4 @@ void ModbusTCP::AnalizeMultipleRegisters()
 	//}
 	//	if(Registers[0] > 0) m->SetFault(Registers[0]);
 	//	if(Registers[1] > 0) m->ClearFault(Registers[1]);
-}
+//}

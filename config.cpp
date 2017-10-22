@@ -27,7 +27,7 @@ Config::Config() : StateMachine(ST_MAX_STATES)
 
 void Config::EV_ButtonClick(ConfigData* pdata)
 {
-	m->EV_EnterToConfig();
+	if(current_state == ST_IDLE) m->EV_EnterToConfig();
 	if(current_state == ST_CHOOSING_FUNCTION)
 	{
 		// exit from configuration
@@ -35,20 +35,18 @@ void Config::EV_ButtonClick(ConfigData* pdata)
 		timer.Assign(TIMER_FAULT_SHOW, 1000, FaultShow);
 	}
 	BEGIN_TRANSITION_MAP								// current state
-        TRANSITION_MAP_ENTRY(ST_CHOOSING_FUNCTION)		// ST_INIT
-        TRANSITION_MAP_ENTRY(ST_DONE)					// ST_CHOOSING_FUNCTION
+        TRANSITION_MAP_ENTRY(ST_CHOOSING_FUNCTION)		// ST_IDLE
+        TRANSITION_MAP_ENTRY(ST_IDLE)					// ST_CHOOSING_FUNCTION
         TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_EXECUTING_FUNCTION
-        TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_DONE
     END_TRANSITION_MAP(pdata)
 }
 
 void Config::EV_Encoder(ConfigData* pdata)
 {
     BEGIN_TRANSITION_MAP								// current state
-        TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_INIT
+        TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_IDLE
     	TRANSITION_MAP_ENTRY(ST_CHOOSING_FUNCTION)		// ST_CHOOSING_FUNCTION
         TRANSITION_MAP_ENTRY(ST_EXECUTING_FUNCTION)		// ST_EXECUTING_FUNCTION
-        TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_DONE
     END_TRANSITION_MAP(pdata)
 }
 
@@ -70,10 +68,9 @@ void Config::EV_EncoderClick(ConfigData* pdata)
 			timer.Assign(TIMER_ENCODER_POLL, 1, EncoderPoll);
 		}
 		BEGIN_TRANSITION_MAP								// current state
-        	TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_INIT
+        	TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_IDLE
         	TRANSITION_MAP_ENTRY(ST_EXECUTING_FUNCTION)		// ST_CHOOSING_FUNCTION
 			TRANSITION_MAP_ENTRY(ST_CHOOSING_FUNCTION)		// ST_EXECUTING_FUNCTION
-			TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_DONE
 		END_TRANSITION_MAP(pdata)
 	}
 }
@@ -112,13 +109,4 @@ void Config::ST_ExecutingFunction(ConfigData* pdata)
 		display.Write(TParameterValue, pdata->val);
 		functions[index].param = pdata->val;
 	}
-}
-
-void Config::ST_Done(ConfigData* pdata)
-{
-//	timer.Disable(TIMER_BUTTON_POLL);
-//	timer.Disable(TIMER_ENCODER_POLL);
-	//timer.Assign(TIMER_SHOW_FAULT, 1000, ShowFault);
-	// odpalenie maszyny
-	//m->InternalEvent(ST_INIT, NULL);
 }

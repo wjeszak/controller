@@ -36,7 +36,7 @@ class Config : public StateMachine
 {
 public:
 	Config();
-	void SetSupportedFunctions(uint8_t number_of_functions);
+//	void SetSupportedFunctions(uint8_t number_of_functions);
 	// Events
 	void EV_ButtonClick(ConfigData* pdata);
 	void EV_Encoder(ConfigData* pdata);
@@ -48,13 +48,11 @@ private:
 	void ST_Idle(ConfigData* pdata);
 	void ST_ChoosingFunction(ConfigData* pdata);
 	void ST_ExecutingFunction(ConfigData* pdata);
-	void ST_Done(ConfigData* pdata);
-	enum States {ST_IDLE = 0, ST_CHOOSING_FUNCTION, ST_EXECUTING_FUNCTION, ST_DONE, ST_MAX_STATES};
+	enum States {ST_IDLE = 0, ST_CHOOSING_FUNCTION, ST_EXECUTING_FUNCTION, ST_MAX_STATES};
 	BEGIN_STATE_MAP
 		STATE_MAP_ENTRY(&Config::ST_Idle)
 		STATE_MAP_ENTRY(&Config::ST_ChoosingFunction)
 		STATE_MAP_ENTRY(&Config::ST_ExecutingFunction)
-		STATE_MAP_ENTRY(&Config::ST_Done)
 	END_STATE_MAP
 	uint8_t index;
 };
