@@ -31,12 +31,14 @@ public:
 	virtual void SlavePoll() {}
 	virtual void SlaveParse(uint8_t* frame) {}
 	virtual void SlaveTimeout() {}
+	virtual void EV_UserAction(MachineData* pdata) {}
 	uint8_t current_address;
 private:
 	enum States {ST_MAX_STATES};
 };
 
 extern Machine* m;
+extern MachineData* d;
 
 extern void GetPointerTypeOfMachine(uint8_t type);
 

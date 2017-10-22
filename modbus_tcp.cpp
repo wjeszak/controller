@@ -11,6 +11,8 @@
 #include "machine.h"
 #include "motor.h"
 #include "comm_prot.h"
+#include "display.h"
+#include "dynabox.h"
 
 ModbusTCP::ModbusTCP()
 {
@@ -102,7 +104,9 @@ void ModbusTCP::WriteMultipleRegisters(uint8_t* frame)
 	{
 		UpdateMultipleRegisters(frame, starting_address, quantity);
 		WriteMultipleRegistersReply(frame);
-		AnalizeMultipleRegisters();
+		// ----------------------------- User action ----------------------------------
+		m->EV_UserAction(d);
+		// ----------------------------- User action ----------------------------------
 	}
 }
 

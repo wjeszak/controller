@@ -47,6 +47,7 @@ public:
 	void EV_TestElm(DynaboxData* pdata);
 	void EV_GetDoorsState(DynaboxData* pdata);
 	void EV_NeedMovement(DynaboxData* pdata);
+	void EV_UserAction(MachineData* pdata);
 	void SlavePoll();
 	void SlaveParse(uint8_t* frame);
 	void SlaveTimeout();
@@ -56,6 +57,7 @@ private:
 	void ST_TestingElm(DynaboxData* pdata);
 	void ST_CheckingDoorsState(DynaboxData* pdata);
 	void ST_Homing(DynaboxData* pdata);
+	void ST_Test(DynaboxData* pdata);
 	enum States {ST_TESTING_LED, ST_TESTING_ELM, ST_CHECKING_DOORS_STATE, ST_HOMING, ST_MAX_STATES};
 	BEGIN_STATE_MAP
 		STATE_MAP_ENTRY(&Dynabox::ST_TestingLed)

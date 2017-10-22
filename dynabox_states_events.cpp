@@ -13,6 +13,7 @@
 #include "modbus_tcp.h"
 #include "usart.h"
 #include "fault.h"
+#include "display.h"
 #include <util/delay.h>
 
 // ----------------------- States -----------------------
@@ -172,6 +173,21 @@ void Dynabox::EV_GetDoorsState(DynaboxData* pdata)
 		TRANSITION_MAP_ENTRY(ST_CHECKING_DOORS_STATE)	// ST_TESTING_ELM
 		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_HOMING
 	END_TRANSITION_MAP(pdata)
+}
+
+void Dynabox::EV_UserAction(MachineData* pdata)
+{
+	BEGIN_TRANSITION_MAP								// current state
+		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_TESTING_LED
+		TRANSITION_MAP_ENTRY(ST_HOMING)					// ST_TESTING_ELM
+		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_CHECKING_DOORS_STATE
+		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_HOMING
+	END_TRANSITION_MAP(pdata)
+}
+
+void Dynabox::ST_Test(DynaboxData* pdata)
+{
+	display.Write(1111);
 }
 
 void Dynabox::EV_NeedMovement(DynaboxData* pdata)
