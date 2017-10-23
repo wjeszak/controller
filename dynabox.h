@@ -53,6 +53,7 @@ public:
 	void EV_EnterToConfig();
 	void EV_TestLed(DynaboxData* pdata);
 	void EV_TestElm(DynaboxData* pdata);
+	void EV_ShowOnLed(DynaboxData* pdata);
 	void EV_GetDoorsState(DynaboxData* pdata);
 	void EV_NeedMovement(DynaboxData* pdata);
 	void EV_UserAction(MachineData* pdata);

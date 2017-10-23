@@ -171,6 +171,11 @@ void Dynabox::EV_TestElm(DynaboxData* pdata)
 	END_TRANSITION_MAP(pdata)
 }
 
+void Dynabox::EV_ShowOnLed(DynaboxData* pdata)
+{
+
+}
+
 void Dynabox::EV_GetDoorsState(DynaboxData* pdata)
 {
 	pstate = &Dynabox::ST_CheckingDoorsState;
