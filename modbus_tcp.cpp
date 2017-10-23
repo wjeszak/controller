@@ -102,6 +102,16 @@ uint16_t ModbusTCP::GetHoldingRegister(uint8_t address)
 	return Registers[address];
 }
 
+void ModbusTCP::SetBitHoldingRegister(uint8_t address, uint8_t bit)
+{
+	Registers[address] |= (1 << bit);
+}
+
+void ModbusTCP::ClearBitHoldingRegister(uint8_t address, uint8_t bit)
+{
+	Registers[address] &= ~(1 << bit);
+}
+
 void ModbusTCP::PrepareMBAPHeader(uint8_t* frame)	// without length
 {
 	frame[MODBUS_TCP_TRANSACTION_ID_HI] = hi(trans_id);

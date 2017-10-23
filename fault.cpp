@@ -50,17 +50,17 @@ void Fault::ShowGlobal()
 
 void Fault::Set(uint8_t fault, uint8_t address)
 {
-	doors_faults[address - 1] |= (1 << fault);
+	doors_faults[address - 1] |= (1 << (fault - 1));
 }
 
 void Fault::Clear(uint8_t fault, uint8_t address)
 {
-	doors_faults[address - 1] &= ~(1 << fault);
+	doors_faults[address - 1] &= ~(1 << (fault - 1));
 }
 
 bool Fault::Check(uint8_t fault, uint8_t address)
 {
-	if(doors_faults[address - 1] & (1 << fault))
+	if(doors_faults[address - 1] & (1 << (fault - 1)))
 		return true;
 	return false;
 }

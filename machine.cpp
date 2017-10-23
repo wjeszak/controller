@@ -53,10 +53,10 @@ uint8_t Machine::GetOrderStatus()
 
 void Machine::SetIOInfo(uint8_t info)
 {
-	mb.UpdateHoldingRegister(IO_INFORMATIONS, (1 << info));
+	mb.SetBitHoldingRegister(IO_INFORMATIONS, info);
 }
 
 void Machine::ClearIOInfo(uint8_t info)
 {
-	mb.UpdateHoldingRegister(IO_INFORMATIONS, (0 << info));
+	mb.ClearBitHoldingRegister(IO_INFORMATIONS, info);
 }
