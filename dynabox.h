@@ -55,7 +55,7 @@ public:
 	void EV_TestElm(DynaboxData* pdata);
 	void EV_ShowOnLed(DynaboxData* pdata);
 	void EV_GetDoorsState(DynaboxData* pdata);
-	void EV_NeedMovement(DynaboxData* pdata);
+	void EV_NeedHoming(DynaboxData* pdata);
 	void EV_UserAction(MachineData* pdata);
 	void SlavePoll();
 	void SlaveParse(uint8_t* frame);

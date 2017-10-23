@@ -110,7 +110,7 @@ void Dynabox::ST_GettingDoorsState(DynaboxData* pdata)
 	if(LastAddress())
 	{
 		SLAVE_POLL_TIMEOUT_OFF; SLAVE_POLL_STOP;
-		EV_ShowOnLed(pdata);
+		EV_NeedHoming(pdata);
 	}
 }
 
@@ -137,12 +137,6 @@ void Dynabox::ST_ShowingOnLed(DynaboxData* pdata)
 
 void Dynabox::ST_Homing(DynaboxData* pdata)
 {
-//	led_same_for_all = COMM_LED_GREEN_RED_BLINK;
-	//for(uint8_t i = 1; i <= 7; i++)
-	//{
-	//	_delay_ms(500);
-		comm.Prepare(2 + LED_ADDRESS_OFFSET, COMM_LED_GREEN_3PULSES); //+ 0x80);
-	//}
 	motor.EV_Homing();
 }
 
@@ -220,12 +214,11 @@ void Dynabox::EV_UserAction(MachineData* pdata)
 	END_TRANSITION_MAP(pdata)
 }
 
-void Dynabox::EV_NeedMovement(DynaboxData* pdata)
+void Dynabox::EV_NeedHoming(DynaboxData* pdata)
 {
-//comm.Prepare(i + LED_ADDRESS_OFFSET, COMM_LED_GREEN_3PULSES); //+ 0x80);
 	BEGIN_TRANSITION_MAP								// current state
 		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_TESTING_LED
-		TRANSITION_MAP_ENTRY(ST_HOMING)					// ST_TESTING_ELM
-		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_HOMING
+		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_TESTING_ELM
+		TRANSITION_MAP_ENTRY(ST_HOMING)			// ST_GETTING_DOORS_STATE
 	END_TRANSITION_MAP(pdata)
 }
