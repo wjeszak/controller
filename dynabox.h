@@ -30,6 +30,14 @@
 #define F16_ORDER_REFUSED				0x10
 #define F17_24V_MISSSING				0x11
 
+#define IO_MOVING 						0
+#define IO_MOVING_DIRECTION 			1
+#define IO_HOMING_IN_PROGRESS 			2
+#define IO_HOMING_DONE 					3
+#define IO_MANUAL_OPERATION 			4
+#define IO_NORMAL_OPERATION 			5
+#define IO_SWITCH_DOOR 					6
+
 class DynaboxData : public MachineData
 {
 public:
@@ -57,13 +65,15 @@ private:
 	void ST_TestingElm(DynaboxData* pdata);
 	void ST_CheckingDoorsState(DynaboxData* pdata);
 	void ST_Homing(DynaboxData* pdata);
-	void ST_Test(DynaboxData* pdata);
-	enum States {ST_TESTING_LED, ST_TESTING_ELM, ST_CHECKING_DOORS_STATE, ST_HOMING, ST_MAX_STATES};
+	void ST_Ready(DynaboxData* pdata);
+	void ST_Config(DynaboxData* pdata);
+	enum States {ST_TESTING_LED, ST_TESTING_ELM, ST_CHECKING_DOORS_STATE, ST_HOMING, ST_READY, ST_CONFIG, ST_MAX_STATES};
 	BEGIN_STATE_MAP
 		STATE_MAP_ENTRY(&Dynabox::ST_TestingLed)
 		STATE_MAP_ENTRY(&Dynabox::ST_TestingElm)
 		STATE_MAP_ENTRY(&Dynabox::ST_CheckingDoorsState)
 		STATE_MAP_ENTRY(&Dynabox::ST_Homing)
+		STATE_MAP_ENTRY(&Dynabox::ST_Config)
 	END_STATE_MAP
 	uint8_t faults_to_led_map[NUMBER_OF_FAULTS + 1];
 	void (Dynabox::*pstate)(DynaboxData *pdata);
