@@ -76,19 +76,18 @@ void Dynabox::ST_TestingElm(DynaboxData* pdata)
 	if(LastAddress())
 	{
 		SLAVE_POLL_TIMEOUT_OFF; SLAVE_POLL_STOP;
-		EV_ShowOnLed(pdata);
-		//EV_GetDoorsState(pdata);
+		EV_GetDoorsState(pdata);
 	}
 }
 
-void Dynabox::ST_CheckingDoorsState(DynaboxData* pdata)
+void Dynabox::ST_GettingDoorsState(DynaboxData* pdata)
 {
 	switch(pdata->comm_status)
 	{
 	case CommStatusRequest:
-		comm.Prepare(current_address, 0x80);
-		current_address++;
+		comm.Prepare(current_address++, 0x80);
 		SLAVE_POLL_TIMEOUT_SET;
+		return;
 	break;
 	case CommStatusReply:
 		if(usart_data.frame[0] == current_address - 1)
@@ -111,19 +110,28 @@ void Dynabox::ST_CheckingDoorsState(DynaboxData* pdata)
 	if(LastAddress())
 	{
 		SLAVE_POLL_TIMEOUT_OFF; SLAVE_POLL_STOP;
-		//EV_GetDoorsState(pdata);
+		EV_ShowOnLed(pdata);
 	}
 }
 
 void Dynabox::ST_ShowingOnLed(DynaboxData* pdata)
 {
-	//if(fault.Check(F02_DOOR, current_address))
 	if(led_same_for_all)
-	comm.Prepare(current_address++ + LED_ADDRESS_OFFSET, faults_to_led_map[led_same_for_all_id] + 0x80);
+	{
+		comm.Prepare(current_address++ + LED_ADDRESS_OFFSET, faults_to_led_map[led_same_for_all_id] + 0x80);
+	}
+	else
+	{
+		if(fault.Check(F02_DOOR, current_address))
+			comm.Prepare(current_address + LED_ADDRESS_OFFSET, faults_to_led_map[2] + 0x80);
+		current_address++;
+	}
+
 	if(LastAddress())
 	{
 		SLAVE_POLL_STOP;
 		comm.LedTrigger();
+		led_same_for_all = false;
 	}
 }
 
@@ -184,20 +192,20 @@ void Dynabox::EV_ShowOnLed(DynaboxData* pdata)
 	pstate = &Dynabox::ST_ShowingOnLed;
 	current_address = 1;
 	SLAVE_POLL_START;
-	led_same_for_all = true;
-	led_same_for_all_id = 6;
+	//led_same_for_all = true;
+	//led_same_for_all_id = 6;
 	InternalEvent(ST_SHOWING_ON_LED);
 }
 
 void Dynabox::EV_GetDoorsState(DynaboxData* pdata)
 {
-	pstate = &Dynabox::ST_CheckingDoorsState;
+	pstate = &Dynabox::ST_GettingDoorsState;
 	current_address = 1;
 	SLAVE_POLL_START;
 
 	BEGIN_TRANSITION_MAP								// current state
 		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_TESTING_LED
-		TRANSITION_MAP_ENTRY(ST_CHECKING_DOORS_STATE)	// ST_TESTING_ELM
+		TRANSITION_MAP_ENTRY(ST_GETTING_DOORS_STATE)	// ST_TESTING_ELM
 		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_HOMING
 	END_TRANSITION_MAP(pdata)
 }
