@@ -30,7 +30,8 @@ Dynabox::Dynabox() : faults_to_led_map {
 	COMM_LED_RED_BLINK	 					// F17
 }
 {
-	led_same_for_all = 0;
+	led_same_for_all = false;
+	led_same_for_all_id = 0;
 	pstate = NULL;
 }
 

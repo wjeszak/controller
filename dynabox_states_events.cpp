@@ -14,7 +14,6 @@
 #include "usart.h"
 #include "fault.h"
 #include "display.h"
-#include <util/delay.h>
 
 // ----------------------- States -----------------------
 void Dynabox::ST_TestingLed(DynaboxData* pdata)
@@ -29,13 +28,11 @@ void Dynabox::ST_TestingLed(DynaboxData* pdata)
 	case CommStatusReply:
 		//if(frame[0] == current_address + LED_ADDRESS_OFFSET)
 		pdata->comm_status = CommStatusRequest;
-//		return;
 	break;
 	case CommStatusTimeout:
 		fault.SetGlobal(F01_LED);
 		mb.UpdateHoldingRegister(current_address, F01_LED << 8);
 		pdata->comm_status = CommStatusRequest;
-//		return;
 	break;
 	}
 
@@ -70,6 +67,7 @@ void Dynabox::ST_TestingElm(DynaboxData* pdata)
 	break;
 	case CommStatusTimeout:
 		fault.SetGlobal(F02_DOOR);
+		fault.Set(F02_DOOR, current_address - 1);
 		mb.UpdateHoldingRegister(current_address, F02_DOOR << 8);
 		pdata->comm_status = CommStatusRequest;
 	break;
@@ -78,7 +76,8 @@ void Dynabox::ST_TestingElm(DynaboxData* pdata)
 	if(LastAddress())
 	{
 		SLAVE_POLL_TIMEOUT_OFF; SLAVE_POLL_STOP;
-		EV_GetDoorsState(pdata);
+		EV_ShowOnLed(pdata);
+		//EV_GetDoorsState(pdata);
 	}
 }
 
@@ -90,7 +89,6 @@ void Dynabox::ST_CheckingDoorsState(DynaboxData* pdata)
 		comm.Prepare(current_address, 0x80);
 		current_address++;
 		SLAVE_POLL_TIMEOUT_SET;
-//		return;
 	break;
 	case CommStatusReply:
 		if(usart_data.frame[0] == current_address - 1)
@@ -102,13 +100,11 @@ void Dynabox::ST_CheckingDoorsState(DynaboxData* pdata)
 			//}
 		}
 		pdata->comm_status = CommStatusRequest;
-//		return;
 	break;
 	case CommStatusTimeout:
 		fault.SetGlobal(F02_DOOR);
 		mb.UpdateHoldingRegister(current_address, F02_DOOR << 8);
 		pdata->comm_status = CommStatusRequest;
-//		return;
 	break;
 	}
 
@@ -116,13 +112,19 @@ void Dynabox::ST_CheckingDoorsState(DynaboxData* pdata)
 	{
 		SLAVE_POLL_TIMEOUT_OFF; SLAVE_POLL_STOP;
 		//EV_GetDoorsState(pdata);
-//		return;
 	}
 }
 
 void Dynabox::ST_ShowingOnLed(DynaboxData* pdata)
 {
-
+	//if(fault.Check(F02_DOOR, current_address))
+	if(led_same_for_all)
+	comm.Prepare(current_address++ + LED_ADDRESS_OFFSET, faults_to_led_map[led_same_for_all_id] + 0x80);
+	if(LastAddress())
+	{
+		SLAVE_POLL_STOP;
+		comm.LedTrigger();
+	}
 }
 
 void Dynabox::ST_Homing(DynaboxData* pdata)
@@ -179,7 +181,12 @@ void Dynabox::EV_TestElm(DynaboxData* pdata)
 
 void Dynabox::EV_ShowOnLed(DynaboxData* pdata)
 {
-
+	pstate = &Dynabox::ST_ShowingOnLed;
+	current_address = 1;
+	SLAVE_POLL_START;
+	led_same_for_all = true;
+	led_same_for_all_id = 6;
+	InternalEvent(ST_SHOWING_ON_LED);
 }
 
 void Dynabox::EV_GetDoorsState(DynaboxData* pdata)
@@ -204,11 +211,6 @@ void Dynabox::EV_UserAction(MachineData* pdata)
 		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_HOMING
 	END_TRANSITION_MAP(pdata)
 }
-
-//void Dynabox::ST_Test(DynaboxData* pdata)
-//{
-//	display.Write(1111);
-//}
 
 void Dynabox::EV_NeedMovement(DynaboxData* pdata)
 {

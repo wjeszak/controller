@@ -60,7 +60,8 @@ public:
 	void SlavePoll();
 	void SlaveParse(uint8_t* frame);
 	void SlaveTimeout();
-	uint8_t led_same_for_all;
+	bool led_same_for_all;
+	uint8_t led_same_for_all_id;
 private:
 	void ST_TestingLed(DynaboxData* pdata);
 	void ST_TestingElm(DynaboxData* pdata);
