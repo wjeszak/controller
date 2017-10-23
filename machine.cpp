@@ -8,6 +8,7 @@
 #include "machine.h"
 #include "dynabox.h"
 #include "lockerbox.h"
+#include "config.h"
 
 void GetPointerTypeOfMachine(uint8_t type)
 {
@@ -30,4 +31,11 @@ void GetPointerTypeOfMachine(uint8_t type)
 Machine::Machine() : StateMachine(ST_MAX_STATES)
 {
 	current_address =  1;
+}
+
+bool Machine::LastAddress()
+{
+	if(current_address == functions[1].param + 1)
+		return true;
+	return false;
 }

@@ -13,6 +13,7 @@
 
 #define MACHINE_TYPE_DYNABOX 					0
 #define MACHINE_TYPE_LOCKERBOX 					1
+#define MACHINE_MAX_NUMBER_OF_DOORS				13
 
 class MachineData : public EventData
 {
@@ -24,6 +25,7 @@ class Machine : public StateMachine
 {
 public:
 	Machine();
+	bool LastAddress();
 	virtual void LoadParameters() {}
 	virtual void SaveParameters() {}
 	virtual void Init() {}

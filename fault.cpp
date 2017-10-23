@@ -11,34 +11,34 @@
 
 Fault::Fault()
 {
-	faults = 0;
+	global_faults = 0;
 }
 
-void Fault::Set(uint8_t fault)
+void Fault::SetGlobal(uint8_t fault)
 {
-	faults |= (1ULL << fault);
+	global_faults |= (1ULL << fault);
 	mb.UpdateHoldingRegister(GENERAL_ERROR_STATUS, fault);
 }
 
-void Fault::Clear(uint8_t fault)
+void Fault::ClearGlobal(uint8_t fault)
 {
-	faults &= ~(1ULL << fault);
+	global_faults &= ~(1ULL << fault);
 }
 
-bool Fault::Check(uint8_t fault)
+bool Fault::CheckGlobal(uint8_t fault)
 {
-	if(faults & (1ULL << fault)) return true;
+	if(global_faults & (1ULL << fault)) return true;
 	return false;
 }
 
-void Fault::Show()
+void Fault::ShowGlobal()
 {
 	static uint8_t i = 1;
-	if(faults == 0) { display.Write(TNoFault, 0); return; }
+	if(global_faults == 0) { display.Write(TNoFault, 0); return; }
 	while(i <= 18)
 	{
 		if(i == 18) i = 1;
-		if(faults & (1ULL << i))
+		if(global_faults & (1ULL << i))
 		{
 			display.Write(TFault, i);
 			i++;
@@ -46,4 +46,21 @@ void Fault::Show()
 		}
 		i++;
 	}
+}
+
+void Fault::Set(uint8_t fault, uint8_t address)
+{
+	doors_faults[address - 1] |= (1 << fault);
+}
+
+void Fault::Clear(uint8_t fault, uint8_t address)
+{
+	doors_faults[address - 1] &= ~(1 << fault);
+}
+
+bool Fault::Check(uint8_t fault, uint8_t address)
+{
+	if(doors_faults[address - 1] & (1 << fault))
+		return true;
+	return false;
 }

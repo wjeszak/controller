@@ -127,5 +127,5 @@ void MotorAccelerate()
 // TIMER_FAULT_SHOW
 void FaultShow()
 {
-	fault.Show();
+	fault.ShowGlobal();
 }
