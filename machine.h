@@ -26,6 +26,10 @@ class Machine : public StateMachine
 public:
 	Machine();
 	bool LastAddress();
+	void SetOrderStatus(uint8_t status);
+	uint8_t GetOrderStatus();
+	void SetIOInfo(uint8_t info);
+	void ClearIOInfo(uint8_t info);
 	virtual void LoadParameters() {}
 	virtual void SaveParameters() {}
 	virtual void Init() {}
