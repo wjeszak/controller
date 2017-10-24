@@ -36,7 +36,7 @@ Machine::Machine() : StateMachine(ST_MAX_STATES)
 
 bool Machine::LastAddress()
 {
-	if(current_address == functions[1].param + 1)
+	if(current_address == functions[1].param)
 		return true;
 	return false;
 }

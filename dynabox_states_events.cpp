@@ -18,20 +18,21 @@
 // ----------------------- States -----------------------
 void Dynabox::ST_TestingLed(DynaboxData* pdata)
 {
-	comm.Prepare(current_address++ + LED_ADDRESS_OFFSET, COMM_LED_DIAG);
+	comm.Prepare(current_address + LED_ADDRESS_OFFSET, COMM_LED_DIAG);
 	SLAVE_POLL_TIMEOUT_SET;
 
 	if(LastAddress())
 	{
-		SLAVE_POLL_STOP; //SLAVE_POLL_TIMEOUT_OFF;
+		SLAVE_POLL_STOP;
 //		EV_TestElm(pdata);
 	}
+	current_address++;
 }
 
 void Dynabox::ST_TestingElm(DynaboxData* pdata)
 {
 	comm.Prepare(current_address, COMM_DOOR_CHECK_ELECTROMAGNET);
-	comm.Prepare(current_address + LED_ADDRESS_OFFSET, COMM_LED_GREEN_ON_FOR_TIME);
+//	comm.Prepare(current_address + LED_ADDRESS_OFFSET, COMM_LED_GREEN_ON_FOR_TIME);
 	current_address++;
 	SLAVE_POLL_TIMEOUT_SET;
 
@@ -44,14 +45,10 @@ void Dynabox::ST_TestingElm(DynaboxData* pdata)
 //			}
 //		}
 
-//		fault.SetGlobal(F02_DOOR);
-//		fault.Set(F02_DOOR, current_address - 1);
-//		mb.UpdateHoldingRegister(current_address, F02_DOOR << 8);
-
 	if(LastAddress())
 	{
-		SLAVE_POLL_TIMEOUT_OFF; SLAVE_POLL_STOP;
-		EV_GetDoorsState(pdata);
+		SLAVE_POLL_STOP;
+		//EV_GetDoorsState(pdata);
 	}
 }
 
