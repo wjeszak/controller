@@ -32,12 +32,10 @@ Dynabox::Dynabox() : faults_to_led_map {
 {
 	led_same_for_all = false;
 	led_same_for_all_id = 0;
-	pstate = NULL;
 }
 
 void Dynabox::Init()
 {
-	dynabox_data.comm_status = CommStatusRequest;
 	EV_TestLed(&dynabox_data);
 }
 
@@ -47,24 +45,23 @@ void Dynabox::EV_EnterToConfig()
 	timer.Disable(TIMER_FAULT_SHOW);
 }
 
-void Dynabox::SlavePoll()
+void Dynabox::Scheduler()
 {
-	(this->*pstate)(&dynabox_data);
+	InternalEvent(GetState(), &dynabox_data);
 }
 
-void Dynabox::SlaveParse(uint8_t* frame)
+void Dynabox::EV_Parse(uint8_t* frame)
 {
 	SLAVE_POLL_TIMEOUT_OFF;
 	if(comm.Crc8(frame, 2) == frame[2])
 	{
-		dynabox_data.comm_status = CommStatusReply;
-		(this->*pstate)(&dynabox_data);
+//		dynabox_data.comm_status = CommStatusReply;
+//		(this->*pstate)(&dynabox_data);
 	}
 }
 
-void Dynabox::SlaveTimeout()
+void Dynabox::EV_Timeout()
 {
 	SLAVE_POLL_TIMEOUT_OFF;
-	dynabox_data.comm_status = CommStatusTimeout;
-	(this->*pstate)(&dynabox_data);
+//	(this->*pstate)(&dynabox_data);
 }

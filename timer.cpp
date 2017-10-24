@@ -109,13 +109,13 @@ void EncoderPoll()
 
 void SlavePollGeneral()
 {
-	m->SlavePoll();
+	m->Scheduler();
 }
 
 void SlaveTimeoutGeneral()
 {
 	SLAVE_POLL_TIMEOUT_OFF;
-	m->SlaveTimeout();
+	m->EV_Timeout();
 }
 
 // TIMER_MOTOR_ACCELERATE

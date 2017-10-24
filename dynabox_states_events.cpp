@@ -18,60 +18,39 @@
 // ----------------------- States -----------------------
 void Dynabox::ST_TestingLed(DynaboxData* pdata)
 {
-	switch(pdata->comm_status)
-	{
-	case CommStatusRequest:
-		comm.Prepare(current_address++ + LED_ADDRESS_OFFSET, COMM_LED_DIAG);
-		SLAVE_POLL_TIMEOUT_SET;
-		return;
-	break;
-	case CommStatusReply:
-		//if(frame[0] == current_address + LED_ADDRESS_OFFSET)
-		pdata->comm_status = CommStatusRequest;
-	break;
-	case CommStatusTimeout:
-		fault.SetGlobal(F01_LED);
-		mb.UpdateHoldingRegister(current_address, F01_LED << 8);
-		pdata->comm_status = CommStatusRequest;
-	break;
-	}
+	comm.Prepare(current_address++ + LED_ADDRESS_OFFSET, COMM_LED_DIAG);
+	SLAVE_POLL_TIMEOUT_SET;
+
+
+//		fault.SetGlobal(F01_LED);
+//		mb.UpdateHoldingRegister(current_address, F01_LED << 8);
 
 	if(LastAddress())
 	{
 		SLAVE_POLL_TIMEOUT_OFF; SLAVE_POLL_STOP;
-		EV_TestElm(pdata);
+//		EV_TestElm(pdata);
 	}
 }
 
 void Dynabox::ST_TestingElm(DynaboxData* pdata)
 {
-	switch(pdata->comm_status)
-	{
-	case CommStatusRequest:
-		comm.Prepare(current_address, COMM_DOOR_CHECK_ELECTROMAGNET);
-		comm.Prepare(current_address + LED_ADDRESS_OFFSET, COMM_LED_GREEN_ON_FOR_TIME);
-		current_address++;
-		SLAVE_POLL_TIMEOUT_SET;
-		return;
-	break;
-	case CommStatusReply:
-		if(usart_data.frame[0] == current_address - 1)
-		{
-			if(usart_data.frame[1] == COMM_F05_ELECTROMAGNET)
-			{
-				fault.SetGlobal(F05_ELECTROMAGNET);
-				mb.UpdateHoldingRegister(current_address, F05_ELECTROMAGNET << 8);
-			}
-		}
-		pdata->comm_status = CommStatusRequest;
-	break;
-	case CommStatusTimeout:
-		fault.SetGlobal(F02_DOOR);
-		fault.Set(F02_DOOR, current_address - 1);
-		mb.UpdateHoldingRegister(current_address, F02_DOOR << 8);
-		pdata->comm_status = CommStatusRequest;
-	break;
-	}
+	comm.Prepare(current_address, COMM_DOOR_CHECK_ELECTROMAGNET);
+	comm.Prepare(current_address + LED_ADDRESS_OFFSET, COMM_LED_GREEN_ON_FOR_TIME);
+	current_address++;
+	SLAVE_POLL_TIMEOUT_SET;
+
+//		if(usart_data.frame[0] == current_address - 1)
+//		{
+//			if(usart_data.frame[1] == COMM_F05_ELECTROMAGNET)
+//			{
+//				fault.SetGlobal(F05_ELECTROMAGNET);
+//				mb.UpdateHoldingRegister(current_address, F05_ELECTROMAGNET << 8);
+//			}
+//		}
+
+//		fault.SetGlobal(F02_DOOR);
+//		fault.Set(F02_DOOR, current_address - 1);
+//		mb.UpdateHoldingRegister(current_address, F02_DOOR << 8);
 
 	if(LastAddress())
 	{
@@ -82,30 +61,21 @@ void Dynabox::ST_TestingElm(DynaboxData* pdata)
 
 void Dynabox::ST_GettingDoorsState(DynaboxData* pdata)
 {
-	switch(pdata->comm_status)
-	{
-	case CommStatusRequest:
 		comm.Prepare(current_address++, 0x80);
 		SLAVE_POLL_TIMEOUT_SET;
-		return;
-	break;
-	case CommStatusReply:
-		if(usart_data.frame[0] == current_address - 1)
-		{
+
+//		if(usart_data.frame[0] == current_address - 1)
+//		{
 			//if(usart_data.frame[1] == COMM_F05_ELECTROMAGNET)
 			//{
 			//	fault.Set(F05_ELECTROMAGNET);
-				mb.UpdateHoldingRegister(current_address, usart_data.frame[1]);
+//				mb.UpdateHoldingRegister(current_address, usart_data.frame[1]);
 			//}
-		}
-		pdata->comm_status = CommStatusRequest;
-	break;
-	case CommStatusTimeout:
-		fault.SetGlobal(F02_DOOR);
-		mb.UpdateHoldingRegister(current_address, F02_DOOR << 8);
-		pdata->comm_status = CommStatusRequest;
-	break;
-	}
+//		}
+
+//		fault.SetGlobal(F02_DOOR);
+//		mb.UpdateHoldingRegister(current_address, F02_DOOR << 8);
+
 
 	if(LastAddress())
 	{
@@ -157,7 +127,6 @@ void Dynabox::ST_Config(DynaboxData* pdata)
 // ----------------------- Events -----------------------
 void Dynabox::EV_TestLed(DynaboxData* pdata)
 {
-	pstate = &Dynabox::ST_TestingLed;
 	current_address = 1;
 	SLAVE_POLL_START;
 //	BEGIN_TRANSITION_MAP								// current state
@@ -170,7 +139,6 @@ void Dynabox::EV_TestLed(DynaboxData* pdata)
 
 void Dynabox::EV_TestElm(DynaboxData* pdata)
 {
-	pstate = &Dynabox::ST_TestingElm;
 	current_address = 1;
 	SLAVE_POLL_START;
 
@@ -183,17 +151,13 @@ void Dynabox::EV_TestElm(DynaboxData* pdata)
 
 void Dynabox::EV_ShowOnLed(DynaboxData* pdata)
 {
-	pstate = &Dynabox::ST_ShowingOnLed;
 	current_address = 1;
 	SLAVE_POLL_START;
-	//led_same_for_all = true;
-	//led_same_for_all_id = 6;
 	InternalEvent(ST_SHOWING_ON_LED);
 }
 
 void Dynabox::EV_GetDoorsState(DynaboxData* pdata)
 {
-	pstate = &Dynabox::ST_GettingDoorsState;
 	current_address = 1;
 	SLAVE_POLL_START;
 

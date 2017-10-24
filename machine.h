@@ -18,7 +18,6 @@
 class MachineData : public EventData
 {
 public:
-	CommStatus comm_status;
 };
 
 class Machine : public StateMachine
@@ -34,9 +33,9 @@ public:
 	virtual void SaveParameters() {}
 	virtual void Init() {}
 	virtual void EV_EnterToConfig() {}
-	virtual void SlavePoll() {}
-	virtual void SlaveParse(uint8_t* frame) {}
-	virtual void SlaveTimeout() {}
+	virtual void Scheduler() {}
+	virtual void EV_Parse(uint8_t* frame) {}
+	virtual void EV_Timeout() {}
 	virtual void EV_UserAction(MachineData* pdata) {}
 	uint8_t current_address;
 private:

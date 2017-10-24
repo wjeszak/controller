@@ -50,6 +50,7 @@ public:
 	void LoadParameters();
 	void SaveParameters();
 	void Init();
+	void Scheduler();
 	void EV_EnterToConfig();
 	void EV_TestLed(DynaboxData* pdata);
 	void EV_TestElm(DynaboxData* pdata);
@@ -57,9 +58,8 @@ public:
 	void EV_GetDoorsState(DynaboxData* pdata);
 	void EV_NeedHoming(DynaboxData* pdata);
 	void EV_UserAction(MachineData* pdata);
-	void SlavePoll();
-	void SlaveParse(uint8_t* frame);
-	void SlaveTimeout();
+	void EV_Parse(uint8_t* frame);
+	void EV_Timeout();
 	bool led_same_for_all;
 	uint8_t led_same_for_all_id;
 private:
@@ -83,7 +83,7 @@ private:
 		STATE_MAP_ENTRY(&Dynabox::ST_Config)
 	END_STATE_MAP
 	uint8_t faults_to_led_map[NUMBER_OF_FAULTS + 1];
-	void (Dynabox::*pstate)(DynaboxData *pdata);
+//	void (Dynabox::*pstate)(DynaboxData *pdata);
 };
 
 extern Dynabox dynabox;
