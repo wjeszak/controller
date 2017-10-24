@@ -21,13 +21,9 @@ void Dynabox::ST_TestingLed(DynaboxData* pdata)
 	comm.Prepare(current_address++ + LED_ADDRESS_OFFSET, COMM_LED_DIAG);
 	SLAVE_POLL_TIMEOUT_SET;
 
-
-//		fault.SetGlobal(F01_LED);
-//		mb.UpdateHoldingRegister(current_address, F01_LED << 8);
-
 	if(LastAddress())
 	{
-		SLAVE_POLL_TIMEOUT_OFF; SLAVE_POLL_STOP;
+		SLAVE_POLL_STOP; //SLAVE_POLL_TIMEOUT_OFF;
 //		EV_TestElm(pdata);
 	}
 }

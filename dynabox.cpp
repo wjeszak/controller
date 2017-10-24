@@ -8,6 +8,8 @@
 #include "timer.h"
 #include "comm_prot.h"
 #include "dynabox.h"
+#include "fault.h"
+#include "modbus_tcp.h"
 
 Dynabox::Dynabox() : faults_to_led_map {
 	0,									// not used
@@ -63,5 +65,13 @@ void Dynabox::EV_Parse(uint8_t* frame)
 void Dynabox::EV_Timeout()
 {
 	SLAVE_POLL_TIMEOUT_OFF;
-//	(this->*pstate)(&dynabox_data);
+	uint8_t st = GetState();
+	switch (st)
+	{
+	case ST_TESTING_LED:
+		fault.SetGlobal(F01_LED);
+		fault.Set(F01_LED, current_address - 1);
+		mb.UpdateHoldingRegister(current_address, F01_LED << 8);
+	break;
+	}
 }
