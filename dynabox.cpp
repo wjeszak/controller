@@ -70,6 +70,9 @@ void Dynabox::EV_Parse(uint8_t* frame)
 					mb.UpdateHoldingRegister(current_address, F05_ELECTROMAGNET << 8);
 				}
 			break;
+			case ST_PREPARING_TO_HOMING:
+				mb.UpdateHoldingRegister(current_address, frame[1]);
+			break;
 			}
 		}
 	}
