@@ -54,9 +54,9 @@ public:
 	void EV_EnterToConfig();
 	void EV_TestLed(DynaboxData* pdata);
 	void EV_TestElm(DynaboxData* pdata);
-	void EV_ShowOnLed(DynaboxData* pdata);
-//	void EV_GetDoorsState(DynaboxData* pdata);
+	void EV_PreparedToHoming(DynaboxData* pdata);
 	void EV_NeedHoming(DynaboxData* pdata);
+	void EV_ShowOnLed(DynaboxData* pdata);
 	void EV_UserAction(MachineData* pdata);
 	void EV_Parse(uint8_t* frame);
 	void EV_Timeout();

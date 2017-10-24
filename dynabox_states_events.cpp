@@ -52,6 +52,8 @@ void Dynabox::ST_PreparingToHoming(DynaboxData* pdata)
 	if(LastAddress())
 	{
 		SLAVE_POLL_STOP;
+		next_EV = &Dynabox::EV_PreparedToHoming;
+		timer.Assign(TIMER_DELAY_BETWEEN_STATES, DELAY_BETWEEN_STATES, DelayBetweenStates);
 	}
 	current_address++;
 }
@@ -60,13 +62,13 @@ void Dynabox::ST_ShowingOnLed(DynaboxData* pdata)
 {
 	if(led_same_for_all)
 	{
-		comm.Prepare(current_address++ + LED_ADDRESS_OFFSET, faults_to_led_map[led_same_for_all_id] + 0x80);
+		comm.Prepare(current_address + LED_ADDRESS_OFFSET, faults_to_led_map[led_same_for_all_id] + 0x80);
 	}
 	else
 	{
 		if(fault.Check(F02_DOOR, current_address))
 			comm.Prepare(current_address + LED_ADDRESS_OFFSET, faults_to_led_map[2] + 0x80);
-		current_address++;
+
 	}
 
 	if(LastAddress())
@@ -75,6 +77,7 @@ void Dynabox::ST_ShowingOnLed(DynaboxData* pdata)
 		comm.LedTrigger();
 		led_same_for_all = false;
 	}
+	current_address++;
 }
 
 void Dynabox::ST_Homing(DynaboxData* pdata)
@@ -131,6 +134,16 @@ void Dynabox::EV_NeedHoming(DynaboxData* pdata)
 		TRANSITION_MAP_ENTRY(ST_PREPARING_TO_HOMING)	// ST_TESTING_ELM
 		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_HOMING
 	END_TRANSITION_MAP(pdata)
+}
+
+void Dynabox::EV_PreparedToHoming(DynaboxData* pdata)
+{
+	if(!fault.CheckGlobal(F02_DOOR))
+	{
+		led_same_for_all = true;
+		led_same_for_all_id = 6;
+		EV_ShowOnLed(pdata);
+	}
 }
 
 void Dynabox::EV_ShowOnLed(DynaboxData* pdata)
