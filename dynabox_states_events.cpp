@@ -13,8 +13,7 @@
 #include "modbus_tcp.h"
 #include "usart.h"
 #include "fault.h"
-#include "display.h"
-#include <util/delay.h>
+//#include "display.h"
 
 // ----------------------- States -----------------------
 void Dynabox::ST_TestingLed(DynaboxData* pdata)
@@ -34,7 +33,6 @@ void Dynabox::ST_TestingElm(DynaboxData* pdata)
 {
 	comm.Prepare(current_address, COMM_DOOR_CHECK_ELECTROMAGNET);
 	comm.Prepare(current_address + LED_ADDRESS_OFFSET, COMM_LED_GREEN_ON_FOR_TIME);
-
 	SLAVE_POLL_TIMEOUT_SET;
 
 	if(LastAddress())
@@ -47,8 +45,8 @@ void Dynabox::ST_TestingElm(DynaboxData* pdata)
 
 void Dynabox::ST_GettingDoorsState(DynaboxData* pdata)
 {
-		comm.Prepare(current_address++, 0x80);
-		SLAVE_POLL_TIMEOUT_SET;
+	comm.Prepare(current_address++, 0x80);
+	SLAVE_POLL_TIMEOUT_SET;
 
 //		if(usart_data.frame[0] == current_address - 1)
 //		{
@@ -61,7 +59,6 @@ void Dynabox::ST_GettingDoorsState(DynaboxData* pdata)
 
 //		fault.SetGlobal(F02_DOOR);
 //		mb.UpdateHoldingRegister(current_address, F02_DOOR << 8);
-
 
 	if(LastAddress())
 	{

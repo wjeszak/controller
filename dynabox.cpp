@@ -85,11 +85,10 @@ void Dynabox::EV_Timeout()
 		fault.SetGlobal(F01_LED);
 		fault.Set(F01_LED, current_address - 1);
 		mb.UpdateHoldingRegister(current_address, F01_LED << 8);
-	break;
-	case ST_TESTING_ELM:
-		fault.SetGlobal(F02_DOOR);
-		fault.Set(F02_DOOR, current_address - 1);
-		mb.UpdateHoldingRegister(current_address, F02_DOOR << 8);
+		return;
 	break;
 	}
+	fault.SetGlobal(F02_DOOR);
+	fault.Set(F02_DOOR, current_address - 1);
+	mb.UpdateHoldingRegister(current_address, F02_DOOR << 8);
 }
