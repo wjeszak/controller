@@ -66,8 +66,8 @@ void Dynabox::ST_ShowingOnLed(DynaboxData* pdata)
 	}
 	else
 	{
-		if(fault.Check(F02_DOOR, current_address))
-			comm.Prepare(current_address + LED_ADDRESS_OFFSET, faults_to_led_map[2] + 0x80);
+		//if(fault.Check(F02_DOOR, current_address))
+			comm.Prepare(current_address + LED_ADDRESS_OFFSET, faults_to_led_map[mb.GetHoldingRegister(current_address + 1) >> 8] + 0x80);
 
 	}
 
@@ -138,12 +138,28 @@ void Dynabox::EV_NeedHoming(DynaboxData* pdata)
 
 void Dynabox::EV_PreparedToHoming(DynaboxData* pdata)
 {
-	if(!fault.CheckGlobal(F02_DOOR))
+	bool is_fault = false;
+	for(uint8_t i = 1; i <= functions[1].param; i++)
+	{
+		if(mb.GetHoldingRegister(i + 1) != 0xC0)
+		{
+			fault.SetGlobal(F06_CLOSE_THE_DOOR);
+			fault.Set(F06_CLOSE_THE_DOOR, i);
+			mb.UpdateHoldingRegister(i + 1, F06_CLOSE_THE_DOOR << 8);
+			is_fault = true;
+		}
+	}
+	if(is_fault)
+	{
+		led_same_for_all = false;
+	}
+	else
 	{
 		led_same_for_all = true;
 		led_same_for_all_id = 6;
-		EV_ShowOnLed(pdata);
 	}
+	EV_ShowOnLed(pdata);
+	is_fault = false;
 }
 
 void Dynabox::EV_ShowOnLed(DynaboxData* pdata)
