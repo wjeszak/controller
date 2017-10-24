@@ -56,6 +56,7 @@ public:
 	void EV_TestElm(DynaboxData* pdata);
 	void EV_PreparedToHoming(DynaboxData* pdata);
 	void EV_NeedHoming(DynaboxData* pdata);
+	void EV_HomingDone(DynaboxData* pdata);
 	void EV_ShowOnLed(DynaboxData* pdata);
 	void EV_UserAction(MachineData* pdata);
 	void EV_Parse(uint8_t* frame);
