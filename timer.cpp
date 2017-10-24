@@ -15,6 +15,7 @@
 #include "motor.h"
 #include "encoder.h"
 #include "machine.h"
+#include "dynabox.h"
 
 Timer::Timer(T2Prescallers prescaller)
 {
@@ -128,4 +129,10 @@ void MotorAccelerate()
 void FaultShow()
 {
 	fault.ShowGlobal();
+}
+
+void DelayBetweenStates()
+{
+	timer.Disable(TIMER_DELAY_BETWEEN_STATES);
+	dynabox.EV_TestElm(&dynabox_data);
 }

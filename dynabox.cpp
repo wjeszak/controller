@@ -57,8 +57,7 @@ void Dynabox::EV_Parse(uint8_t* frame)
 	SLAVE_POLL_TIMEOUT_OFF;
 	if(comm.Crc8(frame, 2) == frame[2])
 	{
-//		dynabox_data.comm_status = CommStatusReply;
-//		(this->*pstate)(&dynabox_data);
+
 	}
 }
 

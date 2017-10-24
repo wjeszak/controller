@@ -14,6 +14,7 @@
 #include "usart.h"
 #include "fault.h"
 #include "display.h"
+#include <util/delay.h>
 
 // ----------------------- States -----------------------
 void Dynabox::ST_TestingLed(DynaboxData* pdata)
@@ -24,7 +25,7 @@ void Dynabox::ST_TestingLed(DynaboxData* pdata)
 	if(LastAddress())
 	{
 		SLAVE_POLL_STOP;
-//		EV_TestElm(pdata);
+		timer.Assign(TIMER_DELAY_BETWEEN_STATES, DELAY_BETWEEN_STATES, DelayBetweenStates);
 	}
 	current_address++;
 }
@@ -32,8 +33,8 @@ void Dynabox::ST_TestingLed(DynaboxData* pdata)
 void Dynabox::ST_TestingElm(DynaboxData* pdata)
 {
 	comm.Prepare(current_address, COMM_DOOR_CHECK_ELECTROMAGNET);
-//	comm.Prepare(current_address + LED_ADDRESS_OFFSET, COMM_LED_GREEN_ON_FOR_TIME);
-	current_address++;
+	comm.Prepare(current_address + LED_ADDRESS_OFFSET, COMM_LED_GREEN_ON_FOR_TIME);
+
 	SLAVE_POLL_TIMEOUT_SET;
 
 //		if(usart_data.frame[0] == current_address - 1)
@@ -50,6 +51,7 @@ void Dynabox::ST_TestingElm(DynaboxData* pdata)
 		SLAVE_POLL_STOP;
 		//EV_GetDoorsState(pdata);
 	}
+	current_address++;
 }
 
 void Dynabox::ST_GettingDoorsState(DynaboxData* pdata)
