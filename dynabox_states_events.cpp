@@ -13,7 +13,6 @@
 #include "modbus_tcp.h"
 #include "usart.h"
 #include "fault.h"
-//#include "display.h"
 
 // ----------------------- States -----------------------
 void Dynabox::ST_TestingLed(DynaboxData* pdata)
@@ -24,6 +23,7 @@ void Dynabox::ST_TestingLed(DynaboxData* pdata)
 	if(LastAddress())
 	{
 		SLAVE_POLL_STOP;
+		next_EV = &Dynabox::EV_TestElm;
 		timer.Assign(TIMER_DELAY_BETWEEN_STATES, DELAY_BETWEEN_STATES, DelayBetweenStates);
 	}
 	current_address++;

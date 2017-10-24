@@ -62,6 +62,7 @@ public:
 	void EV_Timeout();
 	bool led_same_for_all;
 	uint8_t led_same_for_all_id;
+	void (Dynabox::*next_EV)(DynaboxData* pdata);
 private:
 	void ST_TestingLed(DynaboxData* pdata);
 	void ST_TestingElm(DynaboxData* pdata);

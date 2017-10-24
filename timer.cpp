@@ -134,5 +134,5 @@ void FaultShow()
 void DelayBetweenStates()
 {
 	timer.Disable(TIMER_DELAY_BETWEEN_STATES);
-	dynabox.EV_TestElm(&dynabox_data);
+	(dynabox.*(dynabox.next_EV))(&dynabox_data);
 }
