@@ -73,6 +73,9 @@ void Dynabox::EV_Parse(uint8_t* frame)
 			case ST_PREPARING_TO_HOMING:
 				mb.UpdateHoldingRegister(current_address, frame[1]);
 			break;
+			case ST_READY:
+				mb.UpdateHoldingRegister(current_address, frame[1]);
+			break;
 			}
 		}
 	}

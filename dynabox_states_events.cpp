@@ -85,7 +85,15 @@ void Dynabox::ST_Homing(DynaboxData* pdata)
 
 void Dynabox::ST_Ready(DynaboxData* pdata)
 {
+	comm.Prepare(current_address, 0x80);
+	SLAVE_POLL_TIMEOUT_SET;
 
+	if(LastAddress())
+	{
+		current_address = 1;
+		return;
+	}
+	current_address++;
 }
 
 void Dynabox::ST_NotReady(DynaboxData* pdata)
@@ -138,7 +146,10 @@ void Dynabox::EV_HomingDone(DynaboxData* pdata)
 {
 	led_same_for_all = true;
 	led_same_for_all_id = 0;
-	EV_ShowOnLed(pdata);
+//	EV_ShowOnLed(pdata);
+	current_address = 1;
+	SLAVE_POLL_START;
+	InternalEvent(ST_READY);
 }
 
 void Dynabox::EV_PreparedToHoming(DynaboxData* pdata)
@@ -177,10 +188,10 @@ void Dynabox::EV_ShowOnLed(DynaboxData* pdata)
 
 void Dynabox::EV_UserAction(MachineData* pdata)
 {
-	BEGIN_TRANSITION_MAP								// current state
-		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_TESTING_LED
-		TRANSITION_MAP_ENTRY(ST_HOMING)					// ST_TESTING_ELM
-		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_CHECKING_DOORS_STATE
-		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_HOMING
-	END_TRANSITION_MAP(pdata)
+	//	BEGIN_TRANSITION_MAP								// current state
+//		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_TESTING_LED
+//		TRANSITION_MAP_ENTRY(ST_HOMING)					// ST_TESTING_ELM
+//		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_CHECKING_DOORS_STATE
+//		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_HOMING
+//	END_TRANSITION_MAP(pdata)
 }
