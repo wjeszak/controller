@@ -37,15 +37,6 @@ void Dynabox::ST_TestingElm(DynaboxData* pdata)
 
 	SLAVE_POLL_TIMEOUT_SET;
 
-//		if(usart_data.frame[0] == current_address - 1)
-//		{
-//			if(usart_data.frame[1] == COMM_F05_ELECTROMAGNET)
-//			{
-//				fault.SetGlobal(F05_ELECTROMAGNET);
-//				mb.UpdateHoldingRegister(current_address, F05_ELECTROMAGNET << 8);
-//			}
-//		}
-
 	if(LastAddress())
 	{
 		SLAVE_POLL_STOP;

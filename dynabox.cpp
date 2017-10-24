@@ -55,9 +55,23 @@ void Dynabox::Scheduler()
 void Dynabox::EV_Parse(uint8_t* frame)
 {
 	SLAVE_POLL_TIMEOUT_OFF;
-	if(comm.Crc8(frame, 2) == frame[2])
+	if(CrcOk(frame))
 	{
-
+		if(CurrentAddress())
+		{
+			uint8_t st = GetState();
+			switch(st)
+			{
+			case ST_TESTING_ELM:
+				if(usart_data.frame[1] == COMM_F05_ELECTROMAGNET)
+				{
+					fault.SetGlobal(F05_ELECTROMAGNET);
+					fault.Set(F05_ELECTROMAGNET, current_address - 1);
+					mb.UpdateHoldingRegister(current_address, F05_ELECTROMAGNET << 8);
+				}
+			break;
+			}
+		}
 	}
 }
 

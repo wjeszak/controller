@@ -83,7 +83,6 @@ private:
 		STATE_MAP_ENTRY(&Dynabox::ST_Config)
 	END_STATE_MAP
 	uint8_t faults_to_led_map[NUMBER_OF_FAULTS + 1];
-//	void (Dynabox::*pstate)(DynaboxData *pdata);
 };
 
 extern Dynabox dynabox;

@@ -24,6 +24,8 @@ class Machine : public StateMachine
 {
 public:
 	Machine();
+	bool CrcOk(uint8_t* frame);
+	bool CurrentAddress();
 	bool LastAddress();
 	void SetOrderStatus(uint8_t status);
 	uint8_t GetOrderStatus();
