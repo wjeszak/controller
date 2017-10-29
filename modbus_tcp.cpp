@@ -64,11 +64,11 @@ void ModbusTCP::Read(uint8_t* frame)
 	if(starting_address < MODBUS_TCP_ADDR_OFFSET) error_code = MODBUS_TCP_ERROR_ILL_DATA_ADDR;
 	if(error_code)
 	{
-		SendErrorFrame(frame, error_code);
+		SendError(frame, error_code);
 	}
 	else
 	{
-		ReadHoldingRegistersReply(frame);
+		ReadReply(frame);
 	}
 }
 
@@ -81,19 +81,16 @@ void ModbusTCP::Write(uint8_t* frame)
 	if(starting_address < MODBUS_TCP_ADDR_OFFSET) error_code = MODBUS_TCP_ERROR_ILL_DATA_ADDR;
 	if(error_code)
 	{
-		SendErrorFrame(frame, error_code);
+		SendError(frame, error_code);
 	}
 	else
 	{
-//		UpdateMultipleRegisters(frame, starting_address, quantity);
-		WriteMultipleRegistersReply(frame);
+		WriteReply(frame);
 		// ----------------------------- User action ----------------------------------
 		m->EV_UserAction(d);
 		// ----------------------------- User action ----------------------------------
 	}
 }
-
-
 
 void ModbusTCP::SetBit(uint8_t address, uint8_t bit)
 {
@@ -105,36 +102,18 @@ void ModbusTCP::ClearBit(uint8_t address, uint8_t bit)
 	Registers[address] &= ~(1 << bit);
 }
 
-void ModbusTCP::PrepareMBAPHeader(uint8_t* frame)	// without length
+void ModbusTCP::MakeMBAPHeader(uint8_t* frame)	// without length
 {
 	frame[MODBUS_TCP_TRANSACTION_ID_HI] = hi(trans_id);
 	frame[MODBUS_TCP_TRANSACTION_ID_LO] = lo(trans_id);
-	// always 0 for ModbusTCP
-	frame[MODBUS_TCP_PROTOCOL_ID_HI] = 0;
-	frame[MODBUS_TCP_PROTOCOL_ID_LO] = 0;
+	frame[MODBUS_TCP_PROTOCOL_ID_HI] = 0;						// 0 for ModbusTCP
+	frame[MODBUS_TCP_PROTOCOL_ID_LO] = 0;						// 0 for ModbusTCP
 	frame[MODBUS_TCP_UNIT_ID] = unit_id;
 }
 
-//void ModbusTCP::ReturnHoldingRegisters(uint8_t* frame, uint16_t starting_address, uint16_t quantity)
-//{
-//	for(uint8_t i = 0; i < quantity; i++)
-//	{
-//		frame[MODBUS_RES_TCP_DATA + 2 * i]       = hi(Registers[starting_address - MODBUS_TCP_ADDR_OFFSET + i]);
-//		frame[MODBUS_RES_TCP_DATA + (2 * i) + 1] = lo(Registers[starting_address - MODBUS_TCP_ADDR_OFFSET + i]);
-//	}
-//}
-
-//void ModbusTCP::UpdateMultipleRegisters(uint8_t* frame, uint16_t starting_address, uint16_t quantity)
-//{
-//	for(uint8_t i = 0; i < quantity; i++)
-//	{
-//		Registers[starting_address - MODBUS_TCP_ADDR_OFFSET + i] = (hi(frame[MODBUS_REQ_TCP_REG_VAL_HI + 2 * i])) | (lo(frame[MODBUS_REQ_TCP_REG_VAL_LO + 2 * i]));
-//	}
-//}
-
-void ModbusTCP::ReadHoldingRegistersReply(uint8_t* frame)
+void ModbusTCP::ReadReply(uint8_t* frame)
 {
-	PrepareMBAPHeader(frame);
+	MakeMBAPHeader(frame);
 	uint16_t length = (quantity * 2) + UNIT_ID_FUNCTION_BYTE_COUNT_LEN;
 	frame[MODBUS_TCP_LENGTH_HI] = hi(length);
 	frame[MODBUS_TCP_LENGTH_LO] = lo(length);
@@ -146,13 +125,12 @@ void ModbusTCP::ReadHoldingRegistersReply(uint8_t* frame)
 		frame[MODBUS_RES_TCP_DATA + 2 * i]       = hi(Registers[starting_address - MODBUS_TCP_ADDR_OFFSET + i]);
 		frame[MODBUS_RES_TCP_DATA + (2 * i) + 1] = lo(Registers[starting_address - MODBUS_TCP_ADDR_OFFSET + i]);
 	}
-	//	ReturnHoldingRegisters(frame, starting_address, quantity);
 	stack_data.len = MBAP_FUNCTION_BYTE_COUNT_LEN + (quantity * 2);
 }
 
-void ModbusTCP::WriteMultipleRegistersReply(uint8_t *frame)
+void ModbusTCP::WriteReply(uint8_t *frame)
 {
-	PrepareMBAPHeader(frame);
+	MakeMBAPHeader(frame);
 	frame[MODBUS_TCP_LENGTH_HI] = 0;
 	frame[MODBUS_TCP_LENGTH_LO] = 6;
 	frame[MODBUS_TCP_FUNCTION] = function_code;
@@ -160,6 +138,7 @@ void ModbusTCP::WriteMultipleRegistersReply(uint8_t *frame)
 	frame[MODBUS_TCP_START_ADDR_LO] = lo(starting_address);
 	frame[MODBUS_TCP_QUANTITY_HI] = hi(quantity);
 	frame[MODBUS_TCP_QUANTITY_LO] = lo(quantity);
+
 	for(uint8_t i = 0; i < quantity; i++)
 	{
 		Registers[starting_address - MODBUS_TCP_ADDR_OFFSET + i] = (hi(frame[MODBUS_REQ_TCP_REG_VAL_HI + 2 * i])) | (lo(frame[MODBUS_REQ_TCP_REG_VAL_LO + 2 * i]));
@@ -167,9 +146,9 @@ void ModbusTCP::WriteMultipleRegistersReply(uint8_t *frame)
 	stack_data.len = 12;
 }
 
-void ModbusTCP::SendErrorFrame(uint8_t* frame, uint8_t error_code)
+void ModbusTCP::SendError(uint8_t* frame, uint8_t error_code)
 {
-	PrepareMBAPHeader(frame);
+	MakeMBAPHeader(frame);
 	frame[MODBUS_TCP_LENGTH_HI] = 0;
 	frame[MODBUS_TCP_LENGTH_LO] = 3;
 	frame[MODBUS_TCP_FUNCTION] = function_code + 0x80;

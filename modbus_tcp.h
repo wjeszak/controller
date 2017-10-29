@@ -82,12 +82,10 @@ public:
 	void Read(uint8_t* frame);						// from user
 	void Write(uint8_t* frame);						// from user
 private:
-	void PrepareMBAPHeader(uint8_t* frame);
-//	void ReturnHoldingRegisters(uint8_t* frame, uint16_t starting_address, uint16_t quantity);
-//	void UpdateMultipleRegisters(uint8_t* frame, uint16_t starting_address, uint16_t quantity);
-	void ReadHoldingRegistersReply(uint8_t* frame);
-	void WriteMultipleRegistersReply(uint8_t* frame);
-	void SendErrorFrame(uint8_t* frame, uint8_t error_code);
+	void MakeMBAPHeader(uint8_t* frame);
+	void ReadReply(uint8_t* frame);
+	void WriteReply(uint8_t* frame);
+	void SendError(uint8_t* frame, uint8_t error_code);
 	uint16_t Registers[MODBUS_TCP_NUMBER_OF_REG];
 	uint16_t trans_id;
 	uint16_t prot_id;
