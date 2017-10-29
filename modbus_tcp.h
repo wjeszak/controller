@@ -85,7 +85,7 @@ private:
 	void MakeMBAPHeader(uint8_t* frame);
 	void ReadReply(uint8_t* frame);
 	void WriteReply(uint8_t* frame);
-	void SendError(uint8_t* frame, uint8_t error_code);
+	void ErrorReply(uint8_t* frame, uint8_t error_code);
 	uint16_t Registers[MODBUS_TCP_NUMBER_OF_REG];
 	uint16_t trans_id;
 	uint16_t prot_id;

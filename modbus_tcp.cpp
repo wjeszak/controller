@@ -64,7 +64,7 @@ void ModbusTCP::Read(uint8_t* frame)
 	if(starting_address < MODBUS_TCP_ADDR_OFFSET) error_code = MODBUS_TCP_ERROR_ILL_DATA_ADDR;
 	if(error_code)
 	{
-		SendError(frame, error_code);
+		ErrorReply(frame, error_code);
 	}
 	else
 	{
@@ -81,7 +81,7 @@ void ModbusTCP::Write(uint8_t* frame)
 	if(starting_address < MODBUS_TCP_ADDR_OFFSET) error_code = MODBUS_TCP_ERROR_ILL_DATA_ADDR;
 	if(error_code)
 	{
-		SendError(frame, error_code);
+		ErrorReply(frame, error_code);
 	}
 	else
 	{
@@ -146,7 +146,7 @@ void ModbusTCP::WriteReply(uint8_t *frame)
 	stack_data.len = 12;
 }
 
-void ModbusTCP::SendError(uint8_t* frame, uint8_t error_code)
+void ModbusTCP::ErrorReply(uint8_t* frame, uint8_t error_code)
 {
 	MakeMBAPHeader(frame);
 	frame[MODBUS_TCP_LENGTH_HI] = 0;
