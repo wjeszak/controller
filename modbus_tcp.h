@@ -86,13 +86,13 @@ private:
 	void ReadReply(uint8_t* frame);
 	void WriteReply(uint8_t* frame);
 	void ErrorReply(uint8_t* frame, uint8_t error_code);
-	uint16_t Registers[MODBUS_TCP_NUMBER_OF_REG];
 	uint16_t trans_id;
 	uint16_t prot_id;
 	uint8_t  unit_id;
 	uint8_t  function_code;
 	uint16_t starting_address;
 	uint16_t quantity;
+	uint16_t Registers[MODBUS_TCP_NUMBER_OF_REG];
 };
 
 extern ModbusTCP mb;

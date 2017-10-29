@@ -8,10 +8,6 @@
 #include "modbus_tcp.h"
 #include "stack.h"
 #include "common.h"
-#include "machine.h"
-#include "motor.h"
-#include "comm_prot.h"
-#include "display.h"
 #include "dynabox.h"
 
 ModbusTCP::ModbusTCP()
