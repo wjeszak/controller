@@ -15,7 +15,7 @@ Stack::Stack() : StateMachine(ST_MAX_STATES)
 {
 	enc28j60.Init();
 	packet_len = 0;
-	seqnum  = 0xA;
+	seqnum  = 0x0A;
 	port = 502;
 }
 
@@ -43,15 +43,15 @@ void Stack::Poll()
 				// SYN
 				if(buf[TCP_FLAGS_P] & TCP_FLAGS_SYN_V)
 				{
-					Syn();
+					EV_Syn(&stack_data);
 				}
 				if(buf[TCP_FLAGS_P] & TCP_FLAGS_ACK_V)
 				{
-					Ack();
+					EV_Ack(&stack_data);
 				}
 				if(buf[TCP_FLAGS_P] & TCP_FLAGS_PUSH_V)
 				{
-					Psh();
+					EV_Psh(&stack_data);
 				}
 				if(buf[TCP_FLAGS_P] & TCP_FLAGS_FIN_V)
 				{
@@ -62,6 +62,7 @@ void Stack::Poll()
 		}
 	}
 }
+
 void Stack::ST_Listen(StackData* pdata)
 {
 
@@ -87,14 +88,14 @@ void Stack::ST_Request(StackData* pdata)
 	MakeTcpAckWithDataNoFlags(buf, stack_data.len);
 }
 
-void Stack::Syn(StackData* pdata)
+void Stack::EV_Syn(StackData* pdata)
 {
     BEGIN_TRANSITION_MAP							// current state
         TRANSITION_MAP_ENTRY(ST_SYN_RECV)			// ST_LISTEN
     END_TRANSITION_MAP(pdata)
 }
 
-void Stack::Ack(StackData* pdata)
+void Stack::EV_Ack(StackData* pdata)
 {
     BEGIN_TRANSITION_MAP							// current state
         TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)		// ST_LISTEN
@@ -104,7 +105,7 @@ void Stack::Ack(StackData* pdata)
     END_TRANSITION_MAP(pdata)
 }
 
-void Stack::Psh(StackData* pdata)
+void Stack::EV_Psh(StackData* pdata)
 {
     BEGIN_TRANSITION_MAP							// current state
         TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)		// ST_LISTEN

@@ -24,9 +24,9 @@ public:
 	Stack();
 	void Poll();
 	// Events
-	void Syn(StackData* pdata = NULL);
-	void Ack(StackData* pdata = NULL);
-	void Psh(StackData* pdata = NULL);
+	void EV_Syn(StackData* pdata);
+	void EV_Ack(StackData* pdata);
+	void EV_Psh(StackData* pdata);
 private:
 	uint8_t EthTypeIsArpMyIP(uint8_t* buf, uint16_t len);
 	uint8_t EthTypeIsIPMyIP(uint8_t* buf, uint16_t len);
