@@ -17,15 +17,6 @@
 ModbusTCP::ModbusTCP()
 {
 
-//Registers[1] = 0x11;;
-//Registers[2] = (1 << 7) | (1 << 6);
-//Registers[3] = 0x05 << 8;
-//Registers[4] = (1 << 7) | (1 << 6) | (1 << 4);
-//Registers[44] = 128;
-//Registers[45] = 13 << 8 | 36;
-//Registers[47] = (1 << 0) | (1 << 2) | (1 << 3) | (1 << 4) | (1 << 5) | (1 << 6);
-//Registers[49] = 3000;
-
 }
 
 void ModbusTCP::Process(uint8_t* frame)
@@ -42,10 +33,10 @@ void ModbusTCP::Process(uint8_t* frame)
 		switch(function_code)
 		{
 		case MODBUS_TCP_HOLDING_FUNCTION:
-			ReadHoldingRegisters(frame);
+			Read(frame);
 			break;
 		case MODBUS_TCP_WRITE_MULTIPLE_FUNCTION:
-			WriteMultipleRegisters(frame);
+			Write(frame);
 			break;
 		default:
 			//FunctionNotSupported(frame);
@@ -54,7 +45,17 @@ void ModbusTCP::Process(uint8_t* frame)
 	}
 }
 
-void ModbusTCP::ReadHoldingRegisters(uint8_t* frame)
+uint16_t ModbusTCP::Read(uint8_t address)
+{
+	return Registers[address];
+}
+
+void ModbusTCP::Write(uint8_t address, uint16_t value)
+{
+	Registers[address] = value;
+}
+
+void ModbusTCP::Read(uint8_t* frame)
 {
 	uint8_t error_code = 0;
 
@@ -71,7 +72,7 @@ void ModbusTCP::ReadHoldingRegisters(uint8_t* frame)
 	}
 }
 
-void ModbusTCP::WriteMultipleRegisters(uint8_t* frame)
+void ModbusTCP::Write(uint8_t* frame)
 {
 	uint8_t error_code = 0;
 
@@ -84,7 +85,7 @@ void ModbusTCP::WriteMultipleRegisters(uint8_t* frame)
 	}
 	else
 	{
-		UpdateMultipleRegisters(frame, starting_address, quantity);
+//		UpdateMultipleRegisters(frame, starting_address, quantity);
 		WriteMultipleRegistersReply(frame);
 		// ----------------------------- User action ----------------------------------
 		m->EV_UserAction(d);
@@ -92,22 +93,14 @@ void ModbusTCP::WriteMultipleRegisters(uint8_t* frame)
 	}
 }
 
-void ModbusTCP::UpdateHoldingRegister(uint8_t address, uint16_t value)
-{
-	Registers[address] = value;
-}
 
-uint16_t ModbusTCP::GetHoldingRegister(uint8_t address)
-{
-	return Registers[address];
-}
 
-void ModbusTCP::SetBitHoldingRegister(uint8_t address, uint8_t bit)
+void ModbusTCP::SetBit(uint8_t address, uint8_t bit)
 {
 	Registers[address] |= (1 << bit);
 }
 
-void ModbusTCP::ClearBitHoldingRegister(uint8_t address, uint8_t bit)
+void ModbusTCP::ClearBit(uint8_t address, uint8_t bit)
 {
 	Registers[address] &= ~(1 << bit);
 }
@@ -122,22 +115,22 @@ void ModbusTCP::PrepareMBAPHeader(uint8_t* frame)	// without length
 	frame[MODBUS_TCP_UNIT_ID] = unit_id;
 }
 
-void ModbusTCP::ReturnHoldingRegisters(uint8_t* frame, uint16_t starting_address, uint16_t quantity)
-{
-	for(uint8_t i = 0; i < quantity; i++)
-	{
-		frame[MODBUS_RES_TCP_DATA + 2 * i]       = hi(Registers[starting_address - MODBUS_TCP_ADDR_OFFSET + i]);
-		frame[MODBUS_RES_TCP_DATA + (2 * i) + 1] = lo(Registers[starting_address - MODBUS_TCP_ADDR_OFFSET + i]);
-	}
-}
+//void ModbusTCP::ReturnHoldingRegisters(uint8_t* frame, uint16_t starting_address, uint16_t quantity)
+//{
+//	for(uint8_t i = 0; i < quantity; i++)
+//	{
+//		frame[MODBUS_RES_TCP_DATA + 2 * i]       = hi(Registers[starting_address - MODBUS_TCP_ADDR_OFFSET + i]);
+//		frame[MODBUS_RES_TCP_DATA + (2 * i) + 1] = lo(Registers[starting_address - MODBUS_TCP_ADDR_OFFSET + i]);
+//	}
+//}
 
-void ModbusTCP::UpdateMultipleRegisters(uint8_t* frame, uint16_t starting_address, uint16_t quantity)
-{
-	for(uint8_t i = 0; i < quantity; i++)
-	{
-		Registers[starting_address - MODBUS_TCP_ADDR_OFFSET + i] = (hi(frame[MODBUS_REQ_TCP_REG_VAL_HI + 2 * i])) | (lo(frame[MODBUS_REQ_TCP_REG_VAL_LO + 2 * i]));
-	}
-}
+//void ModbusTCP::UpdateMultipleRegisters(uint8_t* frame, uint16_t starting_address, uint16_t quantity)
+//{
+//	for(uint8_t i = 0; i < quantity; i++)
+//	{
+//		Registers[starting_address - MODBUS_TCP_ADDR_OFFSET + i] = (hi(frame[MODBUS_REQ_TCP_REG_VAL_HI + 2 * i])) | (lo(frame[MODBUS_REQ_TCP_REG_VAL_LO + 2 * i]));
+//	}
+//}
 
 void ModbusTCP::ReadHoldingRegistersReply(uint8_t* frame)
 {
@@ -148,7 +141,12 @@ void ModbusTCP::ReadHoldingRegistersReply(uint8_t* frame)
 	frame[MODBUS_TCP_FUNCTION]  = function_code;
 	frame[MODBUS_RES_TCP_BYTE_COUNT] = lo(quantity * 2);
 
-	ReturnHoldingRegisters(frame, starting_address, quantity);
+	for(uint8_t i = 0; i < quantity; i++)
+	{
+		frame[MODBUS_RES_TCP_DATA + 2 * i]       = hi(Registers[starting_address - MODBUS_TCP_ADDR_OFFSET + i]);
+		frame[MODBUS_RES_TCP_DATA + (2 * i) + 1] = lo(Registers[starting_address - MODBUS_TCP_ADDR_OFFSET + i]);
+	}
+	//	ReturnHoldingRegisters(frame, starting_address, quantity);
 	stack_data.len = MBAP_FUNCTION_BYTE_COUNT_LEN + (quantity * 2);
 }
 
@@ -162,6 +160,10 @@ void ModbusTCP::WriteMultipleRegistersReply(uint8_t *frame)
 	frame[MODBUS_TCP_START_ADDR_LO] = lo(starting_address);
 	frame[MODBUS_TCP_QUANTITY_HI] = hi(quantity);
 	frame[MODBUS_TCP_QUANTITY_LO] = lo(quantity);
+	for(uint8_t i = 0; i < quantity; i++)
+	{
+		Registers[starting_address - MODBUS_TCP_ADDR_OFFSET + i] = (hi(frame[MODBUS_REQ_TCP_REG_VAL_HI + 2 * i])) | (lo(frame[MODBUS_REQ_TCP_REG_VAL_LO + 2 * i]));
+	}
 	stack_data.len = 12;
 }
 

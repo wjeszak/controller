@@ -39,23 +39,23 @@ void Dynabox::LoadParameters()
 {
 	eeprom_read_block(&functions, &dynabox_eem_functions, FUNCTION_RECORD_SIZE * DYNABOX_NUMBER_OF_FUNCTIONS);
 	config.number_of_functions = DYNABOX_NUMBER_OF_FUNCTIONS;
-	mb.UpdateHoldingRegister(TYPE_OF_MACHINE, (functions[1].param << 8 | 36));
-	mb.UpdateHoldingRegister(SERIAL_NUMBER, functions[9].param);
+	mb.Write(TYPE_OF_MACHINE, (functions[1].param << 8 | 36));
+	mb.Write(SERIAL_NUMBER, functions[9].param);
 
-	mb.UpdateHoldingRegister(FIRST_DOOR_NUMBER, 1);
-	mb.UpdateHoldingRegister(88, 20);
-	mb.UpdateHoldingRegister(90, 20);
-	mb.UpdateHoldingRegister(91, 75);
-	mb.UpdateHoldingRegister(92, 50);
-	mb.UpdateHoldingRegister(93, 400);
-	mb.UpdateHoldingRegister(94, 3);
-	mb.UpdateHoldingRegister(98, 5);
-	mb.UpdateHoldingRegister(99, 10);
+	mb.Write(FIRST_DOOR_NUMBER, 1);
+	mb.Write(88, 20);
+	mb.Write(90, 20);
+	mb.Write(91, 75);
+	mb.Write(92, 50);
+	mb.Write(93, 400);
+	mb.Write(94, 3);
+	mb.Write(98, 5);
+	mb.Write(99, 10);
 }
 
 void Dynabox::SaveParameters()
 {
 	eeprom_update_block(&functions, &dynabox_eem_functions, FUNCTION_RECORD_SIZE * DYNABOX_NUMBER_OF_FUNCTIONS);
-	mb.UpdateHoldingRegister(TYPE_OF_MACHINE, (functions[1].param << 8 | 36));
-	mb.UpdateHoldingRegister(SERIAL_NUMBER, functions[9].param);
+	mb.Write(TYPE_OF_MACHINE, (functions[1].param << 8 | 36));
+	mb.Write(SERIAL_NUMBER, functions[9].param);
 }

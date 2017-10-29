@@ -67,14 +67,14 @@ void Dynabox::EV_Parse(uint8_t* frame)
 				{
 					fault.SetGlobal(F05_ELECTROMAGNET);
 					fault.Set(F05_ELECTROMAGNET, current_address - 1);
-					mb.UpdateHoldingRegister(current_address, F05_ELECTROMAGNET << 8);
+					mb.Write(current_address, F05_ELECTROMAGNET << 8);
 				}
 			break;
 			case ST_PREPARING_TO_HOMING:
-				mb.UpdateHoldingRegister(current_address, frame[1]);
+				mb.Write(current_address, frame[1]);
 			break;
 			case ST_READY:
-				mb.UpdateHoldingRegister(current_address, frame[1]);
+				mb.Write(current_address, frame[1]);
 			break;
 			}
 		}
@@ -90,11 +90,11 @@ void Dynabox::EV_Timeout()
 	case ST_TESTING_LED:
 		fault.SetGlobal(F01_LED);
 		fault.Set(F01_LED, current_address - 1);
-		mb.UpdateHoldingRegister(current_address, F01_LED << 8);
+		mb.Write(current_address, F01_LED << 8);
 		return;
 	break;
 	}
 	fault.SetGlobal(F02_DOOR);
 	fault.Set(F02_DOOR, current_address - 1);
-	mb.UpdateHoldingRegister(current_address, F02_DOOR << 8);
+	mb.Write(current_address, F02_DOOR << 8);
 }

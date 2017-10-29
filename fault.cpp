@@ -17,7 +17,7 @@ Fault::Fault()
 void Fault::SetGlobal(uint8_t fault)
 {
 	global_faults |= (1ULL << fault);
-	mb.UpdateHoldingRegister(GENERAL_ERROR_STATUS, fault);
+	mb.Write(GENERAL_ERROR_STATUS, fault);
 }
 
 void Fault::ClearGlobal(uint8_t fault)

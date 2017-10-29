@@ -58,20 +58,20 @@ bool Machine::CurrentAddress()
 
 void Machine::SetOrderStatus(uint8_t status)
 {
-	mb.UpdateHoldingRegister(ORDER_STATUS, status);
+	mb.Write(ORDER_STATUS, status);
 }
 
 uint8_t Machine::GetOrderStatus()
 {
-	return mb.GetHoldingRegister(ORDER_STATUS);
+	return mb.Read((uint8_t)ORDER_STATUS);
 }
 
 void Machine::SetIOInfo(uint8_t info)
 {
-	mb.SetBitHoldingRegister(IO_INFORMATIONS, info);
+	mb.SetBit(IO_INFORMATIONS, info);
 }
 
 void Machine::ClearIOInfo(uint8_t info)
 {
-	mb.ClearBitHoldingRegister(IO_INFORMATIONS, info);
+	mb.ClearBit(IO_INFORMATIONS, info);
 }

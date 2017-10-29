@@ -75,16 +75,16 @@ class ModbusTCP
 public:
 	ModbusTCP();
 	void Process(uint8_t* frame);
-	void ReadHoldingRegisters(uint8_t* frame);
-	void WriteMultipleRegisters(uint8_t* frame);
-	void UpdateHoldingRegister(uint8_t address, uint16_t value);
-	uint16_t GetHoldingRegister(uint8_t address);
-	void SetBitHoldingRegister(uint8_t address, uint8_t bit);
-	void ClearBitHoldingRegister(uint8_t address, uint8_t bit);
+	uint16_t Read(uint8_t address);					// from controller
+	void Write(uint8_t address, uint16_t value);	// from controller
+	void SetBit(uint8_t address, uint8_t bit);		// from controller
+	void ClearBit(uint8_t address, uint8_t bit);	// from controller
+	void Read(uint8_t* frame);						// from user
+	void Write(uint8_t* frame);						// from user
 private:
 	void PrepareMBAPHeader(uint8_t* frame);
-	void ReturnHoldingRegisters(uint8_t* frame, uint16_t starting_address, uint16_t quantity);
-	void UpdateMultipleRegisters(uint8_t* frame, uint16_t starting_address, uint16_t quantity);
+//	void ReturnHoldingRegisters(uint8_t* frame, uint16_t starting_address, uint16_t quantity);
+//	void UpdateMultipleRegisters(uint8_t* frame, uint16_t starting_address, uint16_t quantity);
 	void ReadHoldingRegistersReply(uint8_t* frame);
 	void WriteMultipleRegistersReply(uint8_t* frame);
 	void SendErrorFrame(uint8_t* frame, uint8_t error_code);
