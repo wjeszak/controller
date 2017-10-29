@@ -10,6 +10,7 @@
 #include "lockerbox.h"
 #include "config.h"
 #include "modbus_tcp.h"
+#include "usart.h"
 
 void GetPointerTypeOfMachine(uint8_t type)
 {

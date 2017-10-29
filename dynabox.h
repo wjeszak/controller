@@ -9,7 +9,6 @@
 #define DYNABOX_H_
 
 #include "machine.h"
-#include "usart.h"
 
 #define NUMBER_OF_FAULTS 				17
 #define NO_FAULT						0x00
