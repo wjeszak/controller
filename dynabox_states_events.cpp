@@ -20,7 +20,7 @@ void Dynabox::ST_TestingLed(DynaboxData* pdata)
 	comm.Prepare(current_address + LED_ADDRESS_OFFSET, COMM_LED_DIAG);
 	SLAVE_POLL_TIMEOUT_SET;
 
-	if(LastAddress())
+	if(1)
 	{
 		SLAVE_POLL_STOP;
 		next_EV = &Dynabox::EV_TestElm;
@@ -35,7 +35,7 @@ void Dynabox::ST_TestingElm(DynaboxData* pdata)
 	comm.Prepare(current_address + LED_ADDRESS_OFFSET, COMM_LED_GREEN_ON_FOR_TIME);
 	SLAVE_POLL_TIMEOUT_SET;
 
-	if(LastAddress())
+	if(1)
 	{
 		SLAVE_POLL_STOP;
 		next_EV = &Dynabox::EV_NeedHoming;
@@ -49,7 +49,7 @@ void Dynabox::ST_PreparingToHoming(DynaboxData* pdata)
 	comm.Prepare(current_address, 0x80);
 	SLAVE_POLL_TIMEOUT_SET;
 
-	if(LastAddress())
+	if(1)
 	{
 		SLAVE_POLL_STOP;
 		next_EV = &Dynabox::EV_PreparedToHoming;
@@ -69,7 +69,7 @@ void Dynabox::ST_ShowingOnLed(DynaboxData* pdata)
 		comm.Prepare(current_address + LED_ADDRESS_OFFSET, faults_to_led_map[mb.Read(current_address + 1) >> 8] + 0x80);
 	}
 
-	if(LastAddress())
+	if(1)
 	{
 		SLAVE_POLL_STOP;
 		comm.LedTrigger();
@@ -88,7 +88,7 @@ void Dynabox::ST_Ready(DynaboxData* pdata)
 	comm.Prepare(current_address, 0x80);
 	SLAVE_POLL_TIMEOUT_SET;
 
-	if(LastAddress())
+	if(1)
 	{
 		current_address = 1;
 		return;

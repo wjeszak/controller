@@ -56,9 +56,9 @@ void Dynabox::Scheduler()
 void Dynabox::EV_Parse(uint8_t* frame)
 {
 	SLAVE_POLL_TIMEOUT_OFF;
-	if(CrcOk(frame))
+	if(comm.CrcOk(frame))
 	{
-		if(CurrentAddress())
+		if(1)	// !!!!!!!!!!!1
 		{
 			uint8_t st = GetState();
 			switch(st)

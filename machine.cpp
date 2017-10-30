@@ -34,7 +34,7 @@ Machine::Machine() : StateMachine(ST_MAX_STATES)
 {
 	current_address =  1;
 }
-
+/*
 bool Machine::CrcOk(uint8_t* frame)
 {
 	if(comm.Crc8(frame, 2) == frame[2])
@@ -56,7 +56,7 @@ bool Machine::CurrentAddress()
 		return true;
 	return false;
 }
-
+*/
 void Machine::SetOrderStatus(uint8_t status)
 {
 	mb.Write(ORDER_STATUS, status);

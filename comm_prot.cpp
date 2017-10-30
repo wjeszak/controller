@@ -27,6 +27,28 @@ void Comm_prot::Prepare(uint8_t addr, uint8_t command)
 	usart.SendFrame(&usart_data);
 }
 
+bool Comm_prot::CrcOk(uint8_t* frame)
+{
+	if(Crc8(frame, 2) == frame[2])
+		return true;
+	return false;
+}
+
+//bool Comm_prot::LastAddress()
+//{
+//	if(current_address == functions[1].param)
+//		return true;
+//	return false;
+//}
+
+
+//bool Comm_prot::CurrentAddress()
+//{
+//	if(usart_data.frame[0] == current_address - 1)
+//		return true;
+//	return false;
+//}
+
 void Comm_prot::LedTrigger()
 {
 	usart_data.frame[0] = LED_ADDRESS_TRIGGER;
@@ -37,7 +59,7 @@ void Comm_prot::LedTrigger()
 	usart.SendFrame(&usart_data);
 }
 
-uint8_t Comm_prot::Crc8(uint8_t *frame, uint8_t len)
+uint8_t Comm_prot::Crc8(uint8_t* frame, uint8_t len)
 {
 	uint8_t crc = 0x00;
 	for (uint8_t pos = 0; pos < len; pos++)

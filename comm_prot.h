@@ -48,6 +48,9 @@ public:
 	Comm_prot();
 	uint8_t Crc8(uint8_t* frame, uint8_t len);
 	void Prepare(uint8_t addr, uint8_t command);
+	bool CrcOk(uint8_t* frame);
+	bool CurrentAddress();
+	bool LastAddress();
 	void LedTrigger();
 };
 
