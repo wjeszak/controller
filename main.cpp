@@ -16,7 +16,7 @@
 #include "timer.h"
 #include "display.h"
 #include "button.h"
-#include "comm_prot.h"
+#include "comm.h"
 #include "config.h"
 #include "encoder.h"
 #include "dynabox.h"
@@ -48,7 +48,7 @@ UsartData usart_data;
 Usart usart;
 StackData stack_data;
 Stack stack;
-Comm_prot comm;
+Comm comm;
 ModbusTCP mb;
 
 int main()

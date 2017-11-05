@@ -5,9 +5,9 @@
  *      Author: tomek
  */
 
+#include "comm.h"
 #include "dynabox.h"
 #include "timer.h"
-#include "comm_prot.h"
 #include "modbus_tcp.h"
 /*
 

@@ -58,8 +58,8 @@ public:
 	void EV_HomingDone(DynaboxData* pdata);
 	void EV_ShowOnLed(DynaboxData* pdata);
 	void EV_UserAction(MachineData* pdata);
-	void EV_Parse(uint8_t* frame);
-	void EV_Timeout();
+	void EV_ReplyOK(MachineData* pdata);
+	void EV_Timeout(MachineData* pdata);
 	bool led_same_for_all;
 	uint8_t led_same_for_all_id;
 	void (Dynabox::*next_EV)(DynaboxData* pdata);

@@ -7,7 +7,8 @@
 
 #include <avr/interrupt.h>
 #include "usart.h"
-#include "comm_prot.h"
+
+#include "comm.h"
 #include "machine.h"
 
 Usart::Usart(uint16_t baud) : StateMachine(ST_MAX_STATES)
@@ -57,7 +58,7 @@ void Usart::ST_Idle(UsartData* pdata)
 void Usart::ST_ByteReceived(UsartData* pdata)
 {
 	uint8_t tmp_head;
-	tmp_head = (rx_head + 1) & UART_BUF_MASK;
+	tmp_head = (rx_head + 1) & USART_BUF_MASK;
 	if(tmp_head == rx_tail)
 	{
 		// buffer overwrite
@@ -75,13 +76,14 @@ void Usart::ST_FrameReceived(UsartData* pdata)
 	uint8_t i = 0;
 	while(rx_tail != rx_head)
 	{
-		rx_tail = (rx_tail + 1) & UART_BUF_MASK;
+		rx_tail = (rx_tail + 1) & USART_BUF_MASK;
 		pdata->frame[i] = rx_buf[rx_tail];
 		i++;
 	}
 	pdata->len = 0;
 	InternalEvent(ST_IDLE, pdata);
-	m->EV_Parse(pdata->frame);
+	comm.EV_Reply();
+	//m->EV_Parse(pdata->frame);
 }
 
 void Usart::EV_NewByte(UsartData* pdata)
@@ -91,14 +93,14 @@ void Usart::EV_NewByte(UsartData* pdata)
 		TRANSITION_MAP_ENTRY(ST_BYTE_RECEIVED)			// ST_BYTE_RECEIVED
     END_TRANSITION_MAP(pdata)
 
-	if((pdata->c == 0x0A) && (pdata->len == FRAME_LENGTH_RESPONSE)) InternalEvent(ST_FRAME_RECEIVED, pdata);
+	if((pdata->c == USART_FRAME_END_CHAR) && (pdata->len == FRAME_LENGTH_RESPONSE)) InternalEvent(ST_FRAME_RECEIVED, pdata);
 }
 
 void Usart::EV_TXBufferEmpty(UsartData* pdata)
 {
 	if(tx_head != tx_tail)
 	{
-		tx_tail = (tx_tail + 1) & UART_BUF_MASK;
+		tx_tail = (tx_tail + 1) & USART_BUF_MASK;
 		UDR0 = tx_buf[tx_tail];
 	}
 	else
@@ -119,7 +121,7 @@ void Usart::SendFrame(UsartData* pdata)
 	uint8_t *w = pdata->frame;
 	while(pdata->len)
 	{
-		tmp_tx_head = (tx_head  + 1) & UART_BUF_MASK;
+		tmp_tx_head = (tx_head  + 1) & USART_BUF_MASK;
 		while(tmp_tx_head == tx_tail) {}
 		tx_buf[tmp_tx_head] = *w++;
 		tx_head = tmp_tx_head;

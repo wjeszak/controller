@@ -8,8 +8,8 @@
 #ifndef MACHINE_H_
 #define MACHINE_H_
 
+#include "comm.h"
 #include "state_machine.h"
-#include "comm_prot.h"
 
 #define MACHINE_TYPE_DYNABOX 					0
 #define MACHINE_TYPE_LOCKERBOX 					1
@@ -18,15 +18,14 @@
 class MachineData : public EventData
 {
 public:
+	uint8_t addr;
+	uint8_t data;
 };
 
 class Machine : public StateMachine
 {
 public:
 	Machine();
-//	bool CrcOk(uint8_t* frame);
-//	bool CurrentAddress();
-//	bool LastAddress();
 	void SetOrderStatus(uint8_t status);
 	uint8_t GetOrderStatus();
 	void SetIOInfo(uint8_t info);
@@ -36,8 +35,8 @@ public:
 	virtual void Init() {}
 	virtual void EV_EnterToConfig() {}
 	virtual void Scheduler() {}
-	virtual void EV_Parse(uint8_t* frame) {}
-	virtual void EV_Timeout() {}
+	virtual void EV_ReplyOK(MachineData* pdata) {}
+	virtual void EV_Timeout(MachineData* pdata) {}
 	virtual void EV_UserAction(MachineData* pdata) {}
 	uint8_t current_address;
 private:

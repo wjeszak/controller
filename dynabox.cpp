@@ -6,8 +6,9 @@
  */
 
 #include "timer.h"
-#include "comm_prot.h"
 #include "dynabox.h"
+
+#include "comm.h"
 #include "fault.h"
 #include "modbus_tcp.h"
 #include "usart.h"
@@ -53,10 +54,10 @@ void Dynabox::Scheduler()
 	InternalEvent(GetState(), &dynabox_data);
 }
 
-void Dynabox::EV_Parse(uint8_t* frame)
+void Dynabox::EV_ReplyOK(MachineData* pdata)
 {
 	SLAVE_POLL_TIMEOUT_OFF;
-	if(comm.CrcOk(frame))
+/*	if(comm.CrcOk(frame))
 	{
 		if(1)	// !!!!!!!!!!!1
 		{
@@ -80,9 +81,10 @@ void Dynabox::EV_Parse(uint8_t* frame)
 			}
 		}
 	}
+*/
 }
 
-void Dynabox::EV_Timeout()
+void Dynabox::EV_Timeout(MachineData* pdata)
 {
 	SLAVE_POLL_TIMEOUT_OFF;
 	uint8_t st = GetState();

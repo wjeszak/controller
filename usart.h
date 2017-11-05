@@ -11,8 +11,8 @@
 #ifndef USART_H_
 #define USART_H_
 
+#include "comm.h"
 #include "state_machine.h"
-#include "comm_prot.h"
 
 #define USART_DE_DDR 			DDRC
 #define USART_DE_PORT 			PORTC
@@ -22,14 +22,16 @@
 #define USART_DE_SEND 			USART_DE_PORT |=  (1 << USART_DE_PIN)
 #define USART_DE_INIT 			USART_DE_DDR  |=  (1 << USART_DE_PIN)
 
-#define UART_BUF_SIZE 			16
-#define UART_BUF_MASK 			(UART_BUF_SIZE - 1)
+#define USART_BUF_SIZE 			16
+#define USART_BUF_MASK 			(USART_BUF_SIZE - 1)
+
+#define USART_FRAME_END_CHAR 	0x0A
 
 class UsartData : public EventData
 {
 public:
 	uint8_t c;
-	uint8_t frame[UART_BUF_SIZE];
+	uint8_t frame[USART_BUF_SIZE];
 	uint8_t len;
 };
 
@@ -58,8 +60,8 @@ private:
 		STATE_MAP_ENTRY(&Usart::ST_FrameReceived)
 	END_STATE_MAP
 
-	volatile uint8_t rx_buf[UART_BUF_SIZE];
-	volatile uint8_t tx_buf[UART_BUF_SIZE];
+	volatile uint8_t rx_buf[USART_BUF_SIZE];
+	volatile uint8_t tx_buf[USART_BUF_SIZE];
 	volatile uint8_t rx_head, rx_tail, tx_head, tx_tail;
 };
 

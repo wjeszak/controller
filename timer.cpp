@@ -9,7 +9,7 @@
 #include "timer.h"
 #include "fault.h"
 #include "button.h"
-#include "comm_prot.h"
+#include "comm.h"
 #include "config.h"
 #include "display.h"
 #include "motor.h"
@@ -115,8 +115,7 @@ void SlavePollGeneral()
 
 void SlaveTimeoutGeneral()
 {
-	SLAVE_POLL_TIMEOUT_OFF;
-	m->EV_Timeout();
+	comm.EV_Timeout();
 }
 
 // TIMER_MOTOR_ACCELERATE

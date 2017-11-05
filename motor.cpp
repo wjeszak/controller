@@ -8,11 +8,12 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "motor.h"
+
+#include "comm.h"
 #include "timer.h"
 #include "display.h"
 #include "modbus_tcp.h"
 #include "dynabox.h"
-#include "comm_prot.h"
 
 Motor::Motor() : StateMachine(ST_MAX_STATES)
 {

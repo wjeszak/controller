@@ -5,9 +5,9 @@
  *      Author: tomek
  */
 
+#include "comm.h"
 #include "timer.h"
 #include "config.h"
-#include "comm_prot.h"
 #include "dynabox.h"
 #include "motor.h"
 #include "modbus_tcp.h"
@@ -17,7 +17,7 @@
 // ----------------------- States -----------------------
 void Dynabox::ST_TestingLed(DynaboxData* pdata)
 {
-	comm.EV_Send(current_address + LED_ADDRESS_OFFSET, COMM_LED_DIAG);
+/*	comm.EV_Send(current_address + LED_ADDRESS_OFFSET, COMM_LED_DIAG, true);
 	SLAVE_POLL_TIMEOUT_SET;
 
 	if(1)
@@ -27,14 +27,15 @@ void Dynabox::ST_TestingLed(DynaboxData* pdata)
 		timer.Assign(TIMER_DELAY_BETWEEN_STATES, DELAY_BETWEEN_STATES, DelayBetweenStates);
 	}
 	current_address++;
+	*/
 }
 
 void Dynabox::ST_TestingElm(DynaboxData* pdata)
 {
-	comm.EV_Send(current_address, COMM_DOOR_CHECK_ELECTROMAGNET);
+/*	comm.EV_Send(current_address, COMM_DOOR_CHECK_ELECTROMAGNET);
 	comm.EV_Send(current_address + LED_ADDRESS_OFFSET, COMM_LED_GREEN_ON_FOR_TIME);
 	SLAVE_POLL_TIMEOUT_SET;
-
+*/
 	if(1)
 	{
 		SLAVE_POLL_STOP;
@@ -46,7 +47,7 @@ void Dynabox::ST_TestingElm(DynaboxData* pdata)
 
 void Dynabox::ST_PreparingToHoming(DynaboxData* pdata)
 {
-	comm.EV_Send(current_address, 0x80);
+//	comm.EV_Send(current_address, 0x80);
 	SLAVE_POLL_TIMEOUT_SET;
 
 	if(1)
@@ -62,17 +63,17 @@ void Dynabox::ST_ShowingOnLed(DynaboxData* pdata)
 {
 	if(led_same_for_all)
 	{
-		comm.EV_Send(current_address + LED_ADDRESS_OFFSET, faults_to_led_map[led_same_for_all_id] + 0x80);
+//		comm.EV_Send(current_address + LED_ADDRESS_OFFSET, faults_to_led_map[led_same_for_all_id] + 0x80);
 	}
 	else
 	{
-		comm.EV_Send(current_address + LED_ADDRESS_OFFSET, faults_to_led_map[mb.Read(current_address + 1) >> 8] + 0x80);
+//		comm.EV_Send(current_address + LED_ADDRESS_OFFSET, faults_to_led_map[mb.Read(current_address + 1) >> 8] + 0x80);
 	}
 
 	if(1)
 	{
 		SLAVE_POLL_STOP;
-		comm.LedTrigger();
+//		comm.LedTrigger();
 		led_same_for_all = false;
 	}
 	current_address++;
@@ -85,7 +86,7 @@ void Dynabox::ST_Homing(DynaboxData* pdata)
 
 void Dynabox::ST_Ready(DynaboxData* pdata)
 {
-	comm.EV_Send(current_address, 0x80);
+//	comm.EV_Send(current_address, 0x80);
 	SLAVE_POLL_TIMEOUT_SET;
 
 	if(1)
