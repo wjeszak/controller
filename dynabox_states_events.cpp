@@ -17,7 +17,7 @@
 // ----------------------- States -----------------------
 void Dynabox::ST_TestingLed(DynaboxData* pdata)
 {
-	comm.Prepare(current_address + LED_ADDRESS_OFFSET, COMM_LED_DIAG);
+	comm.EV_Send(current_address + LED_ADDRESS_OFFSET, COMM_LED_DIAG);
 	SLAVE_POLL_TIMEOUT_SET;
 
 	if(1)
@@ -31,8 +31,8 @@ void Dynabox::ST_TestingLed(DynaboxData* pdata)
 
 void Dynabox::ST_TestingElm(DynaboxData* pdata)
 {
-	comm.Prepare(current_address, COMM_DOOR_CHECK_ELECTROMAGNET);
-	comm.Prepare(current_address + LED_ADDRESS_OFFSET, COMM_LED_GREEN_ON_FOR_TIME);
+	comm.EV_Send(current_address, COMM_DOOR_CHECK_ELECTROMAGNET);
+	comm.EV_Send(current_address + LED_ADDRESS_OFFSET, COMM_LED_GREEN_ON_FOR_TIME);
 	SLAVE_POLL_TIMEOUT_SET;
 
 	if(1)
@@ -46,7 +46,7 @@ void Dynabox::ST_TestingElm(DynaboxData* pdata)
 
 void Dynabox::ST_PreparingToHoming(DynaboxData* pdata)
 {
-	comm.Prepare(current_address, 0x80);
+	comm.EV_Send(current_address, 0x80);
 	SLAVE_POLL_TIMEOUT_SET;
 
 	if(1)
@@ -62,11 +62,11 @@ void Dynabox::ST_ShowingOnLed(DynaboxData* pdata)
 {
 	if(led_same_for_all)
 	{
-		comm.Prepare(current_address + LED_ADDRESS_OFFSET, faults_to_led_map[led_same_for_all_id] + 0x80);
+		comm.EV_Send(current_address + LED_ADDRESS_OFFSET, faults_to_led_map[led_same_for_all_id] + 0x80);
 	}
 	else
 	{
-		comm.Prepare(current_address + LED_ADDRESS_OFFSET, faults_to_led_map[mb.Read(current_address + 1) >> 8] + 0x80);
+		comm.EV_Send(current_address + LED_ADDRESS_OFFSET, faults_to_led_map[mb.Read(current_address + 1) >> 8] + 0x80);
 	}
 
 	if(1)
@@ -85,7 +85,7 @@ void Dynabox::ST_Homing(DynaboxData* pdata)
 
 void Dynabox::ST_Ready(DynaboxData* pdata)
 {
-	comm.Prepare(current_address, 0x80);
+	comm.EV_Send(current_address, 0x80);
 	SLAVE_POLL_TIMEOUT_SET;
 
 	if(1)

@@ -17,7 +17,7 @@ Comm_prot::Comm_prot()
 
 }
 
-void Comm_prot::Prepare(uint8_t addr, uint8_t command)
+void Comm_prot::EV_Send(uint8_t addr, uint8_t command)
 {
 	usart_data.frame[0] = addr;
 	usart_data.frame[1] = command;
