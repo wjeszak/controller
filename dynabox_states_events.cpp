@@ -17,8 +17,7 @@
 // ----------------------- States -----------------------
 void Dynabox::ST_TestingLed(DynaboxData* pdata)
 {
-/*	comm.EV_Send(current_address + LED_ADDRESS_OFFSET, COMM_LED_DIAG, true);
-	SLAVE_POLL_TIMEOUT_SET;
+	comm.EV_Send(current_address + LED_ADDRESS_OFFSET, COMM_LED_DIAG, true);
 
 	if(1)
 	{
@@ -27,7 +26,6 @@ void Dynabox::ST_TestingLed(DynaboxData* pdata)
 		timer.Assign(TIMER_DELAY_BETWEEN_STATES, DELAY_BETWEEN_STATES, DelayBetweenStates);
 	}
 	current_address++;
-	*/
 }
 
 void Dynabox::ST_TestingElm(DynaboxData* pdata)

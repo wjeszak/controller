@@ -34,13 +34,6 @@ Machine::Machine() : StateMachine(ST_MAX_STATES)
 {
 	current_address =  1;
 }
-/*
-bool Machine::CrcOk(uint8_t* frame)
-{
-	if(comm.Crc8(frame, 2) == frame[2])
-		return true;
-	return false;
-}
 
 bool Machine::LastAddress()
 {
@@ -49,7 +42,7 @@ bool Machine::LastAddress()
 	return false;
 }
 
-
+/*
 bool Machine::CurrentAddress()
 {
 	if(usart_data.frame[0] == current_address - 1)

@@ -34,8 +34,14 @@ Dynabox::Dynabox() : faults_to_led_map {
 	COMM_LED_RED_BLINK	 					// F17
 }
 {
-	led_same_for_all = false;
-	led_same_for_all_id = 0;
+//	led_same_for_all = false;
+//	led_same_for_all_id = 0;
+//	states_map[0].state = ST_TESTING_LED;
+//	states_map[0].command = COMM_LED_DIAG;
+//	states_map[0].reply = 0x80;
+//	states_map[0].fault = F01_LED;
+//	state_poll_repeat[ST_TESTING_LED] = false;
+//	state_poll_repeat[ST_TESTING_ELM] = false;
 }
 
 void Dynabox::Init()
@@ -51,7 +57,9 @@ void Dynabox::EV_EnterToConfig()
 
 void Dynabox::Scheduler()
 {
-	InternalEvent(GetState(), &dynabox_data);
+	uint8_t state = GetState();
+	if(LastAddress() && state_poll_repeat[state])
+	InternalEvent(state, &dynabox_data);
 }
 
 void Dynabox::EV_ReplyOK(MachineData* pdata)
@@ -86,18 +94,16 @@ void Dynabox::EV_ReplyOK(MachineData* pdata)
 
 void Dynabox::EV_Timeout(MachineData* pdata)
 {
-	SLAVE_POLL_TIMEOUT_OFF;
-	uint8_t st = GetState();
-	switch (st)
+	if(pdata->addr > 100)
 	{
-	case ST_TESTING_LED:
 		fault.SetGlobal(F01_LED);
 		fault.Set(F01_LED, current_address - 1);
 		mb.Write(current_address, F01_LED << 8);
-		return;
-	break;
 	}
-	fault.SetGlobal(F02_DOOR);
-	fault.Set(F02_DOOR, current_address - 1);
-	mb.Write(current_address, F02_DOOR << 8);
+	else
+	{
+		fault.SetGlobal(F02_DOOR);
+		fault.Set(F02_DOOR, current_address - 1);
+		mb.Write(current_address, F02_DOOR << 8);
+	}
 }

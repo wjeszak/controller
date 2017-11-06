@@ -30,6 +30,7 @@ public:
 	uint8_t GetOrderStatus();
 	void SetIOInfo(uint8_t info);
 	void ClearIOInfo(uint8_t info);
+	bool LastAddress();
 	virtual void LoadParameters() {}
 	virtual void SaveParameters() {}
 	virtual void Init() {}

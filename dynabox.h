@@ -84,6 +84,22 @@ private:
 		STATE_MAP_ENTRY(&Dynabox::ST_Config)
 	END_STATE_MAP
 	uint8_t faults_to_led_map[NUMBER_OF_FAULTS + 1];
+
+	bool state_poll_repeat[ST_MAX_STATES] = {false, false};
+
+	struct StateFault
+	{
+		States state;
+		uint8_t reply;
+		void (Dynabox::*fp)(DynaboxData* pdata);
+		uint8_t fault;
+	};
+	StateFault set_state_fault[10] =
+	{
+		{ST_TESTING_LED, 0xC0, &Dynabox::ST_Ready, F03_OPTICAL_SWITCHES},
+		{ST_TESTING_LED, 0xF0, &Dynabox::ST_Homing, F06_CLOSE_THE_DOOR }
+	};
+	StateFault clear_state_fault[10];
 };
 
 extern Dynabox dynabox;
