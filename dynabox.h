@@ -83,9 +83,29 @@ private:
 		STATE_MAP_ENTRY(&Dynabox::ST_NotReady)
 		STATE_MAP_ENTRY(&Dynabox::ST_Config)
 	END_STATE_MAP
+	// ---------------------------------------------------------
+	uint8_t GetDestAddr(uint8_t st);
 	uint8_t faults_to_led_map[NUMBER_OF_FAULTS + 1];
 
-	bool state_poll_repeat[ST_MAX_STATES] = {false, false};
+	enum Destination {Dest_Door, Dest_Led};
+
+	bool end_state = false;
+
+	struct StateProperties
+	{
+		Destination dest;
+		uint8_t command;
+		bool need_timeout;
+		bool repeat;
+		uint8_t next_state;
+	};
+
+	StateProperties state_prop[ST_MAX_STATES] =
+	{
+		{Dest_Led,  COMM_LED_DIAG, false, false, ST_TESTING_ELM},
+		{Dest_Door, COMM_DOOR_CHECK_ELECTROMAGNET,  false, false, ST_READY},
+		//{COMM_LED_GREEN_1PULSE, false}
+	};
 
 	struct StateFault
 	{

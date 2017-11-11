@@ -35,21 +35,11 @@ Machine::Machine() : StateMachine(ST_MAX_STATES)
 	current_address =  1;
 }
 
-bool Machine::LastAddress()
+uint8_t Machine::LastAddress()
 {
-	if(current_address == functions[1].param)
-		return true;
-	return false;
+	return functions[1].param;
 }
 
-/*
-bool Machine::CurrentAddress()
-{
-	if(usart_data.frame[0] == current_address - 1)
-		return true;
-	return false;
-}
-*/
 void Machine::SetOrderStatus(uint8_t status)
 {
 	mb.Write(ORDER_STATUS, status);

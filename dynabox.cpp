@@ -12,6 +12,7 @@
 #include "fault.h"
 #include "modbus_tcp.h"
 #include "usart.h"
+//#include "display.h"
 
 Dynabox::Dynabox() : faults_to_led_map {
 	0,									// not used
@@ -57,18 +58,36 @@ void Dynabox::EV_EnterToConfig()
 	timer.Disable(TIMER_FAULT_SHOW);
 }
 
+uint8_t Dynabox::GetDestAddr(uint8_t st)
+{
+	if(state_prop[st].dest == Dest_Led)
+		return current_address + LED_ADDRESS_OFFSET;
+	return current_address;
+}
+
 void Dynabox::Poll()
 {
 	uint8_t state = GetState();
-	InternalEvent(state, &dynabox_data);
-	current_address++;
-	if(LastAddress() && state_poll_repeat[state] == false) SLAVE_POLL_STOP;
-
+	if(end_state)
+	{
+		//SLAVE_POLL_STOP;
+		//return;
+		if(state_prop[state].repeat == false)
+		{
+			state = state_prop[state].next_state;
+			InternalEvent(state, &dynabox_data);
+		}
+	}
+	comm.EV_Send(current_address + LED_ADDRESS_OFFSET, state_prop[state].command , state_prop[state].need_timeout);
 }
 
 void Dynabox::EV_ReplyOK(MachineData* pdata)
 {
-	SLAVE_POLL_TIMEOUT_OFF;
+//	display.Write(4444);
+	if(current_address == LastAddress())
+		end_state = true;
+	else
+		current_address++;
 /*	if(comm.CrcOk(frame))
 	{
 		if(1)	// !!!!!!!!!!!1
@@ -98,6 +117,10 @@ void Dynabox::EV_ReplyOK(MachineData* pdata)
 
 void Dynabox::EV_Timeout(MachineData* pdata)
 {
+	if(current_address == LastAddress())
+		end_state = true;
+	else
+		current_address++;
 	if(pdata->addr > 100)
 	{
 		fault.SetGlobal(F01_LED);

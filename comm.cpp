@@ -33,6 +33,7 @@ void Comm::EV_LedTrigger()
 
 void Comm::EV_Reply()
 {
+	SLAVE_POLL_TIMEOUT_OFF;
 	if(Crc(usart_data.frame, 2) == usart_data.frame[2])
 	{
 		d->addr = usart_data.frame[0];

@@ -17,7 +17,7 @@
 // ----------------------- States -----------------------
 void Dynabox::ST_TestingLed(DynaboxData* pdata)
 {
-	comm.EV_Send(current_address + LED_ADDRESS_OFFSET, COMM_LED_DIAG, true);
+
 
 //	if(1)
 //	{
@@ -34,13 +34,13 @@ void Dynabox::ST_TestingElm(DynaboxData* pdata)
 	comm.EV_Send(current_address + LED_ADDRESS_OFFSET, COMM_LED_GREEN_ON_FOR_TIME);
 	SLAVE_POLL_TIMEOUT_SET;
 */
-	if(1)
-	{
-		SLAVE_POLL_STOP;
-		next_EV = &Dynabox::EV_NeedHoming;
-		timer.Assign(TIMER_DELAY_BETWEEN_STATES, DELAY_BETWEEN_STATES, DelayBetweenStates);
-	}
-	current_address++;
+//	if(1)
+//	{
+//		SLAVE_POLL_STOP;
+//		next_EV = &Dynabox::EV_NeedHoming;
+//		timer.Assign(TIMER_DELAY_BETWEEN_STATES, DELAY_BETWEEN_STATES, DelayBetweenStates);
+//	}
+//	current_address++;
 }
 
 void Dynabox::ST_PreparingToHoming(DynaboxData* pdata)
