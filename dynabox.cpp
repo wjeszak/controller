@@ -65,22 +65,27 @@ uint8_t Dynabox::GetDestAddr(uint8_t st)
 	return current_address;
 }
 
+void Dynabox::SetDestAddr(uint8_t addr)
+{
+	current_address = addr;
+}
+
 void Dynabox::Poll()
 {
 	uint8_t state = GetState();
-	InternalEvent(state, &dynabox_data);
 	if(end_state)
 	{
 		end_state = false;
-		current_address = 1;
+		SetDestAddr(1);
 		if(state_prop[state].repeat == false)
 		{
 			state = state_prop[state].next_state;
 			ChangeState(state);
-			//InternalEvent(state, &dynabox_data);
 		}
+		return;
 	}
 	comm.EV_Send(GetDestAddr(state), state_prop[state].command , state_prop[state].need_timeout);
+	InternalEvent(state, &dynabox_data);
 }
 
 void Dynabox::EV_ReplyOK(MachineData* pdata)
