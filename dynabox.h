@@ -49,7 +49,7 @@ public:
 	void LoadParameters();
 	void SaveParameters();
 	void Init();
-	void Scheduler();
+	void Poll();
 	void EV_EnterToConfig();
 	void EV_TestLed(DynaboxData* pdata);
 	void EV_TestElm(DynaboxData* pdata);

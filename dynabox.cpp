@@ -47,6 +47,8 @@ Dynabox::Dynabox() : faults_to_led_map {
 void Dynabox::Init()
 {
 	EV_TestLed(&dynabox_data);
+	// never disable
+	SLAVE_POLL_START;
 }
 
 void Dynabox::EV_EnterToConfig()
@@ -55,11 +57,13 @@ void Dynabox::EV_EnterToConfig()
 	timer.Disable(TIMER_FAULT_SHOW);
 }
 
-void Dynabox::Scheduler()
+void Dynabox::Poll()
 {
 	uint8_t state = GetState();
-	if(LastAddress() && state_poll_repeat[state])
 	InternalEvent(state, &dynabox_data);
+	current_address++;
+	if(LastAddress() && state_poll_repeat[state] == false) SLAVE_POLL_STOP;
+
 }
 
 void Dynabox::EV_ReplyOK(MachineData* pdata)

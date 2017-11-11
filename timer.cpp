@@ -110,7 +110,7 @@ void EncoderPoll()
 
 void SlavePollGeneral()
 {
-	m->Scheduler();
+	m->Poll();
 }
 
 void SlaveTimeoutGeneral()
@@ -132,6 +132,6 @@ void FaultShow()
 
 void DelayBetweenStates()
 {
-	timer.Disable(TIMER_DELAY_BETWEEN_STATES);
-	(dynabox.*(dynabox.next_EV))(&dynabox_data);
+//	timer.Disable(TIMER_DELAY_BETWEEN_STATES);
+//	(dynabox.*(dynabox.next_EV))(&dynabox_data);
 }

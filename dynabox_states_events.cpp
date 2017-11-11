@@ -19,13 +19,13 @@ void Dynabox::ST_TestingLed(DynaboxData* pdata)
 {
 	comm.EV_Send(current_address + LED_ADDRESS_OFFSET, COMM_LED_DIAG, true);
 
-	if(1)
-	{
-		SLAVE_POLL_STOP;
-		next_EV = &Dynabox::EV_TestElm;
-		timer.Assign(TIMER_DELAY_BETWEEN_STATES, DELAY_BETWEEN_STATES, DelayBetweenStates);
-	}
-	current_address++;
+//	if(1)
+//	{
+//		SLAVE_POLL_STOP;
+//		next_EV = &Dynabox::EV_TestElm;
+//		timer.Assign(TIMER_DELAY_BETWEEN_STATES, DELAY_BETWEEN_STATES, DelayBetweenStates);
+//	}
+//	current_address++;
 }
 
 void Dynabox::ST_TestingElm(DynaboxData* pdata)
@@ -107,8 +107,6 @@ void Dynabox::ST_Config(DynaboxData* pdata)
 // ----------------------- Events -----------------------
 void Dynabox::EV_TestLed(DynaboxData* pdata)
 {
-	current_address = 1;
-	SLAVE_POLL_START;
 //	BEGIN_TRANSITION_MAP								// current state
 //        TRANSITION_MAP_ENTRY(ST_TESTING_LED)			// ST_INIT
 //		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_TESTING_LED
