@@ -9,6 +9,7 @@
 #define DYNABOX_H_
 
 #include "machine.h"
+#include "motor.h"
 
 #define NUMBER_OF_FAULTS 				17
 #define NO_FAULT						0x00
@@ -42,6 +43,8 @@ class DynaboxData : public MachineData
 public:
 };
 
+
+
 class Dynabox : public Machine
 {
 public:
@@ -67,19 +70,21 @@ private:
 	void ST_TestingLed(DynaboxData* pdata);
 	void ST_TestingElm(DynaboxData* pdata);
 	void ST_PreparingToHoming(DynaboxData* pdata);
-	void ST_ShowingOnLed(DynaboxData* pdata);
+	void ST_HomingOnEntry();
 	void ST_Homing(DynaboxData* pdata);
 	void ST_Ready(DynaboxData* pdata);
+
+	void ST_ShowingOnLed(DynaboxData* pdata);
 	void ST_NotReady(DynaboxData* pdata);
 	void ST_Config(DynaboxData* pdata);
-	enum States {ST_TESTING_LED, ST_TESTING_ELM, ST_READY, ST_MAX_STATES};
+	enum States {ST_TESTING_LED, ST_TESTING_ELM, ST_PREPARING_TO_HOMING, ST_HOMING, ST_READY, ST_MAX_STATES};
 	BEGIN_STATE_MAP
 		STATE_MAP_ENTRY(&Dynabox::ST_TestingLed)
 		STATE_MAP_ENTRY(&Dynabox::ST_TestingElm)
+		STATE_MAP_ENTRY(&Dynabox::ST_PreparingToHoming)
+		STATE_MAP_ENTRY(&Dynabox::ST_Homing)
 		STATE_MAP_ENTRY(&Dynabox::ST_Ready)
-//		STATE_MAP_ENTRY(&Dynabox::ST_PreparingToHoming)
 //		STATE_MAP_ENTRY(&Dynabox::ST_ShowingOnLed)
-//		STATE_MAP_ENTRY(&Dynabox::ST_Homing)
 //		STATE_MAP_ENTRY(&Dynabox::ST_NotReady)
 		STATE_MAP_ENTRY(&Dynabox::ST_Config)
 	END_STATE_MAP
@@ -105,9 +110,10 @@ private:
 
 	StateProperties state_prop[ST_MAX_STATES] =
 	{
-		{Dest_Led,  COMM_LED_DIAG, true, false, NULL, NULL, ST_TESTING_ELM},
-		{Dest_Door, COMM_DOOR_CHECK_ELECTROMAGNET, true, false, NULL, NULL, ST_READY},
-		{Dest_Door, 0x80, true, true, NULL, NULL, 0}
+		{Dest_Led,  COMM_LED_DIAG, true, false, NULL, NULL, ST_TESTING_ELM},							// ST_TESTING_LED
+		{Dest_Door, COMM_DOOR_CHECK_ELECTROMAGNET, true, false, NULL, NULL, ST_PREPARING_TO_HOMING},	// ST_TESTING_ELM
+		{Dest_Door, 0x80, true, false, NULL, NULL, ST_HOMING},											// ST_PREPARING_TO_HOMING
+		{Dest_Door, 0x80, true, true, &Dynabox::ST_HomingOnEntry, NULL, 0}								// ST_HOMING
 	};
 
 	struct StateFault

@@ -79,8 +79,10 @@ void Dynabox::Poll()
 		SetDestAddr(1);
 		if(state_prop[state].repeat == false)
 		{
+			if(state_prop[state].on_exit != NULL) (this->*state_prop[state].on_exit)();
 			state = state_prop[state].next_state;
 			ChangeState(state);
+			if(state_prop[state].on_entry != NULL) (this->*state_prop[state].on_entry)();
 		}
 		return;
 	}

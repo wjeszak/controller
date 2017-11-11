@@ -68,18 +68,3 @@ uint8_t Comm::Crc(uint8_t* frame, uint8_t len)
 	}
 	return crc;
 }
-
-//bool Comm_prot::LastAddress()
-//{
-//	if(current_address == functions[1].param)
-//		return true;
-//	return false;
-//}
-
-
-//bool Comm_prot::CurrentAddress()
-//{
-//	if(usart_data.frame[0] == current_address - 1)
-//		return true;
-//	return false;
-//}

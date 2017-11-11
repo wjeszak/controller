@@ -27,54 +27,27 @@ void Dynabox::ST_TestingElm(DynaboxData* pdata)
 
 void Dynabox::ST_PreparingToHoming(DynaboxData* pdata)
 {
-//	comm.EV_Send(current_address, 0x80);
-//	SLAVE_POLL_TIMEOUT_SET;
 
-//	if(1)
-//	{
-//		SLAVE_POLL_STOP;
-//		next_EV = &Dynabox::EV_PreparedToHoming;
-//		timer.Assign(TIMER_DELAY_BETWEEN_STATES, DELAY_BETWEEN_STATES, DelayBetweenStates);
-//	}
-//	current_address++;
 }
 
 void Dynabox::ST_ShowingOnLed(DynaboxData* pdata)
 {
-//	if(led_same_for_all)
-//	{
-//		comm.EV_Send(current_address + LED_ADDRESS_OFFSET, faults_to_led_map[led_same_for_all_id] + 0x80);
-//	}
-//	else
-//	{
-//		comm.EV_Send(current_address + LED_ADDRESS_OFFSET, faults_to_led_map[mb.Read(current_address + 1) >> 8] + 0x80);
-//	}
 
-//	if(1)
-//	{
-		SLAVE_POLL_STOP;
-//		comm.LedTrigger();
-//		led_same_for_all = false;
-//	}
-//	current_address++;
 }
 
-void Dynabox::ST_Homing(DynaboxData* pdata)
+void Dynabox::ST_HomingOnEntry()
 {
 	motor.EV_Homing();
 }
 
+void Dynabox::ST_Homing(DynaboxData* pdata)
+{
+
+}
+
 void Dynabox::ST_Ready(DynaboxData* pdata)
 {
-//	comm.EV_Send(current_address, 0x80);
-//	SLAVE_POLL_TIMEOUT_SET;
 
-//	if(1)
-//	{
-//		current_address = 1;
-//		return;
-//	}
-//	current_address++;
 }
 
 void Dynabox::ST_NotReady(DynaboxData* pdata)
