@@ -70,15 +70,15 @@ void Dynabox::Poll()
 	uint8_t state = GetState();
 	if(end_state)
 	{
-		//SLAVE_POLL_STOP;
-		//return;
+		end_state = false;
+		current_address = 1;
 		if(state_prop[state].repeat == false)
 		{
 			state = state_prop[state].next_state;
 			InternalEvent(state, &dynabox_data);
 		}
 	}
-	comm.EV_Send(current_address + LED_ADDRESS_OFFSET, state_prop[state].command , state_prop[state].need_timeout);
+	comm.EV_Send(GetDestAddr(state), state_prop[state].command , state_prop[state].need_timeout);
 }
 
 void Dynabox::EV_ReplyOK(MachineData* pdata)

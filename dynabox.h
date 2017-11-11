@@ -72,15 +72,15 @@ private:
 	void ST_Ready(DynaboxData* pdata);
 	void ST_NotReady(DynaboxData* pdata);
 	void ST_Config(DynaboxData* pdata);
-	enum States {ST_TESTING_LED, ST_TESTING_ELM, ST_PREPARING_TO_HOMING, ST_SHOWING_ON_LED, ST_HOMING, ST_READY, ST_CONFIG, ST_NOT_READY, ST_MAX_STATES};
+	enum States {ST_TESTING_LED, ST_TESTING_ELM, ST_READY, ST_MAX_STATES};
 	BEGIN_STATE_MAP
 		STATE_MAP_ENTRY(&Dynabox::ST_TestingLed)
 		STATE_MAP_ENTRY(&Dynabox::ST_TestingElm)
-		STATE_MAP_ENTRY(&Dynabox::ST_PreparingToHoming)
-		STATE_MAP_ENTRY(&Dynabox::ST_ShowingOnLed)
-		STATE_MAP_ENTRY(&Dynabox::ST_Homing)
 		STATE_MAP_ENTRY(&Dynabox::ST_Ready)
-		STATE_MAP_ENTRY(&Dynabox::ST_NotReady)
+//		STATE_MAP_ENTRY(&Dynabox::ST_PreparingToHoming)
+//		STATE_MAP_ENTRY(&Dynabox::ST_ShowingOnLed)
+//		STATE_MAP_ENTRY(&Dynabox::ST_Homing)
+//		STATE_MAP_ENTRY(&Dynabox::ST_NotReady)
 		STATE_MAP_ENTRY(&Dynabox::ST_Config)
 	END_STATE_MAP
 	// ---------------------------------------------------------
@@ -102,9 +102,9 @@ private:
 
 	StateProperties state_prop[ST_MAX_STATES] =
 	{
-		{Dest_Led,  COMM_LED_DIAG, false, false, ST_TESTING_ELM},
-		{Dest_Door, COMM_DOOR_CHECK_ELECTROMAGNET,  false, false, ST_READY},
-		//{COMM_LED_GREEN_1PULSE, false}
+		{Dest_Led,  COMM_LED_DIAG, true, false, ST_TESTING_ELM},
+		{Dest_Door, COMM_DOOR_CHECK_ELECTROMAGNET, true, false, ST_READY},
+		{Dest_Door, 0x80, true, true, 0}
 	};
 
 	struct StateFault
