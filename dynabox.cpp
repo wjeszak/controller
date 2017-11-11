@@ -68,6 +68,7 @@ uint8_t Dynabox::GetDestAddr(uint8_t st)
 void Dynabox::Poll()
 {
 	uint8_t state = GetState();
+	InternalEvent(state, &dynabox_data);
 	if(end_state)
 	{
 		end_state = false;
@@ -75,7 +76,8 @@ void Dynabox::Poll()
 		if(state_prop[state].repeat == false)
 		{
 			state = state_prop[state].next_state;
-			InternalEvent(state, &dynabox_data);
+			ChangeState(state);
+			//InternalEvent(state, &dynabox_data);
 		}
 	}
 	comm.EV_Send(GetDestAddr(state), state_prop[state].command , state_prop[state].need_timeout);

@@ -22,7 +22,7 @@ void Dynabox::ST_TestingLed(DynaboxData* pdata)
 
 void Dynabox::ST_TestingElm(DynaboxData* pdata)
 {
-
+	comm.EV_Send(current_address + LED_ADDRESS_OFFSET, 0x0C, false);
 }
 
 void Dynabox::ST_PreparingToHoming(DynaboxData* pdata)

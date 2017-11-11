@@ -23,6 +23,7 @@ class StateMachine
 public:
 	StateMachine(uint8_t max_states);
 	uint8_t GetState();
+	void ChangeState(uint8_t new_state);
 	void InternalEvent(uint8_t new_state, EventData* pdata = NULL);
 	void Event(uint8_t new_state, EventData* pdata = NULL);
 protected:
@@ -31,7 +32,6 @@ protected:
 private:
 	const uint8_t _max_states;
 	bool _event_generated;
-	void ChangeState(uint8_t new_state);
 	virtual const StateStruct* GetStateMap() { return NULL; }
 };
 
