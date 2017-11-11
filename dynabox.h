@@ -123,11 +123,13 @@ private:
 		uint8_t reply;
 		void (Dynabox::*fp)(DynaboxData* pdata);
 		uint8_t fault;
+		bool neg;
 	};
-	StateFault set_state_fault[1] =
+	StateFault set_state_fault[3] =
 	{
-		{ST_TESTING_ELM, 0x01, NULL, F05_ELECTROMAGNET}
-		//{ST_TESTING_LED, 0xF0, &Dynabox::ST_Homing, F06_CLOSE_THE_DOOR }
+		{ST_TESTING_ELM, 0x01, NULL, F05_ELECTROMAGNET, false},
+		{ST_PREPARING_TO_HOMING, 0xC0, NULL, F06_CLOSE_THE_DOOR, true},
+		{ST_HOMING, 0xC0, NULL, F08_ILLEGAL_OPENING, true}
 	};
 	StateFault clear_state_fault[10];
 };

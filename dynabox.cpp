@@ -65,11 +65,17 @@ void Dynabox::SetDestAddr(uint8_t addr)
 
 void Dynabox::SetFaults(uint8_t st, uint8_t reply)
 {
-	for(uint8_t i = 0; i < 1; i++)
+	for(uint8_t i = 0; i < 3; i++)
 	{
 		if(set_state_fault[i].state == st)
 		{
-			if(set_state_fault[i].reply == reply)
+			if((set_state_fault[i].reply == reply) && set_state_fault[i].neg == false)
+			{
+				fault.SetGlobal(set_state_fault[i].fault);
+				//fault.Set(F01_LED, current_address - 1);
+				mb.Write(current_address, set_state_fault[i].fault << 8);
+			}
+			if((set_state_fault[i].reply != reply) && set_state_fault[i].neg == true)
 			{
 				fault.SetGlobal(set_state_fault[i].fault);
 				//fault.Set(F01_LED, current_address - 1);
@@ -101,38 +107,12 @@ void Dynabox::Poll()
 
 void Dynabox::EV_ReplyOK(MachineData* pdata)
 {
-//	display.Write(4444);
 	if(current_address == LastAddress())
 		end_state = true;
 	else
 		current_address++;
 	uint8_t state = GetState();
 	SetFaults(state, pdata->data);
-	/*	if(comm.CrcOk(frame))
-	{
-		if(1)	// !!!!!!!!!!!1
-		{
-			uint8_t st = GetState();
-			switch(st)
-			{
-			case ST_TESTING_ELM:
-				if(usart_data.frame[1] == COMM_F05_ELECTROMAGNET)
-				{
-					fault.SetGlobal(F05_ELECTROMAGNET);
-					fault.Set(F05_ELECTROMAGNET, current_address - 1);
-					mb.Write(current_address, F05_ELECTROMAGNET << 8);
-				}
-			break;
-			case ST_PREPARING_TO_HOMING:
-				mb.Write(current_address, frame[1]);
-			break;
-			case ST_READY:
-				mb.Write(current_address, frame[1]);
-			break;
-			}
-		}
-	}
-*/
 }
 
 void Dynabox::EV_Timeout(MachineData* pdata)
