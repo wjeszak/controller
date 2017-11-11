@@ -63,9 +63,9 @@ public:
 	void EV_UserAction(MachineData* pdata);
 	void EV_ReplyOK(MachineData* pdata);
 	void EV_Timeout(MachineData* pdata);
-	bool led_same_for_all;
-	uint8_t led_same_for_all_id;
-	void (Dynabox::*next_EV)(DynaboxData* pdata);
+//	bool led_same_for_all;
+//	uint8_t led_same_for_all_id;
+//	void (Dynabox::*next_EV)(DynaboxData* pdata);
 private:
 	void ST_TestingLed(DynaboxData* pdata);
 	void ST_TestingElm(DynaboxData* pdata);
@@ -91,6 +91,7 @@ private:
 	// ---------------------------------------------------------
 	uint8_t GetDestAddr(uint8_t st);
 	void SetDestAddr(uint8_t addr);
+	void SetFaults(uint8_t st, uint8_t reply);
 	uint8_t faults_to_led_map[NUMBER_OF_FAULTS + 1];
 
 	enum Destination {Dest_Door, Dest_Led};
@@ -123,10 +124,10 @@ private:
 		void (Dynabox::*fp)(DynaboxData* pdata);
 		uint8_t fault;
 	};
-	StateFault set_state_fault[10] =
+	StateFault set_state_fault[1] =
 	{
-		{ST_TESTING_LED, 0xC0, &Dynabox::ST_Ready, F03_OPTICAL_SWITCHES},
-		{ST_TESTING_LED, 0xF0, &Dynabox::ST_Homing, F06_CLOSE_THE_DOOR }
+		{ST_TESTING_ELM, 0x01, NULL, F05_ELECTROMAGNET}
+		//{ST_TESTING_LED, 0xF0, &Dynabox::ST_Homing, F06_CLOSE_THE_DOOR }
 	};
 	StateFault clear_state_fault[10];
 };

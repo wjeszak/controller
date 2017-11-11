@@ -35,14 +35,7 @@ Dynabox::Dynabox() : faults_to_led_map {
 	COMM_LED_RED_BLINK	 					// F17
 }
 {
-//	led_same_for_all = false;
-//	led_same_for_all_id = 0;
-//	states_map[0].state = ST_TESTING_LED;
-//	states_map[0].command = COMM_LED_DIAG;
-//	states_map[0].reply = 0x80;
-//	states_map[0].fault = F01_LED;
-//	state_poll_repeat[ST_TESTING_LED] = false;
-//	state_poll_repeat[ST_TESTING_ELM] = false;
+
 }
 
 void Dynabox::Init()
@@ -68,6 +61,22 @@ uint8_t Dynabox::GetDestAddr(uint8_t st)
 void Dynabox::SetDestAddr(uint8_t addr)
 {
 	current_address = addr;
+}
+
+void Dynabox::SetFaults(uint8_t st, uint8_t reply)
+{
+	for(uint8_t i = 0; i < 1; i++)
+	{
+		if(set_state_fault[i].state == st)
+		{
+			if(set_state_fault[i].reply == reply)
+			{
+				fault.SetGlobal(set_state_fault[i].fault);
+				//fault.Set(F01_LED, current_address - 1);
+				mb.Write(current_address, set_state_fault[i].fault << 8);
+			}
+		}
+	}
 }
 
 void Dynabox::Poll()
@@ -97,7 +106,9 @@ void Dynabox::EV_ReplyOK(MachineData* pdata)
 		end_state = true;
 	else
 		current_address++;
-/*	if(comm.CrcOk(frame))
+	uint8_t state = GetState();
+	SetFaults(state, pdata->data);
+	/*	if(comm.CrcOk(frame))
 	{
 		if(1)	// !!!!!!!!!!!1
 		{
