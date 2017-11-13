@@ -63,18 +63,16 @@ public:
 	void EV_UserAction(MachineData* pdata);
 	void EV_ReplyOK(MachineData* pdata);
 	void EV_Timeout(MachineData* pdata);
-//	bool led_same_for_all;
-//	uint8_t led_same_for_all_id;
-//	void (Dynabox::*next_EV)(DynaboxData* pdata);
 private:
 	void ST_TestingLed(DynaboxData* pdata);
 	void ST_TestingElm(DynaboxData* pdata);
 	void ST_PreparingToHoming(DynaboxData* pdata);
+	void ST_ShowingOnLed(DynaboxData* pdata);
+	void ST_ShowingOnLedOnExit();
 	void ST_HomingOnEntry();
 	void ST_Homing(DynaboxData* pdata);
 	void ST_Ready(DynaboxData* pdata);
 
-	void ST_ShowingOnLed(DynaboxData* pdata);
 	void ST_NotReady(DynaboxData* pdata);
 	void ST_Config(DynaboxData* pdata);
 	enum States {ST_TESTING_LED, ST_TESTING_ELM, ST_PREPARING_TO_HOMING, ST_HOMING, ST_READY, ST_MAX_STATES};
@@ -82,9 +80,9 @@ private:
 		STATE_MAP_ENTRY(&Dynabox::ST_TestingLed)
 		STATE_MAP_ENTRY(&Dynabox::ST_TestingElm)
 		STATE_MAP_ENTRY(&Dynabox::ST_PreparingToHoming)
+//		STATE_MAP_ENTRY(&Dynabox::ST_ShowingOnLed)
 		STATE_MAP_ENTRY(&Dynabox::ST_Homing)
 		STATE_MAP_ENTRY(&Dynabox::ST_Ready)
-//		STATE_MAP_ENTRY(&Dynabox::ST_ShowingOnLed)
 //		STATE_MAP_ENTRY(&Dynabox::ST_NotReady)
 		STATE_MAP_ENTRY(&Dynabox::ST_Config)
 	END_STATE_MAP
@@ -114,7 +112,9 @@ private:
 		{Dest_Led,  COMM_LED_DIAG, true, false, NULL, NULL, ST_TESTING_ELM},							// ST_TESTING_LED
 		{Dest_Door, COMM_DOOR_CHECK_ELECTROMAGNET, true, false, NULL, NULL, ST_PREPARING_TO_HOMING},	// ST_TESTING_ELM
 		{Dest_Door, 0x80, true, false, NULL, NULL, ST_HOMING},											// ST_PREPARING_TO_HOMING
-		{Dest_Door, 0x80, true, true, &Dynabox::ST_HomingOnEntry, NULL, 0}								// ST_HOMING
+//		{Dest_Led, 0, false, false, NULL, &Dynabox::ST_ShowingOnLedOnExit, ST_HOMING},					// ST_SHOWING_ON_LED
+		{Dest_Door, 0x80, true, true, &Dynabox::ST_HomingOnEntry, NULL, ST_READY},						// ST_HOMING
+		{Dest_Door, 0x80, true, true, NULL, NULL, 0}
 	};
 
 	struct StateFault

@@ -45,9 +45,14 @@ void Dynabox::ST_Homing(DynaboxData* pdata)
 
 }
 
+void Dynabox::ST_ShowingOnLedOnExit()
+{
+	comm.EV_LedTrigger();
+}
+
 void Dynabox::ST_Ready(DynaboxData* pdata)
 {
-
+	mb.Write(current_address +1, d->data);
 }
 
 void Dynabox::ST_NotReady(DynaboxData* pdata)
@@ -98,13 +103,7 @@ void Dynabox::EV_NeedHoming(DynaboxData* pdata)
 
 void Dynabox::EV_HomingDone(DynaboxData* pdata)
 {
-/*	led_same_for_all = true;
-	led_same_for_all_id = 0;
-//	EV_ShowOnLed(pdata);
-	current_address = 1;
-	SLAVE_POLL_START;
 	InternalEvent(ST_READY);
-*/
 }
 
 void Dynabox::EV_PreparedToHoming(DynaboxData* pdata)

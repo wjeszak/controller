@@ -101,7 +101,13 @@ void Dynabox::Poll()
 		}
 		return;
 	}
-	comm.EV_Send(GetDestAddr(state), state_prop[state].command , state_prop[state].need_timeout);
+	//if(state == ST_SHOWING_ON_LED)
+	//{
+		//comm.EV_Send(GetDestAddr(state), 0x0A + 0x80, false);
+		//current_address++;
+	//}
+	//else
+		comm.EV_Send(GetDestAddr(state), state_prop[state].command , state_prop[state].need_timeout);
 	InternalEvent(state, &dynabox_data);
 }
 
@@ -121,12 +127,14 @@ void Dynabox::EV_Timeout(MachineData* pdata)
 		end_state = true;
 	else
 		current_address++;
+	// led's fault
 	if(pdata->addr > 100)
 	{
 		fault.SetGlobal(F01_LED);
 		fault.Set(F01_LED, current_address - 1);
 		mb.Write(current_address, F01_LED << 8);
 	}
+	// door's fault
 	else
 	{
 		fault.SetGlobal(F02_DOOR);

@@ -154,15 +154,7 @@ void ModbusTCP::ErrorReply(uint8_t* frame, uint8_t error_code)
 
 //void ModbusTCP::AnalizeMultipleRegisters()
 //{
-	// ---------------- tutaj dziala polimorfizm ----------------
-	// testowo, dla pokazania idei
-	// w zaleznosci od ustawienia wskaznika 'm' w funcji main() uruchomi sie odpowiednia funkcja StartupTest()
-	//if(Registers[LOCATIONS_NUMBER] > 0) m->StartupTest();		// dziala ok 07.09.17
-	//if(Registers[LOCATIONS_NUMBER] > 0)
-	//{
-	//	motor_data.pos = 100 * (Registers[LOCATIONS_NUMBER] - 1);
-	//	motor.EV_RunToPosition(&motor_data);
-	//}
+
 	//for(uint8_t i = 52; i < 65; i++)
 	//{
 //		if(Registers[52] > 0) comm.Prepare(TDoor, 1, Registers[52] + 0x80);
