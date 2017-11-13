@@ -145,6 +145,12 @@ void Dynabox::EV_ShowOnLed(DynaboxData* pdata)
 
 void Dynabox::EV_UserAction(MachineData* pdata)
 {
+	if(mb.Read(LOCATIONS_NUMBER) > 0)
+	{
+		motor_data.pos = (mb.Read(LOCATIONS_NUMBER) - 1);
+		//motor_data.pos = 100 * (mb.Read(LOCATIONS_NUMBER) - 1);
+		motor.EV_RunToPosition(&motor_data);
+	}
 	//	BEGIN_TRANSITION_MAP								// current state
 //		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_TESTING_LED
 //		TRANSITION_MAP_ENTRY(ST_HOMING)					// ST_TESTING_ELM
