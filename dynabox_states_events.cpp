@@ -42,7 +42,7 @@ void Dynabox::ST_HomingOnEntry()
 
 void Dynabox::ST_Homing(DynaboxData* pdata)
 {
-
+	mb.Write(current_address + 1, d->data);
 }
 
 void Dynabox::ST_ShowingOnLedOnExit()
@@ -52,7 +52,7 @@ void Dynabox::ST_ShowingOnLedOnExit()
 
 void Dynabox::ST_Ready(DynaboxData* pdata)
 {
-	mb.Write(current_address +1, d->data);
+	mb.Write(current_address + 1, d->data);
 }
 
 void Dynabox::ST_NotReady(DynaboxData* pdata)
@@ -156,4 +156,9 @@ void Dynabox::EV_UserAction(MachineData* pdata)
 //		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_CHECKING_DOORS_STATE
 //		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_HOMING
 //	END_TRANSITION_MAP(pdata)
+}
+
+void Dynabox::EV_OnF8(DynaboxData* pdata)
+{
+	motor.Stop();
 }

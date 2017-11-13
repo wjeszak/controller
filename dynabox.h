@@ -63,6 +63,7 @@ public:
 	void EV_UserAction(MachineData* pdata);
 	void EV_ReplyOK(MachineData* pdata);
 	void EV_Timeout(MachineData* pdata);
+	void EV_OnF8(DynaboxData* pdata);
 private:
 	void ST_TestingLed(DynaboxData* pdata);
 	void ST_TestingElm(DynaboxData* pdata);
@@ -129,7 +130,7 @@ private:
 	{
 		{ST_TESTING_ELM, 0x01, NULL, F05_ELECTROMAGNET, false},
 		{ST_PREPARING_TO_HOMING, 0xC0, NULL, F06_CLOSE_THE_DOOR, true},
-		{ST_HOMING, 0xC0, NULL, F08_ILLEGAL_OPENING, true}
+		{ST_HOMING, 0xC0, &Dynabox::EV_OnF8, F08_ILLEGAL_OPENING, true}
 	};
 	StateFault clear_state_fault[10];
 };

@@ -74,12 +74,14 @@ void Dynabox::SetFaults(uint8_t st, uint8_t reply)
 				fault.SetGlobal(set_state_fault[i].fault);
 				//fault.Set(F01_LED, current_address - 1);
 				mb.Write(current_address, set_state_fault[i].fault << 8);
+				if(set_state_fault[i].fp != NULL) (this->*set_state_fault[i].fp)(NULL);
 			}
 			if((set_state_fault[i].reply != reply) && set_state_fault[i].neg == true)
 			{
 				fault.SetGlobal(set_state_fault[i].fault);
 				//fault.Set(F01_LED, current_address - 1);
 				mb.Write(current_address, set_state_fault[i].fault << 8);
+				if(set_state_fault[i].fp != NULL) (this->*set_state_fault[i].fp)(NULL);
 			}
 		}
 	}
