@@ -47,7 +47,7 @@ void Dynabox::ST_Homing(DynaboxData* pdata)
 
 void Dynabox::ST_ShowingOnLedOnExit()
 {
-	comm.EV_LedTrigger();
+//	comm.EV_LedTrigger();
 }
 
 void Dynabox::ST_Ready(DynaboxData* pdata)
@@ -67,7 +67,9 @@ void Dynabox::ST_Config(DynaboxData* pdata)
 // ----------------------- Events -----------------------
 void Dynabox::EV_TestLed(DynaboxData* pdata)
 {
-//	BEGIN_TRANSITION_MAP								// current state
+	for(uint8_t i = 0; i < 13; i++)
+		addr_command[i] = COMM_LED_DIAG;
+	//	BEGIN_TRANSITION_MAP								// current state
 //        TRANSITION_MAP_ENTRY(ST_TESTING_LED)			// ST_INIT
 //		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_TESTING_LED
 //		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_TESTING_ELM
@@ -75,8 +77,10 @@ void Dynabox::EV_TestLed(DynaboxData* pdata)
 //	END_TRANSITION_MAP(pdata)
 }
 
-void Dynabox::EV_TestElm(DynaboxData* pdata)
+void Dynabox::EV_TestElm()
 {
+	for(uint8_t i = 0; i < 13; i++)
+		addr_command[i] = COMM_DOOR_CHECK_ELECTROMAGNET;
 /*	current_address = 1;
 	SLAVE_POLL_START;
 
@@ -88,8 +92,10 @@ void Dynabox::EV_TestElm(DynaboxData* pdata)
 */
 }
 
-void Dynabox::EV_NeedHoming(DynaboxData* pdata)
+void Dynabox::EV_NeedHoming()
 {
+	for(uint8_t i = 0; i < 13; i++)
+		addr_command[i] = 0x80;
 /*	current_address = 1;
 	SLAVE_POLL_START;
 
@@ -106,32 +112,10 @@ void Dynabox::EV_HomingDone(DynaboxData* pdata)
 	InternalEvent(ST_READY);
 }
 
-void Dynabox::EV_PreparedToHoming(DynaboxData* pdata)
+void Dynabox::EV_PreparedToHoming()
 {
-/*	bool is_fault = false;
-	for(uint8_t i = 1; i <= functions[1].param; i++)
-	{
-		if(mb.Read(i + 1) != 0xC0)
-		{
-			fault.SetGlobal(F06_CLOSE_THE_DOOR);
-			fault.Set(F06_CLOSE_THE_DOOR, i);
-			mb.Write(i + 1, F06_CLOSE_THE_DOOR << 8);
-			is_fault = true;
-		}
-	}
-	if(is_fault)
-	{
-		led_same_for_all = false;
-	}
-	else
-	{
-		led_same_for_all = true;
-		led_same_for_all_id = 6;
-		InternalEvent(ST_HOMING);
-	}
-	EV_ShowOnLed(pdata);
-	is_fault = false;
-	*/
+	for(uint8_t i = 0; i < 13; i++)
+		addr_command[i] = 0x05;
 }
 
 void Dynabox::EV_ShowOnLed(DynaboxData* pdata)

@@ -55,9 +55,9 @@ public:
 	void Poll();
 	void EV_EnterToConfig();
 	void EV_TestLed(DynaboxData* pdata);
-	void EV_TestElm(DynaboxData* pdata);
-	void EV_PreparedToHoming(DynaboxData* pdata);
-	void EV_NeedHoming(DynaboxData* pdata);
+	void EV_TestElm();
+	void EV_PreparedToHoming();
+	void EV_NeedHoming();
 	void EV_HomingDone(DynaboxData* pdata);
 	void EV_ShowOnLed(DynaboxData* pdata);
 	void EV_UserAction(MachineData* pdata);
@@ -76,12 +76,12 @@ private:
 
 	void ST_NotReady(DynaboxData* pdata);
 	void ST_Config(DynaboxData* pdata);
-	enum States {ST_TESTING_LED, ST_TESTING_ELM, ST_PREPARING_TO_HOMING, ST_HOMING, ST_READY, ST_MAX_STATES};
+	enum States {ST_TESTING_LED, ST_TESTING_ELM, ST_PREPARING_TO_HOMING, ST_SHOWING_ON_LED, ST_HOMING, ST_READY, ST_MAX_STATES};
 	BEGIN_STATE_MAP
 		STATE_MAP_ENTRY(&Dynabox::ST_TestingLed)
 		STATE_MAP_ENTRY(&Dynabox::ST_TestingElm)
 		STATE_MAP_ENTRY(&Dynabox::ST_PreparingToHoming)
-//		STATE_MAP_ENTRY(&Dynabox::ST_ShowingOnLed)
+		STATE_MAP_ENTRY(&Dynabox::ST_ShowingOnLed)
 		STATE_MAP_ENTRY(&Dynabox::ST_Homing)
 		STATE_MAP_ENTRY(&Dynabox::ST_Ready)
 //		STATE_MAP_ENTRY(&Dynabox::ST_NotReady)
@@ -97,6 +97,8 @@ private:
 
 	bool end_state = false;
 
+	uint8_t addr_command[13];
+
 	struct StateProperties
 	{
 		Destination dest;
@@ -110,10 +112,10 @@ private:
 
 	StateProperties state_prop[ST_MAX_STATES] =
 	{
-		{Dest_Led,  COMM_LED_DIAG, true, false, NULL, NULL, ST_TESTING_ELM},							// ST_TESTING_LED
-		{Dest_Door, COMM_DOOR_CHECK_ELECTROMAGNET, true, false, NULL, NULL, ST_PREPARING_TO_HOMING},	// ST_TESTING_ELM
-		{Dest_Door, 0x80, true, false, NULL, NULL, ST_HOMING},											// ST_PREPARING_TO_HOMING
-//		{Dest_Led, 0, false, false, NULL, &Dynabox::ST_ShowingOnLedOnExit, ST_HOMING},					// ST_SHOWING_ON_LED
+		{Dest_Led,  COMM_LED_DIAG, true, false, NULL, &Dynabox::EV_TestElm, ST_TESTING_ELM},			// ST_TESTING_LED
+		{Dest_Door, COMM_DOOR_CHECK_ELECTROMAGNET, true, false, NULL, &Dynabox::EV_NeedHoming, ST_PREPARING_TO_HOMING},	// ST_TESTING_ELM
+		{Dest_Door, 0x80, true, false, NULL, &Dynabox::EV_PreparedToHoming, ST_SHOWING_ON_LED},											// ST_PREPARING_TO_HOMING
+		{Dest_Led, 0, false, false, NULL, NULL, ST_HOMING},												// ST_SHOWING_ON_LED
 		{Dest_Door, 0x80, true, true, &Dynabox::ST_HomingOnEntry, NULL, ST_READY},						// ST_HOMING
 		{Dest_Door, 0x80, true, true, NULL, NULL, 0}
 	};

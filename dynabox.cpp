@@ -90,9 +90,8 @@ void Dynabox::SetFaults(uint8_t st, uint8_t reply)
 void Dynabox::Poll()
 {
 	uint8_t state = GetState();
-	if(end_state)
+	if(current_address == LastAddress() + 1)
 	{
-		end_state = false;
 		SetDestAddr(1);
 		if(state_prop[state].repeat == false)
 		{
@@ -103,32 +102,19 @@ void Dynabox::Poll()
 		}
 		return;
 	}
-	//if(state == ST_SHOWING_ON_LED)
-	//{
-		//comm.EV_Send(GetDestAddr(state), 0x0A + 0x80, false);
-		//current_address++;
-	//}
-	//else
-		comm.EV_Send(GetDestAddr(state), state_prop[state].command , state_prop[state].need_timeout);
+	comm.EV_Send(GetDestAddr(state), addr_command[current_address - 1] , state_prop[state].need_timeout);
 	InternalEvent(state, &dynabox_data);
+	current_address++;
 }
 
 void Dynabox::EV_ReplyOK(MachineData* pdata)
 {
-	if(current_address == LastAddress())
-		end_state = true;
-	else
-		current_address++;
 	uint8_t state = GetState();
 	SetFaults(state, pdata->data);
 }
 
 void Dynabox::EV_Timeout(MachineData* pdata)
 {
-	if(current_address == LastAddress())
-		end_state = true;
-	else
-		current_address++;
 	// led's fault
 	if(pdata->addr > 100)
 	{
