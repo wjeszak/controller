@@ -37,6 +37,8 @@ void Dynabox::ST_ShowingOnLed(DynaboxData* pdata)
 
 void Dynabox::ST_HomingOnEntry()
 {
+	for(uint8_t i = 0; i < 13; i++)
+		addr_command[i] = 0x80;
 	motor.EV_Homing();
 }
 
@@ -109,6 +111,8 @@ void Dynabox::EV_NeedHoming()
 
 void Dynabox::EV_HomingDone(DynaboxData* pdata)
 {
+	for(uint8_t i = 0; i < 13; i++)
+		addr_command[i] = 0x80;
 	InternalEvent(ST_READY);
 }
 
