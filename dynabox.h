@@ -64,6 +64,8 @@ public:
 	void EV_ReplyOK(MachineData* pdata);
 	void EV_Timeout(MachineData* pdata);
 	void EV_OnF8(DynaboxData* pdata);
+	// nowe
+	void EV_PositionAchieved(DynaboxData* pdata);
 private:
 	void ST_TestingLed(DynaboxData* pdata);
 	void ST_TestingElm(DynaboxData* pdata);

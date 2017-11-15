@@ -204,6 +204,7 @@ void Motor::ST_PositionAchieved(MotorData* pdata)
 	motor_data.pos = 0;
 	mb.Write(ORDER_STATUS, ORDER_STATUS_END_OF_MOVEMENT);
 	mb.Write(IO_INFORMATIONS, (0 << 0) | (1 << 3));
+	dynabox.EV_PositionAchieved(&dynabox_data);
 }
 
 ISR(TIMER0_COMPA_vect)
