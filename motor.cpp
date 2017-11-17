@@ -36,20 +36,36 @@ void Motor::EV_PhaseA(MotorData* pdata)
 {
 	if(MOTOR_ENCODER_PIN & (1 << MOTOR_ENCODER_PHASEB_PIN))
 	{
-		// left
-	}
-	else
-	{
 		// right
 		//display.Write(actual_position);
-		mb.Write(ENCODER_CURRENT_VALUE, actual_position++);
 		if(actual_position == motor_data.pos)
 		{
 			motor.Stop();
 			timer.Disable(TIMER_MOTOR_ACCELERATE);
 			Event(5, NULL);
 		}
-		if(actual_position == ENCODER_ROWS) actual_position = 0;
+		if(actual_position == ENCODER_ROWS)
+			actual_position = 0;
+		else
+			actual_position++;
+		mb.Write(ENCODER_CURRENT_VALUE, actual_position);
+
+	}
+	else
+	{
+		// left
+		if(actual_position == motor_data.pos)
+		{
+			motor.Stop();
+			timer.Disable(TIMER_MOTOR_ACCELERATE);
+			Event(5, NULL);
+		}
+		if(actual_position == 0)
+			actual_position = 3600;
+		else
+			actual_position--;
+		mb.Write(ENCODER_CURRENT_VALUE, actual_position);
+
 	}
 }
 
@@ -57,20 +73,38 @@ void Motor::EV_PhaseB(MotorData* pdata)
 {
 	if(MOTOR_ENCODER_PIN & (1 << MOTOR_ENCODER_PHASEA_PIN))
 	{
-		// left
-	}
-	else
-	{
+		//mb.Write(ENCODER_CURRENT_VALUE, actual_position++);
 		// right
-		//display.Write(actual_position);
-		mb.Write(ENCODER_CURRENT_VALUE, actual_position++);
 		if(actual_position == motor_data.pos)
 		{
 			motor.Stop();
 			timer.Disable(TIMER_MOTOR_ACCELERATE);
 			Event(5, NULL);
 		}
-		if(actual_position == ENCODER_ROWS) actual_position = 0;
+		if(actual_position == ENCODER_ROWS)
+			actual_position = 0;
+		else
+			actual_position++;
+		mb.Write(ENCODER_CURRENT_VALUE, actual_position);
+
+	}
+	else
+	{
+		//mb.Write(ENCODER_CURRENT_VALUE, actual_position--);
+		// left
+		//display.Write(actual_position);
+		if(actual_position == motor_data.pos)
+		{
+			motor.Stop();
+			timer.Disable(TIMER_MOTOR_ACCELERATE);
+			Event(5, NULL);
+		}
+		if(actual_position == 0)
+			actual_position = 3600;
+		else
+			actual_position--;
+		mb.Write(ENCODER_CURRENT_VALUE, actual_position);
+
 	}
 }
 
@@ -92,6 +126,8 @@ void Motor::EV_Homing(MotorData* pdata)
         TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)		// ST_RUNNING
     END_TRANSITION_MAP(pdata)
 	mb.Write(IO_INFORMATIONS, (1 << 2) | (1 << 0));
+    MOTOR_HOME_IRQ_ENABLE;
+    SetDirection(Forward);
 }
 
 void Motor::EV_RunToPosition(MotorData* pdata)
@@ -166,11 +202,11 @@ void Motor::ST_Idle(MotorData* pdata)
 
 void Motor::ST_Acceleration(MotorData* pdata)
 {
-	SetDirection(Forward);
+	//SetDirection(Forward);
 	//SetDirection(Backward);
-	SetSpeed(10);
+	SetSpeed(70);
 	MOTOR_ENCODER_ENABLE
-	MOTOR_HOME_IRQ_ENABLE;
+
 	actual_speed = 0;
 	MOTOR_START;
 	timer.Assign(TIMER_MOTOR_ACCELERATE, 50, MotorAccelerate);
@@ -185,8 +221,9 @@ void Motor::ST_Home(MotorData* pdata)
 {
 	timer.Disable(TIMER_MOTOR_ACCELERATE); // if accelerating
 	Stop();
-	MOTOR_ENCODER_DISABLE;
-	actual_position = 0;
+	MOTOR_HOME_IRQ_DISABLE;
+//	MOTOR_ENCODER_DISABLE;
+//	actual_position = 0;
 	//display.Write(actual_position);
 	mb.Write(ENCODER_CURRENT_VALUE, actual_position);
 	home_ok = 1;

@@ -37,7 +37,7 @@
 #define MOTOR_HOME_IRQ_ENABLE 			EIMSK |=  (1 << INT2);
 #define MOTOR_HOME_IRQ_DISABLE 			EIMSK &= ~(1 << INT2);
 
-#define ENCODER_ROWS 					64
+#define ENCODER_ROWS 					3600
 
 
 
@@ -63,10 +63,12 @@ public:
 	uint8_t desired_speed;
 	uint16_t actual_position;
 	uint16_t desired_position;
-private:
 	enum Direction {Forward, Backward};
-	void EncoderAndHomeIrqInit();
 	void SetDirection(Direction dir);
+private:
+
+	void EncoderAndHomeIrqInit();
+
 	void SetSpeed(uint8_t speed);
 	void ST_Idle(MotorData* pdata);
 	void ST_Acceleration(MotorData* pdata);
