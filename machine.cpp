@@ -30,7 +30,7 @@ void GetPointerTypeOfMachine(uint8_t type)
 	}
 }
 
-Machine::Machine() : StateMachine(ST_MAX_STATES)
+Machine::Machine() : StateMachineEx(ST_MAX_STATES)
 {
 	current_address =  1;
 }

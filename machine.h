@@ -9,20 +9,20 @@
 #define MACHINE_H_
 
 #include "comm.h"
-#include "state_machine.h"
+#include "state_machine_ex.h"
 
 #define MACHINE_TYPE_DYNABOX 					0
 #define MACHINE_TYPE_LOCKERBOX 					1
 #define MACHINE_MAX_NUMBER_OF_DOORS				13
 
-class MachineData : public EventData
+class MachineData : public EventDataEx
 {
 public:
 	uint8_t addr;
 	uint8_t data;
 };
 
-class Machine : public StateMachine
+class Machine : public StateMachineEx
 {
 public:
 	Machine();

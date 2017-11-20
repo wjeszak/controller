@@ -78,7 +78,7 @@ private:
 
 	void ST_NotReady(DynaboxData* pdata);
 	void ST_Config(DynaboxData* pdata);
-	enum States {ST_TESTING_LED, ST_TESTING_ELM, ST_PREPARING_TO_HOMING, ST_SHOWING_ON_LED, ST_HOMING, ST_READY, ST_MAX_STATES};
+	enum States {ST_TESTING_LED, ST_TESTING_ELM, ST_PREPARING_HOMING, ST_SHOWING_ON_LED, ST_HOMING, ST_READY, ST_MOVEMENT, ST_NOT_READY, ST_MAX_STATES};
 	BEGIN_STATE_MAP
 		STATE_MAP_ENTRY(&Dynabox::ST_TestingLed)
 		STATE_MAP_ENTRY(&Dynabox::ST_TestingElm)
@@ -97,29 +97,25 @@ private:
 
 	enum Destination {Dest_Door, Dest_Led};
 
-	bool end_state = false;
-
 	uint8_t addr_command[13];
 
 	struct StateProperties
 	{
 		Destination dest;
-		uint8_t command;
 		bool need_timeout;
 		bool repeat;
 		void (Dynabox::*on_entry)();
 		void (Dynabox::*on_exit)();
-		uint8_t next_state;
 	};
 
 	StateProperties state_prop[ST_MAX_STATES] =
 	{
-		{Dest_Led,  COMM_LED_DIAG, true, false, NULL, &Dynabox::EV_TestElm, ST_TESTING_ELM},			// ST_TESTING_LED
-		{Dest_Door, COMM_DOOR_CHECK_ELECTROMAGNET, true, false, NULL, &Dynabox::EV_NeedHoming, ST_PREPARING_TO_HOMING},	// ST_TESTING_ELM
-		{Dest_Door, 0x80, true, false, NULL, &Dynabox::EV_PreparedToHoming, ST_SHOWING_ON_LED},											// ST_PREPARING_TO_HOMING
-		{Dest_Led, 0, false, false, NULL, NULL, ST_HOMING},												// ST_SHOWING_ON_LED
-		{Dest_Door, 0x80, true, true, &Dynabox::ST_HomingOnEntry, NULL, ST_READY},						// ST_HOMING
-		{Dest_Door, 0x80, true, true, NULL, NULL, 0}
+		{Dest_Led,  true, false, NULL, &Dynabox::EV_TestElm},			// ST_TESTING_LED
+		{Dest_Door, true, false, NULL, &Dynabox::EV_NeedHoming},		// ST_TESTING_ELM
+		{Dest_Door, true, false, NULL, &Dynabox::EV_PreparedToHoming},	// ST_GETTING_STATE
+		{Dest_Led,  false, false, NULL, NULL},							// ST_SHOWING_ON_LED
+		{Dest_Door, true, true, &Dynabox::ST_HomingOnEntry, NULL},		// ST_MOVEMENT
+		{Dest_Door, true, true, NULL, NULL}
 	};
 
 	struct StateFault
@@ -133,7 +129,7 @@ private:
 	StateFault set_state_fault[3] =
 	{
 		{ST_TESTING_ELM, 0x01, NULL, F05_ELECTROMAGNET, false},
-		{ST_PREPARING_TO_HOMING, 0xC0, NULL, F06_CLOSE_THE_DOOR, true},
+//		{ST_PREPARING_TO_HOMING, 0xC0, NULL, F06_CLOSE_THE_DOOR, true},
 		{ST_HOMING, 0xC0, &Dynabox::EV_OnF8, F08_ILLEGAL_OPENING, true}
 	};
 	StateFault clear_state_fault[10];
