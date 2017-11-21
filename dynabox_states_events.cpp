@@ -18,7 +18,6 @@
 // ----------------------- States -----------------------
 void Dynabox::ST_TestingLed(DynaboxData* pdata)
 {
-
 }
 
 void Dynabox::ST_TestingElm(DynaboxData* pdata)
@@ -85,12 +84,13 @@ void Dynabox::EV_TestElm()
 {
 	for(uint8_t i = 0; i < 13; i++)
 		addr_command[i] = COMM_DOOR_CHECK_ELECTROMAGNET;
+	AddToQueue(ST_PREPARING_TO_HOMING);
 }
 
 void Dynabox::EV_NeedHoming()
 {
-//	for(uint8_t i = 0; i < 13; i++)
-//		addr_command[i] = 0x80;
+	for(uint8_t i = 0; i < 13; i++)
+		addr_command[i] = 0x80;
 /*	current_address = 1;
 	SLAVE_POLL_START;
 

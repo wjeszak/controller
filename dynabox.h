@@ -54,8 +54,8 @@ public:
 	void Init();
 	void Poll();
 	void EV_EnterToConfig();
-	void EV_TestLed(DynaboxData* pdata);
-	void EV_TestElm();
+	void EV_TestLed(DynaboxData* pdata);				// 0
+	void EV_TestElm();									// 1
 	void EV_PreparedToHoming();
 	void EV_NeedHoming();
 	void EV_HomingDone(DynaboxData* pdata);
@@ -67,10 +67,10 @@ public:
 	// nowe
 	void EV_PositionAchieved(DynaboxData* pdata);
 private:
-	void ST_TestingLed(DynaboxData* pdata);
-	void ST_TestingElm(DynaboxData* pdata);
-	void ST_PreparingToHoming(DynaboxData* pdata);
-	void ST_ShowingOnLed(DynaboxData* pdata);
+	void ST_TestingLed(DynaboxData* pdata);				// 0
+	void ST_TestingElm(DynaboxData* pdata);				// 1
+	void ST_PreparingToHoming(DynaboxData* pdata);		// 2
+	void ST_ShowingOnLed(DynaboxData* pdata);			// 3
 	void ST_ShowingOnLedOnExit();
 	void ST_HomingOnEntry();
 	void ST_Homing(DynaboxData* pdata);
@@ -78,7 +78,7 @@ private:
 
 	void ST_NotReady(DynaboxData* pdata);
 	void ST_Config(DynaboxData* pdata);
-	enum States {ST_TESTING_LED, ST_TESTING_ELM, ST_PREPARING_HOMING, ST_SHOWING_ON_LED, ST_HOMING, ST_READY, ST_MOVEMENT, ST_NOT_READY, ST_MAX_STATES};
+	enum States {ST_TESTING_LED, ST_TESTING_ELM, ST_PREPARING_TO_HOMING, ST_SHOWING_ON_LED, ST_HOMING, ST_READY, ST_MOVEMENT, ST_NOT_READY, ST_MAX_STATES};
 	BEGIN_STATE_MAP_EX
 		STATE_MAP_ENTRY_EX(&Dynabox::ST_TestingLed)
 		STATE_MAP_ENTRY_EX(&Dynabox::ST_TestingElm)
@@ -111,9 +111,9 @@ private:
 	{
 		{Dest_Led,  true,  NULL, &Dynabox::EV_TestElm},				// ST_TESTING_LED
 		{Dest_Door, true,  NULL, &Dynabox::EV_NeedHoming},			// ST_TESTING_ELM
-		{Dest_Door, true,  NULL, &Dynabox::EV_PreparedToHoming},	// ST_GETTING_STATE
+		{Dest_Door, true,  NULL, &Dynabox::EV_PreparedToHoming},	// ST_PREPARING_TO_HOMING
 		{Dest_Led,  false, NULL, NULL},								// ST_SHOWING_ON_LED
-		{Dest_Door, true,  &Dynabox::ST_HomingOnEntry, NULL},		// ST_MOVEMENT
+		{Dest_Door, true,  &Dynabox::ST_HomingOnEntry, NULL},		// ST_HOMING
 		{Dest_Door, true,  NULL, NULL}
 	};
 
