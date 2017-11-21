@@ -97,8 +97,8 @@ void Dynabox::Poll()
 		if(new_state != ST_EMPTY)
 		{
 			if(state_prop[state].on_exit != NULL) (this->*state_prop[state].on_exit)();
-			ChangeState(state);
-			if(state_prop[state].on_entry != NULL) (this->*state_prop[state].on_entry)();
+			ChangeState(new_state);
+			if(state_prop[new_state].on_entry != NULL) (this->*state_prop[new_state].on_entry)();
 		}
 		return;
 	}

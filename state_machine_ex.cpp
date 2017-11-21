@@ -9,7 +9,7 @@
 
 StateMachineEx::StateMachineEx(uint8_t max_states) : current_state(0), _max_states(max_states), _event_generated(false)
 {
-
+	queued_state = ST_EMPTY;
 }
 
 void StateMachineEx::ChangeState(uint8_t new_state)
