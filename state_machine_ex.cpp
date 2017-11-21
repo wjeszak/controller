@@ -24,9 +24,6 @@ uint8_t StateMachineEx::GetState()
 
 void StateMachineEx::Event(uint8_t new_state, EventDataEx* pdata)
 {
-//	if(new_state == ST_NOT_ALLOWED) {}
-//	else
-//		InternalEvent(new_state, pdata);
 	if(new_state != ST_NOT_ALLOWED)
 		AddToQueue(new_state);
 }
@@ -47,7 +44,7 @@ uint8_t StateMachineEx::GetFromQueue()
 void StateMachineEx::InternalEvent(uint8_t new_state, EventDataEx* pdata)
 {
 	_event_generated = true;
-	ChangeState(new_state);
+//	ChangeState(new_state);
 	while(_event_generated)
 	{
 		const StateStructEx* pStateMap = GetStateMapEx();

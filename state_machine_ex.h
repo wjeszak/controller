@@ -47,15 +47,15 @@ struct StateStructEx
 
 // State map
 #define BEGIN_STATE_MAP_EX \
-const StateStructEx* GetStateMap() {\
-    static const StateStructEx StateMap[] = {
+const StateStructEx* GetStateMapEx() {\
+    static const StateStructEx StateMapEx[] = {
 
 #define STATE_MAP_ENTRY_EX(stateFunc)\
     { reinterpret_cast<StateFuncEx>(stateFunc) },
 
 #define END_STATE_MAP_EX \
     }; \
-    return &StateMap[0]; }
+    return &StateMapEx[0]; }
 
 // Transition map
 #define BEGIN_TRANSITION_MAP_EX \

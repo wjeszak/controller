@@ -79,16 +79,16 @@ private:
 	void ST_NotReady(DynaboxData* pdata);
 	void ST_Config(DynaboxData* pdata);
 	enum States {ST_TESTING_LED, ST_TESTING_ELM, ST_PREPARING_HOMING, ST_SHOWING_ON_LED, ST_HOMING, ST_READY, ST_MOVEMENT, ST_NOT_READY, ST_MAX_STATES};
-	BEGIN_STATE_MAP
-		STATE_MAP_ENTRY(&Dynabox::ST_TestingLed)
-		STATE_MAP_ENTRY(&Dynabox::ST_TestingElm)
-		STATE_MAP_ENTRY(&Dynabox::ST_PreparingToHoming)
-		STATE_MAP_ENTRY(&Dynabox::ST_ShowingOnLed)
-		STATE_MAP_ENTRY(&Dynabox::ST_Homing)
-		STATE_MAP_ENTRY(&Dynabox::ST_Ready)
-//		STATE_MAP_ENTRY(&Dynabox::ST_NotReady)
-		STATE_MAP_ENTRY(&Dynabox::ST_Config)
-	END_STATE_MAP
+	BEGIN_STATE_MAP_EX
+		STATE_MAP_ENTRY_EX(&Dynabox::ST_TestingLed)
+		STATE_MAP_ENTRY_EX(&Dynabox::ST_TestingElm)
+		STATE_MAP_ENTRY_EX(&Dynabox::ST_PreparingToHoming)
+		STATE_MAP_ENTRY_EX(&Dynabox::ST_ShowingOnLed)
+		STATE_MAP_ENTRY_EX(&Dynabox::ST_Homing)
+		STATE_MAP_ENTRY_EX(&Dynabox::ST_Ready)
+//		STATE_MAP_ENTRY_EX(&Dynabox::ST_NotReady)
+		STATE_MAP_ENTRY_EX(&Dynabox::ST_Config)
+	END_STATE_MAP_EX
 	// ---------------------------------------------------------
 	uint8_t GetDestAddr(uint8_t st);
 	void SetDestAddr(uint8_t addr);
