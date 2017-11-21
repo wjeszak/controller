@@ -37,14 +37,14 @@ void Dynabox::ST_ShowingOnLed(DynaboxData* pdata)
 
 void Dynabox::ST_HomingOnEntry()
 {
-//	for(uint8_t i = 0; i < 13; i++)
-//		addr_command[i] = 0x80;
-//	motor.EV_Homing();
+	for(uint8_t i = 0; i < 13; i++)
+		addr_command[i] = 0x80;
+	motor.EV_Homing();
 }
 
 void Dynabox::ST_Homing(DynaboxData* pdata)
 {
-//	mb.Write(current_address + 1, d->data);
+	mb.Write(current_address + 1, d->data);
 }
 
 void Dynabox::ST_ShowingOnLedOnExit()
@@ -91,15 +91,19 @@ void Dynabox::EV_NeedHoming()
 {
 	for(uint8_t i = 0; i < 13; i++)
 		addr_command[i] = 0x80;
-/*	current_address = 1;
-	SLAVE_POLL_START;
+	AddToQueue(ST_SHOWING_ON_LED);
+}
 
-	BEGIN_TRANSITION_MAP								// current state
-		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_TESTING_LED
-		TRANSITION_MAP_ENTRY(ST_PREPARING_TO_HOMING)	// ST_TESTING_ELM
-		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_HOMING
-	END_TRANSITION_MAP(pdata)
-*/
+void Dynabox::EV_PreparedToHoming()
+{
+	for(uint8_t i = 0; i < 13; i++)
+		addr_command[i] = 0x80 + 0x05;
+	AddToQueue(ST_HOMING);
+}
+
+void Dynabox::EV_LedTrigger()
+{
+	timer.Assign(TIMER_LED_TRIGGER, 10, LedTrigger);
 }
 
 void Dynabox::EV_HomingDone(DynaboxData* pdata)
@@ -109,11 +113,7 @@ void Dynabox::EV_HomingDone(DynaboxData* pdata)
 //	InternalEvent(ST_READY);
 }
 
-void Dynabox::EV_PreparedToHoming()
-{
-//	for(uint8_t i = 0; i < 13; i++)
-//		addr_command[i] = 0x05;
-}
+
 
 void Dynabox::EV_ShowOnLed(DynaboxData* pdata)
 {

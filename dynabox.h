@@ -58,6 +58,7 @@ public:
 	void EV_TestElm();									// 1
 	void EV_PreparedToHoming();
 	void EV_NeedHoming();
+	void EV_LedTrigger();
 	void EV_HomingDone(DynaboxData* pdata);
 	void EV_ShowOnLed(DynaboxData* pdata);
 	void EV_UserAction(MachineData* pdata);
@@ -112,7 +113,7 @@ private:
 		{Dest_Led,  true,  NULL, &Dynabox::EV_TestElm},				// ST_TESTING_LED
 		{Dest_Door, true,  NULL, &Dynabox::EV_NeedHoming},			// ST_TESTING_ELM
 		{Dest_Door, true,  NULL, &Dynabox::EV_PreparedToHoming},	// ST_PREPARING_TO_HOMING
-		{Dest_Led,  false, NULL, NULL},								// ST_SHOWING_ON_LED
+		{Dest_Led,  false, NULL, &Dynabox::EV_LedTrigger},			// ST_SHOWING_ON_LED
 		{Dest_Door, true,  &Dynabox::ST_HomingOnEntry, NULL},		// ST_HOMING
 		{Dest_Door, true,  NULL, NULL}
 	};

@@ -12,7 +12,6 @@
 #include "fault.h"
 #include "modbus_tcp.h"
 #include "usart.h"
-//#include "display.h"
 
 Dynabox::Dynabox() : faults_to_led_map {
 	0,									// not used

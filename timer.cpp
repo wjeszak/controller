@@ -135,3 +135,9 @@ void DelayBetweenStates()
 //	timer.Disable(TIMER_DELAY_BETWEEN_STATES);
 //	(dynabox.*(dynabox.next_EV))(&dynabox_data);
 }
+
+void LedTrigger()
+{
+	timer.Disable(TIMER_LED_TRIGGER);
+	comm.EV_LedTrigger();
+}

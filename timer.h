@@ -25,7 +25,7 @@
 #define TIMER_SLAVE_TIMEOUT 			4
 #define TIMER_MOTOR_ACCELERATE 			5
 #define TIMER_FAULT_SHOW 				6
-#define TIMER_DELAY_BETWEEN_STATES 		7
+#define TIMER_LED_TRIGGER 		 		7
 
 #define SLAVE_POLL_INTERVAL 			1000
 #define SLAVE_TIMEOUT_INTERVAL 			20
@@ -77,6 +77,7 @@ extern void SlavePollGeneral();
 extern void SlaveTimeoutGeneral();
 extern void MotorAccelerate();
 extern void FaultShow();
-extern void DelayBetweenStates();
+extern void LedTrigger();
+//extern void DelayBetweenStates();
 
 #endif /* TIMER_H_ */
