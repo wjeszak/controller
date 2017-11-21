@@ -93,17 +93,17 @@ void Dynabox::Poll()
 	if(current_address == LastAddress() + 1)
 	{
 		SetDestAddr(1);
-		if(state_prop[state].repeat == false)
+		uint8_t new_state = GetFromQueue();
+		if(new_state != ST_EMPTY)
 		{
 			if(state_prop[state].on_exit != NULL) (this->*state_prop[state].on_exit)();
-			//state = state_prop[state].next_state;
 			ChangeState(state);
 			if(state_prop[state].on_entry != NULL) (this->*state_prop[state].on_entry)();
 		}
 		return;
 	}
 	comm.EV_Send(GetDestAddr(state), addr_command[current_address - 1] , state_prop[state].need_timeout);
-	InternalEvent(state, &dynabox_data);
+//	InternalEvent(state, &dynabox_data);
 	current_address++;
 }
 

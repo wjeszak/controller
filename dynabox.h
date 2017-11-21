@@ -103,19 +103,18 @@ private:
 	{
 		Destination dest;
 		bool need_timeout;
-		bool repeat;
 		void (Dynabox::*on_entry)();
 		void (Dynabox::*on_exit)();
 	};
 
 	StateProperties state_prop[ST_MAX_STATES] =
 	{
-		{Dest_Led,  true, false, NULL, &Dynabox::EV_TestElm},			// ST_TESTING_LED
-		{Dest_Door, true, false, NULL, &Dynabox::EV_NeedHoming},		// ST_TESTING_ELM
-		{Dest_Door, true, false, NULL, &Dynabox::EV_PreparedToHoming},	// ST_GETTING_STATE
-		{Dest_Led,  false, false, NULL, NULL},							// ST_SHOWING_ON_LED
-		{Dest_Door, true, true, &Dynabox::ST_HomingOnEntry, NULL},		// ST_MOVEMENT
-		{Dest_Door, true, true, NULL, NULL}
+		{Dest_Led,  true,  NULL, &Dynabox::EV_TestElm},				// ST_TESTING_LED
+		{Dest_Door, true,  NULL, &Dynabox::EV_NeedHoming},			// ST_TESTING_ELM
+		{Dest_Door, true,  NULL, &Dynabox::EV_PreparedToHoming},	// ST_GETTING_STATE
+		{Dest_Led,  false, NULL, NULL},								// ST_SHOWING_ON_LED
+		{Dest_Door, true,  &Dynabox::ST_HomingOnEntry, NULL},		// ST_MOVEMENT
+		{Dest_Door, true,  NULL, NULL}
 	};
 
 	struct StateFault

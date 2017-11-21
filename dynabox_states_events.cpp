@@ -13,6 +13,7 @@
 #include "modbus_tcp.h"
 #include "usart.h"
 #include "fault.h"
+#include "display.h"
 
 // ----------------------- States -----------------------
 void Dynabox::ST_TestingLed(DynaboxData* pdata)
@@ -37,14 +38,14 @@ void Dynabox::ST_ShowingOnLed(DynaboxData* pdata)
 
 void Dynabox::ST_HomingOnEntry()
 {
-	for(uint8_t i = 0; i < 13; i++)
-		addr_command[i] = 0x80;
-	motor.EV_Homing();
+//	for(uint8_t i = 0; i < 13; i++)
+//		addr_command[i] = 0x80;
+//	motor.EV_Homing();
 }
 
 void Dynabox::ST_Homing(DynaboxData* pdata)
 {
-	mb.Write(current_address + 1, d->data);
+//	mb.Write(current_address + 1, d->data);
 }
 
 void Dynabox::ST_ShowingOnLedOnExit()
@@ -54,7 +55,7 @@ void Dynabox::ST_ShowingOnLedOnExit()
 
 void Dynabox::ST_Ready(DynaboxData* pdata)
 {
-	mb.Write(current_address + 1, d->data);
+//	mb.Write(current_address + 1, d->data);
 }
 
 void Dynabox::ST_NotReady(DynaboxData* pdata)
@@ -81,6 +82,7 @@ void Dynabox::EV_TestLed(DynaboxData* pdata)
 
 void Dynabox::EV_TestElm()
 {
+	AddToQueue(ST_TESTING_ELM);
 	for(uint8_t i = 0; i < 13; i++)
 		addr_command[i] = COMM_DOOR_CHECK_ELECTROMAGNET;
 /*	current_address = 1;
@@ -96,8 +98,8 @@ void Dynabox::EV_TestElm()
 
 void Dynabox::EV_NeedHoming()
 {
-	for(uint8_t i = 0; i < 13; i++)
-		addr_command[i] = 0x80;
+//	for(uint8_t i = 0; i < 13; i++)
+//		addr_command[i] = 0x80;
 /*	current_address = 1;
 	SLAVE_POLL_START;
 
@@ -111,15 +113,15 @@ void Dynabox::EV_NeedHoming()
 
 void Dynabox::EV_HomingDone(DynaboxData* pdata)
 {
-	for(uint8_t i = 0; i < 13; i++)
-		addr_command[i] = 0x80;
-	InternalEvent(ST_READY);
+//	for(uint8_t i = 0; i < 13; i++)
+//		addr_command[i] = 0x80;
+//	InternalEvent(ST_READY);
 }
 
 void Dynabox::EV_PreparedToHoming()
 {
-	for(uint8_t i = 0; i < 13; i++)
-		addr_command[i] = 0x05;
+//	for(uint8_t i = 0; i < 13; i++)
+//		addr_command[i] = 0x05;
 }
 
 void Dynabox::EV_ShowOnLed(DynaboxData* pdata)
@@ -143,6 +145,7 @@ void Dynabox::EV_UserAction(MachineData* pdata)
 
 		motor.EV_RunToPosition(&motor_data);
 	}
+	if(mb.Read((uint8_t)ORDER_STATUS) == 1) display.Write(7843);
 	//	BEGIN_TRANSITION_MAP								// current state
 //		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_TESTING_LED
 //		TRANSITION_MAP_ENTRY(ST_HOMING)					// ST_TESTING_ELM
@@ -153,7 +156,7 @@ void Dynabox::EV_UserAction(MachineData* pdata)
 
 void Dynabox::EV_OnF8(DynaboxData* pdata)
 {
-	motor.Stop();
+//	motor.Stop();
 }
 
 void Dynabox::EV_PositionAchieved(DynaboxData* pdata)

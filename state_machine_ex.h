@@ -20,19 +20,22 @@ struct StateStructEx;
 
 class StateMachineEx
 {
+protected:
+	uint8_t current_state;
+	enum States {ST_EMPTY = 0xFE, ST_NOT_ALLOWED = 0xFF};
 public:
 	StateMachineEx(uint8_t max_states);
 	uint8_t GetState();
 	void ChangeState(uint8_t new_state);
 	void InternalEvent(uint8_t new_state, EventDataEx* pdata = NULL);
 	void Event(uint8_t new_state, EventDataEx* pdata = NULL);
-protected:
-	uint8_t current_state;
-	enum States {ST_NOT_ALLOWED = 0xFF};
+	void AddToQueue(uint8_t state);
+	uint8_t GetFromQueue();
 private:
 	const uint8_t _max_states;
 	bool _event_generated;
 	virtual const StateStructEx* GetStateMapEx() { return NULL; }
+	uint8_t queued_state;
 };
 
 typedef void (StateMachineEx::*StateFuncEx)(EventDataEx*);

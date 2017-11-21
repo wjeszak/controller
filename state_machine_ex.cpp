@@ -24,9 +24,24 @@ uint8_t StateMachineEx::GetState()
 
 void StateMachineEx::Event(uint8_t new_state, EventDataEx* pdata)
 {
-	if(new_state == ST_NOT_ALLOWED) {}
-	else
-		InternalEvent(new_state, pdata);
+//	if(new_state == ST_NOT_ALLOWED) {}
+//	else
+//		InternalEvent(new_state, pdata);
+	if(new_state != ST_NOT_ALLOWED)
+		AddToQueue(new_state);
+}
+
+void StateMachineEx::AddToQueue(uint8_t state)
+{
+	if(queued_state == ST_EMPTY)
+		queued_state = state;
+}
+
+uint8_t StateMachineEx::GetFromQueue()
+{
+	uint8_t tmp_st = queued_state;
+	queued_state = ST_EMPTY;
+    return tmp_st;
 }
 
 void StateMachineEx::InternalEvent(uint8_t new_state, EventDataEx* pdata)
