@@ -115,7 +115,7 @@ private:
 		{Dest_Door, true,  NULL, &Dynabox::EV_PreparedToHoming},	// ST_PREPARING_TO_HOMING
 		{Dest_Led,  false, NULL, &Dynabox::EV_LedTrigger},			// ST_SHOWING_ON_LED
 		{Dest_Door, true,  &Dynabox::ST_HomingOnEntry, NULL},		// ST_HOMING
-		{Dest_Door, true,  NULL, NULL}
+//		{Dest_Door, true,  NULL, NULL}
 	};
 
 	struct StateFault

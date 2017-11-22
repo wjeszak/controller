@@ -72,12 +72,6 @@ void Dynabox::EV_TestLed(DynaboxData* pdata)
 	for(uint8_t i = 0; i < 13; i++)
 		addr_command[i] = COMM_LED_DIAG;
 	AddToQueue(ST_TESTING_ELM);
-	//	BEGIN_TRANSITION_MAP								// current state
-//        TRANSITION_MAP_ENTRY(ST_TESTING_LED)			// ST_INIT
-//		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_TESTING_LED
-//		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_TESTING_ELM
-//		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_HOMING
-//	END_TRANSITION_MAP(pdata)
 }
 
 void Dynabox::EV_TestElm()
