@@ -211,6 +211,7 @@ void Motor::ST_Home(MotorData* pdata)
 	MOTOR_HOME_IRQ_DISABLE;
 	mb.Write(ENCODER_CURRENT_VALUE, actual_position);
 	home_ok = true;
+	actual_position = 0;
 	mb.Write(IO_INFORMATIONS, (0 << 2) | (0 << 0) | (1 << 3));
 	dynabox.EV_HomingDone(&dynabox_data);
 }
