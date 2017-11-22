@@ -59,13 +59,13 @@ const StateStructEx* GetStateMapEx() {\
 
 // Transition map
 #define BEGIN_TRANSITION_MAP_EX \
-	const uint8_t TransitionsEx[] = {\
+	const uint8_t Transitions[] = {\
 
 #define TRANSITION_MAP_ENTRY_EX(entry)\
     entry,
 
 #define END_TRANSITION_MAP_EX(data) \
     0 };\
-    EventEx(TransitionsEx[current_state], pdata);
+    EventEx(Transitions[current_state], pdata);
 
 #endif /* STATE_MACHINE_EX_H_ */
