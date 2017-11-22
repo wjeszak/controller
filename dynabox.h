@@ -60,7 +60,6 @@ public:
 	void EV_NeedHoming();
 	void EV_LedTrigger();
 	void EV_HomingDone(DynaboxData* pdata);
-	void EV_ShowOnLed(DynaboxData* pdata);
 	void EV_UserAction(MachineData* pdata);
 	void EV_ReplyOK(MachineData* pdata);
 	void EV_Timeout(MachineData* pdata);

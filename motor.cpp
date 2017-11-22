@@ -17,7 +17,7 @@ Motor::Motor() : StateMachine(ST_MAX_STATES)
 {
 	MOTOR_INIT;
 	EncoderAndHomeIrqInit();
-	home_ok = 0;
+	home_ok = false;
 }
 
 void Motor::Accelerate()
@@ -35,11 +35,11 @@ void Motor::EV_PhaseA(MotorData* pdata)
 	if(MOTOR_ENCODER_PIN & (1 << MOTOR_ENCODER_PHASEB_PIN))
 	{
 		// right
-		if(actual_position == motor_data.pos)
+		if((actual_position == motor_data.pos) && home_ok)
 		{
-			//motor.Stop();
-			//timer.Disable(TIMER_MOTOR_ACCELERATE);
-			//Event(ST_POSITION_ACHIEVED, NULL);
+			motor.Stop();
+			timer.Disable(TIMER_MOTOR_ACCELERATE);
+			Event(ST_POSITION_ACHIEVED, NULL);
 		}
 		if(actual_position == ENCODER_ROWS)
 			actual_position = 0;
@@ -50,11 +50,11 @@ void Motor::EV_PhaseA(MotorData* pdata)
 	else
 	{
 		// left
-		if(actual_position == motor_data.pos)
+		if((actual_position == motor_data.pos) && home_ok)
 		{
-			//motor.Stop();
-			//timer.Disable(TIMER_MOTOR_ACCELERATE);
-			//Event(ST_POSITION_ACHIEVED, NULL);
+			motor.Stop();
+			timer.Disable(TIMER_MOTOR_ACCELERATE);
+			Event(ST_POSITION_ACHIEVED, NULL);
 		}
 		if(actual_position == 0)
 			actual_position = 3600;
@@ -68,13 +68,12 @@ void Motor::EV_PhaseB(MotorData* pdata)
 {
 	if(MOTOR_ENCODER_PIN & (1 << MOTOR_ENCODER_PHASEA_PIN))
 	{
-		//mb.Write(ENCODER_CURRENT_VALUE, actual_position++);
 		// right
-		if(actual_position == motor_data.pos)
+		if((actual_position == motor_data.pos) && home_ok)
 		{
-			//motor.Stop();
-			//timer.Disable(TIMER_MOTOR_ACCELERATE);
-			//Event(ST_POSITION_ACHIEVED, NULL);
+			motor.Stop();
+			timer.Disable(TIMER_MOTOR_ACCELERATE);
+			Event(ST_POSITION_ACHIEVED, NULL);
 		}
 		if(actual_position == ENCODER_ROWS)
 			actual_position = 0;
@@ -85,13 +84,12 @@ void Motor::EV_PhaseB(MotorData* pdata)
 	}
 	else
 	{
-		//mb.Write(ENCODER_CURRENT_VALUE, actual_position--);
 		// left
-		if(actual_position == motor_data.pos)
+		if((actual_position == motor_data.pos) && home_ok)
 		{
-			//motor.Stop();
-			//timer.Disable(TIMER_MOTOR_ACCELERATE);
-			//Event(ST_POSITION_ACHIEVED, NULL);
+			motor.Stop();
+			timer.Disable(TIMER_MOTOR_ACCELERATE);
+			Event(ST_POSITION_ACHIEVED, NULL);
 		}
 		if(actual_position == 0)
 			actual_position = 3600;
@@ -103,7 +101,6 @@ void Motor::EV_PhaseB(MotorData* pdata)
 
 void Motor::EV_PhaseZ(MotorData* pdata)
 {
-	// disable INT2 ?
     BEGIN_TRANSITION_MAP							// current state
         TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)		// ST_IDLE
         TRANSITION_MAP_ENTRY(ST_HOME)				// ST_ACCELERATION
@@ -212,10 +209,8 @@ void Motor::ST_Home(MotorData* pdata)
 	timer.Disable(TIMER_MOTOR_ACCELERATE); // if accelerating
 	Stop();
 	MOTOR_HOME_IRQ_DISABLE;
-//	MOTOR_ENCODER_DISABLE;
-//	actual_position = 0;
 	mb.Write(ENCODER_CURRENT_VALUE, actual_position);
-	home_ok = 1;
+	home_ok = true;
 	mb.Write(IO_INFORMATIONS, (0 << 2) | (0 << 0) | (1 << 3));
 	dynabox.EV_HomingDone(&dynabox_data);
 }

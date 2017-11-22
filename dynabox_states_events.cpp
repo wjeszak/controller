@@ -102,19 +102,9 @@ void Dynabox::EV_LedTrigger()
 
 void Dynabox::EV_HomingDone(DynaboxData* pdata)
 {
-//	for(uint8_t i = 0; i < 13; i++)
-//		addr_command[i] = 0x80;
-//	InternalEvent(ST_READY);
-}
-
-
-
-void Dynabox::EV_ShowOnLed(DynaboxData* pdata)
-{
-/*	current_address = 1;
-	SLAVE_POLL_START;
-	InternalEvent(ST_SHOWING_ON_LED);
-*/
+	for(uint8_t i = 0; i < 13; i++)
+		addr_command[i] = 0x00;
+	AddToQueue(ST_SHOWING_ON_LED);
 }
 
 void Dynabox::EV_UserAction(MachineData* pdata)

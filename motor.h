@@ -58,7 +58,7 @@ public:
 	void EV_Homing(MotorData* pdata = NULL);
 	void EV_RunToPosition(MotorData* pdata);
 	void Stop();
-	uint8_t home_ok;
+	bool home_ok;
 	uint8_t actual_speed;
 	uint8_t desired_speed;
 	uint16_t actual_position;
