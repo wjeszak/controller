@@ -8,10 +8,8 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "motor.h"
-
 #include "comm.h"
 #include "timer.h"
-#include "display.h"
 #include "modbus_tcp.h"
 #include "dynabox.h"
 
@@ -24,8 +22,8 @@ Motor::Motor() : StateMachine(ST_MAX_STATES)
 
 void Motor::Accelerate()
 {
-	OCR2A = motor.actual_speed++;
-	if(motor.actual_speed == motor.desired_speed)
+	OCR2A = actual_speed++;
+	if(actual_speed == desired_speed)
 	{
 		timer.Disable(TIMER_MOTOR_ACCELERATE);
 		Event(2, NULL);
@@ -40,7 +38,7 @@ void Motor::EV_PhaseA(MotorData* pdata)
 		//display.Write(actual_position);
 		if(actual_position == motor_data.pos)
 		{
-			motor.Stop();
+			//motor.Stop();
 			timer.Disable(TIMER_MOTOR_ACCELERATE);
 			Event(5, NULL);
 		}
@@ -56,7 +54,7 @@ void Motor::EV_PhaseA(MotorData* pdata)
 		// left
 		if(actual_position == motor_data.pos)
 		{
-			motor.Stop();
+			//motor.Stop();
 			timer.Disable(TIMER_MOTOR_ACCELERATE);
 			Event(5, NULL);
 		}
@@ -77,7 +75,7 @@ void Motor::EV_PhaseB(MotorData* pdata)
 		// right
 		if(actual_position == motor_data.pos)
 		{
-			motor.Stop();
+			//motor.Stop();
 			timer.Disable(TIMER_MOTOR_ACCELERATE);
 			Event(5, NULL);
 		}
@@ -95,7 +93,7 @@ void Motor::EV_PhaseB(MotorData* pdata)
 		//display.Write(actual_position);
 		if(actual_position == motor_data.pos)
 		{
-			motor.Stop();
+			//motor.Stop();
 			timer.Disable(TIMER_MOTOR_ACCELERATE);
 			Event(5, NULL);
 		}
@@ -104,7 +102,6 @@ void Motor::EV_PhaseB(MotorData* pdata)
 		else
 			actual_position--;
 		mb.Write(ENCODER_CURRENT_VALUE, actual_position);
-
 	}
 }
 
@@ -126,7 +123,7 @@ void Motor::EV_Homing(MotorData* pdata)
         TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)		// ST_RUNNING
     END_TRANSITION_MAP(pdata)
 	mb.Write(IO_INFORMATIONS, (1 << 2) | (1 << 0));
-    MOTOR_HOME_IRQ_ENABLE;
+//    MOTOR_HOME_IRQ_ENABLE;
     SetDirection(Forward);
 }
 
@@ -205,7 +202,7 @@ void Motor::ST_Acceleration(MotorData* pdata)
 	//SetDirection(Forward);
 	//SetDirection(Backward);
 	SetSpeed(70);
-	MOTOR_ENCODER_ENABLE
+	MOTOR_ENCODER_ENABLE;
 
 	actual_speed = 0;
 	MOTOR_START;

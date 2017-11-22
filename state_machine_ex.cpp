@@ -22,7 +22,7 @@ uint8_t StateMachineEx::GetState()
 	return current_state;
 }
 
-void StateMachineEx::Event(uint8_t new_state, EventDataEx* pdata)
+void StateMachineEx::EventEx(uint8_t new_state, EventDataEx* pdata)
 {
 	if(new_state != ST_NOT_ALLOWED)
 		AddToQueue(new_state);
