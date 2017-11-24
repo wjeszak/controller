@@ -124,6 +124,12 @@ void MotorAccelerate()
 	motor.Accelerate();
 }
 
+// TIMER_MOTOR_DECELERATE
+void MotorDecelerate()
+{
+	motor.Decelerate();
+}
+
 // TIMER_FAULT_SHOW
 void FaultShow()
 {

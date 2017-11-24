@@ -18,6 +18,8 @@ Motor::Motor() : StateMachine(ST_MAX_STATES)
 	MOTOR_INIT;
 	EncoderAndHomeIrqInit();
 	home_ok = false;
+	delta_time_accelerate = 10;
+	delta_time_decelerate = 80;
 }
 
 void Motor::Accelerate()
@@ -30,73 +32,60 @@ void Motor::Accelerate()
 	}
 }
 
+void Motor::Decelerate()
+{
+	OCR2A = actual_speed--;
+	if(actual_speed == 0) timer.Disable(TIMER_MOTOR_DECELERATE);
+}
+
+void Motor::Pos_Ach()
+{
+	if((actual_position == motor_data.pos - 260) && home_ok)
+	{
+		timer.Disable(TIMER_MOTOR_ACCELERATE);
+		timer.Assign(TIMER_MOTOR_DECELERATE, delta_time_decelerate, MotorDecelerate);
+		Event(ST_POSITION_ACHIEVED, NULL);
+	}
+}
+
 void Motor::EV_PhaseA(MotorData* pdata)
 {
 	if(MOTOR_ENCODER_PIN & (1 << MOTOR_ENCODER_PHASEB_PIN))
 	{
-		// right
-		if((actual_position == motor_data.pos) && home_ok)
-		{
-			motor.Stop();
-			timer.Disable(TIMER_MOTOR_ACCELERATE);
-			Event(ST_POSITION_ACHIEVED, NULL);
-		}
 		if(actual_position == ENCODER_ROWS)
 			actual_position = 0;
 		else
 			actual_position++;
-		mb.Write(ENCODER_CURRENT_VALUE, actual_position);
 	}
 	else
 	{
-		// left
-		if((actual_position == motor_data.pos) && home_ok)
-		{
-			motor.Stop();
-			timer.Disable(TIMER_MOTOR_ACCELERATE);
-			Event(ST_POSITION_ACHIEVED, NULL);
-		}
 		if(actual_position == 0)
-			actual_position = 3600;
+			actual_position = ENCODER_ROWS;
 		else
 			actual_position--;
-		mb.Write(ENCODER_CURRENT_VALUE, actual_position);
 	}
+	mb.Write(ENCODER_CURRENT_VALUE, actual_position);
+	Pos_Ach();
 }
 
 void Motor::EV_PhaseB(MotorData* pdata)
 {
 	if(MOTOR_ENCODER_PIN & (1 << MOTOR_ENCODER_PHASEA_PIN))
 	{
-		// right
-		if((actual_position == motor_data.pos) && home_ok)
-		{
-			motor.Stop();
-			timer.Disable(TIMER_MOTOR_ACCELERATE);
-			Event(ST_POSITION_ACHIEVED, NULL);
-		}
 		if(actual_position == ENCODER_ROWS)
 			actual_position = 0;
 		else
 			actual_position++;
-		mb.Write(ENCODER_CURRENT_VALUE, actual_position);
-
 	}
 	else
 	{
-		// left
-		if((actual_position == motor_data.pos) && home_ok)
-		{
-			motor.Stop();
-			timer.Disable(TIMER_MOTOR_ACCELERATE);
-			Event(ST_POSITION_ACHIEVED, NULL);
-		}
 		if(actual_position == 0)
-			actual_position = 3600;
+			actual_position = ENCODER_ROWS;
 		else
 			actual_position--;
-		mb.Write(ENCODER_CURRENT_VALUE, actual_position);
 	}
+	mb.Write(ENCODER_CURRENT_VALUE, actual_position);
+	Pos_Ach();
 }
 
 void Motor::EV_PhaseZ(MotorData* pdata)
@@ -182,7 +171,7 @@ void Motor::SetDirection(Direction dir)
 void Motor::SetSpeed(uint8_t speed)
 {
 	desired_speed = speed * 255 / 100; 	// percent
-	OCR2A = 0;
+	OCR2A = 50;
 }
 
 void Motor::ST_Idle(MotorData* pdata)
@@ -196,7 +185,7 @@ void Motor::ST_Acceleration(MotorData* pdata)
 	MOTOR_ENCODER_ENABLE;
 	actual_speed = 0;
 	MOTOR_START;
-	timer.Assign(TIMER_MOTOR_ACCELERATE, 50, MotorAccelerate);
+	timer.Assign(TIMER_MOTOR_ACCELERATE, delta_time_accelerate, MotorAccelerate);
 }
 
 void Motor::ST_Running(MotorData* pdata)

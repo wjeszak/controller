@@ -52,6 +52,7 @@ class Motor : public StateMachine
 public:
 	Motor();
 	void Accelerate();
+	void Decelerate();
 	void EV_PhaseA(MotorData* pdata = NULL);
 	void EV_PhaseB(MotorData* pdata = NULL);
 	void EV_PhaseZ(MotorData* pdata = NULL);
@@ -63,12 +64,15 @@ public:
 	uint8_t desired_speed;
 	uint16_t actual_position;
 	uint16_t desired_position;
+	// parameters
+	uint8_t delta_time_accelerate;
+	uint8_t delta_time_decelerate;
 	enum Direction {Forward, Backward};
 	void SetDirection(Direction dir);
 private:
 
 	void EncoderAndHomeIrqInit();
-
+	void Pos_Ach();
 	void SetSpeed(uint8_t speed);
 	void ST_Idle(MotorData* pdata);
 	void ST_Acceleration(MotorData* pdata);
