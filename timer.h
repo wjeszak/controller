@@ -27,10 +27,11 @@
 #define TIMER_FAULT_SHOW 				6
 #define TIMER_LED_TRIGGER 		 		7
 #define TIMER_MOTOR_DECELERATE 			8
+#define TIMER_MOTOR_SPEED_MEAS 			9
 
 #define SLAVE_POLL_INTERVAL 			100
 #define SLAVE_TIMEOUT_INTERVAL 			20
-#define DELAY_BETWEEN_STATES			SLAVE_TIMEOUT_INTERVAL
+#define MOTOR_SPEED_MEAS_INTERVAL 		100
 
 #define SLAVE_POLL_START 				timer.Assign(TIMER_SLAVE_POLL, SLAVE_POLL_INTERVAL, SlavePollGeneral)
 #define SLAVE_POLL_STOP					timer.Disable(TIMER_SLAVE_POLL);
@@ -80,5 +81,6 @@ extern void MotorAccelerate();
 extern void MotorDecelerate();
 extern void FaultShow();
 extern void LedTrigger();
+extern void MotorSpeedMeas();
 
 #endif /* TIMER_H_ */

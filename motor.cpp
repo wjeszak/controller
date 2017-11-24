@@ -5,8 +5,8 @@
  * Author: tomek
  */
 
-#include <avr/io.h>
 #include <avr/interrupt.h>
+#include <stdlib.h>				// abs()
 #include "motor.h"
 #include "timer.h"
 #include "modbus_tcp.h"
@@ -25,6 +25,7 @@ Motor::Motor() : StateMachine(ST_MAX_STATES)
 	desired_speed = 	0;
 	actual_position = 	0;
 	desired_position = 	0;
+	impulses_cnt = 		0;
 }
 
 void Motor::Accelerate()
@@ -41,6 +42,15 @@ void Motor::Decelerate()
 {
 	OCR2A = actual_speed--;
 	if(actual_speed == 0) timer.Disable(TIMER_MOTOR_DECELERATE);
+}
+
+void Motor::SpeedMeasure()
+{
+	uint16_t v = impulses_cnt * 10;		// [imp / s] @ 100 ms timer
+	mb.Write(ACTUAL_SPEED, v);
+	if(GetState() == ST_ACCELERATION)
+		if(v != 0) display.Write(OCR2A);
+	impulses_cnt = 0;
 }
 
 void Motor::PulsePlus()
@@ -82,6 +92,7 @@ void Motor::EV_PhaseA(MotorData* pdata)
 	}
 	mb.Write(ENCODER_CURRENT_VALUE, actual_position);
 	Pos_Ach();
+	impulses_cnt++;
 }
 
 void Motor::EV_PhaseB(MotorData* pdata)
@@ -96,6 +107,7 @@ void Motor::EV_PhaseB(MotorData* pdata)
 	}
 	mb.Write(ENCODER_CURRENT_VALUE, actual_position);
 	Pos_Ach();
+	impulses_cnt++;
 }
 
 void Motor::EV_PhaseZ(MotorData* pdata)
@@ -133,6 +145,7 @@ void Motor::EV_RunToPosition(MotorData* pdata)
 	    END_TRANSITION_MAP(pdata)
 		mb.Write(ORDER_STATUS, ORDER_STATUS_PROCESSING);
 		mb.Write(IO_INFORMATIONS, (1 << 0) | (1 << 3));
+		ComputeDirection();
 	}
 }
 
@@ -177,6 +190,15 @@ void Motor::SetDirection(Direction dir)
 		break;
 	}
 	_direction = dir;
+}
+
+void Motor::ComputeDirection()
+{
+	uint16_t dist = (motor_data.pos - actual_position) % ENCODER_ROWS;
+	if(abs(dist) < (ENCODER_ROWS / 2))
+		SetDirection(Forward);
+	else
+		SetDirection(Backward);
 }
 
 void Motor::SetSpeed(uint8_t speed)

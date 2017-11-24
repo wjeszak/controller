@@ -144,3 +144,9 @@ void LedTrigger()
 	timer.Disable(TIMER_LED_TRIGGER);
 	comm.EV_LedTrigger();
 }
+
+// TIMER_MOTOR_SPEED_MEAS
+void MotorSpeedMeas()
+{
+	motor.SpeedMeasure();
+}

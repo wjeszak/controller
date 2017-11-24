@@ -113,11 +113,10 @@ void Dynabox::EV_UserAction(MachineData* pdata)
 	{
 		//motor_data.pos = (mb.Read(LOCATIONS_NUMBER) - 1);
 		motor_data.pos = 100 * (mb.Read(LOCATIONS_NUMBER) - 1);
-		if(motor.actual_position > motor_data.pos)
-			motor.SetDirection(motor.Backward);
-		else
-			motor.SetDirection(motor.Forward);
-
+//		if(motor.actual_position > motor_data.pos)
+//			motor.SetDirection(motor.Backward);
+//		else
+//			motor.SetDirection(motor.Forward);
 		motor.EV_RunToPosition(&motor_data);
 	}
 	if(mb.Read((uint8_t)ORDER_STATUS) == 1) display.Write(7843);

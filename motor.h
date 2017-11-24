@@ -51,6 +51,7 @@ public:
 	Motor();
 	void Accelerate();
 	void Decelerate();
+	void SpeedMeasure();
 	void EV_PhaseA(MotorData* pdata = NULL);
 	void EV_PhaseB(MotorData* pdata = NULL);
 	void EV_PhaseZ(MotorData* pdata = NULL);
@@ -67,10 +68,12 @@ public:
 	uint8_t delta_time_decelerate;
 	uint16_t pulses_to_decelerate;
 	uint8_t max_speed;
+	uint16_t impulses_cnt;
 
 	enum Direction {Forward, Backward};
-	void SetDirection(Direction dir);
 private:
+	void ComputeDirection();
+	void SetDirection(Direction dir);
 	void EncoderAndHomeIrqInit();
 	void Pos_Ach();
 	void PulsePlus();
