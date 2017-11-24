@@ -39,7 +39,7 @@ uint8_t Machine::LastAddress()
 {
 	return functions[1].param;
 }
-
+/*
 void Machine::SetOrderStatus(uint8_t status)
 {
 	mb.Write(ORDER_STATUS, status);
@@ -59,3 +59,4 @@ void Machine::ClearIOInfo(uint8_t info)
 {
 	mb.ClearBit(IO_INFORMATIONS, info);
 }
+*/

@@ -26,10 +26,10 @@ class Machine : public StateMachineEx
 {
 public:
 	Machine();
-	void SetOrderStatus(uint8_t status);
-	uint8_t GetOrderStatus();
-	void SetIOInfo(uint8_t info);
-	void ClearIOInfo(uint8_t info);
+//	void SetOrderStatus(uint8_t status);
+//	uint8_t GetOrderStatus();
+//	void SetIOInfo(uint8_t info);
+//	void ClearIOInfo(uint8_t info);
 	uint8_t LastAddress();
 	virtual void LoadParameters() {}
 	virtual void SaveParameters() {}

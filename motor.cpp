@@ -11,6 +11,7 @@
 #include "timer.h"
 #include "modbus_tcp.h"
 #include "dynabox.h"
+#include "display.h"
 
 Motor::Motor() : StateMachine(ST_MAX_STATES)
 {
@@ -126,8 +127,9 @@ void Motor::EV_Homing(MotorData* pdata)
         TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)		// ST_ACCELERATION
         TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)		// ST_RUNNING
     END_TRANSITION_MAP(pdata)
-	mb.Write(IO_INFORMATIONS, (1 << 2) | (1 << 0));
-    MOTOR_HOME_IRQ_ENABLE;
+//	mb.Write(IO_INFORMATIONS, (1 << 2) | (1 << 0));
+
+	MOTOR_HOME_IRQ_ENABLE;
     SetDirection(Forward);
 }
 
