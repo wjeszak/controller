@@ -39,8 +39,6 @@
 
 #define ENCODER_ROWS 					3600
 
-
-
 class MotorData : public EventData
 {
 public:
@@ -67,12 +65,16 @@ public:
 	// parameters
 	uint8_t delta_time_accelerate;
 	uint8_t delta_time_decelerate;
+	uint16_t pulses_to_decelerate;
+	uint8_t max_speed;
+
 	enum Direction {Forward, Backward};
 	void SetDirection(Direction dir);
 private:
-
 	void EncoderAndHomeIrqInit();
 	void Pos_Ach();
+	void PulsePlus();
+	void PulseMinus();
 	void SetSpeed(uint8_t speed);
 	void ST_Idle(MotorData* pdata);
 	void ST_Acceleration(MotorData* pdata);

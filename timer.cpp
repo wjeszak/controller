@@ -102,17 +102,19 @@ void ButtonPoll()
 		button_encoder_sw.EV_Released(&button_data);
 }
 
-//TIMER_ENCODER_POLL
+// TIMER_ENCODER_POLL
 void EncoderPoll()
 {
 	encoder.Poll();
 }
 
+// TIMER_SLAVE_POLL
 void SlavePollGeneral()
 {
 	m->Poll();
 }
 
+// TIMER_SLAVE_TIMEOUT
 void SlaveTimeoutGeneral()
 {
 	comm.EV_Timeout();
@@ -136,6 +138,7 @@ void FaultShow()
 	fault.ShowGlobal();
 }
 
+// TIMER_LED_TRIGGER
 void LedTrigger()
 {
 	timer.Disable(TIMER_LED_TRIGGER);

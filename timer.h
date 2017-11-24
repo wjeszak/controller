@@ -80,6 +80,5 @@ extern void MotorAccelerate();
 extern void MotorDecelerate();
 extern void FaultShow();
 extern void LedTrigger();
-//extern void DelayBetweenStates();
 
 #endif /* TIMER_H_ */

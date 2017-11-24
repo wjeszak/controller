@@ -8,18 +8,23 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "motor.h"
-#include "comm.h"
 #include "timer.h"
 #include "modbus_tcp.h"
 #include "dynabox.h"
 
 Motor::Motor() : StateMachine(ST_MAX_STATES)
 {
+	delta_time_accelerate = 10;		// [ms]
+	delta_time_decelerate = 80;		// [ms]
+	pulses_to_decelerate = 	300; 	// [pulses]
+	max_speed = 			70;		// percent of 255
 	MOTOR_INIT;
 	EncoderAndHomeIrqInit();
 	home_ok = false;
-	delta_time_accelerate = 10;
-	delta_time_decelerate = 80;
+	actual_speed = 		0;
+	desired_speed = 	0;
+	actual_position = 	0;
+	desired_position = 	0;
 }
 
 void Motor::Accelerate()
@@ -38,9 +43,25 @@ void Motor::Decelerate()
 	if(actual_speed == 0) timer.Disable(TIMER_MOTOR_DECELERATE);
 }
 
+void Motor::PulsePlus()
+{
+	if(actual_position == ENCODER_ROWS)
+		actual_position = 0;
+	else
+		actual_position++;
+}
+
+void Motor::PulseMinus()
+{
+	if(actual_position == 0)
+		actual_position = ENCODER_ROWS;
+	else
+		actual_position--;
+}
+
 void Motor::Pos_Ach()
 {
-	if((actual_position == motor_data.pos - 260) && home_ok)
+	if((actual_position == (motor_data.pos - pulses_to_decelerate)) && home_ok)
 	{
 		timer.Disable(TIMER_MOTOR_ACCELERATE);
 		timer.Assign(TIMER_MOTOR_DECELERATE, delta_time_decelerate, MotorDecelerate);
@@ -52,17 +73,12 @@ void Motor::EV_PhaseA(MotorData* pdata)
 {
 	if(MOTOR_ENCODER_PIN & (1 << MOTOR_ENCODER_PHASEB_PIN))
 	{
-		if(actual_position == ENCODER_ROWS)
-			actual_position = 0;
-		else
-			actual_position++;
+	// right
+		PulsePlus();
 	}
 	else
 	{
-		if(actual_position == 0)
-			actual_position = ENCODER_ROWS;
-		else
-			actual_position--;
+		PulseMinus();
 	}
 	mb.Write(ENCODER_CURRENT_VALUE, actual_position);
 	Pos_Ach();
@@ -72,17 +88,11 @@ void Motor::EV_PhaseB(MotorData* pdata)
 {
 	if(MOTOR_ENCODER_PIN & (1 << MOTOR_ENCODER_PHASEA_PIN))
 	{
-		if(actual_position == ENCODER_ROWS)
-			actual_position = 0;
-		else
-			actual_position++;
+		PulsePlus();
 	}
 	else
 	{
-		if(actual_position == 0)
-			actual_position = ENCODER_ROWS;
-		else
-			actual_position--;
+		PulseMinus();
 	}
 	mb.Write(ENCODER_CURRENT_VALUE, actual_position);
 	Pos_Ach();
@@ -147,6 +157,7 @@ void Motor::EncoderAndHomeIrqInit()
 	TCCR1B |= (1<< CS12) | (1<< CS11) | (1 << CS10);  // external source, rising edge
 	TCNT1 = 0;
 	OCR1A = 1;
+	MOTOR_ENCODER_ENABLE;
 	// homing
 	MOTOR_HOME_IRQ_DDR &= ~(1 << MOTOR_HOME_IRQ_PIN);
 	EICRA |= (1 << ISC21) | (1 << ISC20); 			// rising edge
@@ -181,8 +192,7 @@ void Motor::ST_Idle(MotorData* pdata)
 
 void Motor::ST_Acceleration(MotorData* pdata)
 {
-	SetSpeed(70);
-	MOTOR_ENCODER_ENABLE;
+	SetSpeed(max_speed);
 	actual_speed = 0;
 	MOTOR_START;
 	timer.Assign(TIMER_MOTOR_ACCELERATE, delta_time_accelerate, MotorAccelerate);
