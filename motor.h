@@ -57,6 +57,7 @@ public:
 	void EV_PhaseZ(MotorData* pdata = NULL);
 	void EV_Homing(MotorData* pdata = NULL);
 	void EV_RunToPosition(MotorData* pdata);
+	void Start();
 	void Stop();
 	bool home_ok;
 	uint8_t actual_speed;
@@ -69,16 +70,20 @@ public:
 	uint16_t pulses_to_decelerate;
 	uint8_t max_speed;
 	uint16_t impulses_cnt;
+	uint8_t init_pwm_val;
+	int16_t distance;
 
 	enum Direction {Forward, Backward};
 private:
+	void ComputeDistance();
 	void ComputeDirection();
 	void SetDirection(Direction dir);
 	void EncoderAndHomeIrqInit();
-	void Pos_Ach();
+	void NeedDeceleration();
 	void PulsePlus();
 	void PulseMinus();
 	void SetSpeed(uint8_t speed);
+	void GetStartPwmVal();
 	void ST_Idle(MotorData* pdata);
 	void ST_Acceleration(MotorData* pdata);
 	void ST_Running(MotorData* pdata);
