@@ -27,15 +27,12 @@
 #define MOTOR_ENCODER_DDR 				DDRB
 #define MOTOR_ENCODER_PORT 				PORTB
 #define MOTOR_ENCODER_PIN 				PINB
-#define MOTOR_ENCODER_PHASEA_PIN 		0
-#define MOTOR_ENCODER_PHASEB_PIN 		1
-#define MOTOR_ENCODER_ENABLE 			TIMSK0 |=  (1 << OCIE0A); TIMSK1 |=  (1 << OCIE1A);
-#define MOTOR_ENCODER_DISABLE 			TIMSK0 &= ~(1 << OCIE0A); TIMSK1 &= ~(1 << OCIE1A);
+#define MOTOR_ENCODER_A_PIN		 		0
+#define MOTOR_ENCODER_B_PIN 			1
 
 #define MOTOR_HOME_IRQ_DDR				DDRB
-#define MOTOR_HOME_IRQ_PIN 				2
-#define MOTOR_HOME_IRQ_ENABLE 			EIMSK |=  (1 << INT2);
-#define MOTOR_HOME_IRQ_DISABLE 			EIMSK &= ~(1 << INT2);
+#define MOTOR_HOME_IRQ_PIN 				PINB
+#define MOTOR_HOME_IRQ_PPIN				2
 
 #define ENCODER_ROWS 					3600
 
@@ -52,8 +49,6 @@ public:
 	void Accelerate();
 	void Decelerate();
 	void SpeedMeasure();
-	void EV_PhaseA(MotorData* pdata = NULL);
-	void EV_PhaseB(MotorData* pdata = NULL);
 	void EV_PhaseZ(MotorData* pdata = NULL);
 	void EV_Homing(MotorData* pdata = NULL);
 	void EV_RunToPosition(MotorData* pdata);
@@ -62,7 +57,7 @@ public:
 	bool home_ok;
 	uint8_t actual_speed;
 	uint8_t desired_speed;
-	uint16_t actual_position;
+	volatile uint16_t actual_position;
 	uint16_t desired_position;
 	// parameters
 	uint8_t delta_time_accelerate;
@@ -72,7 +67,7 @@ public:
 	uint16_t impulses_cnt;
 	uint8_t init_pwm_val;
 	int16_t distance;
-
+	volatile uint8_t dir, old;
 	enum Direction {Forward, Backward};
 private:
 	void ComputeDistance();
