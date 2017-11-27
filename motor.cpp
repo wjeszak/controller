@@ -288,16 +288,22 @@ ISR(PCINT1_vect)
 {
 	uint8_t enc_a = bit_is_set(MOTOR_ENCODER_PIN, MOTOR_ENCODER_A_PIN);
 	uint8_t enc_b = bit_is_set(MOTOR_ENCODER_PIN, MOTOR_ENCODER_B_PIN);
+
 	motor.dir = motor.old ^ (enc_a | enc_b);
 	if(motor.dir == 1)
+	{
 		motor.actual_position++;
+		if(motor.actual_position == ENCODER_ROWS) motor.actual_position = 0;
+	}
 	if(motor.dir == 2)
+	{
+		if(motor.actual_position == 0) motor.actual_position = ENCODER_ROWS;
 		motor.actual_position--;
+	}
 
-	motor.old = (enc_a << 1)|(enc_b >> 1);
-
-
-	mb.Write(ENCODER_CURRENT_VALUE, motor.actual_position / 4);
+	//mb.Write(ENCODER_CURRENT_VALUE, motor.actual_position);
+	display.Write(motor.actual_position);
+	motor.old = (enc_a << 1) | (enc_b >> 1);
 	//if(motor.actual_position == motor_data.pos) motor.Stop();
 	if(!motor.home_ok && (MOTOR_HOME_IRQ_PIN & (1 << MOTOR_HOME_IRQ_PPIN)))
 	{

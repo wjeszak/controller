@@ -34,7 +34,7 @@
 #define MOTOR_HOME_IRQ_PIN 				PINB
 #define MOTOR_HOME_IRQ_PPIN				2
 
-#define ENCODER_ROWS 					3600
+#define ENCODER_ROWS 					50
 
 class MotorData : public EventData
 {
