@@ -15,13 +15,14 @@
 
 Motor::Motor() : StateMachine(ST_MAX_STATES)
 {
-	delta_time_accelerate = 10;		// [ms]
-	delta_time_decelerate = 80;		// [ms]
-	pulses_to_decelerate = 	5; 	// [pulses]
-	init_pwm_val = 			45;		// 0 .. 255
-	max_speed = 			70;		// 0 .. 100 (percent of 255)
 	MOTOR_INIT;
 	EncoderAndHomeIrqInit();
+	delta_time_accelerate = 10;		// [ms]
+	delta_time_decelerate = 80;		// [ms]
+	pulses_to_decelerate = 	5; 		// [pulses]
+	init_pwm_val = 			45;		// 0 .. 255
+	max_speed = 			70;		// 0 .. 100 (percent of 255)
+// -------------------------------------------------------------
 	home_ok = false;
 	actual_speed = 		0;
 	desired_speed = 	0;
@@ -29,8 +30,8 @@ Motor::Motor() : StateMachine(ST_MAX_STATES)
 	desired_position = 	0;
 	impulses_cnt = 		0;
 	distance = 			0;
-	dir = 0;
-	old = 0;
+	_direction_encoder = Forward;
+	_last_encoder_val = 0;
 }
 
 void Motor::Start()
@@ -75,20 +76,6 @@ void Motor::GetStartPwmVal()
 
 }
 
-void Motor::SpeedMeasure()
-{
-//	uint16_t v = impulses_cnt;		// [imp / s] @ 100 ms timer
-	//display.Write(v);
-	//mb.Write(ACTUAL_SPEED, v / 10);
-	//if(GetState() == ST_ACCELERATION)
-//		if(v != 0)
-//		{
-//			display.Write(OCR2A);
-//			timer.Disable(TIMER_MOTOR_SPEED_MEAS);
-//		}
-	//impulses_cnt = 0;
-}
-
 void Motor::NeedDeceleration()
 {
 	if((actual_position == motor_data.pos - pulses_to_decelerate) && home_ok)
@@ -101,68 +88,6 @@ void Motor::NeedDeceleration()
 	}
 }
 
-void Motor::PulsePlus()
-{
-//	if(actual_position == ENCODER_ROWS)
-//		actual_position = 0;
-//	else
-
-	actual_position = actual_position % ENCODER_ROWS;
-	actual_position++;
-}
-
-void Motor::PulseMinus()
-{
-//	if(actual_position == 0)
-//		actual_position = ENCODER_ROWS;
-//	else
-	actual_position = actual_position % ENCODER_ROWS;
-	if(actual_position == 0) actual_position = ENCODER_ROWS;
-}
-/*
-void Motor::EV_PhaseA(MotorData* pdata)
-{
-	if(MOTOR_ENCODER_PIN & (1 << MOTOR_ENCODER_PHASEB_PIN))
-	{
-	// right
-	//	actual_position++;
-	//	PulsePlus();
-		actual_position = actual_position % ENCODER_ROWS;
-		actual_position++;
-	}
-	else
-	{
-		//actual_position--;
-		//PulseMinus();
-		actual_position = actual_position % ENCODER_ROWS;
-		if(actual_position == 0) actual_position = ENCODER_ROWS;
-	}
-	mb.Write(ENCODER_CURRENT_VALUE, actual_position);
-	NeedDeceleration();
-//	impulses_cnt++;
-}
-
-void Motor::EV_PhaseB(MotorData* pdata)
-{
-	if(MOTOR_ENCODER_PIN & (1 << MOTOR_ENCODER_PHASEA_PIN))
-	{
-		//actual_position++;
-		//PulsePlus();
-		actual_position = actual_position % ENCODER_ROWS;
-		actual_position++;
-	}
-	else
-	{
-		//actual_position--;
-		//PulseMinus();
-		actual_position = actual_position % ENCODER_ROWS;
-		if(actual_position == 0) actual_position = ENCODER_ROWS;
-	}
-	mb.Write(ENCODER_CURRENT_VALUE, actual_position);
-	NeedDeceleration();
-//	impulses_cnt++;
-}
-*/
 void Motor::EV_PhaseZ(MotorData* pdata)
 {
     BEGIN_TRANSITION_MAP							// current state
@@ -233,7 +158,6 @@ void Motor::ST_Idle(MotorData* pdata)
 
 void Motor::ST_Acceleration(MotorData* pdata)
 {
-//	MOTOR_ENCODER_ENABLE;
 	SetSpeed(100);
 	//SetSpeed(init_pwm_val);
 	actual_speed = 0;
@@ -270,43 +194,67 @@ void Motor::ST_PositionAchieved(MotorData* pdata)
 	dynabox.EV_PositionAchieved(&dynabox_data);
 }
 
+void Motor::SpeedMeasure()
+{
+	uint16_t v = impulses_cnt;		// [imp / s] @ 100 ms timer
+	//display.Write(v);
+	mb.Write(ACTUAL_SPEED, 50 * 255 / 100);		// [imp / 100 ms]
+	//actual_position = 3590;
+	uint8_t act_pos_hi = actual_position >> 8;
+	uint8_t act_pos_lo = actual_position & 0xFF;
+	comm.EV_Send(act_pos_hi, act_pos_lo, false);
+	//if(GetState() == ST_ACCELERATION)
+//		if(v != 0)
+//		{
+//			display.Write(OCR2A);
+//			timer.Disable(TIMER_MOTOR_SPEED_MEAS);
+//		}
+	impulses_cnt = 0;
+}
+
 void Motor::EncoderAndHomeIrqInit()
 {
 	MOTOR_ENCODER_DDR &= ~(1 << MOTOR_ENCODER_A_PIN);
 	//MOTOR_ENCODER_PORT |= (1 << MOTOR_ENCODER_A_PIN);
 	MOTOR_ENCODER_DDR &= ~(1 << MOTOR_ENCODER_B_PIN);
 	//MOTOR_ENCODER_PORT |= (1 << MOTOR_ENCODER_B_PIN);
-
-	PCICR |= (1 << PCIE1);
-	PCMSK1 |= (1 << PCINT10) | (1 << PCINT9) | (1 << PCINT8);
-	EICRA |= (1 << ISC10);
 	// homing
 	MOTOR_HOME_IRQ_DDR &= ~(1 << MOTOR_HOME_IRQ_PIN);
+
+	PCICR  |= (1 << PCIE1);
+	PCMSK1 |= (1 << PCINT10) | (1 << PCINT9) | (1 << PCINT8);
+	EICRA  |= (1 << ISC10);
 }
 
-ISR(PCINT1_vect)
+void Motor::EncoderIrq()
 {
 	uint8_t enc_a = bit_is_set(MOTOR_ENCODER_PIN, MOTOR_ENCODER_A_PIN);
 	uint8_t enc_b = bit_is_set(MOTOR_ENCODER_PIN, MOTOR_ENCODER_B_PIN);
 
-	motor.dir = motor.old ^ (enc_a | enc_b);
-	if(motor.dir == 1)
+	_direction_encoder = _last_encoder_val ^ (enc_a | enc_b);
+	if(_direction_encoder == Forward)
 	{
-		motor.actual_position++;
-		if(motor.actual_position == ENCODER_ROWS) motor.actual_position = 0;
+		actual_position++;
+		if(actual_position == ENCODER_ROWS) actual_position = 0;
 	}
-	if(motor.dir == 2)
+	if(_direction_encoder == Backward)
 	{
-		if(motor.actual_position == 0) motor.actual_position = ENCODER_ROWS;
-		motor.actual_position--;
+		if(actual_position == 0) actual_position = ENCODER_ROWS;
+		actual_position--;
 	}
-
+	// need to measure speed
+	impulses_cnt++;
 	//mb.Write(ENCODER_CURRENT_VALUE, motor.actual_position);
-	display.Write(motor.actual_position);
-	motor.old = (enc_a << 1) | (enc_b >> 1);
+	display.Write(actual_position);
+	_last_encoder_val = (enc_a << 1) | (enc_b >> 1);
 	//if(motor.actual_position == motor_data.pos) motor.Stop();
-	if(!motor.home_ok && (MOTOR_HOME_IRQ_PIN & (1 << MOTOR_HOME_IRQ_PPIN)))
+	if(!home_ok && (MOTOR_HOME_IRQ_PIN & (1 << MOTOR_HOME_IRQ_PPIN)))
 	{
-		motor.EV_PhaseZ();
+		EV_PhaseZ();
 	}
+}
+
+ISR(PCINT1_vect)
+{
+	motor.EncoderIrq();
 }

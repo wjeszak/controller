@@ -41,7 +41,7 @@ void Dynabox::Init()
 {
 	EV_TestLed(&dynabox_data);
 	// never disable
-	SLAVE_POLL_START;
+//	SLAVE_POLL_START;
 }
 
 void Dynabox::EV_EnterToConfig()

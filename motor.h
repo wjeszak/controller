@@ -54,10 +54,11 @@ public:
 	void EV_RunToPosition(MotorData* pdata);
 	void Start();
 	void Stop();
+	void EncoderIrq();
 	bool home_ok;
 	uint8_t actual_speed;
 	uint8_t desired_speed;
-	volatile uint16_t actual_position;
+	uint16_t actual_position;
 	uint16_t desired_position;
 	// parameters
 	uint8_t delta_time_accelerate;
@@ -67,16 +68,13 @@ public:
 	uint16_t impulses_cnt;
 	uint8_t init_pwm_val;
 	int16_t distance;
-	volatile uint8_t dir, old;
-	enum Direction {Forward, Backward};
+	enum Direction {Forward = 1, Backward};
 private:
 	void ComputeDistance();
 	void ComputeDirection();
 	void SetDirection(Direction dir);
 	void EncoderAndHomeIrqInit();
 	void NeedDeceleration();
-	void PulsePlus();
-	void PulseMinus();
 	void SetSpeed(uint8_t speed);
 	void GetStartPwmVal();
 	void ST_Idle(MotorData* pdata);
@@ -96,6 +94,8 @@ private:
 	END_STATE_MAP
 
 	Direction _direction;
+	uint8_t _direction_encoder;
+	uint8_t _last_encoder_val;
 };
 
 extern Motor motor;
