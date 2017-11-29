@@ -41,7 +41,7 @@ void Dynabox::Init()
 {
 	EV_TestLed(&dynabox_data);
 	// never disable
-//	SLAVE_POLL_START;
+	SLAVE_POLL_START;
 }
 
 void Dynabox::EV_EnterToConfig()
@@ -101,7 +101,7 @@ void Dynabox::Poll()
 		}
 		return;
 	}
-	comm.EV_Send(GetDestAddr(state), addr_command[current_address - 1] , state_prop[state].need_timeout);
+	//comm.EV_Send(GetDestAddr(state), addr_command[current_address - 1] , state_prop[state].need_timeout);
 	InternalEvent(state, &dynabox_data);
 	current_address++;
 }

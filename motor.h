@@ -34,7 +34,7 @@
 #define MOTOR_HOME_IRQ_PIN 				PINB
 #define MOTOR_HOME_IRQ_PPIN				2
 
-#define ENCODER_ROWS 					50
+#define ENCODER_ROWS 					14400
 
 class MotorData : public EventData
 {
@@ -96,6 +96,7 @@ private:
 	Direction _direction;
 	uint8_t _direction_encoder;
 	uint8_t _last_encoder_val;
+	uint16_t old_imp;
 };
 
 extern Motor motor;

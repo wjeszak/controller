@@ -11,7 +11,7 @@
 #include <inttypes.h>
 #include "usart.h"
 
-#define FRAME_LENGTH_REQUEST 						4
+#define FRAME_LENGTH_REQUEST 						5
 #define FRAME_LENGTH_RESPONSE 						4
 
 // door's commands
