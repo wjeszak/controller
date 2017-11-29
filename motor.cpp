@@ -17,9 +17,9 @@ Motor::Motor() : StateMachine(ST_MAX_STATES)
 {
 	MOTOR_INIT;
 	EncoderAndHomeIrqInit();
-	delta_time_accelerate = 10;		// [ms]
-	delta_time_decelerate = 10;		// [ms]
-	pulses_to_decelerate = 	5; 		// [pulses]
+	delta_time_accelerate = 4;		// [ms]
+	delta_time_decelerate = 4;		// [ms]
+	pulses_to_decelerate = 	1000; 		// [pulses]
 	init_pwm_val = 			35;		// 0 .. 255
 	max_speed = 			70;		// 0 .. 100 (percent of 255)
 // -------------------------------------------------------------
@@ -58,7 +58,12 @@ void Motor::Accelerate()
 void Motor::Decelerate()
 {
 	OCR2A = actual_speed--;
-	if(actual_speed == 0) timer.Disable(TIMER_MOTOR_DECELERATE);
+	if(actual_speed == 70)
+	{
+		timer.Disable(TIMER_MOTOR_DECELERATE);
+		//Event(ST_POSITION_ACHIEVED, NULL);
+	}
+
 }
 
 void Motor::EV_Homing(MotorData* pdata)
@@ -79,14 +84,15 @@ void Motor::GetStartPwmVal()
 
 void Motor::NeedDeceleration()
 {
-	if((actual_position == motor_data.pos - pulses_to_decelerate) && home_ok)
+	if((actual_position == motor_data.pos - pulses_to_decelerate)) //&& home_ok)
 	//if((actual_position == motor_data.pos) && home_ok)
 	{
-		timer.Disable(TIMER_MOTOR_ACCELERATE);
-//		timer.Assign(TIMER_MOTOR_DECELERATE, delta_time_decelerate, MotorDecelerate);
-		Stop();
-		Event(ST_POSITION_ACHIEVED, NULL);
+		//timer.Disable(TIMER_MOTOR_ACCELERATE);
+		timer.Assign(TIMER_MOTOR_DECELERATE, delta_time_decelerate, MotorDecelerate);
+		//Stop();
+		Event(ST_DECELERATION, NULL);
 	}
+	if(actual_position == desired_position) Stop();
 }
 
 void Motor::EV_PhaseZ(MotorData* pdata)
@@ -104,20 +110,22 @@ void Motor::EV_PhaseZ(MotorData* pdata)
 
 void Motor::EV_RunToPosition(MotorData* pdata)
 {
-	if(home_ok)
-	{
-		BEGIN_TRANSITION_MAP						// current state
-			TRANSITION_MAP_ENTRY(ST_ACCELERATION)	// ST_IDLE
-			TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED) 	// ST_ACCELERATION
-			TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)	// ST_RUNNING
-			TRANSITION_MAP_ENTRY(ST_ACCELERATION)	// ST_HOME
-			TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)	// ST_DECELERATION
-			TRANSITION_MAP_ENTRY(ST_ACCELERATION)	// ST_POSITION_ACHIEVED
-	    END_TRANSITION_MAP(pdata)
+//	if(home_ok)
+//	{
+//		BEGIN_TRANSITION_MAP						// current state
+//			TRANSITION_MAP_ENTRY(ST_ACCELERATION)	// ST_IDLE
+//			TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED) 	// ST_ACCELERATION
+//			TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)	// ST_RUNNING
+//			TRANSITION_MAP_ENTRY(ST_ACCELERATION)	// ST_HOME
+//			TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)	// ST_DECELERATION
+//			TRANSITION_MAP_ENTRY(ST_ACCELERATION)	// ST_POSITION_ACHIEVED
+//	    END_TRANSITION_MAP(pdata)
 		mb.Write(ORDER_STATUS, ORDER_STATUS_PROCESSING);
 		mb.Write(IO_INFORMATIONS, (1 << 0) | (1 << 3));
 		ComputeDirection();
-	}
+		Event(ST_ACCELERATION, NULL);
+		//Start();
+//	}
 }
 
 void Motor::SetDirection(Direction dir)
@@ -163,7 +171,7 @@ void Motor::ST_Idle(MotorData* pdata)
 
 void Motor::ST_Acceleration(MotorData* pdata)
 {
-	SetSpeed(70);
+	SetSpeed(100);
 	//SetSpeed(init_pwm_val);
 	//actual_speed = 0;
 	Start();
@@ -264,8 +272,9 @@ void Motor::EncoderIrq()
 	}
 	// need to measure speed
 
-	//mb.Write(ENCODER_CURRENT_VALUE, motor.actual_position);
+	mb.Write(ENCODER_CURRENT_VALUE, motor.actual_position);
 	//display.Write(actual_position);
+	NeedDeceleration();
 	_last_encoder_val = (enc_a << 1) | (enc_b >> 1);
 	//if(motor.actual_position == motor_data.pos) motor.Stop();
 	if(!home_ok && (MOTOR_HOME_IRQ_PIN & (1 << MOTOR_HOME_IRQ_PPIN)))

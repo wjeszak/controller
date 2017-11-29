@@ -104,7 +104,7 @@ void Dynabox::EV_HomingDone(DynaboxData* pdata)
 {
 	for(uint8_t i = 0; i < 13; i++)
 		addr_command[i] = 0x00;
-	AddToQueue(ST_SHOWING_ON_LED);
+	//AddToQueue(ST_SHOWING_ON_LED);
 }
 
 void Dynabox::EV_UserAction(MachineData* pdata)
@@ -119,7 +119,7 @@ void Dynabox::EV_UserAction(MachineData* pdata)
 //			motor.SetDirection(motor.Forward);
 		motor.EV_RunToPosition(&motor_data);
 	}
-	if(mb.Read((uint8_t)ORDER_STATUS) == 1) display.Write(7843);
+//	if(mb.Read((uint8_t)ORDER_STATUS) == 1) display.Write(7843);
 	//	BEGIN_TRANSITION_MAP								// current state
 //		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_TESTING_LED
 //		TRANSITION_MAP_ENTRY(ST_HOMING)					// ST_TESTING_ELM
