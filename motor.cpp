@@ -26,7 +26,7 @@ Motor::Motor() : StateMachine(ST_MAX_STATES)
 // -------------------------------------------------------------
 	homing = 					true;
 	phaze_z_achieved = 			false;
-	actual_pwm = 				35;
+//	actual_pwm = 				35;
 	actual_position = 			0;
 	desired_position = 			0;
 	impulses_cnt = 				0;
@@ -79,15 +79,12 @@ void Motor::EV_Homing(MotorData* pdata)
 
 void Motor::NeedDeceleration()
 {
-	//if((actual_position == motor_data.pos - pulses_to_decelerate)) //&& home_ok)
-	//if((actual_position == motor_data.pos) && home_ok)
 	if(homing && phaze_z_achieved && actual_position == offset)
 	{
 		phaze_z_achieved = false;
 		timer.Disable(TIMER_MOTOR_ACCELERATE);			// if accelerating
 		timer.Assign(TIMER_MOTOR_DECELERATE, delta_time_decelerate, MotorDecelerate);
 		Event(ST_DECELERATION, NULL);
-		//return;
 	}
 
 	if(homing && _direction_encoder == Backward && actual_position == offset)
@@ -95,6 +92,14 @@ void Motor::NeedDeceleration()
 		homing = false;
 		Stop();
 		Event(ST_HOME, NULL);
+		return;
+	}
+
+	if(!homing && actual_position == motor_data.pos - pulses_to_decelerate)
+	{
+		timer.Disable(TIMER_MOTOR_ACCELERATE);			// if accelerating
+		timer.Assign(TIMER_MOTOR_DECELERATE, delta_time_decelerate, MotorDecelerate);
+		Event(ST_DECELERATION, NULL);
 	}
 }
 
@@ -177,6 +182,7 @@ void Motor::ST_Idle(MotorData* pdata)
 void Motor::ST_Acceleration(MotorData* pdata)
 {
 	SetMinPwm(minimum_pwm_val_percent);
+	actual_pwm = minimum_pwm_val;
 	SetMaxPwm(maximum_pwm_val_percent);
 	Start();
 	timer.Assign(TIMER_MOTOR_ACCELERATE, delta_time_accelerate, MotorAccelerate);
@@ -195,6 +201,15 @@ void Motor::ST_RunningMinPwm(MotorData* pdata)
 		SetDirection(Backward);
 		SetMaxPwm(27);
 		Start();
+	}
+
+	if(!homing)
+	{
+		if(actual_position == motor_data.pos)
+		{
+			Stop();
+			Event(ST_POSITION_ACHIEVED, NULL);
+		}
 	}
 }
 
