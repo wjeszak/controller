@@ -20,7 +20,7 @@ typedef void (*fp)();
 struct Function
 {
 	uint8_t id;
-	uint8_t param;
+	uint16_t param;
 	fp f;
 };
 

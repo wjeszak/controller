@@ -28,7 +28,7 @@ Function EEMEM dynabox_eem_functions[DYNABOX_NUMBER_OF_FUNCTIONS] =
 	{5,					170,  			NULL},	// IP master
 	{6,					0,  			f12},	// test door
 	{7,					0,  			f12},	// test led
-	{8,					100,  			NULL},	// offset
+	{8,					0,  			NULL},	// offset
 	{9,					0,  			f12},	// load defaults
 	{10,				25,  			NULL},	// led brightness
 	{12,				1,				NULL},	// serial number

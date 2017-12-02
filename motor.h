@@ -65,6 +65,7 @@ public:
 	uint16_t actual_position;
 	uint16_t desired_position;
 	uint16_t offset;
+	uint16_t delta;
 	// parameters
 	uint8_t delta_time_accelerate;
 	uint8_t delta_time_decelerate;

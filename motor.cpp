@@ -12,6 +12,7 @@
 #include "modbus_tcp.h"
 #include "dynabox.h"
 #include "display.h"
+#include "config.h"
 
 Motor::Motor() : StateMachine(ST_MAX_STATES)
 {
@@ -22,13 +23,14 @@ Motor::Motor() : StateMachine(ST_MAX_STATES)
 	pulses_to_decelerate = 		1000; 	// [pulses]
 	minimum_pwm_val_percent = 	27; 	// 0 .. 100 (percent of 255)
 	maximum_pwm_val_percent =	70;		// 0 .. 100 (percent of 255)
-	offset =					100;
+	offset =					600;
 // -------------------------------------------------------------
 	homing = 					true;
 	phaze_z_achieved = 			false;
 	actual_position = 			0;
 	desired_position = 			0;
 	impulses_cnt = 				0;
+	delta = 					0;
 	distance = 					0;
 	_direction_encoder = 		0;
 	_last_encoder_val = 		0;
@@ -58,10 +60,21 @@ void Motor::Accelerate()
 void Motor::Decelerate()
 {
 	OCR2A = actual_pwm--;
-	if(actual_pwm == minimum_pwm_val)
+	if(!homing && actual_pwm == minimum_pwm_val)
 	{
 		timer.Disable(TIMER_MOTOR_DECELERATE);
 		Event(ST_RUNNING_MIN_PWM, NULL);
+	}
+	if(homing)
+	{
+
+		if(delta > 0 && actual_pwm > 0) {}
+			//actual_pwm--;
+		else
+		{
+			timer.Disable(TIMER_MOTOR_DECELERATE);
+			Event(ST_HOME);
+		}
 	}
 }
 
@@ -84,15 +97,18 @@ void Motor::NeedDeceleration()
 		timer.Disable(TIMER_MOTOR_ACCELERATE);			// if accelerating
 		timer.Assign(TIMER_MOTOR_DECELERATE, delta_time_decelerate, MotorDecelerate);
 		Event(ST_DECELERATION, NULL);
+		actual_position = 0;
 	}
 
-	if(homing && _direction_encoder == Backward && actual_position == offset)
-	{
-		homing = false;
-		Stop();
-		Event(ST_HOME, NULL);
-		return;
-	}
+	//if(homing && delta == 0) Stop();
+
+	//if(homing && _direction_encoder == Backward && actual_position == offset)
+	//{
+	//	homing = false;
+	//	Stop();
+	//	Event(ST_HOME, NULL);
+	//	return;
+	//}
 
 	if(!homing && actual_position == motor_data.pos - pulses_to_decelerate)
 	{
@@ -109,8 +125,8 @@ void Motor::EV_PhaseZ(MotorData* pdata)
         TRANSITION_MAP_ENTRY(ST_HOME)				// ST_ACCELERATION
         TRANSITION_MAP_ENTRY(ST_HOME)				// ST_RUNNING
     END_TRANSITION_MAP(pdata)
-	actual_position = 0;
     phaze_z_achieved = true;
+    actual_position = 0;
 }
 
 void Motor::EV_RunToPosition(MotorData* pdata)
@@ -196,10 +212,11 @@ void Motor::ST_RunningMinPwm(MotorData* pdata)
 {
 	if(homing)
 	{
-		Stop();
-		SetDirection(Backward);
-		SetMaxPwm(27);
-		Start();
+		//if(delta != 0) actual_pwm--;
+		//if(delta == 0) Stop();
+		//SetDirection(Backward);
+		//SetMaxPwm(27);
+		//Start();
 	}
 
 	if(!homing)
@@ -233,8 +250,8 @@ void Motor::ST_PositionAchieved(MotorData* pdata)
 
 void Motor::SpeedMeasure()
 {
-	uint16_t delta = impulses_cnt;		// [imp / s] @ 100 ms timer
-
+	delta = impulses_cnt;		// [imp / s] @ 100 ms timer
+	display.Write(delta);
 	uint8_t act_pos_hi = actual_position >> 8;
 	uint8_t act_pos_lo = actual_position & 0xFF;
 	uint8_t delta_hi = delta >> 8;
