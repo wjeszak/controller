@@ -13,17 +13,18 @@
 #include "dynabox.h"
 #include "display.h"
 #include "config.h"
+#include <util/delay.h>
 
 Motor::Motor() : StateMachine(ST_MAX_STATES)
 {
 	MOTOR_INIT;
 	EncoderAndHomeIrqInit();
 	delta_time_accelerate = 	4;		// [ms]
-	delta_time_decelerate = 	4;		// [ms]
+	delta_time_decelerate = 	6;		// [ms]
 	pulses_to_decelerate = 		1000; 	// [pulses]
 	minimum_pwm_val_percent = 	27; 	// 0 .. 100 (percent of 255)
 	maximum_pwm_val_percent =	70;		// 0 .. 100 (percent of 255)
-	offset =					600;
+	offset =					500;
 // -------------------------------------------------------------
 	homing = 					true;
 	phaze_z_achieved = 			false;
@@ -67,13 +68,11 @@ void Motor::Decelerate()
 	}
 	if(homing)
 	{
-
 		if(delta > 0 && actual_pwm > 0) {}
-			//actual_pwm--;
 		else
 		{
 			timer.Disable(TIMER_MOTOR_DECELERATE);
-			Event(ST_HOME);
+			timer.Assign(TIMER_BEFORE_DIRECTION_CHANGE, BEFORE_DIRECTION_CHANGE_INTERVAL, BeforeDirectionChange);
 		}
 	}
 }
@@ -100,15 +99,13 @@ void Motor::NeedDeceleration()
 		actual_position = 0;
 	}
 
-	//if(homing && delta == 0) Stop();
-
-	//if(homing && _direction_encoder == Backward && actual_position == offset)
-	//{
-	//	homing = false;
-	//	Stop();
-	//	Event(ST_HOME, NULL);
+	if(homing && _direction_encoder == Backward && actual_position == offset)
+	{
+		homing = false;
+		Stop();
+		Event(ST_HOME, NULL);
 	//	return;
-	//}
+	}
 
 	if(!homing && actual_position == motor_data.pos - pulses_to_decelerate)
 	{

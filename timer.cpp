@@ -150,3 +150,12 @@ void MotorSpeedMeas()
 {
 	motor.SpeedMeasure();
 }
+
+void BeforeDirectionChange()
+{
+	timer.Disable(TIMER_BEFORE_DIRECTION_CHANGE);
+	motor.SetDirection(motor.Backward);
+	motor.SetMaxPwm(13);
+	motor.Start();
+	timer.Assign(TIMER_MOTOR_ACCELERATE, motor.delta_time_accelerate, MotorAccelerate);
+}

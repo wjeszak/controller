@@ -74,14 +74,14 @@ public:
 	uint8_t init_pwm_val;
 	int16_t distance;
 	enum Direction {Forward = 1, Backward};
+	void SetDirection(Direction dir);
+	void SetMaxPwm(uint8_t pwm_val_percent);
 private:
 	void ComputeDistance();
 	void ComputeDirection();
-	void SetDirection(Direction dir);
 	void EncoderAndHomeIrqInit();
 	void NeedDeceleration();
 	void SetMinPwm(uint8_t pwm_val_percent);
-	void SetMaxPwm(uint8_t pwm_val_percent);
 	void ST_Idle(MotorData* pdata);
 	void ST_Acceleration(MotorData* pdata);
 	void ST_Running(MotorData* pdata);

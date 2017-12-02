@@ -15,23 +15,25 @@
 
 #include <avr/io.h>
 
-#define MAIN_TIMER_PRESCALER 			36
-#define NUMBER_OF_TIMERS 				10
+#define MAIN_TIMER_PRESCALER 				36
+#define NUMBER_OF_TIMERS 					11
 
-#define TIMER_DISPLAY_REFRESH 			0
-#define TIMER_BUTTON_POLL				1
-#define TIMER_ENCODER_POLL			 	2
-#define TIMER_SLAVE_POLL 				3
-#define TIMER_SLAVE_TIMEOUT 			4
-#define TIMER_MOTOR_ACCELERATE 			5
-#define TIMER_FAULT_SHOW 				6
-#define TIMER_LED_TRIGGER 		 		7
-#define TIMER_MOTOR_DECELERATE 			8
-#define TIMER_MOTOR_SPEED_MEAS 			9
+#define TIMER_DISPLAY_REFRESH 				0
+#define TIMER_BUTTON_POLL					1
+#define TIMER_ENCODER_POLL			 		2
+#define TIMER_SLAVE_POLL 					3
+#define TIMER_SLAVE_TIMEOUT 				4
+#define TIMER_MOTOR_ACCELERATE 				5
+#define TIMER_FAULT_SHOW 					6
+#define TIMER_LED_TRIGGER 		 			7
+#define TIMER_MOTOR_DECELERATE 				8
+#define TIMER_MOTOR_SPEED_MEAS 				9
+#define TIMER_BEFORE_DIRECTION_CHANGE		10
 
-#define SLAVE_POLL_INTERVAL 			100
-#define SLAVE_TIMEOUT_INTERVAL 			20
-#define MOTOR_SPEED_MEAS_INTERVAL 		100
+#define SLAVE_POLL_INTERVAL 				100
+#define SLAVE_TIMEOUT_INTERVAL 				20
+#define MOTOR_SPEED_MEAS_INTERVAL 			100
+#define BEFORE_DIRECTION_CHANGE_INTERVAL 	2000
 
 #define SLAVE_POLL_START 				timer.Assign(TIMER_SLAVE_POLL, SLAVE_POLL_INTERVAL, SlavePollGeneral)
 #define SLAVE_POLL_STOP					timer.Disable(TIMER_SLAVE_POLL);
@@ -82,5 +84,6 @@ extern void MotorDecelerate();
 extern void FaultShow();
 extern void LedTrigger();
 extern void MotorSpeedMeas();
+extern void BeforeDirectionChange();
 
 #endif /* TIMER_H_ */
