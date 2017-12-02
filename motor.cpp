@@ -26,12 +26,11 @@ Motor::Motor() : StateMachine(ST_MAX_STATES)
 // -------------------------------------------------------------
 	homing = 					true;
 	phaze_z_achieved = 			false;
-//	actual_pwm = 				35;
 	actual_position = 			0;
 	desired_position = 			0;
 	impulses_cnt = 				0;
 	distance = 					0;
-	_direction_encoder = 		0;//Forward;
+	_direction_encoder = 		0;
 	_last_encoder_val = 		0;
 	old_imp = 					0;
 }
