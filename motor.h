@@ -55,7 +55,8 @@ public:
 	void Start();
 	void Stop();
 	void EncoderIrq();
-	bool home_ok;
+	bool homing;
+	bool phaze_z_achieved;
 	uint8_t actual_pwm;
 	uint8_t minimum_pwm_val;
 	uint8_t minimum_pwm_val_percent;

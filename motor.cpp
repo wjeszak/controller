@@ -24,15 +24,16 @@ Motor::Motor() : StateMachine(ST_MAX_STATES)
 	maximum_pwm_val_percent =	70;		// 0 .. 100 (percent of 255)
 	offset =					100;
 // -------------------------------------------------------------
-	home_ok = false;
-	actual_pwm = 		35;
-	actual_position = 	0;
-	desired_position = 	0;
-	impulses_cnt = 		0;
-	distance = 			0;
-	_direction_encoder = 0;//Forward;
-	_last_encoder_val = 0;
-	old_imp = 0;
+	homing = 					true;
+	phaze_z_achieved = 			false;
+	actual_pwm = 				35;
+	actual_position = 			0;
+	desired_position = 			0;
+	impulses_cnt = 				0;
+	distance = 					0;
+	_direction_encoder = 		0;//Forward;
+	_last_encoder_val = 		0;
+	old_imp = 					0;
 }
 
 void Motor::Start()
@@ -78,15 +79,23 @@ void Motor::EV_Homing(MotorData* pdata)
 
 void Motor::NeedDeceleration()
 {
-	if((actual_position == motor_data.pos - pulses_to_decelerate)) //&& home_ok)
+	//if((actual_position == motor_data.pos - pulses_to_decelerate)) //&& home_ok)
 	//if((actual_position == motor_data.pos) && home_ok)
+	if(homing && phaze_z_achieved && actual_position == offset)
 	{
-		//timer.Disable(TIMER_MOTOR_ACCELERATE);
+		phaze_z_achieved = false;
+		timer.Disable(TIMER_MOTOR_ACCELERATE);			// if accelerating
 		timer.Assign(TIMER_MOTOR_DECELERATE, delta_time_decelerate, MotorDecelerate);
-		//Stop();
 		Event(ST_DECELERATION, NULL);
+		//return;
 	}
-	if(actual_position == desired_position) Stop();
+
+	if(homing && _direction_encoder == Backward && actual_position == offset)
+	{
+		homing = false;
+		Stop();
+		Event(ST_HOME, NULL);
+	}
 }
 
 void Motor::EV_PhaseZ(MotorData* pdata)
@@ -97,9 +106,7 @@ void Motor::EV_PhaseZ(MotorData* pdata)
         TRANSITION_MAP_ENTRY(ST_HOME)				// ST_RUNNING
     END_TRANSITION_MAP(pdata)
 	actual_position = 0;
-    timer.Disable(TIMER_MOTOR_ACCELERATE);
-    timer.Assign(TIMER_MOTOR_DECELERATE, delta_time_decelerate, MotorDecelerate);
-    Event(ST_DECELERATION, NULL);
+    phaze_z_achieved = true;
 }
 
 void Motor::EV_RunToPosition(MotorData* pdata)
@@ -118,7 +125,6 @@ void Motor::EV_RunToPosition(MotorData* pdata)
 		mb.Write(IO_INFORMATIONS, (1 << 0) | (1 << 3));
 		ComputeDirection();
 		Event(ST_ACCELERATION, NULL);
-		//Start();
 //	}
 }
 
@@ -183,16 +189,17 @@ void Motor::ST_Running(MotorData* pdata)
 
 void Motor::ST_RunningMinPwm(MotorData* pdata)
 {
-
+	if(homing)
+	{
+		Stop();
+		SetDirection(Backward);
+		SetMaxPwm(27);
+		Start();
+	}
 }
 
 void Motor::ST_Home(MotorData* pdata)
 {
-	//timer.Disable(TIMER_MOTOR_ACCELERATE); // if accelerating
-	//Stop();
-	mb.Write(ENCODER_CURRENT_VALUE, actual_position);
-	//home_ok = true;
-	//actual_position = 0;
 	mb.Write(IO_INFORMATIONS, (0 << 2) | (0 << 0) | (1 << 3));
 	dynabox.EV_HomingDone(&dynabox_data);
 }
@@ -250,13 +257,13 @@ void Motor::EncoderIrq()
 	uint8_t enc_b = bit_is_set(MOTOR_ENCODER_PIN, MOTOR_ENCODER_B_PIN);
 
 	_direction_encoder = _last_encoder_val ^ (enc_a | enc_b);
-	if(_direction_encoder == 1)
+	if(_direction_encoder == Forward)
 	{
 		actual_position++;
 		if(actual_position == ENCODER_ROWS) actual_position = 0;
 		impulses_cnt++;
 	}
-	if(_direction_encoder == 2)
+	if(_direction_encoder == Backward)
 	{
 		if(actual_position == 0) actual_position = ENCODER_ROWS;
 		actual_position--;
@@ -266,8 +273,8 @@ void Motor::EncoderIrq()
 	mb.Write(ENCODER_CURRENT_VALUE, motor.actual_position);
 	NeedDeceleration();
 	_last_encoder_val = (enc_a << 1) | (enc_b >> 1);
-	//if(motor.actual_position == motor_data.pos) motor.Stop();
-	if(!home_ok && (MOTOR_HOME_IRQ_PIN & (1 << MOTOR_HOME_IRQ_PPIN)))
+
+	if(homing && (MOTOR_HOME_IRQ_PIN & (1 << MOTOR_HOME_IRQ_PPIN)))
 	{
 		EV_PhaseZ();
 	}
