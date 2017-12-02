@@ -17,22 +17,22 @@ Motor::Motor() : StateMachine(ST_MAX_STATES)
 {
 	MOTOR_INIT;
 	EncoderAndHomeIrqInit();
-	delta_time_accelerate = 4;		// [ms]
-	delta_time_decelerate = 4;		// [ms]
-	pulses_to_decelerate = 	1000; 		// [pulses]
-	init_pwm_val = 			35;		// 0 .. 255
-	max_speed = 			70;		// 0 .. 100 (percent of 255)
+	delta_time_accelerate = 	4;		// [ms]
+	delta_time_decelerate = 	4;		// [ms]
+	pulses_to_decelerate = 		1000; 	// [pulses]
+	minimum_pwm_val_percent = 	27; 	// 0 .. 100 (percent of 255)
+	maximum_pwm_val_percent =	70;		// 0 .. 100 (percent of 255)
+	offset =					100;
 // -------------------------------------------------------------
 	home_ok = false;
-	actual_speed = 		35;
-	desired_speed = 	0;
+	actual_pwm = 		35;
 	actual_position = 	0;
 	desired_position = 	0;
 	impulses_cnt = 		0;
 	distance = 			0;
 	_direction_encoder = 0;//Forward;
 	_last_encoder_val = 0;
-	old_imp =0;
+	old_imp = 0;
 }
 
 void Motor::Start()
@@ -47,8 +47,8 @@ void Motor::Stop()
 // from timer
 void Motor::Accelerate()
 {
-	OCR2A = actual_speed++;
-	if(actual_speed == desired_speed)
+	OCR2A = actual_pwm++;
+	if(actual_pwm == maximum_pwm_val)
 	{
 		timer.Disable(TIMER_MOTOR_ACCELERATE);
 		Event(ST_RUNNING, NULL);
@@ -57,13 +57,12 @@ void Motor::Accelerate()
 // from timer
 void Motor::Decelerate()
 {
-	OCR2A = actual_speed--;
-	if(actual_speed == 70)
+	OCR2A = actual_pwm--;
+	if(actual_pwm == minimum_pwm_val)
 	{
 		timer.Disable(TIMER_MOTOR_DECELERATE);
-		//Event(ST_POSITION_ACHIEVED, NULL);
+		Event(ST_RUNNING_MIN_PWM, NULL);
 	}
-
 }
 
 void Motor::EV_Homing(MotorData* pdata)
@@ -75,11 +74,6 @@ void Motor::EV_Homing(MotorData* pdata)
     END_TRANSITION_MAP(pdata)
 	mb.Write(IO_INFORMATIONS, (1 << 2) | (1 << 0));
     SetDirection(Forward);
-}
-
-void Motor::GetStartPwmVal()
-{
-
 }
 
 void Motor::NeedDeceleration()
@@ -158,9 +152,14 @@ void Motor::ComputeDirection()
 		SetDirection(Backward);
 }
 
-void Motor::SetSpeed(uint8_t speed)
+void Motor::SetMinPwm(uint8_t pwm_val_percent)
 {
-	desired_speed = speed * 255 / 100; 	// percent
+	minimum_pwm_val = pwm_val_percent * 255 / 100; 	// percent
+}
+
+void Motor::SetMaxPwm(uint8_t pwm_val_percent)
+{
+	maximum_pwm_val = pwm_val_percent * 255 / 100; 	// percent
 	OCR2A = 0;
 }
 
@@ -171,14 +170,18 @@ void Motor::ST_Idle(MotorData* pdata)
 
 void Motor::ST_Acceleration(MotorData* pdata)
 {
-	SetSpeed(100);
-	//SetSpeed(init_pwm_val);
-	//actual_speed = 0;
+	SetMinPwm(minimum_pwm_val_percent);
+	SetMaxPwm(maximum_pwm_val_percent);
 	Start();
 	timer.Assign(TIMER_MOTOR_ACCELERATE, delta_time_accelerate, MotorAccelerate);
 }
 
 void Motor::ST_Running(MotorData* pdata)
+{
+
+}
+
+void Motor::ST_RunningMinPwm(MotorData* pdata)
 {
 
 }
@@ -210,31 +213,20 @@ void Motor::ST_PositionAchieved(MotorData* pdata)
 void Motor::SpeedMeasure()
 {
 	uint16_t delta = impulses_cnt;		// [imp / s] @ 100 ms timer
-	//uint16_t delta = impulses_cnt - old_imp;
-	//old_imp = impulses_cnt;
-	//display.Write(v);
-	//mb.Write(ACTUAL_SPEED, 50 * 255 / 100);		// [imp / 100 ms]
-	//actual_position = 3590;
-	// delta, pwm
+
 	uint8_t act_pos_hi = actual_position >> 8;
 	uint8_t act_pos_lo = actual_position & 0xFF;
 	uint8_t delta_hi = delta >> 8;
 	uint8_t delta_lo = delta & 0xFF;
-	//comm.EV_Send(act_pos_hi, act_pos_lo, false);
+
 	usart_data.frame[0] = act_pos_hi;
 	usart_data.frame[1] = act_pos_lo;
-	usart_data.frame[2] = actual_speed;
+	usart_data.frame[2] = actual_pwm;
 	usart_data.frame[3] = delta_hi;
 	usart_data.frame[4] = delta_lo;
 	usart_data.len = FRAME_LENGTH_REQUEST;
 	usart.SendFrame(&usart_data);
 
-	//if(GetState() == ST_ACCELERATION)
-//		if(v != 0)
-//		{
-//			display.Write(OCR2A);
-//			timer.Disable(TIMER_MOTOR_SPEED_MEAS);
-//		}
 	impulses_cnt = 0;
 }
 
@@ -270,10 +262,8 @@ void Motor::EncoderIrq()
 		actual_position--;
 		impulses_cnt++;
 	}
-	// need to measure speed
 
 	mb.Write(ENCODER_CURRENT_VALUE, motor.actual_position);
-	//display.Write(actual_position);
 	NeedDeceleration();
 	_last_encoder_val = (enc_a << 1) | (enc_b >> 1);
 	//if(motor.actual_position == motor_data.pos) motor.Stop();

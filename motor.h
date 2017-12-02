@@ -56,15 +56,18 @@ public:
 	void Stop();
 	void EncoderIrq();
 	bool home_ok;
-	uint8_t actual_speed;
-	uint8_t desired_speed;
+	uint8_t actual_pwm;
+	uint8_t minimum_pwm_val;
+	uint8_t minimum_pwm_val_percent;
+	uint8_t maximum_pwm_val;
+	uint8_t maximum_pwm_val_percent;
 	uint16_t actual_position;
 	uint16_t desired_position;
+	uint16_t offset;
 	// parameters
 	uint8_t delta_time_accelerate;
 	uint8_t delta_time_decelerate;
 	uint16_t pulses_to_decelerate;
-	uint8_t max_speed;
 	uint16_t impulses_cnt;
 	uint8_t init_pwm_val;
 	int16_t distance;
@@ -75,19 +78,21 @@ private:
 	void SetDirection(Direction dir);
 	void EncoderAndHomeIrqInit();
 	void NeedDeceleration();
-	void SetSpeed(uint8_t speed);
-	void GetStartPwmVal();
+	void SetMinPwm(uint8_t pwm_val_percent);
+	void SetMaxPwm(uint8_t pwm_val_percent);
 	void ST_Idle(MotorData* pdata);
 	void ST_Acceleration(MotorData* pdata);
 	void ST_Running(MotorData* pdata);
+	void ST_RunningMinPwm(MotorData* pdata);
 	void ST_Home(MotorData* pdata);
 	void ST_Deceleration(MotorData* pdata);
 	void ST_PositionAchieved(MotorData* pdata);
-	enum States {ST_IDLE = 0, ST_ACCELERATION, ST_RUNNING, ST_HOME, ST_DECELERATION, ST_POSITION_ACHIEVED, ST_MAX_STATES};
+	enum States {ST_IDLE = 0, ST_ACCELERATION, ST_RUNNING, ST_RUNNING_MIN_PWM, ST_HOME, ST_DECELERATION, ST_POSITION_ACHIEVED, ST_MAX_STATES};
 	BEGIN_STATE_MAP
 		STATE_MAP_ENTRY(&Motor::ST_Idle)
 		STATE_MAP_ENTRY(&Motor::ST_Acceleration)
 		STATE_MAP_ENTRY(&Motor::ST_Running)
+		STATE_MAP_ENTRY(&Motor::ST_RunningMinPwm)
 		STATE_MAP_ENTRY(&Motor::ST_Home)
 		STATE_MAP_ENTRY(&Motor::ST_Deceleration)
 		STATE_MAP_ENTRY(&Motor::ST_PositionAchieved)
