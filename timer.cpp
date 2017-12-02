@@ -156,9 +156,10 @@ void BeforeDirectionChange()
 	timer.Disable(TIMER_BEFORE_DIRECTION_CHANGE);
 	motor.SetDirection(motor.Backward);
 	motor.actual_pwm = motor.minimum_pwm_val;
-	motor.maximum_pwm_val = 36;
+// --------------------- UWAGA NA WARTOSC PWM + 1 ----------------------------------
+	motor.maximum_pwm_val = 51;
 	motor_data.pos = 0;
-	//motor.SetMaxPwm(13);
-	motor.EV_RunToPosition(&motor_data);
-//	timer.Assign(TIMER_MOTOR_ACCELERATE, motor.delta_time_accelerate, MotorAccelerate);
+	motor.EV_RunToZero(&motor_data);
+	//motor.tmp++;
+	//display.Write(motor.tmp);
 }

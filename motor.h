@@ -52,6 +52,7 @@ public:
 	void EV_PhaseZ(MotorData* pdata = NULL);
 	void EV_Homing(MotorData* pdata = NULL);
 	void EV_RunToPosition(MotorData* pdata);
+	void EV_RunToZero(MotorData* pdata);
 	void Start();
 	void Stop();
 	void EncoderIrq();
@@ -66,6 +67,7 @@ public:
 	uint16_t desired_position;
 	uint16_t offset;
 	uint16_t delta;
+	uint8_t tmp;
 	// parameters
 	uint8_t delta_time_accelerate;
 	uint8_t delta_time_decelerate;
@@ -75,13 +77,13 @@ public:
 	int16_t distance;
 	enum Direction {Forward = 1, Backward};
 	void SetDirection(Direction dir);
-	void SetMaxPwm(uint8_t pwm_val_percent);
+//	void SetMaxPwm(uint8_t pwm_val_percent);
 private:
 	void ComputeDistance();
 	void ComputeDirection();
 	void EncoderAndHomeIrqInit();
 	void NeedDeceleration();
-	void SetMinPwm(uint8_t pwm_val_percent);
+//	void SetMinPwm(uint8_t pwm_val_percent);
 	void ST_Idle(MotorData* pdata);
 	void ST_Acceleration(MotorData* pdata);
 	void ST_Running(MotorData* pdata);

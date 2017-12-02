@@ -20,10 +20,10 @@ Motor::Motor() : StateMachine(ST_MAX_STATES)
 	MOTOR_INIT;
 	EncoderAndHomeIrqInit();
 	delta_time_accelerate = 	4;		// [ms]
-	delta_time_decelerate = 	6;		// [ms]
+	delta_time_decelerate = 	4;		// [ms]
 	pulses_to_decelerate = 		1000; 	// [pulses]
-	minimum_pwm_val = 			35;
-	maximum_pwm_val =			255;
+	minimum_pwm_val = 			50;
+//	maximum_pwm_val =			255;
 	offset =					500;
 // -------------------------------------------------------------
 	homing = 					true;
@@ -36,6 +36,7 @@ Motor::Motor() : StateMachine(ST_MAX_STATES)
 	_direction_encoder = 		0;
 	_last_encoder_val = 		0;
 	old_imp = 					0;
+	tmp = 0;
 }
 
 void Motor::Start()
@@ -54,7 +55,8 @@ void Motor::Accelerate()
 	if(actual_pwm == maximum_pwm_val)
 	{
 		timer.Disable(TIMER_MOTOR_ACCELERATE);
-		Event(ST_RUNNING, NULL);
+		Event(ST_RUNNING, &motor_data);
+
 	}
 }
 // from timer
@@ -64,7 +66,7 @@ void Motor::Decelerate()
 	if(!homing && actual_pwm == minimum_pwm_val)
 	{
 		timer.Disable(TIMER_MOTOR_DECELERATE);
-		Event(ST_RUNNING_MIN_PWM, NULL);
+		Event(ST_RUNNING_MIN_PWM, &motor_data);
 	}
 	if(homing)
 	{
@@ -97,20 +99,22 @@ void Motor::NeedDeceleration()
 		phaze_z_achieved = false;
 		timer.Disable(TIMER_MOTOR_ACCELERATE);			// if accelerating
 		timer.Assign(TIMER_MOTOR_DECELERATE, delta_time_decelerate, MotorDecelerate);
-		Event(ST_DECELERATION, NULL);
+		Event(ST_DECELERATION, &motor_data);
 		actual_position = 0;
 	}
 
-	if(homing && _direction_encoder == Backward && actual_position == 0)
+	if(homing && _direction_encoder == Backward && actual_position - 20 == 0)
 	{
 		homing = false;
 		Stop();
-		Event(ST_HOME, NULL);
+		Event(ST_HOME, &motor_data);
 	//	return;
 	}
 
+	//if(!homing && actual_position == motor_data.pos)
 	if(!homing && actual_position == motor_data.pos - pulses_to_decelerate)
 	{
+		//Stop();
 		timer.Disable(TIMER_MOTOR_ACCELERATE);			// if accelerating
 		timer.Assign(TIMER_MOTOR_DECELERATE, delta_time_decelerate, MotorDecelerate);
 		Event(ST_DECELERATION, NULL);
@@ -128,6 +132,13 @@ void Motor::EV_PhaseZ(MotorData* pdata)
     actual_position = 0;
 }
 
+void Motor::EV_RunToZero(MotorData* pdata)
+{
+	mb.Write(ORDER_STATUS, ORDER_STATUS_PROCESSING);
+	mb.Write(IO_INFORMATIONS, (1 << 0) | (1 << 3));
+	Event(ST_ACCELERATION, &motor_data);
+}
+
 void Motor::EV_RunToPosition(MotorData* pdata)
 {
 //	if(home_ok)
@@ -142,8 +153,10 @@ void Motor::EV_RunToPosition(MotorData* pdata)
 //	    END_TRANSITION_MAP(pdata)
 		mb.Write(ORDER_STATUS, ORDER_STATUS_PROCESSING);
 		mb.Write(IO_INFORMATIONS, (1 << 0) | (1 << 3));
+		actual_pwm = minimum_pwm_val;
+		maximum_pwm_val = 173;
 		//ComputeDirection();
-		Event(ST_ACCELERATION, NULL);
+		Event(ST_ACCELERATION, &motor_data);
 //	}
 }
 
@@ -174,18 +187,8 @@ void Motor::ComputeDirection()
 	if(abs(distance) < (ENCODER_ROWS / 2))
 		SetDirection(Forward);
 	else
+		distance = ENCODER_ROWS - distance;
 		SetDirection(Backward);
-}
-
-void Motor::SetMinPwm(uint8_t pwm_val_percent)
-{
-	minimum_pwm_val = pwm_val_percent * 255 / 100; 	// percent
-}
-
-void Motor::SetMaxPwm(uint8_t pwm_val_percent)
-{
-	maximum_pwm_val = pwm_val_percent * 255 / 100; 	// percent
-	OCR2A = 0;
 }
 
 void Motor::ST_Idle(MotorData* pdata)
@@ -195,9 +198,6 @@ void Motor::ST_Idle(MotorData* pdata)
 
 void Motor::ST_Acceleration(MotorData* pdata)
 {
-	//SetMinPwm(minimum_pwm_val_percent);
-	//actual_pwm = minimum_pwm_val;
-	//maximum_pwm_val = minimum_pwm_val;
 	Start();
 	timer.Assign(TIMER_MOTOR_ACCELERATE, delta_time_accelerate, MotorAccelerate);
 }
@@ -223,7 +223,7 @@ void Motor::ST_RunningMinPwm(MotorData* pdata)
 		if(actual_position == motor_data.pos)
 		{
 			Stop();
-			Event(ST_POSITION_ACHIEVED, NULL);
+			Event(ST_POSITION_ACHIEVED, &motor_data);
 		}
 	}
 }
@@ -232,6 +232,7 @@ void Motor::ST_Home(MotorData* pdata)
 {
 	mb.Write(IO_INFORMATIONS, (0 << 2) | (0 << 0) | (1 << 3));
 	dynabox.EV_HomingDone(&dynabox_data);
+	Event(ST_IDLE, &motor_data);
 }
 
 void Motor::ST_Deceleration(MotorData* pdata)
@@ -250,7 +251,7 @@ void Motor::ST_PositionAchieved(MotorData* pdata)
 void Motor::SpeedMeasure()
 {
 	delta = impulses_cnt;		// [imp / s] @ 100 ms timer
-	display.Write(delta);
+	//display.Write(actual_pwm);
 	uint8_t act_pos_hi = actual_position >> 8;
 	uint8_t act_pos_lo = actual_position & 0xFF;
 	uint8_t delta_hi = delta >> 8;
@@ -306,7 +307,7 @@ void Motor::EncoderIrq()
 
 	if(homing && (MOTOR_HOME_IRQ_PIN & (1 << MOTOR_HOME_IRQ_PPIN)))
 	{
-		EV_PhaseZ();
+		EV_PhaseZ(&motor_data);
 	}
 }
 
