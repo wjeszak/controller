@@ -59,9 +59,9 @@ public:
 	bool phaze_z_achieved;
 	uint8_t actual_pwm;
 	uint8_t minimum_pwm_val;
-	uint8_t minimum_pwm_val_percent;
+//	uint8_t minimum_pwm_val_percent;
 	uint8_t maximum_pwm_val;
-	uint8_t maximum_pwm_val_percent;
+//	uint8_t maximum_pwm_val_percent;
 	uint16_t actual_position;
 	uint16_t desired_position;
 	uint16_t offset;

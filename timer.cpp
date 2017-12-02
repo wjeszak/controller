@@ -155,7 +155,10 @@ void BeforeDirectionChange()
 {
 	timer.Disable(TIMER_BEFORE_DIRECTION_CHANGE);
 	motor.SetDirection(motor.Backward);
-	motor.SetMaxPwm(13);
-	motor.Start();
-	timer.Assign(TIMER_MOTOR_ACCELERATE, motor.delta_time_accelerate, MotorAccelerate);
+	motor.actual_pwm = motor.minimum_pwm_val;
+	motor.maximum_pwm_val = 36;
+	motor_data.pos = 0;
+	//motor.SetMaxPwm(13);
+	motor.EV_RunToPosition(&motor_data);
+//	timer.Assign(TIMER_MOTOR_ACCELERATE, motor.delta_time_accelerate, MotorAccelerate);
 }

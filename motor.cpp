@@ -22,8 +22,8 @@ Motor::Motor() : StateMachine(ST_MAX_STATES)
 	delta_time_accelerate = 	4;		// [ms]
 	delta_time_decelerate = 	6;		// [ms]
 	pulses_to_decelerate = 		1000; 	// [pulses]
-	minimum_pwm_val_percent = 	27; 	// 0 .. 100 (percent of 255)
-	maximum_pwm_val_percent =	70;		// 0 .. 100 (percent of 255)
+	minimum_pwm_val = 			35;
+	maximum_pwm_val =			255;
 	offset =					500;
 // -------------------------------------------------------------
 	homing = 					true;
@@ -86,6 +86,8 @@ void Motor::EV_Homing(MotorData* pdata)
     END_TRANSITION_MAP(pdata)
 	mb.Write(IO_INFORMATIONS, (1 << 2) | (1 << 0));
     SetDirection(Forward);
+	actual_pwm = minimum_pwm_val;
+	maximum_pwm_val = 173;
 }
 
 void Motor::NeedDeceleration()
@@ -99,7 +101,7 @@ void Motor::NeedDeceleration()
 		actual_position = 0;
 	}
 
-	if(homing && _direction_encoder == Backward && actual_position == offset)
+	if(homing && _direction_encoder == Backward && actual_position == 0)
 	{
 		homing = false;
 		Stop();
@@ -140,7 +142,7 @@ void Motor::EV_RunToPosition(MotorData* pdata)
 //	    END_TRANSITION_MAP(pdata)
 		mb.Write(ORDER_STATUS, ORDER_STATUS_PROCESSING);
 		mb.Write(IO_INFORMATIONS, (1 << 0) | (1 << 3));
-		ComputeDirection();
+		//ComputeDirection();
 		Event(ST_ACCELERATION, NULL);
 //	}
 }
@@ -193,9 +195,9 @@ void Motor::ST_Idle(MotorData* pdata)
 
 void Motor::ST_Acceleration(MotorData* pdata)
 {
-	SetMinPwm(minimum_pwm_val_percent);
-	actual_pwm = minimum_pwm_val;
-	SetMaxPwm(maximum_pwm_val_percent);
+	//SetMinPwm(minimum_pwm_val_percent);
+	//actual_pwm = minimum_pwm_val;
+	//maximum_pwm_val = minimum_pwm_val;
 	Start();
 	timer.Assign(TIMER_MOTOR_ACCELERATE, delta_time_accelerate, MotorAccelerate);
 }
