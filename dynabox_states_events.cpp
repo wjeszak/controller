@@ -39,6 +39,7 @@ void Dynabox::ST_HomingOnEntry()
 {
 	for(uint8_t i = 0; i < 13; i++)
 		addr_command[i] = 0x80;
+
 	motor.EV_Homing();
 }
 
