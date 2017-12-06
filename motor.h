@@ -74,13 +74,13 @@ public:
 	uint16_t pulses_to_decelerate;
 	uint16_t impulses_cnt;
 	uint8_t init_pwm_val;
-	int16_t distance;
+	uint16_t distance;
 	enum Direction {Forward = 1, Backward};
 	void SetDirection(Direction dir);
 //	void SetMaxPwm(uint8_t pwm_val_percent);
 private:
-	void ComputeDistance();
 	void ComputeDirection();
+	void ComputeDistance();
 	void EncoderAndHomeIrqInit();
 	void NeedDeceleration();
 //	void SetMinPwm(uint8_t pwm_val_percent);
