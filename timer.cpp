@@ -163,3 +163,10 @@ void BeforeDirectionChange()
 	//motor.tmp++;
 	//display.Write(motor.tmp);
 }
+
+void TimerTmp()
+{
+	timer.Disable(TIMER_TMP);
+	motor_data.pos = 400 * 2;
+	motor.EV_RunToPosition(&motor_data);
+}

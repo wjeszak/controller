@@ -16,7 +16,7 @@
 #include <avr/io.h>
 
 #define MAIN_TIMER_PRESCALER 				36
-#define NUMBER_OF_TIMERS 					11
+#define NUMBER_OF_TIMERS 					12
 
 #define TIMER_DISPLAY_REFRESH 				0
 #define TIMER_BUTTON_POLL					1
@@ -29,6 +29,7 @@
 #define TIMER_MOTOR_DECELERATE 				8
 #define TIMER_MOTOR_SPEED_MEAS 				9
 #define TIMER_BEFORE_DIRECTION_CHANGE		10
+#define TIMER_TMP							11
 
 #define SLAVE_POLL_INTERVAL 				100
 #define SLAVE_TIMEOUT_INTERVAL 				20
@@ -85,5 +86,6 @@ extern void FaultShow();
 extern void LedTrigger();
 extern void MotorSpeedMeas();
 extern void BeforeDirectionChange();
+extern void TimerTmp();
 
 #endif /* TIMER_H_ */

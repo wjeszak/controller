@@ -113,6 +113,7 @@ void Dynabox::EV_UserAction(MachineData* pdata)
 	{
 		motor_data.pos = 400 * (mb.Read(LOCATIONS_NUMBER) - 1);
 		motor.EV_RunToPosition(&motor_data);
+		mb.Write(LOCATIONS_NUMBER, 0);
 	}
 //	if(mb.Read((uint8_t)ORDER_STATUS) == 1) display.Write(7843);
 	//	BEGIN_TRANSITION_MAP								// current state

@@ -41,12 +41,14 @@ Motor::Motor() : StateMachine(ST_MAX_STATES)
 
 void Motor::Start()
 {
+	actual_pwm = minimum_pwm_val;
 	MOTOR_START;
 }
 
 void Motor::Stop()
 {
 	MOTOR_STOP;
+	actual_pwm = 0;
 }
 // from timer
 void Motor::Accelerate()
@@ -70,6 +72,7 @@ void Motor::Decelerate()
 	}
 	if(homing)
 	{
+		//if(actual_pwm > 0) {}
 		if(delta > 0 && actual_pwm > 0) {}
 		else
 		{
@@ -88,7 +91,7 @@ void Motor::EV_Homing(MotorData* pdata)
     END_TRANSITION_MAP(pdata)
 	mb.Write(IO_INFORMATIONS, (1 << 2) | (1 << 0));
     SetDirection(Forward);
-	actual_pwm = minimum_pwm_val;
+	//actual_pwm = minimum_pwm_val;
 	maximum_pwm_val = 173;
 }
 
@@ -153,9 +156,10 @@ void Motor::EV_RunToPosition(MotorData* pdata)
 //	    END_TRANSITION_MAP(pdata)
 		mb.Write(ORDER_STATUS, ORDER_STATUS_PROCESSING);
 		mb.Write(IO_INFORMATIONS, (1 << 0) | (1 << 3));
-		actual_pwm = minimum_pwm_val;
+		//actual_pwm = minimum_pwm_val;
 		maximum_pwm_val = 173;
-		//ComputeDirection();
+		ComputeDirection();
+
 		Event(ST_ACCELERATION, &motor_data);
 //	}
 }
@@ -179,6 +183,7 @@ void Motor::SetDirection(Direction dir)
 void Motor::ComputeDistance()
 {
 	distance = (motor_data.pos - actual_position) % ENCODER_ROWS;
+	//display.Write(distance);
 }
 
 void Motor::ComputeDirection()
@@ -193,7 +198,7 @@ void Motor::ComputeDirection()
 
 void Motor::ST_Idle(MotorData* pdata)
 {
-
+	//timer.Assign(TIMER_TMP, 5000, TimerTmp);
 }
 
 void Motor::ST_Acceleration(MotorData* pdata)
@@ -254,14 +259,18 @@ void Motor::SpeedMeasure()
 	//display.Write(actual_pwm);
 	uint8_t act_pos_hi = actual_position >> 8;
 	uint8_t act_pos_lo = actual_position & 0xFF;
-	uint8_t delta_hi = delta >> 8;
-	uint8_t delta_lo = delta & 0xFF;
+	uint8_t dist_hi = distance >> 8;
+	uint8_t dist_lo = distance & 0xFF;
+	//uint8_t delta_hi = delta >> 8;
+	//uint8_t delta_lo = delta & 0xFF;
 
 	usart_data.frame[0] = act_pos_hi;
 	usart_data.frame[1] = act_pos_lo;
 	usart_data.frame[2] = actual_pwm;
-	usart_data.frame[3] = delta_hi;
-	usart_data.frame[4] = delta_lo;
+	usart_data.frame[3] = dist_hi;
+	usart_data.frame[4] = dist_lo;
+	//usart_data.frame[3] = delta_hi;
+	//usart_data.frame[4] = delta_lo;
 	usart_data.len = FRAME_LENGTH_REQUEST;
 	usart.SendFrame(&usart_data);
 
