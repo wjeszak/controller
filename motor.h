@@ -60,9 +60,9 @@ public:
 	bool phaze_z_achieved;
 	uint8_t actual_pwm;
 	uint8_t minimum_pwm_val;
-//	uint8_t minimum_pwm_val_percent;
+	uint8_t minimum_pwm_val_forward;
+	uint8_t minimum_pwm_val_backward;
 	uint8_t maximum_pwm_val;
-//	uint8_t maximum_pwm_val_percent;
 	uint16_t actual_position;
 	uint16_t desired_position;
 	uint16_t offset;
@@ -75,6 +75,7 @@ public:
 	uint16_t impulses_cnt;
 	uint8_t init_pwm_val;
 	uint16_t distance;
+	uint8_t correction;
 	enum Direction {Forward = 1, Backward};
 	void SetDirection(Direction dir);
 //	void SetMaxPwm(uint8_t pwm_val_percent);

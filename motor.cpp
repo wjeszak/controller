@@ -20,9 +20,12 @@ Motor::Motor() : StateMachine(ST_MAX_STATES)
 	MOTOR_INIT;
 	EncoderAndHomeIrqInit();
 	delta_time_accelerate = 	4;		// [ms]
-	delta_time_decelerate = 	4;		// [ms]
-	pulses_to_decelerate = 		1000; 	// [pulses]
-	minimum_pwm_val = 			50;
+	delta_time_decelerate = 	16;		// [ms]
+	pulses_to_decelerate = 		2800; 	// [pulses]
+	minimum_pwm_val = 			0;
+	minimum_pwm_val_forward =	55;
+	minimum_pwm_val_backward = 	32;
+	correction = 				0;
 	offset =					500;
 // -------------------------------------------------------------
 	homing = 					true;
@@ -105,7 +108,7 @@ void Motor::NeedDeceleration()
 		actual_position = 0;
 	}
 
-	if(homing && _direction_encoder == Backward && actual_position - 20 == 0)
+	if(homing && _direction_encoder == Backward && actual_position - correction == 0)
 	{
 		homing = false;
 		Stop();
@@ -123,7 +126,7 @@ void Motor::NeedDeceleration()
 		Event(ST_DECELERATION, &motor_data);
 	}
 
-	if(!homing && distance == 20)
+	if(!homing && distance == correction)
 	//if(!homing && actual_position == motor_data.pos)
 	{
 		Stop();
@@ -177,10 +180,12 @@ void Motor::SetDirection(Direction dir)
 	case Forward:
 		MOTOR_PORT &= ~(1 << MOTOR_REV_PIN);
 		MOTOR_PORT |=  (1 << MOTOR_FWD_PIN);
+		minimum_pwm_val = minimum_pwm_val_forward;
 		break;
 	case Backward:
 		MOTOR_PORT &= ~(1 << MOTOR_FWD_PIN);
 		MOTOR_PORT |=  (1 << MOTOR_REV_PIN);
+		minimum_pwm_val = minimum_pwm_val_backward;
 		break;
 	}
 	_direction = dir;
@@ -203,12 +208,12 @@ void Motor::ComputeDirection()
 	}
 	else
 	{
-		if(dist < ENCODER_ROWS / 2)
+		if(abs(dist) < ENCODER_ROWS / 2)
 			SetDirection(Backward);
 		else
 			SetDirection(Forward);
 	}
-	display.Write(dist);
+	//display.Write(dist);
 }
 
 void Motor::ST_Idle(MotorData* pdata)
@@ -271,7 +276,7 @@ void Motor::ST_PositionAchieved(MotorData* pdata)
 void Motor::SpeedMeasure()
 {
 	delta = impulses_cnt;		// [imp / s] @ 100 ms timer
-	//display.Write(actual_pwm);
+	display.Write(actual_pwm);
 	uint8_t act_pos_hi = actual_position >> 8;
 	uint8_t act_pos_lo = actual_position & 0xFF;
 	uint8_t dist_hi = distance >> 8;
@@ -325,7 +330,7 @@ void Motor::EncoderIrq()
 		impulses_cnt++;
 	}
 
-	mb.Write(ENCODER_CURRENT_VALUE, motor.actual_position);
+	mb.Write(ENCODER_CURRENT_VALUE, motor.actual_position / 4);
 	NeedDeceleration();
 	_last_encoder_val = (enc_a << 1) | (enc_b >> 1);
 
