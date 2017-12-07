@@ -67,7 +67,6 @@ public:
 	uint16_t desired_position;
 	uint16_t offset;
 	uint16_t delta;
-	uint8_t tmp;
 	// parameters
 	uint8_t delta_time_accelerate;
 	uint8_t delta_time_decelerate;
@@ -78,13 +77,11 @@ public:
 	uint8_t correction;
 	enum Direction {Forward = 1, Backward};
 	void SetDirection(Direction dir);
-//	void SetMaxPwm(uint8_t pwm_val_percent);
 private:
 	void ComputeDirection();
 	void ComputeDistance();
 	void EncoderAndHomeIrqInit();
 	void NeedDeceleration();
-//	void SetMinPwm(uint8_t pwm_val_percent);
 	void ST_Idle(MotorData* pdata);
 	void ST_Acceleration(MotorData* pdata);
 	void ST_Running(MotorData* pdata);

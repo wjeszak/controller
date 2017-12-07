@@ -86,6 +86,6 @@ extern void FaultShow();
 extern void LedTrigger();
 extern void MotorSpeedMeas();
 extern void BeforeDirectionChange();
-extern void TimerTmp();
+//extern void TimerTmp();
 
 #endif /* TIMER_H_ */
