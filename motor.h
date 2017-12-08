@@ -73,7 +73,7 @@ public:
 	uint16_t pulses_to_decelerate;
 	uint16_t impulses_cnt;
 	uint8_t init_pwm_val;
-	uint16_t distance;
+	int16_t distance;
 	uint8_t correction;
 	enum Direction {Forward = 1, Backward};
 	void SetDirection(Direction dir);
