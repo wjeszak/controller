@@ -21,9 +21,6 @@
 #define MOTOR_START 					TCCR2A |= (1 << COM2A1) | (1 << COM2A0);
 #define MOTOR_STOP						TCCR2A &= ~((1 << COM2A1) | (1 << COM2A0)); MOTOR_PORT |= (1 << MOTOR_EN_PIN);
 
-//#define MOTOR_BRAKE_ON 			MOTOR_PORT |= (1 << MOTOR_BRAKE_PIN)
-//#define MOTOR_BRAKE_OFF 			MOTOR_PORT &= ~(1 << MOTOR_BRAKE_PIN)
-
 #define MOTOR_ENCODER_DDR 				DDRB
 #define MOTOR_ENCODER_PORT 				PORTB
 #define MOTOR_ENCODER_PIN 				PINB
@@ -40,70 +37,68 @@ class MotorData : public EventData
 {
 public:
 	uint16_t pos;
+	uint8_t max_pwm_val;
 };
 
 class Motor : public StateMachine
 {
 public:
 	Motor();
+	void ComputeDirection();
+	void ComputeDistance();
+	void ComputeMaxPwm();
+	void EV_Start(MotorData* pdata);
+	void EV_Stop(MotorData* pdata);
 	void Accelerate();
 	void Decelerate();
 	void SpeedMeasure();
-	void EV_PhaseZ(MotorData* pdata = NULL);
-	void EV_Homing(MotorData* pdata = NULL);
-	void EV_RunToPosition(MotorData* pdata);
-	void EV_RunToZero(MotorData* pdata);
-	void Start();
-	void Stop();
+	void EV_PhaseZ(MotorData* pdata);
 	void EncoderIrq();
 	bool homing;
-	bool phaze_z_achieved;
-	uint8_t actual_pwm;
-	uint8_t minimum_pwm_val;
-	uint8_t minimum_pwm_val_forward;
-	uint8_t minimum_pwm_val_backward;
-	uint8_t maximum_pwm_val;
+
 	uint16_t actual_position;
 	uint16_t desired_position;
-	uint16_t offset;
 	uint16_t delta;
-	// parameters
-	uint8_t delta_time_accelerate;
-	uint8_t delta_time_decelerate;
-	uint16_t pulses_to_decelerate;
 	uint16_t impulses_cnt;
-	uint8_t init_pwm_val;
 	int16_t distance;
-	uint8_t correction;
+
 	enum Direction {Forward = 1, Backward};
 	void SetDirection(Direction dir);
 private:
-	void ComputeDirection();
-	void ComputeDistance();
 	void EncoderAndHomeIrqInit();
-	void NeedDeceleration();
-	void ST_Idle(MotorData* pdata);
+	void MovementManager();
+	void ST_NotRunning(MotorData* pdata);
 	void ST_Acceleration(MotorData* pdata);
 	void ST_Running(MotorData* pdata);
-	void ST_RunningMinPwm(MotorData* pdata);
-	void ST_Home(MotorData* pdata);
 	void ST_Deceleration(MotorData* pdata);
-	void ST_PositionAchieved(MotorData* pdata);
-	enum States {ST_IDLE = 0, ST_ACCELERATION, ST_RUNNING, ST_RUNNING_MIN_PWM, ST_HOME, ST_DECELERATION, ST_POSITION_ACHIEVED, ST_MAX_STATES};
+	void ST_RunningMinPwm(MotorData* pdata);
+	void EV_MaxPwmAchievied(MotorData* pdata);
+	void EV_Decelerate(MotorData* pdata);
+	void EV_MinPwmAchieved(MotorData* pdata);
+	enum States {ST_NOT_RUNNING = 0, ST_ACCELERATION, ST_RUNNING, ST_DECELERATION, ST_RUNNING_MIN_PWM, ST_MAX_STATES};
 	BEGIN_STATE_MAP
-		STATE_MAP_ENTRY(&Motor::ST_Idle)
+		STATE_MAP_ENTRY(&Motor::ST_NotRunning)
 		STATE_MAP_ENTRY(&Motor::ST_Acceleration)
 		STATE_MAP_ENTRY(&Motor::ST_Running)
-		STATE_MAP_ENTRY(&Motor::ST_RunningMinPwm)
-		STATE_MAP_ENTRY(&Motor::ST_Home)
 		STATE_MAP_ENTRY(&Motor::ST_Deceleration)
-		STATE_MAP_ENTRY(&Motor::ST_PositionAchieved)
+		STATE_MAP_ENTRY(&Motor::ST_RunningMinPwm)
 	END_STATE_MAP
+// ----------------------------------------------------------
+// parameters
+	uint8_t  _delta_time_accelerate;
+	uint8_t  _delta_time_decelerate;
+	uint16_t _pulses_to_decelerate;
+	uint8_t  _minimum_pwm_val;
+	uint8_t  _minimum_pwm_val_forward;
+	uint8_t  _minimum_pwm_val_backward;
+	uint8_t  _maximum_pwm_val;
+	uint8_t  _correction;
+	uint16_t _offset;
 
-	Direction _direction;
-	uint8_t _direction_encoder;
-	uint8_t _last_encoder_val;
-	uint16_t old_imp;
+	uint8_t  _actual_pwm_val;
+	uint8_t  _direction_encoder;
+	uint8_t  _last_encoder_val;
+	bool 	 _phaze_z_achieved;
 };
 
 extern Motor motor;

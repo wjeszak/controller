@@ -6,7 +6,7 @@
  */
 
 #include <avr/interrupt.h>
-#include <stdlib.h>				// abs()
+#include <stdlib.h>						// abs()
 #include "motor.h"
 #include "timer.h"
 #include "modbus_tcp.h"
@@ -18,17 +18,17 @@ Motor::Motor() : StateMachine(ST_MAX_STATES)
 {
 	MOTOR_INIT;
 	EncoderAndHomeIrqInit();
-	delta_time_accelerate = 	4;		// [ms]
-	delta_time_decelerate = 	16;		// [ms]
-	pulses_to_decelerate = 		2800; 	// [pulses]
-	minimum_pwm_val = 			0;
-	minimum_pwm_val_forward =	55;
-	minimum_pwm_val_backward = 	32;
-	correction = 				20;
-	offset =					500;
+	_delta_time_accelerate = 	4;		// [ms]
+	_delta_time_decelerate = 	16;		// [ms]
+	_pulses_to_decelerate = 	2800; 	// [pulses]
+	_minimum_pwm_val = 			0;
+	_minimum_pwm_val_forward =	55;
+	_minimum_pwm_val_backward = 32;
+	_correction = 				20;
+	_offset =					500;
 // -------------------------------------------------------------
 	homing = 					true;
-	phaze_z_achieved = 			false;
+	_phaze_z_achieved = 		false;
 	actual_position = 			0;
 	desired_position = 			0;
 	impulses_cnt = 				0;
@@ -36,138 +36,158 @@ Motor::Motor() : StateMachine(ST_MAX_STATES)
 	distance = 					0;
 	_direction_encoder = 		0;
 	_last_encoder_val = 		0;
-	old_imp = 					0;
 }
-
-void Motor::Start()
-{
-	actual_pwm = minimum_pwm_val;
-	MOTOR_START;
-}
-
-void Motor::Stop()
+// ------------------------------------- States -------------------------------------
+void Motor::ST_NotRunning(MotorData* pdata)
 {
 	MOTOR_STOP;
-	actual_pwm = 0;
+	_actual_pwm_val = 0;
 }
+
+void Motor::ST_Acceleration(MotorData* pdata)
+{
+	_actual_pwm_val = _minimum_pwm_val;
+	_maximum_pwm_val = pdata->max_pwm_val;
+	MOTOR_START;
+	timer.Assign(TIMER_MOTOR_ACCELERATE, _delta_time_accelerate, MotorAccelerate);
+	mb.Write(ORDER_STATUS, ORDER_STATUS_PROCESSING);
+	mb.Write(IO_INFORMATIONS, (1 << 0) | (1 << 3));
+}
+
 // from timer
 void Motor::Accelerate()
 {
-	OCR2A = actual_pwm++;
-	if(actual_pwm == maximum_pwm_val)
+	OCR2A = _actual_pwm_val++;
+	if(_actual_pwm_val == _maximum_pwm_val)
 	{
-		timer.Disable(TIMER_MOTOR_ACCELERATE);
-		Event(ST_RUNNING, &motor_data);
+		EV_MaxPwmAchievied(&motor_data);
 	}
 }
+
+void Motor::ST_Running(MotorData* pdata)
+{
+	timer.Disable(TIMER_MOTOR_ACCELERATE);
+}
+
+void Motor::ST_Deceleration(MotorData* pdata)
+{
+	timer.Disable(TIMER_MOTOR_ACCELERATE);			// if accelerating
+	timer.Assign(TIMER_MOTOR_DECELERATE, _delta_time_decelerate, MotorDecelerate);
+}
+
+void Motor::ST_RunningMinPwm(MotorData* pdata)
+{
+	timer.Disable(TIMER_MOTOR_DECELERATE);
+}
+// ------------------------------------- Public events -------------------------------------
+void Motor::EV_Start(MotorData* pdata)
+{
+	BEGIN_TRANSITION_MAP							// current state
+		TRANSITION_MAP_ENTRY(ST_ACCELERATION)		// ST_NOT_RUNNING
+        TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)		// ST_ACCELERATION
+        TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)		// ST_RUNNING
+		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)		// ST_DECELERATION
+		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)		// ST_RUNNING_MIN_PWM
+	END_TRANSITION_MAP(pdata)
+}
+
+void Motor::EV_Stop(MotorData* pdata)
+{
+	BEGIN_TRANSITION_MAP							// current state
+		TRANSITION_MAP_ENTRY(ST_NOT_RUNNING)		// ST_NOT_RUNNING
+        TRANSITION_MAP_ENTRY(ST_NOT_RUNNING)		// ST_ACCELERATION
+        TRANSITION_MAP_ENTRY(ST_NOT_RUNNING)		// ST_RUNNING
+		TRANSITION_MAP_ENTRY(ST_NOT_RUNNING)		// ST_DECELERATION
+		TRANSITION_MAP_ENTRY(ST_NOT_RUNNING)		// ST_RUNNING_MIN_PWM
+	END_TRANSITION_MAP(pdata)
+}
+// ------------------------------------- Private events -------------------------------------
+void Motor::EV_MaxPwmAchievied(MotorData* pdata)
+{
+	BEGIN_TRANSITION_MAP							// current state
+		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)		// ST_NOT_RUNNING
+        TRANSITION_MAP_ENTRY(ST_RUNNING)			// ST_ACCELERATION
+        TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)		// ST_RUNNING
+		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)		// ST_DECELERATION
+		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)		// ST_RUNNING_MIN_PWM
+	END_TRANSITION_MAP(pdata)
+}
+
+void Motor::EV_Decelerate(MotorData* pdata)
+{
+	BEGIN_TRANSITION_MAP							// current state
+		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)		// ST_NOT_RUNNING
+        TRANSITION_MAP_ENTRY(ST_DECELERATION)		// ST_ACCELERATION
+        TRANSITION_MAP_ENTRY(ST_DECELERATION)		// ST_RUNNING
+		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)		// ST_DECELERATION
+		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)		// ST_RUNNING_MIN_PWM
+	END_TRANSITION_MAP(pdata)
+}
+
+void Motor::EV_MinPwmAchieved(MotorData* pdata)
+{
+	BEGIN_TRANSITION_MAP							// current state
+		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)		// ST_NOT_RUNNING
+        TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)		// ST_ACCELERATION
+        TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)		// ST_RUNNING
+		TRANSITION_MAP_ENTRY(ST_RUNNING_MIN_PWM)	// ST_DECELERATION
+		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)		// ST_RUNNING_MIN_PWM
+	END_TRANSITION_MAP(pdata)
+}
+
 // from timer
 void Motor::Decelerate()
 {
-	OCR2A = actual_pwm--;
-	if(!homing && actual_pwm == minimum_pwm_val)
-	{
-		timer.Disable(TIMER_MOTOR_DECELERATE);
-		Event(ST_RUNNING_MIN_PWM, &motor_data);
-	}
+	OCR2A = _actual_pwm_val--;
 	if(homing)
 	{
-		if(delta > 0 && actual_pwm > 0) {}
+		if(delta > 0 && _actual_pwm_val > 0) {}
 		else
 		{
 			timer.Disable(TIMER_MOTOR_DECELERATE);
 			timer.Assign(TIMER_BEFORE_DIRECTION_CHANGE, BEFORE_DIRECTION_CHANGE_INTERVAL, BeforeDirectionChange);
 		}
 	}
+	if(!homing && _actual_pwm_val == _minimum_pwm_val)
+	{
+		EV_MinPwmAchieved(&motor_data);
+	}
 }
 
-void Motor::EV_Homing(MotorData* pdata)
-{
-//    BEGIN_TRANSITION_MAP							// current state
-//        TRANSITION_MAP_ENTRY(ST_ACCELERATION)		// ST_IDLE
-//        TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)		// ST_ACCELERATION
-//        TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)		// ST_RUNNING
-//    END_TRANSITION_MAP(pdata)
-	mb.Write(IO_INFORMATIONS, (1 << 2) | (1 << 0));
-    maximum_pwm_val = 173;
-	SetDirection(Forward);
-	Event(ST_ACCELERATION, &motor_data);
-}
-
-void Motor::NeedDeceleration()
+void Motor::MovementManager()
 {
 	ComputeDistance();
-	if(homing && phaze_z_achieved && actual_position == offset)
+	if(homing && _phaze_z_achieved && actual_position == _offset)
 	{
-		phaze_z_achieved = false;
-		timer.Disable(TIMER_MOTOR_ACCELERATE);			// if accelerating
-		timer.Assign(TIMER_MOTOR_DECELERATE, delta_time_decelerate, MotorDecelerate);
-		Event(ST_DECELERATION, &motor_data);
+		_phaze_z_achieved = false;
 		actual_position = 0;
+		EV_Decelerate(&motor_data);
 	}
 
-	if(homing && _direction_encoder == Backward && actual_position - correction == 0)
+	if(homing && _direction_encoder == Backward && actual_position == _correction)
 	{
 		homing = false;
-		Stop();
-		Event(ST_HOME, &motor_data);
-	//	return;
+		EV_Stop(&motor_data);
+		dynabox.EV_HomingDone(&dynabox_data);
 	}
 
-	if(!homing && abs(distance) <= pulses_to_decelerate && GetState() != ST_RUNNING_MIN_PWM && actual_pwm == maximum_pwm_val)
+	if(!homing && abs(distance) <= _pulses_to_decelerate && GetState() != ST_RUNNING_MIN_PWM && _actual_pwm_val == _maximum_pwm_val)
 	{
-		timer.Disable(TIMER_MOTOR_ACCELERATE);			// if accelerating
-		timer.Assign(TIMER_MOTOR_DECELERATE, delta_time_decelerate, MotorDecelerate);
-		Event(ST_DECELERATION, &motor_data);
+		EV_Decelerate(&motor_data);
 	}
 
-	if(!homing && distance == correction)
+	if(!homing && distance == _correction)
 	{
-		Stop();
-		Event(ST_POSITION_ACHIEVED, &motor_data);
+		EV_Stop(&motor_data);
+		dynabox.EV_PositionAchieved(&dynabox_data);
+		motor_data.pos = 0;
 	}
 }
 
 void Motor::EV_PhaseZ(MotorData* pdata)
 {
-	// usunac ponizsza tablice ? niepotrzebnie wchodzi na chwile
-	// w stan ST_HOME!
-//	BEGIN_TRANSITION_MAP							// current state
-//        TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)		// ST_IDLE
-//        TRANSITION_MAP_ENTRY(ST_HOME)				// ST_ACCELERATION
-//        TRANSITION_MAP_ENTRY(ST_HOME)				// ST_RUNNING
-//    END_TRANSITION_MAP(pdata)
-    phaze_z_achieved = true;
+    _phaze_z_achieved = true;
     actual_position = 0;
-}
-
-void Motor::EV_RunToZero(MotorData* pdata)
-{
-	mb.Write(ORDER_STATUS, ORDER_STATUS_PROCESSING);
-	mb.Write(IO_INFORMATIONS, (1 << 0) | (1 << 3));
-	Event(ST_ACCELERATION, &motor_data);
-}
-
-void Motor::EV_RunToPosition(MotorData* pdata)
-{
-//	if(home_ok)
-//	{
-//		BEGIN_TRANSITION_MAP						// current state
-//			TRANSITION_MAP_ENTRY(ST_ACCELERATION)	// ST_IDLE
-//			TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED) 	// ST_ACCELERATION
-//			TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)	// ST_RUNNING
-//			TRANSITION_MAP_ENTRY(ST_ACCELERATION)	// ST_HOME
-//			TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)	// ST_DECELERATION
-//			TRANSITION_MAP_ENTRY(ST_ACCELERATION)	// ST_POSITION_ACHIEVED
-//	    END_TRANSITION_MAP(pdata)
-		mb.Write(ORDER_STATUS, ORDER_STATUS_PROCESSING);
-		mb.Write(IO_INFORMATIONS, (1 << 0) | (1 << 3));
-		ComputeDirection();
-		ComputeDistance();
-		if(distance < 120 * 4) maximum_pwm_val = 130;
-		if(distance >= 120 * 4 && distance < 220 * 4) maximum_pwm_val = 155;
-		if(distance > 220 * 4) maximum_pwm_val = 173;
-		Event(ST_ACCELERATION, &motor_data);
-//	}
 }
 
 void Motor::SetDirection(Direction dir)
@@ -177,15 +197,14 @@ void Motor::SetDirection(Direction dir)
 	case Forward:
 		MOTOR_PORT &= ~(1 << MOTOR_REV_PIN);
 		MOTOR_PORT |=  (1 << MOTOR_FWD_PIN);
-		minimum_pwm_val = minimum_pwm_val_forward;
+		_minimum_pwm_val = _minimum_pwm_val_forward;
 		break;
 	case Backward:
 		MOTOR_PORT &= ~(1 << MOTOR_FWD_PIN);
 		MOTOR_PORT |=  (1 << MOTOR_REV_PIN);
-		minimum_pwm_val = minimum_pwm_val_backward;
+		_minimum_pwm_val = _minimum_pwm_val_backward;
 		break;
 	}
-	_direction = dir;
 }
 
 void Motor::ComputeDistance()
@@ -217,71 +236,19 @@ void Motor::ComputeDirection()
 		else
 			SetDirection(Forward);
 	}
-	//display.Write(dist);
 }
 
-void Motor::ST_Idle(MotorData* pdata)
+void Motor::ComputeMaxPwm()
 {
-
-}
-
-void Motor::ST_Acceleration(MotorData* pdata)
-{
-	Start();
-	timer.Assign(TIMER_MOTOR_ACCELERATE, delta_time_accelerate, MotorAccelerate);
-}
-
-void Motor::ST_Running(MotorData* pdata)
-{
-
-}
-
-void Motor::ST_RunningMinPwm(MotorData* pdata)
-{
-	if(homing)
-	{
-		//if(delta != 0) actual_pwm--;
-		//if(delta == 0) Stop();
-		//SetDirection(Backward);
-		//SetMaxPwm(27);
-		//Start();
-	}
-
-	//if(!homing)
-	//{
-	//	if(actual_position == motor_data.pos)
-	//	{
-	//		Stop();
-	//		Event(ST_POSITION_ACHIEVED, &motor_data);
-	//	}
-	//}
-}
-
-void Motor::ST_Home(MotorData* pdata)
-{
-	mb.Write(IO_INFORMATIONS, (0 << 2) | (0 << 0) | (1 << 3));
-	dynabox.EV_HomingDone(&dynabox_data);
-	Event(ST_IDLE, &motor_data);
-}
-
-void Motor::ST_Deceleration(MotorData* pdata)
-{
-
-}
-
-void Motor::ST_PositionAchieved(MotorData* pdata)
-{
-//	timer.Disable(TIMER_MOTOR_DECELERATE);
-	motor_data.pos = 0;
-	mb.Write(ORDER_STATUS, ORDER_STATUS_END_OF_MOVEMENT);
-	mb.Write(IO_INFORMATIONS, (0 << 0) | (1 << 3));
-	dynabox.EV_PositionAchieved(&dynabox_data);
+	if(distance < 120 * 4) motor_data.max_pwm_val = 130;
+	if(distance >= 120 * 4 && distance < 220 * 4) motor_data.max_pwm_val = 155;
+	if(distance > 220 * 4) motor_data.max_pwm_val = 173;
 }
 
 void Motor::SpeedMeasure()
 {
 	delta = impulses_cnt;		// [imp / s] @ 100 ms timer
-	display.Write(actual_pwm);
+	display.Write(_actual_pwm_val);
 	uint8_t act_pos_hi = actual_position >> 8;
 	uint8_t act_pos_lo = actual_position & 0xFF;
 	uint8_t dist_hi = distance >> 8;
@@ -291,7 +258,7 @@ void Motor::SpeedMeasure()
 
 	usart_data.frame[0] = act_pos_hi;
 	usart_data.frame[1] = act_pos_lo;
-	usart_data.frame[2] = actual_pwm;
+	usart_data.frame[2] = _actual_pwm_val;
 
 	usart_data.frame[3] = dist_hi;
 	usart_data.frame[4] = dist_lo;
@@ -337,7 +304,7 @@ void Motor::EncoderIrq()
 	}
 
 	mb.Write(ENCODER_CURRENT_VALUE, motor.actual_position / 4);
-	NeedDeceleration();
+	MovementManager();
 	_last_encoder_val = (enc_a << 1) | (enc_b >> 1);
 
 	if(homing && (MOTOR_HOME_IRQ_PIN & (1 << MOTOR_HOME_IRQ_PPIN)))

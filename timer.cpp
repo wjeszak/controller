@@ -16,6 +16,7 @@
 #include "encoder.h"
 #include "machine.h"
 #include "dynabox.h"
+#include "modbus_tcp.h"
 
 Timer::Timer(T2Prescallers prescaller)
 {
@@ -154,17 +155,13 @@ void MotorSpeedMeas()
 void BeforeDirectionChange()
 {
 	timer.Disable(TIMER_BEFORE_DIRECTION_CHANGE);
+	mb.Write(ORDER_STATUS, ORDER_STATUS_PROCESSING);
+	mb.Write(IO_INFORMATIONS, (1 << 0) | (1 << 3));
 	motor.SetDirection(motor.Backward);
-// --------------------- UWAGA NA WARTOSC PWM + 1 ----------------------------------
-	motor.maximum_pwm_val = motor.minimum_pwm_val_backward + 1;
+// --------------------- ! UWAGA NA WARTOSC PWM ! ----------------------------------
+// motor_data.max_pwm_val = _minimum_pwm_val_backward + 1
+// --------------------- ! UWAGA NA WARTOSC PWM ! ----------------------------------
 	motor_data.pos = 0;
-	motor.EV_RunToZero(&motor_data);
+	motor_data.max_pwm_val = 33;
+	motor.EV_Start(&motor_data);
 }
-/*
-void TimerTmp()
-{
-	timer.Disable(TIMER_TMP);
-	motor_data.pos = 400 * 2;
-	motor.EV_RunToPosition(&motor_data);
-}
-*/

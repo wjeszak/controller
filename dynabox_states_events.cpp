@@ -39,8 +39,11 @@ void Dynabox::ST_HomingOnEntry()
 {
 	for(uint8_t i = 0; i < 13; i++)
 		addr_command[i] = 0x80;
-
-	motor.EV_Homing();
+// --------- !! stad tymczasowo zaczynamy --------------------
+	mb.Write(IO_INFORMATIONS, (1 << 2) | (1 << 0));
+	motor.SetDirection(motor.Forward);
+	motor_data.max_pwm_val = MAX_PWM_HOMING;
+	motor.EV_Start(&motor_data);
 }
 
 void Dynabox::ST_Homing(DynaboxData* pdata)
@@ -105,6 +108,8 @@ void Dynabox::EV_HomingDone(DynaboxData* pdata)
 {
 	for(uint8_t i = 0; i < 13; i++)
 		addr_command[i] = 0x00;
+	mb.Write(IO_INFORMATIONS, (0 << 2) | (0 << 0) | (1 << 3));
+	AddToQueue(ST_READY);
 	//AddToQueue(ST_SHOWING_ON_LED);
 }
 
@@ -113,7 +118,10 @@ void Dynabox::EV_UserAction(MachineData* pdata)
 	if(mb.Read(LOCATIONS_NUMBER) > 0)
 	{
 		motor_data.pos = 400 * (mb.Read(LOCATIONS_NUMBER) - 1);
-		motor.EV_RunToPosition(&motor_data);
+		motor.ComputeDirection();
+		motor.ComputeDistance();
+		motor.ComputeMaxPwm();
+		motor.EV_Start(&motor_data);
 		mb.Write(LOCATIONS_NUMBER, 0);
 	}
 //	if(mb.Read((uint8_t)ORDER_STATUS) == 1) display.Write(7843);
@@ -132,5 +140,6 @@ void Dynabox::EV_OnF8(DynaboxData* pdata)
 
 void Dynabox::EV_PositionAchieved(DynaboxData* pdata)
 {
-
+	mb.Write(ORDER_STATUS, ORDER_STATUS_END_OF_MOVEMENT);
+	mb.Write(IO_INFORMATIONS, (0 << 0) | (1 << 3));
 }

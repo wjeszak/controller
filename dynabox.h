@@ -38,12 +38,12 @@
 #define IO_NORMAL_OPERATION 			5
 #define IO_SWITCH_DOOR 					6
 
+#define MAX_PWM_HOMING 					173
+
 class DynaboxData : public MachineData
 {
 public:
 };
-
-
 
 class Dynabox : public Machine
 {
@@ -61,11 +61,10 @@ public:
 	void EV_LedTrigger();
 	void EV_HomingDone(DynaboxData* pdata);
 	void EV_UserAction(MachineData* pdata);
+	void EV_PositionAchieved(DynaboxData* pdata);
 	void EV_ReplyOK(MachineData* pdata);
 	void EV_Timeout(MachineData* pdata);
 	void EV_OnF8(DynaboxData* pdata);
-	// nowe
-	void EV_PositionAchieved(DynaboxData* pdata);
 private:
 	void ST_TestingLed(DynaboxData* pdata);				// 0
 	void ST_TestingElm(DynaboxData* pdata);				// 1
