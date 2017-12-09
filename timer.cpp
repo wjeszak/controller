@@ -167,3 +167,8 @@ void BeforeDirectionChange()
 	MOTOR_START;
 	motor.EV_MinPwmAchieved(&motor_data);
 }
+
+void Debug()
+{
+	motor.Debug();
+}

@@ -45,7 +45,7 @@ class Motor : public StateMachine
 public:
 	Motor();
 	void ComputeDirection();
-	void ComputeDistance();
+	int16_t ComputeDistance();
 	void ComputeMaxPwm();
 	void EV_Start(MotorData* pdata);
 	void EV_Stop(MotorData* pdata);
@@ -55,8 +55,8 @@ public:
 	void SpeedMeasure();
 	void EV_PhaseZ(MotorData* pdata);
 	void EncoderIrq();
+	void Debug();
 	bool homing;
-
 	uint16_t actual_position;
 	uint16_t desired_position;
 	uint16_t delta;

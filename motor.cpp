@@ -19,12 +19,12 @@ Motor::Motor() : StateMachine(ST_MAX_STATES)
 	MOTOR_INIT;
 	EncoderAndHomeIrqInit();
 	_delta_time_accelerate = 	4;		// [ms]
-	_delta_time_decelerate = 	16;		// [ms]
-	_pulses_to_decelerate = 	2800; 	// [pulses]
+	_delta_time_decelerate = 	10;		// [ms]
+	_pulses_to_decelerate = 	1200; 	// [pulses]
 	_minimum_pwm_val = 			0;
-	_minimum_pwm_val_forward =	55;
-	_minimum_pwm_val_backward = 32;
-	_correction = 				20;
+	_minimum_pwm_val_forward =	40;
+	_minimum_pwm_val_backward = 25;
+	_correction = 				0;
 	_offset =					500;
 // -------------------------------------------------------------
 	homing = 					true;
@@ -158,7 +158,7 @@ void Motor::Decelerate()
 
 void Motor::MovementManager()
 {
-	ComputeDistance();
+	distance = ComputeDistance();
 	if(homing && _phaze_z_achieved && actual_position == _offset)
 	{
 		_phaze_z_achieved = false;
@@ -172,8 +172,8 @@ void Motor::MovementManager()
 		EV_Stop(&motor_data);
 		dynabox.EV_HomingDone(&dynabox_data);
 	}
-
-	if(!homing && abs(distance) <= _pulses_to_decelerate && GetState() != ST_RUNNING_MIN_PWM && _actual_pwm_val == _maximum_pwm_val)
+	if(!homing && abs(distance) <= _pulses_to_decelerate)
+	//if(!homing && abs(distance) <= _pulses_to_decelerate && GetState() != ST_RUNNING_MIN_PWM && _actual_pwm_val == _maximum_pwm_val)
 	{
 		EV_Decelerate(&motor_data);
 	}
@@ -209,16 +209,22 @@ void Motor::SetDirection(Direction dir)
 	}
 }
 
-void Motor::ComputeDistance()
+int16_t Motor::ComputeDistance()
 {
-	distance = motor_data.pos - actual_position;
-	if(distance >= 0) {}
+	int16_t dist = motor_data.pos - actual_position;
+	if(dist >= 0)
+	{
+		if(dist < ENCODER_ROWS / 2) {}
+		else
+			dist = ENCODER_ROWS - motor_data.pos + actual_position;
+	}
 	else
 	{
-		if(abs(distance) < ENCODER_ROWS / 2) {}
+		if(abs(dist) < ENCODER_ROWS / 2) {}
 		else
-			distance = ENCODER_ROWS - actual_position + motor_data.pos;
+			dist = ENCODER_ROWS - actual_position + motor_data.pos;
 	}
+	return dist;
 }
 
 void Motor::ComputeDirection()
@@ -242,41 +248,35 @@ void Motor::ComputeDirection()
 
 void Motor::ComputeMaxPwm()
 {
-	if(distance < 120 * 4) motor_data.max_pwm_val = 130;
-	if(distance >= 120 * 4 && distance < 220 * 4) motor_data.max_pwm_val = 155;
-	if(distance > 220 * 4) motor_data.max_pwm_val = 173;
+	int16_t dist = ComputeDistance();
+	if(dist < 120 * 4) motor_data.max_pwm_val = 130;
+	if(dist >= 120 * 4 && dist < 220 * 4) motor_data.max_pwm_val = 155;
+	if(dist > 220 * 4) motor_data.max_pwm_val = 173;
 }
 
 void Motor::SpeedMeasure()
 {
 	delta = impulses_cnt;		// [imp / s] @ 100 ms timer
-	display.Write(_actual_pwm_val);
-	uint8_t act_pos_hi = actual_position >> 8;
-	uint8_t act_pos_lo = actual_position & 0xFF;
-	uint8_t dist_hi = distance >> 8;
-	uint8_t dist_lo = distance & 0xFF;
-	//uint8_t delta_hi = delta >> 8;
-	//uint8_t delta_lo = delta & 0xFF;
-
-	usart_data.frame[0] = act_pos_hi;
-	usart_data.frame[1] = act_pos_lo;
-	usart_data.frame[2] = _actual_pwm_val;
-
-	usart_data.frame[3] = dist_hi;
-	usart_data.frame[4] = dist_lo;
-	//usart_data.frame[3] = delta_hi;
-	//usart_data.frame[4] = delta_lo;
-	usart_data.len = FRAME_LENGTH_REQUEST;
-	usart.SendFrame(&usart_data);
 	if(GetState() == ST_RUNNING_MIN_PWM)
 	{
-		if(delta < 2)
+		if(delta < 3)
 		{
 			OCR2A = _actual_pwm_val++;
 		}
+/*		if(distance <= 400 && distance > 200 && delta > 2)
+		{
+			OCR2A = _actual_pwm_val--;
+		}
+		if(distance <= 200 && delta >= 2)
+		{
+			OCR2A = _actual_pwm_val--;
+		}
+*/
+
 	}
+	display.Write(delta);
 	impulses_cnt = 0;
-	display.Write(GetState());
+	//display.Write(GetState());
 }
 
 void Motor::EncoderAndHomeIrqInit()
@@ -325,4 +325,22 @@ void Motor::EncoderIrq()
 ISR(PCINT1_vect)
 {
 	motor.EncoderIrq();
+}
+
+void Motor::Debug()
+{
+	int16_t dist = ComputeDistance();
+	uint8_t act_pos_hi = actual_position >> 8;
+	uint8_t act_pos_lo = actual_position & 0xFF;
+	uint8_t dist_hi = dist >> 8;
+	uint8_t dist_lo = dist & 0xFF;
+	//uint8_t delta_hi = delta >> 8;
+	//uint8_t delta_lo = delta & 0xFF;
+	usart_data.frame[0] = act_pos_hi;
+	usart_data.frame[1] = act_pos_lo;
+	usart_data.frame[2] = _actual_pwm_val;
+	usart_data.frame[3] = dist_hi;
+	usart_data.frame[4] = dist_lo;
+	usart_data.len = FRAME_LENGTH_REQUEST;
+	usart.SendFrame(&usart_data);
 }

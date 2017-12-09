@@ -119,7 +119,7 @@ void Dynabox::EV_UserAction(MachineData* pdata)
 	{
 		motor_data.pos = 400 * (mb.Read(LOCATIONS_NUMBER) - 1);
 		motor.ComputeDirection();
-		motor.ComputeDistance();
+		//motor.ComputeDistance();
 		motor.ComputeMaxPwm();
 		motor.EV_Start(&motor_data);
 		mb.Write(LOCATIONS_NUMBER, 0);
