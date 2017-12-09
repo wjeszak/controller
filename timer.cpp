@@ -162,6 +162,8 @@ void BeforeDirectionChange()
 // motor_data.max_pwm_val = _minimum_pwm_val_backward + 1
 // --------------------- ! UWAGA NA WARTOSC PWM ! ----------------------------------
 	motor_data.pos = 0;
-	motor_data.max_pwm_val = 33;
-	motor.EV_Start(&motor_data);
+	//motor_data.max_pwm_val = 33;
+	OCR2A = 33;
+	MOTOR_START;
+	motor.EV_MinPwmAchieved(&motor_data);
 }

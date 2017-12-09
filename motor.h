@@ -49,6 +49,7 @@ public:
 	void ComputeMaxPwm();
 	void EV_Start(MotorData* pdata);
 	void EV_Stop(MotorData* pdata);
+	void EV_MinPwmAchieved(MotorData* pdata);
 	void Accelerate();
 	void Decelerate();
 	void SpeedMeasure();
@@ -74,7 +75,6 @@ private:
 	void ST_RunningMinPwm(MotorData* pdata);
 	void EV_MaxPwmAchievied(MotorData* pdata);
 	void EV_Decelerate(MotorData* pdata);
-	void EV_MinPwmAchieved(MotorData* pdata);
 	enum States {ST_NOT_RUNNING = 0, ST_ACCELERATION, ST_RUNNING, ST_DECELERATION, ST_RUNNING_MIN_PWM, ST_MAX_STATES};
 	BEGIN_STATE_MAP
 		STATE_MAP_ENTRY(&Motor::ST_NotRunning)

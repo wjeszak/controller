@@ -127,7 +127,7 @@ void Motor::EV_Decelerate(MotorData* pdata)
 void Motor::EV_MinPwmAchieved(MotorData* pdata)
 {
 	BEGIN_TRANSITION_MAP							// current state
-		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)		// ST_NOT_RUNNING
+		TRANSITION_MAP_ENTRY(ST_RUNNING_MIN_PWM)	// ST_NOT_RUNNING
         TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)		// ST_ACCELERATION
         TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)		// ST_RUNNING
 		TRANSITION_MAP_ENTRY(ST_RUNNING_MIN_PWM)	// ST_DECELERATION
@@ -145,7 +145,9 @@ void Motor::Decelerate()
 		else
 		{
 			timer.Disable(TIMER_MOTOR_DECELERATE);
+			Event(ST_NOT_RUNNING);
 			timer.Assign(TIMER_BEFORE_DIRECTION_CHANGE, BEFORE_DIRECTION_CHANGE_INTERVAL, BeforeDirectionChange);
+
 		}
 	}
 	if(!homing && _actual_pwm_val == _minimum_pwm_val)
@@ -266,8 +268,15 @@ void Motor::SpeedMeasure()
 	//usart_data.frame[4] = delta_lo;
 	usart_data.len = FRAME_LENGTH_REQUEST;
 	usart.SendFrame(&usart_data);
-
+	if(GetState() == ST_RUNNING_MIN_PWM)
+	{
+		if(delta < 2)
+		{
+			OCR2A = _actual_pwm_val++;
+		}
+	}
 	impulses_cnt = 0;
+	display.Write(GetState());
 }
 
 void Motor::EncoderAndHomeIrqInit()
