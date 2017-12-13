@@ -19,11 +19,11 @@ Motor::Motor() : StateMachine(ST_MAX_STATES)
 	MOTOR_INIT;
 	EncoderAndHomeIrqInit();
 	_delta_time_accelerate = 	4;		// [ms]
-	_delta_time_decelerate = 	10;		// [ms]
-	_pulses_to_decelerate = 	1200; 	// [pulses]
+	_delta_time_decelerate = 	12;//15;		// [ms]
+	_pulses_to_decelerate = 	1600;//2000; 	// [pulses]
 	_minimum_pwm_val = 			0;
 	_minimum_pwm_val_forward =	40;
-	_minimum_pwm_val_backward = 25;
+	_minimum_pwm_val_backward = 35;
 	_correction = 				0;
 	_offset =					500;
 // -------------------------------------------------------------
@@ -200,11 +200,13 @@ void Motor::SetDirection(Direction dir)
 		MOTOR_PORT &= ~(1 << MOTOR_REV_PIN);
 		MOTOR_PORT |=  (1 << MOTOR_FWD_PIN);
 		_minimum_pwm_val = _minimum_pwm_val_forward;
+		motor_data.max_pwm_val = 173;
 		break;
 	case Backward:
 		MOTOR_PORT &= ~(1 << MOTOR_FWD_PIN);
 		MOTOR_PORT |=  (1 << MOTOR_REV_PIN);
 		_minimum_pwm_val = _minimum_pwm_val_backward;
+		motor_data.max_pwm_val = 158;
 		break;
 	}
 }
@@ -249,9 +251,10 @@ void Motor::ComputeDirection()
 void Motor::ComputeMaxPwm()
 {
 	int16_t dist = ComputeDistance();
-	if(dist < 120 * 4) motor_data.max_pwm_val = 130;
-	if(dist >= 120 * 4 && dist < 220 * 4) motor_data.max_pwm_val = 155;
-	if(dist > 220 * 4) motor_data.max_pwm_val = 173;
+	//if(dist < 0) display.Write(1234);
+	if(abs(dist) < 120 * 4) motor_data.max_pwm_val = 130;
+	if(abs(dist) >= 120 * 4 && abs(dist) < 220 * 4) motor_data.max_pwm_val = 155;
+	//if(abs(dist) > 220 * 4) motor_data.max_pwm_val = 173;
 }
 
 void Motor::SpeedMeasure()
@@ -274,7 +277,7 @@ void Motor::SpeedMeasure()
 */
 
 	}
-	display.Write(delta);
+	display.Write(_actual_pwm_val);
 	impulses_cnt = 0;
 	//display.Write(GetState());
 }
