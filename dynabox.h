@@ -71,7 +71,7 @@ private:
 	void ST_PreparingToHoming(DynaboxData* pdata);		// 2
 	void ST_ShowingOnLed(DynaboxData* pdata);			// 3
 	void ST_ShowingOnLedOnExit();
-	void ST_HomingOnEntry();
+	void Entry_Homing();
 	void ST_Homing(DynaboxData* pdata);
 	void ST_Ready(DynaboxData* pdata);
 
@@ -112,7 +112,7 @@ private:
 		{Dest_Door, true,  NULL, &Dynabox::EV_NeedHoming},			// ST_TESTING_ELM
 		{Dest_Door, true,  NULL, &Dynabox::EV_PreparedToHoming},	// ST_PREPARING_TO_HOMING
 		{Dest_Led,  false, NULL, &Dynabox::EV_LedTrigger},			// ST_SHOWING_ON_LED
-		{Dest_Door, true,  &Dynabox::ST_HomingOnEntry, NULL},		// ST_HOMING
+		{Dest_Door, true,  &Dynabox::Entry_Homing, NULL},			// ST_HOMING
 //		{Dest_Door, true,  NULL, NULL}
 	};
 

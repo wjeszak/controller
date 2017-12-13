@@ -22,7 +22,7 @@ void Dynabox::ST_TestingLed(DynaboxData* pdata)
 
 void Dynabox::ST_TestingElm(DynaboxData* pdata)
 {
-//	comm.EV_Send(current_address + LED_ADDRESS_OFFSET, 0x0C, false);
+	comm.EV_Send(current_address + LED_ADDRESS_OFFSET, 0x0C, false);
 }
 
 void Dynabox::ST_PreparingToHoming(DynaboxData* pdata)
@@ -35,7 +35,7 @@ void Dynabox::ST_ShowingOnLed(DynaboxData* pdata)
 
 }
 
-void Dynabox::ST_HomingOnEntry()
+void Dynabox::Entry_Homing()
 {
 	for(uint8_t i = 0; i < 13; i++)
 		addr_command[i] = 0x80;
@@ -50,15 +50,15 @@ void Dynabox::ST_Homing(DynaboxData* pdata)
 {
 	mb.Write(current_address + 1, d->data);
 }
-
-void Dynabox::ST_ShowingOnLedOnExit()
-{
+//
+//void Dynabox::ST_ShowingOnLedOnExit()
+//{
 //	comm.EV_LedTrigger();
-}
+//}
 
 void Dynabox::ST_Ready(DynaboxData* pdata)
 {
-//	mb.Write(current_address + 1, d->data);
+	mb.Write(current_address + 1, d->data);
 }
 
 void Dynabox::ST_NotReady(DynaboxData* pdata)
@@ -109,8 +109,8 @@ void Dynabox::EV_HomingDone(DynaboxData* pdata)
 	for(uint8_t i = 0; i < 13; i++)
 		addr_command[i] = 0x00;
 	mb.Write(IO_INFORMATIONS, (0 << 2) | (0 << 0) | (1 << 3));
-	AddToQueue(ST_READY);
-	//AddToQueue(ST_SHOWING_ON_LED);
+	AddToQueue(ST_SHOWING_ON_LED);
+	//AddToQueue(ST_READY);
 }
 
 void Dynabox::EV_UserAction(MachineData* pdata)

@@ -147,7 +147,6 @@ void Motor::Decelerate()
 			timer.Disable(TIMER_MOTOR_DECELERATE);
 			Event(ST_NOT_RUNNING);
 			timer.Assign(TIMER_BEFORE_DIRECTION_CHANGE, BEFORE_DIRECTION_CHANGE_INTERVAL, BeforeDirectionChange);
-
 		}
 	}
 	if(!homing && _actual_pwm_val == _minimum_pwm_val)
@@ -277,7 +276,7 @@ void Motor::SpeedMeasure()
 */
 
 	}
-	display.Write(_actual_pwm_val);
+	//display.Write(_actual_pwm_val);
 	impulses_cnt = 0;
 	//display.Write(GetState());
 }
