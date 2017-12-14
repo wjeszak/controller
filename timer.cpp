@@ -112,7 +112,7 @@ void EncoderPoll()
 // TIMER_SLAVE_POLL
 void SlavePollGeneral()
 {
-	m->Poll();
+	m->StateManager();
 }
 
 // TIMER_SLAVE_TIMEOUT

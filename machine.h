@@ -35,7 +35,7 @@ public:
 	virtual void SaveParameters() {}
 	virtual void Init() {}
 	virtual void EV_EnterToConfig() {}
-	virtual void Poll() {}
+	virtual void StateManager() {}
 	virtual void EV_ReplyOK(MachineData* pdata) {}
 	virtual void EV_Timeout(MachineData* pdata) {}
 	virtual void EV_UserAction(MachineData* pdata) {}

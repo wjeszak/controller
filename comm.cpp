@@ -6,6 +6,8 @@
  */
 
 #include "comm.h"
+
+#include "dynabox_commands_faults.h"
 #include "timer.h"
 #include "usart.h"
 #include "machine.h"

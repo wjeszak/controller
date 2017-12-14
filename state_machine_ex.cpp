@@ -41,7 +41,7 @@ uint8_t StateMachineEx::GetFromQueue()
     return tmp_st;
 }
 
-void StateMachineEx::InternalEvent(uint8_t new_state, EventDataEx* pdata)
+void StateMachineEx::InternalEventEx(uint8_t new_state, EventDataEx* pdata)
 {
 	_event_generated = true;
 //	ChangeState(new_state);

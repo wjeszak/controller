@@ -27,7 +27,7 @@ public:
 	StateMachineEx(uint8_t max_states);
 	uint8_t GetState();
 	void ChangeState(uint8_t new_state);
-	void InternalEvent(uint8_t new_state, EventDataEx* pdata = NULL);
+	void InternalEventEx(uint8_t new_state, EventDataEx* pdata = NULL);
 	void EventEx(uint8_t new_state, EventDataEx* pdata = NULL);
 	void AddToQueue(uint8_t state);
 	uint8_t GetFromQueue();
@@ -56,7 +56,7 @@ const StateStructEx* GetStateMapEx() {\
 #define END_STATE_MAP_EX \
     }; \
     return &StateMapEx[0]; }
-
+// ------------------------------------------------------------
 // Transition map
 #define BEGIN_TRANSITION_MAP_EX \
 	const uint8_t Transitions[] = {\

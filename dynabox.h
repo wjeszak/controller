@@ -8,27 +8,9 @@
 #ifndef DYNABOX_H_
 #define DYNABOX_H_
 
+#include "dynabox_commands_faults.h"
 #include "machine.h"
 #include "motor.h"
-
-#define NUMBER_OF_FAULTS 				17
-#define NO_FAULT						0x00
-#define F01_LED							0x01
-#define F02_DOOR						0x02
-#define F03_OPTICAL_SWITCHES			0x03
-#define F04_DOOR_OPENED_TOO_FAR			0x04
-#define F05_ELECTROMAGNET				0x05
-#define F06_CLOSE_THE_DOOR				0x06
-#define F07_DOOR_NOT_OPEN				0x07
-#define F08_ILLEGAL_OPENING				0x08
-#define F10_MECHANICAL_WARNING			0x0A
-#define F11_MECHANICAL_FAULT			0x0B
-#define F12_POSITIONING					0x0C
-#define F13_MAIN_DOOR					0x0D
-#define F14_HOMING_FAILED				0x0E
-#define F15_ILLEGAL_ROTATION			0x0F
-#define F16_ORDER_REFUSED				0x10
-#define F17_24V_MISSSING				0x11
 
 #define IO_MOVING 						0
 #define IO_MOVING_DIRECTION 			1
@@ -52,7 +34,7 @@ public:
 	void LoadParameters();
 	void SaveParameters();
 	void Init();
-	void Poll();
+	void StateManager();
 	void EV_EnterToConfig();
 	void EV_TestLed(DynaboxData* pdata);				// 0
 	void EV_TestElm();									// 1
@@ -68,20 +50,22 @@ public:
 private:
 	void ST_TestingLed(DynaboxData* pdata);				// 0
 	void ST_TestingElm(DynaboxData* pdata);				// 1
-	void ST_PreparingToHoming(DynaboxData* pdata);		// 2
+	void ST_PreparingToMovement(DynaboxData* pdata);	// 2
 	void ST_ShowingOnLed(DynaboxData* pdata);			// 3
-	void ST_ShowingOnLedOnExit();
-	void Entry_Homing();
-	void ST_Homing(DynaboxData* pdata);
-	void ST_Ready(DynaboxData* pdata);
+	void ST_Homing(DynaboxData* pdata);					// 4
+	void ST_Ready(DynaboxData* pdata);					// 5
+	void ST_Movement(DynaboxData* pdata);				// 6
+	void ST_EndMovement(DynaboxData* pdata);			// 7
+	void ST_NotReady(DynaboxData* pdata);				// 8
 
-	void ST_NotReady(DynaboxData* pdata);
+	void Entry_Homing();
+
 	void ST_Config(DynaboxData* pdata);
-	enum States {ST_TESTING_LED, ST_TESTING_ELM, ST_PREPARING_TO_HOMING, ST_SHOWING_ON_LED, ST_HOMING, ST_READY, ST_MOVEMENT, ST_NOT_READY, ST_MAX_STATES};
+	enum States {ST_TESTING_LED, ST_TESTING_ELM, ST_PREPARING_TO_HOMING, ST_SHOWING_ON_LED, ST_HOMING, ST_READY, ST_MOVEMENT, ST_END_MOVEMENT, ST_NOT_READY, ST_MAX_STATES};
 	BEGIN_STATE_MAP_EX
 		STATE_MAP_ENTRY_EX(&Dynabox::ST_TestingLed)
 		STATE_MAP_ENTRY_EX(&Dynabox::ST_TestingElm)
-		STATE_MAP_ENTRY_EX(&Dynabox::ST_PreparingToHoming)
+		STATE_MAP_ENTRY_EX(&Dynabox::ST_PreparingToMovement)
 		STATE_MAP_ENTRY_EX(&Dynabox::ST_ShowingOnLed)
 		STATE_MAP_ENTRY_EX(&Dynabox::ST_Homing)
 		STATE_MAP_ENTRY_EX(&Dynabox::ST_Ready)
@@ -89,14 +73,35 @@ private:
 		STATE_MAP_ENTRY_EX(&Dynabox::ST_Config)
 	END_STATE_MAP_EX
 	// ---------------------------------------------------------
-	uint8_t GetDestAddr(uint8_t st);
 	void SetDestAddr(uint8_t addr);
+	uint8_t GetDestAddr(uint8_t st);
+	void SetCommand(uint8_t command); 	// common command for all slaves
 	void SetFaults(uint8_t st, uint8_t reply);
-	uint8_t faults_to_led_map[NUMBER_OF_FAULTS + 1];
+	uint8_t fault_to_led[NUMBER_OF_FAULTS + 1] =
+	{
+		0,										// not used
+		0,										// F01, impossible
+		COMM_LED_RED_1PULSE,					// F02
+		COMM_LED_RED_2PULSES,					// F03
+		COMM_LED_RED_ON,						// F04
+		COMM_LED_RED_3PULSES,					// F05
+		COMM_LED_GREEN_RED_BLINK, 				// F06
+		COMM_LED_GREEN_RED_BLINK,				// F07
+		COMM_LED_GREEN_RED_BLINK,				// F08
+		0,										// not used
+		0, 										// F10, not used
+		COMM_LED_RED_BLINK,						// F11
+		COMM_LED_RED_BLINK, 					// F12
+		COMM_LED_RED_ON, 						// F13
+		COMM_LED_RED_BLINK, 					// F14
+		0,										// F15, not used
+		0, 										// F16, not used
+		COMM_LED_RED_BLINK	 					// F17
+	};
 
 	enum Destination {Dest_Door, Dest_Led};
 
-	uint8_t addr_command[13];
+	uint8_t current_command[MACHINE_MAX_NUMBER_OF_DOORS];
 
 	struct StateProperties
 	{
@@ -106,7 +111,7 @@ private:
 		void (Dynabox::*on_exit)();
 	};
 
-	StateProperties state_prop[ST_MAX_STATES] =
+	StateProperties state_properties[ST_MAX_STATES] =
 	{
 		{Dest_Led,  true,  NULL, &Dynabox::EV_TestElm},				// ST_TESTING_LED
 		{Dest_Door, true,  NULL, &Dynabox::EV_NeedHoming},			// ST_TESTING_ELM
@@ -124,13 +129,20 @@ private:
 		uint8_t fault;
 		bool neg;
 	};
-	StateFault set_state_fault[3] =
+	StateFault reply_fault_set[10] =
 	{
-		{ST_TESTING_ELM, 0x01, NULL, F05_ELECTROMAGNET, false},
-		{ST_PREPARING_TO_HOMING, 0xC0, NULL, F06_CLOSE_THE_DOOR, true},
-		{ST_HOMING, 0xC0, &Dynabox::EV_OnF8, F08_ILLEGAL_OPENING, true}
+//		state 						reply fp 					fault						negation
+		{ST_TESTING_ELM, 			0x01, NULL, 				F05_ELECTROMAGNET, 			false},
+		{ST_PREPARING_TO_HOMING, 	0xC0, NULL, 				F06_CLOSE_THE_DOOR, 		true },
+		{ST_HOMING, 				0xC0, &Dynabox::EV_OnF8, 	F08_ILLEGAL_OPENING, 		true }
 	};
-	StateFault clear_state_fault[10];
+
+	StateFault reply_fault_clear[10] =
+	{
+		{ST_TESTING_ELM, 			0x01, NULL, 				F05_ELECTROMAGNET, 			false},
+		{ST_PREPARING_TO_HOMING, 	0xC0, NULL, 				F06_CLOSE_THE_DOOR, 		true },
+		{ST_HOMING, 				0xC0, &Dynabox::EV_OnF8, 	F08_ILLEGAL_OPENING, 		true }
+	};
 };
 
 extern Dynabox dynabox;
