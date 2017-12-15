@@ -1,32 +1,32 @@
 /*
- * stack.h
+ * tcp.h
  *
  *  Created on: 26 maj 2017
  *      Author: tomek
  */
 
-#ifndef STACK_H_
-#define STACK_H_
+#ifndef TCP_H_
+#define TCP_H_
 
 #include <inttypes.h>
 #include "state_machine.h"
 #include "enc28j60.h"
 
-class StackData : public EventData
+class TcpData : public EventData
 {
 public:
 	uint16_t len;
 };
 
-class Stack : public StateMachine
+class Tcp : public StateMachine
 {
 public:
-	Stack();
+	Tcp();
 	void Poll();
 	// Events
-	void EV_Syn(StackData* pdata);
-	void EV_Ack(StackData* pdata);
-	void EV_Psh(StackData* pdata);
+	void EV_Syn(TcpData* pdata);
+	void EV_Ack(TcpData* pdata);
+	void EV_Psh(TcpData* pdata);
 private:
 	uint8_t EthTypeIsArpMyIP(uint8_t* buf, uint16_t len);
 	uint8_t EthTypeIsIPMyIP(uint8_t* buf, uint16_t len);
@@ -46,16 +46,16 @@ private:
 	void MakeTcpAckWithDataNoFlags(uint8_t* buf, uint16_t dlen);
 
 	// States
-	void ST_Listen(StackData* pdata);
-	void ST_SynReceived(StackData* pdata);
-	void ST_Established(StackData* pdata);
-	void ST_Request(StackData* pdata);
+	void ST_Listen(TcpData* pdata);
+	void ST_SynReceived(TcpData* pdata);
+	void ST_Established(TcpData* pdata);
+	void ST_Request(TcpData* pdata);
 	enum States {ST_LISTEN = 0, ST_SYN_RECV, ST_ESTABLISHED, ST_REQUEST, ST_MAX_STATES};
 	BEGIN_STATE_MAP
-		STATE_MAP_ENTRY(&Stack::ST_Listen)
-		STATE_MAP_ENTRY(&Stack::ST_SynReceived)
-		STATE_MAP_ENTRY(&Stack::ST_Established)
-		STATE_MAP_ENTRY(&Stack::ST_Request)
+		STATE_MAP_ENTRY(&Tcp::ST_Listen)
+		STATE_MAP_ENTRY(&Tcp::ST_SynReceived)
+		STATE_MAP_ENTRY(&Tcp::ST_Established)
+		STATE_MAP_ENTRY(&Tcp::ST_Request)
 	END_STATE_MAP
 
 	uint8_t buf[MAX_PACKET_SIZE];
@@ -156,7 +156,7 @@ private:
 #define TCP_CHECKSUM_L_P 					0x33
 #define TCP_OPTIONS_P 						0x36
 
-extern Stack stack;
-extern StackData stack_data;
+extern Tcp tcp;
+extern TcpData tcp_data;
 
-#endif /* STACK_H_ */
+#endif /* TCP_H_ */

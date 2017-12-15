@@ -6,10 +6,10 @@
  */
 
 #include "modbus_tcp.h"
-#include "stack.h"
 #include "common.h"
 #include "dynabox.h"
 #include "display.h"
+#include "tcp.h"
 
 ModbusTCP::ModbusTCP()
 {
@@ -123,7 +123,7 @@ void ModbusTCP::ReadReply(uint8_t* frame)
 		frame[MODBUS_RES_TCP_DATA + 2 * i]       = hi(Registers[starting_address - MODBUS_TCP_ADDR_OFFSET + i]);
 		frame[MODBUS_RES_TCP_DATA + (2 * i) + 1] = lo(Registers[starting_address - MODBUS_TCP_ADDR_OFFSET + i]);
 	}
-	stack_data.len = MBAP_FUNCTION_BYTE_COUNT_LEN + (quantity * 2);
+	tcp_data.len = MBAP_FUNCTION_BYTE_COUNT_LEN + (quantity * 2);
 }
 
 void ModbusTCP::WriteReply(uint8_t *frame)
@@ -141,7 +141,7 @@ void ModbusTCP::WriteReply(uint8_t *frame)
 	{
 		Registers[starting_address - MODBUS_TCP_ADDR_OFFSET + i] = (hi(frame[MODBUS_REQ_TCP_REG_VAL_HI + 2 * i])) | (lo(frame[MODBUS_REQ_TCP_REG_VAL_LO + 2 * i]));
 	}
-	stack_data.len = 12;
+	tcp_data.len = 12;
 }
 
 void ModbusTCP::ErrorReply(uint8_t* frame, uint8_t error_code)
@@ -151,7 +151,7 @@ void ModbusTCP::ErrorReply(uint8_t* frame, uint8_t error_code)
 	frame[MODBUS_TCP_LENGTH_LO] = 3;
 	frame[MODBUS_TCP_FUNCTION] = function_code + 0x80;
 	frame[MODBUS_RES_TCP_BYTE_COUNT] = error_code;
-	stack_data.len = 9;
+	tcp_data.len = 9;
 }
 
 //void ModbusTCP::AnalizeMultipleRegisters()

@@ -9,8 +9,12 @@
 #define DYNABOX_COMMANDS_FAULTS_H_
 
 // door's commands
-#define COMM_DOOR_CHECK_ELECTROMAGNET 				0x01
-#define COMM_DOOR_CHECK_TRANSOPTORS_GET_STATUS 		0x80
+#define COMM_DOOR_CHECK_ELM			 				0x01
+#define COMM_DOOR_REPLY_ELM_OK 						0x00
+#define COMM_DOOR_REPLY_ELM_FAULT 					0x01
+
+#define COMM_DOOR_GET_STATUS 						0x80
+#define COMM_DOOR_REPLY_TRANSOPT_FAULT 				0xF0
 #define COMM_DOOR_SET_POSITION 						0xC0
 
 // led's commands

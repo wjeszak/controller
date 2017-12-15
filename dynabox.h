@@ -35,44 +35,60 @@ public:
 	void SaveParameters();
 	void Init();
 	void StateManager();
+// ---------------------------------- Public events ---------------------------
 	void EV_EnterToConfig();
-	void EV_TestLed(DynaboxData* pdata);				// 0
-	void EV_TestElm();									// 1
-	void EV_PreparedToHoming();
-	void EV_NeedHoming();
-	void EV_LedTrigger();
 	void EV_HomingDone(DynaboxData* pdata);
 	void EV_UserAction(MachineData* pdata);
 	void EV_PositionAchieved(DynaboxData* pdata);
+	void EV_LedTrigger();
 	void EV_ReplyOK(MachineData* pdata);
 	void EV_Timeout(MachineData* pdata);
 	void EV_OnF8(DynaboxData* pdata);
 private:
-	void ST_TestingLed(DynaboxData* pdata);				// 0
-	void ST_TestingElm(DynaboxData* pdata);				// 1
-	void ST_PreparingToMovement(DynaboxData* pdata);	// 2
-	void ST_ShowingOnLed(DynaboxData* pdata);			// 3
-	void ST_Homing(DynaboxData* pdata);					// 4
-	void ST_Ready(DynaboxData* pdata);					// 5
-	void ST_Movement(DynaboxData* pdata);				// 6
-	void ST_EndMovement(DynaboxData* pdata);			// 7
-	void ST_NotReady(DynaboxData* pdata);				// 8
-
-	void Entry_Homing();
-
-	void ST_Config(DynaboxData* pdata);
-	enum States {ST_TESTING_LED, ST_TESTING_ELM, ST_PREPARING_TO_HOMING, ST_SHOWING_ON_LED, ST_HOMING, ST_READY, ST_MOVEMENT, ST_END_MOVEMENT, ST_NOT_READY, ST_MAX_STATES};
+// ---------------------------------- States ----------------------------------
+	void ST0_TestingLed(DynaboxData* pdata);				// 0
+	void ST1_TestingElm(DynaboxData* pdata);				// 1
+	void ST2_PreparingToMovement(DynaboxData* pdata);		// 2
+	void ST3_ShowingOnLed(DynaboxData* pdata);				// 3
+	void ST4_Homing(DynaboxData* pdata);					// 4
+	void ST5_Ready(DynaboxData* pdata);						// 5
+	void ST6_Movement(DynaboxData* pdata);					// 6
+	void ST7_EndMovement(DynaboxData* pdata);				// 7
+	void ST8_NotReady(DynaboxData* pdata);					// 8
+	void ST9_Config(DynaboxData* pdata);					// 9
+	enum States {ST_TESTING_LED, ST_TESTING_ELM, ST_PREPARING_TO_MOVEMENT, ST_SHOWING_ON_LED, ST_HOMING, ST_READY, ST_MOVEMENT, ST_END_MOVEMENT, ST_NOT_READY, ST_MAX_STATES};
 	BEGIN_STATE_MAP_EX
-		STATE_MAP_ENTRY_EX(&Dynabox::ST_TestingLed)
-		STATE_MAP_ENTRY_EX(&Dynabox::ST_TestingElm)
-		STATE_MAP_ENTRY_EX(&Dynabox::ST_PreparingToMovement)
-		STATE_MAP_ENTRY_EX(&Dynabox::ST_ShowingOnLed)
-		STATE_MAP_ENTRY_EX(&Dynabox::ST_Homing)
-		STATE_MAP_ENTRY_EX(&Dynabox::ST_Ready)
-//		STATE_MAP_ENTRY_EX(&Dynabox::ST_NotReady)
-		STATE_MAP_ENTRY_EX(&Dynabox::ST_Config)
+		STATE_MAP_ENTRY_EX(&Dynabox::ST0_TestingLed)
+		STATE_MAP_ENTRY_EX(&Dynabox::ST1_TestingElm)
+		STATE_MAP_ENTRY_EX(&Dynabox::ST2_PreparingToMovement)
+		STATE_MAP_ENTRY_EX(&Dynabox::ST3_ShowingOnLed)
+		STATE_MAP_ENTRY_EX(&Dynabox::ST4_Homing)
+		STATE_MAP_ENTRY_EX(&Dynabox::ST5_Ready)
+		STATE_MAP_ENTRY_EX(&Dynabox::ST6_Movement)
+		STATE_MAP_ENTRY_EX(&Dynabox::ST7_EndMovement)
+		STATE_MAP_ENTRY_EX(&Dynabox::ST8_NotReady)
+		STATE_MAP_ENTRY_EX(&Dynabox::ST9_Config)
 	END_STATE_MAP_EX
-	// ---------------------------------------------------------
+// ---------------------------------- Entry, exit ----------------------------------
+	void ENTRY_TestingLed(DynaboxData* pdata); 	// call from Dynabox::Init() (dynabox.cpp)
+	void EXIT_TestingLed();
+	void ENTRY_TestingElm();
+	void EXIT_TestingElm();
+	void ENTRY_PreparingToMovement();
+	void EXIT_PreparingToMovement();
+	void ENTRY_ShowingOnLed();
+	void EXIT_ShowingOnLed();
+	void ENTRY_Homing();
+	void EXIT_Homing();
+	void ENTRY_Ready();
+	void EXIT_Ready();
+	void ENTRY_Movement();
+	void EXIT_Movement();
+	void ENTRY_EndMovement();
+	void EXIT_EndMovement();
+	void ENTRY_NotReady();
+	void EXIT_NotReady();
+// ---------------------------------------------------------------------------------
 	void SetDestAddr(uint8_t addr);
 	uint8_t GetDestAddr(uint8_t st);
 	void SetCommand(uint8_t command); 	// common command for all slaves
@@ -102,6 +118,7 @@ private:
 	enum Destination {Dest_Door, Dest_Led};
 
 	uint8_t current_command[MACHINE_MAX_NUMBER_OF_DOORS];
+	uint8_t desired_doors_position[MACHINE_MAX_NUMBER_OF_DOORS];
 
 	struct StateProperties
 	{
@@ -113,11 +130,12 @@ private:
 
 	StateProperties state_properties[ST_MAX_STATES] =
 	{
-		{Dest_Led,  true,  NULL, &Dynabox::EV_TestElm},				// ST_TESTING_LED
-		{Dest_Door, true,  NULL, &Dynabox::EV_NeedHoming},			// ST_TESTING_ELM
-		{Dest_Door, true,  NULL, &Dynabox::EV_PreparedToHoming},	// ST_PREPARING_TO_HOMING
-		{Dest_Led,  false, NULL, &Dynabox::EV_LedTrigger},			// ST_SHOWING_ON_LED
-		{Dest_Door, true,  &Dynabox::Entry_Homing, NULL},			// ST_HOMING
+//		dest 		tout 	entry 					exit
+		{Dest_Led,  true,  	NULL, 					&Dynabox::EXIT_TestingLed			},	// ST_TESTING_LED
+		{Dest_Door, true,  	NULL, 					&Dynabox::EXIT_TestingElm			},	// ST_TESTING_ELM
+		{Dest_Door, true,  	NULL, 					&Dynabox::EXIT_PreparingToMovement	},	// ST_PREPARING_TO_MOVEMENT
+		{Dest_Led,  false, 	NULL, 					&Dynabox::EV_LedTrigger			},	// ST_SHOWING_ON_LED
+		{Dest_Door, true,  &Dynabox::ENTRY_Homing, 	NULL							},	// ST_HOMING
 //		{Dest_Door, true,  NULL, NULL}
 	};
 
@@ -133,14 +151,14 @@ private:
 	{
 //		state 						reply fp 					fault						negation
 		{ST_TESTING_ELM, 			0x01, NULL, 				F05_ELECTROMAGNET, 			false},
-		{ST_PREPARING_TO_HOMING, 	0xC0, NULL, 				F06_CLOSE_THE_DOOR, 		true },
+		{ST_PREPARING_TO_MOVEMENT, 	0xC0, NULL, 				F06_CLOSE_THE_DOOR, 		true },
 		{ST_HOMING, 				0xC0, &Dynabox::EV_OnF8, 	F08_ILLEGAL_OPENING, 		true }
 	};
 
 	StateFault reply_fault_clear[10] =
 	{
 		{ST_TESTING_ELM, 			0x01, NULL, 				F05_ELECTROMAGNET, 			false},
-		{ST_PREPARING_TO_HOMING, 	0xC0, NULL, 				F06_CLOSE_THE_DOOR, 		true },
+		{ST_PREPARING_TO_MOVEMENT, 	0xC0, NULL, 				F06_CLOSE_THE_DOOR, 		true },
 		{ST_HOMING, 				0xC0, &Dynabox::EV_OnF8, 	F08_ILLEGAL_OPENING, 		true }
 	};
 };

@@ -20,14 +20,31 @@ Dynabox::Dynabox()
 
 void Dynabox::Init()
 {
-	EV_TestLed(&dynabox_data);
+	ENTRY_TestingLed(&dynabox_data);
 	SLAVE_POLL_START;
 }
 
-void Dynabox::EV_EnterToConfig()
+void Dynabox::StateManager()
 {
-	SLAVE_POLL_STOP;
-	timer.Disable(TIMER_FAULT_SHOW);
+	uint8_t state = GetState();
+	if(current_address == LastAddress() + 1)
+	{
+		SetDestAddr(1);
+		uint8_t new_state = GetFromQueue();
+		if(new_state != ST_EMPTY)
+		{
+			if(state_properties[state].on_exit != NULL) (this->*state_properties[state].on_exit)();
+			ChangeState(new_state);
+			if(state_properties[new_state].on_entry != NULL) (this->*state_properties[new_state].on_entry)();
+		}
+		return;
+	}
+	comm.EV_Send(GetDestAddr(state), current_command[current_address - 1] , state_properties[state].need_timeout);
+	// wyrzucic InternalEventEx() bo jest mylacy
+	// zamiast tego dodac wskaznik na funkcje wykonujaca sie ciagle
+	// wywolanie funkcji od biezacego stanu: ST_...
+	InternalEventEx(state, &dynabox_data);
+	current_address++;
 }
 
 void Dynabox::SetDestAddr(uint8_t addr)
@@ -70,29 +87,6 @@ void Dynabox::SetFaults(uint8_t st, uint8_t reply)
 			}
 		}
 	}
-}
-
-void Dynabox::StateManager()
-{
-	uint8_t state = GetState();
-	if(current_address == LastAddress() + 1)
-	{
-		SetDestAddr(1);
-		uint8_t new_state = GetFromQueue();
-		if(new_state != ST_EMPTY)
-		{
-			if(state_properties[state].on_exit != NULL) (this->*state_properties[state].on_exit)();
-			ChangeState(new_state);
-			if(state_properties[new_state].on_entry != NULL) (this->*state_properties[new_state].on_entry)();
-		}
-		return;
-	}
-	comm.EV_Send(GetDestAddr(state), current_command[current_address - 1] , state_properties[state].need_timeout);
-	// wyrzucic InternalEventEx() bo jest mylacy
-	// zamiast tego dodac wskaznik na funkcje wykonujaca sie ciagle
-	// wywolanie funkcji od biezacego stanu: ST_...
-	InternalEventEx(state, &dynabox_data);
-	current_address++;
 }
 
 void Dynabox::EV_ReplyOK(MachineData* pdata)

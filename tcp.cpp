@@ -1,17 +1,17 @@
 /*
- * stack.cpp
+ * tcp.cpp
  *
  * Created on: 26 maj 2017
  * Author: tomek
  */
 
-#include "stack.h"
 #include "usart.h"
 #include "modbus_tcp.h"
+#include "tcp.h"
 
 Enc28j60 enc28j60;
 
-Stack::Stack() : StateMachine(ST_MAX_STATES)
+Tcp::Tcp() : StateMachine(ST_MAX_STATES)
 {
 	enc28j60.Init();
 	packet_len = 0;
@@ -19,7 +19,7 @@ Stack::Stack() : StateMachine(ST_MAX_STATES)
 	port = 502;
 }
 
-void Stack::Poll()
+void Tcp::Poll()
 {
 	packet_len = enc28j60.ReceivePacket(buf, MAX_PACKET_SIZE);
 	if(packet_len != 0)
@@ -43,59 +43,59 @@ void Stack::Poll()
 				// SYN
 				if(buf[TCP_FLAGS_P] & TCP_FLAGS_SYN_V)
 				{
-					EV_Syn(&stack_data);
+					EV_Syn(&tcp_data);
 				}
 				if(buf[TCP_FLAGS_P] & TCP_FLAGS_ACK_V)
 				{
-					EV_Ack(&stack_data);
+					EV_Ack(&tcp_data);
 				}
 				if(buf[TCP_FLAGS_P] & TCP_FLAGS_PUSH_V)
 				{
-					EV_Psh(&stack_data);
+					EV_Psh(&tcp_data);
 				}
 				if(buf[TCP_FLAGS_P] & TCP_FLAGS_FIN_V)
 				{
 					MakeTcpAckFromAny(buf, 0, 0);
-					InternalEvent(ST_LISTEN, &stack_data);
+					InternalEvent(ST_LISTEN, &tcp_data);
 				}
 			}
 		}
 	}
 }
 
-void Stack::ST_Listen(StackData* pdata)
+void Tcp::ST_Listen(TcpData* pdata)
 {
 
 }
 
-void Stack::ST_SynReceived(StackData* pdata)
+void Tcp::ST_SynReceived(TcpData* pdata)
 {
 	MakeTcpSynAckFromSyn(buf);
 }
 
-void Stack::ST_Established(StackData* pdata)
+void Tcp::ST_Established(TcpData* pdata)
 {
 
 }
 
-void Stack::ST_Request(StackData* pdata)
+void Tcp::ST_Request(TcpData* pdata)
 {
 	uint16_t len = GetTcpDataLen(buf);
 	MakeTcpAckFromAny(buf, len, 0);
 	// Requeast from user
 	mb.Process(&buf[TCP_OPTIONS_P]);		// no options -> beginning of modbusTCP frame
 	buf[TCP_FLAGS_P] =  TCP_FLAGS_ACK_V | TCP_FLAGS_PUSH_V; //| TCP_FLAGS_FIN_V;
-	MakeTcpAckWithDataNoFlags(buf, stack_data.len);
+	MakeTcpAckWithDataNoFlags(buf, tcp_data.len);
 }
 
-void Stack::EV_Syn(StackData* pdata)
+void Tcp::EV_Syn(TcpData* pdata)
 {
     BEGIN_TRANSITION_MAP							// current state
         TRANSITION_MAP_ENTRY(ST_SYN_RECV)			// ST_LISTEN
     END_TRANSITION_MAP(pdata)
 }
 
-void Stack::EV_Ack(StackData* pdata)
+void Tcp::EV_Ack(TcpData* pdata)
 {
     BEGIN_TRANSITION_MAP							// current state
         TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)		// ST_LISTEN
@@ -105,7 +105,7 @@ void Stack::EV_Ack(StackData* pdata)
     END_TRANSITION_MAP(pdata)
 }
 
-void Stack::EV_Psh(StackData* pdata)
+void Tcp::EV_Psh(TcpData* pdata)
 {
     BEGIN_TRANSITION_MAP							// current state
         TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)		// ST_LISTEN
@@ -115,7 +115,7 @@ void Stack::EV_Psh(StackData* pdata)
 }
 
 // ------------------------------------------------------------------
-uint8_t Stack::EthTypeIsArpMyIP(uint8_t* buf, uint16_t len)
+uint8_t Tcp::EthTypeIsArpMyIP(uint8_t* buf, uint16_t len)
 {
 	uint8_t i = 0;
 	if(len < 41)
@@ -141,7 +141,7 @@ uint8_t Stack::EthTypeIsArpMyIP(uint8_t* buf, uint16_t len)
 	return 1;
 }
 
-void Stack::MakeEthHeader(uint8_t* buf)
+void Tcp::MakeEthHeader(uint8_t* buf)
 {
 	uint8_t i = 0;
 	while(i < 6)
@@ -152,7 +152,7 @@ void Stack::MakeEthHeader(uint8_t* buf)
 	}
 }
 
-void Stack::MakeArpReply(uint8_t* buf)
+void Tcp::MakeArpReply(uint8_t* buf)
 {
 	uint8_t i = 0;
 	MakeEthHeader(buf);
@@ -174,7 +174,7 @@ void Stack::MakeArpReply(uint8_t* buf)
 	enc28j60.SendPacket(buf, 42);
 }
 
-void Stack::MakeIpHeader(uint8_t* buf)
+void Tcp::MakeIpHeader(uint8_t* buf)
 {
 	uint8_t i = 0;
 	while(i < 4)
@@ -187,7 +187,7 @@ void Stack::MakeIpHeader(uint8_t* buf)
 }
 
 
-uint8_t Stack::EthTypeIsIPMyIP(uint8_t* buf, uint16_t len)
+uint8_t Tcp::EthTypeIsIPMyIP(uint8_t* buf, uint16_t len)
 {
 	uint8_t i = 0;
 	if(len < 42)
@@ -212,7 +212,7 @@ uint8_t Stack::EthTypeIsIPMyIP(uint8_t* buf, uint16_t len)
 	}
 	return 1;
 }
-uint8_t Stack::EthTypeIsIcmp(uint8_t* buf)
+uint8_t Tcp::EthTypeIsIcmp(uint8_t* buf)
 {
 	if(buf[IP_PROTO_P] == IP_PROTO_ICMP_V && buf[ICMP_TYPE_P] == ICMP_TYPE_ECHOREQUEST_V)
 		return 1;
@@ -220,7 +220,7 @@ uint8_t Stack::EthTypeIsIcmp(uint8_t* buf)
 		return 0;
 }
 
-uint16_t Stack::Checksum(uint8_t *buf, uint16_t len, uint8_t type)
+uint16_t Tcp::Checksum(uint8_t *buf, uint16_t len, uint8_t type)
 {
 // type 0 = ip, icmp
 //      1 = udp
@@ -253,7 +253,7 @@ uint16_t Stack::Checksum(uint8_t *buf, uint16_t len, uint8_t type)
 	return ((uint16_t) sum ^ 0xFFFF);
 }
 
-void Stack::FillIpHeaderChecksum(uint8_t* buf)
+void Tcp::FillIpHeaderChecksum(uint8_t* buf)
 {
 	uint16_t ck;
 	buf[IP_CHECKSUM_P] = 0;
@@ -266,7 +266,7 @@ void Stack::FillIpHeaderChecksum(uint8_t* buf)
 	buf[IP_CHECKSUM_P + 1] = ck & 0xFF;
 }
 
-void Stack::MakeIcmpReply(uint8_t* buf, uint16_t len)
+void Tcp::MakeIcmpReply(uint8_t* buf, uint16_t len)
 {
 	MakeEthHeader(buf);
 	MakeIpHeader(buf);
@@ -281,7 +281,7 @@ void Stack::MakeIcmpReply(uint8_t* buf, uint16_t len)
 
 // ------------------------ TCP --------------------------
 
-void Stack::StepSequence(uint8_t* buf, uint16_t rel_ack_num, uint8_t cp_seq)
+void Tcp::StepSequence(uint8_t* buf, uint16_t rel_ack_num, uint8_t cp_seq)
 {
 	uint8_t i = 4;
 	uint8_t tseq;
@@ -303,7 +303,7 @@ void Stack::StepSequence(uint8_t* buf, uint16_t rel_ack_num, uint8_t cp_seq)
 	}
 }
 
-void Stack::MakeTcpHeader(uint8_t* buf, uint16_t rel_ack_num, uint8_t cp_seq)
+void Tcp::MakeTcpHeader(uint8_t* buf, uint16_t rel_ack_num, uint8_t cp_seq)
 {
 	uint8_t i = buf[TCP_DST_PORT_H_P];
 	buf[TCP_DST_PORT_H_P] = buf[TCP_SRC_PORT_H_P];
@@ -318,7 +318,7 @@ void Stack::MakeTcpHeader(uint8_t* buf, uint16_t rel_ack_num, uint8_t cp_seq)
 	buf[TCP_HEADER_LEN_P] = 0x50;
 }
 
-void Stack::MakeTcpSynAckFromSyn(uint8_t* buf)
+void Tcp::MakeTcpSynAckFromSyn(uint8_t* buf)
 {
 	uint16_t ck;
 	MakeEthHeader(buf);
@@ -346,7 +346,7 @@ void Stack::MakeTcpSynAckFromSyn(uint8_t* buf)
 	enc28j60.SendPacket(buf, IP_HEADER_LEN + TCP_HEADER_LEN_PLAIN + 4 + ETH_HEADER_LEN);
 }
 
-uint16_t Stack::FillTcpData(uint8_t* buf, uint16_t pos, uint8_t* pdata, uint8_t len)
+uint16_t Tcp::FillTcpData(uint8_t* buf, uint16_t pos, uint8_t* pdata, uint8_t len)
 {
 	// fill in tcp data at position pos
 	// with no options the data starts after the checksum + 2 more bytes (urgent pointer)
@@ -360,7 +360,7 @@ uint16_t Stack::FillTcpData(uint8_t* buf, uint16_t pos, uint8_t* pdata, uint8_t 
 	return pos;
 }
 
-uint16_t Stack::GetTcpDataLen(uint8_t* buf)
+uint16_t Tcp::GetTcpDataLen(uint8_t* buf)
 {
 
 	int16_t i = (((int16_t)buf[IP_TOTLEN_H_P]) << 8) | (buf[IP_TOTLEN_L_P] & 0xFF);
@@ -373,7 +373,7 @@ uint16_t Stack::GetTcpDataLen(uint8_t* buf)
 	return((uint16_t)i);
 }
 
-void Stack::MakeTcpAckFromAny(uint8_t* buf, int16_t datlentoack, uint8_t addflags)
+void Tcp::MakeTcpAckFromAny(uint8_t* buf, int16_t datlentoack, uint8_t addflags)
 {
 	uint16_t j;
 	MakeEthHeader(buf);
@@ -404,7 +404,7 @@ void Stack::MakeTcpAckFromAny(uint8_t* buf, int16_t datlentoack, uint8_t addflag
 	enc28j60.SendPacket(buf, IP_HEADER_LEN + TCP_HEADER_LEN_PLAIN + ETH_HEADER_LEN);
 }
 
-void Stack::MakeTcpAckWithDataNoFlags(uint8_t* buf, uint16_t dlen)
+void Tcp::MakeTcpAckWithDataNoFlags(uint8_t* buf, uint16_t dlen)
 {
 	uint16_t j;
 	j = IP_HEADER_LEN + TCP_HEADER_LEN_PLAIN + dlen;

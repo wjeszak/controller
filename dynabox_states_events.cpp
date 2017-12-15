@@ -17,97 +17,112 @@
 #include "dynabox_commands_faults.h"
 
 // ---------------------------------- States ----------------------------------
-
-void Dynabox::ST_TestingLed(DynaboxData* pdata)
+void Dynabox::ST0_TestingLed(DynaboxData* pdata)
 {
 
 }
 
-void Dynabox::ST_TestingElm(DynaboxData* pdata)
+void Dynabox::ST1_TestingElm(DynaboxData* pdata)
 {
-	comm.EV_Send(current_address + LED_ADDRESS_OFFSET, 0x0C, false);
+	comm.EV_Send(current_address + LED_ADDRESS_OFFSET, COMM_LED_GREEN_ON_FOR_TIME, false);
 }
 
-void Dynabox::ST_PreparingToMovement(DynaboxData* pdata)
-{
-
-}
-
-void Dynabox::ST_ShowingOnLed(DynaboxData* pdata)
+void Dynabox::ST2_PreparingToMovement(DynaboxData* pdata)
 {
 
 }
 
-void Dynabox::ST_Homing(DynaboxData* pdata)
+void Dynabox::ST3_ShowingOnLed(DynaboxData* pdata)
 {
-	mb.Write(current_address + 1, d->data);
+
 }
 
-void Dynabox::ST_Ready(DynaboxData* pdata)
+void Dynabox::ST4_Homing(DynaboxData* pdata)
 {
 	mb.Write(current_address + 1, d->data);
 }
 
-void Dynabox::ST_Movement(DynaboxData* pdata)
+void Dynabox::ST5_Ready(DynaboxData* pdata)
+{
+	mb.Write(current_address + 1, d->data);
+}
+
+void Dynabox::ST6_Movement(DynaboxData* pdata)
 {
 
 }
 
-void Dynabox::ST_EndMovement(DynaboxData* pdata)
+void Dynabox::ST7_EndMovement(DynaboxData* pdata)
 {
 
 }
 
-void Dynabox::ST_NotReady(DynaboxData* pdata)
+void Dynabox::ST8_NotReady(DynaboxData* pdata)
 {
 
 }
 
-void Dynabox::ST_Config(DynaboxData* pdata)
+void Dynabox::ST9_Config(DynaboxData* pdata)
 {
 
 }
 
 // ---------------------------------- Entry, exit ----------------------------------
-
-void Dynabox::Entry_Homing()
+void Dynabox::ENTRY_TestingLed(DynaboxData* pdata)
 {
-	SetCommand(0x80); 	// get state
-// --------- !! stad tymczasowo zaczynamy --------------------
+	SetCommand(COMM_LED_DIAG);
+//	AddToQueue(ST_TESTING_ELM);
+}
+
+void Dynabox::EXIT_TestingLed()
+{
+//	SetCommand(COMM_DOOR_CHECK_ELM);
+	AddToQueue(ST_TESTING_ELM);
+	//AddToQueue(ST_PREPARING_TO_MOVEMENT);
+}
+
+void Dynabox::ENTRY_TestingElm()
+{
+	SetCommand(COMM_DOOR_CHECK_ELM);
+}
+
+void Dynabox::EXIT_TestingElm()
+{
+
+}
+
+void Dynabox::ENTRY_PreparingToMovement()
+{
+	SetCommand(COMM_DOOR_GET_STATUS);
+//	AddToQueue(ST_SHOWING_ON_LED);
+}
+
+void Dynabox::EXIT_PreparingToMovement()
+{
+	SetCommand(0x80 + 0x05);
+	AddToQueue(ST_HOMING);
+	AddToQueue(ST_SHOWING_ON_LED);
+}
+
+void Dynabox::ENTRY_Homing()
+{
+	SetCommand(COMM_DOOR_GET_STATUS);
 	mb.Write(IO_INFORMATIONS, (1 << 2) | (1 << 0));
 	motor.SetDirection(motor.Forward);
 	motor_data.max_pwm_val = MAX_PWM_HOMING;
 	motor.EV_Start(&motor_data);
 }
 
-// ----------------------- Events -----------------------
-void Dynabox::EV_TestLed(DynaboxData* pdata)
-{
-	SetCommand(COMM_LED_DIAG);
-	AddToQueue(ST_TESTING_ELM);
-}
-
-void Dynabox::EV_TestElm()
-{
-	SetCommand(COMM_DOOR_CHECK_ELECTROMAGNET);
-	AddToQueue(ST_PREPARING_TO_HOMING);
-}
-
-void Dynabox::EV_NeedHoming()
-{
-	SetCommand(0x80);
-	AddToQueue(ST_SHOWING_ON_LED);
-}
-
-void Dynabox::EV_PreparedToHoming()
-{
-	SetCommand(0x80 + 0x05);
-	AddToQueue(ST_HOMING);
-}
-
+// ---------------------------------- Public events ---------------------------
 void Dynabox::EV_LedTrigger()
 {
 	timer.Assign(TIMER_LED_TRIGGER, 10, LedTrigger);
+}
+
+void Dynabox::EV_EnterToConfig()
+{
+	SLAVE_POLL_STOP;
+	timer.Disable(TIMER_FAULT_SHOW);
 }
 
 void Dynabox::EV_HomingDone(DynaboxData* pdata)
@@ -138,13 +153,13 @@ void Dynabox::EV_UserAction(MachineData* pdata)
 //	END_TRANSITION_MAP(pdata)
 }
 
-void Dynabox::EV_OnF8(DynaboxData* pdata)
-{
-//	motor.Stop();
-}
-
 void Dynabox::EV_PositionAchieved(DynaboxData* pdata)
 {
 	mb.Write(ORDER_STATUS, ORDER_STATUS_END_OF_MOVEMENT);
 	mb.Write(IO_INFORMATIONS, (0 << 0) | (1 << 3));
+}
+
+void Dynabox::EV_OnF8(DynaboxData* pdata)
+{
+//	motor.Stop();
 }

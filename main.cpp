@@ -23,9 +23,9 @@
 #include "lockerbox.h"
 #include "encoder.h"
 #include "usart.h"
-#include "stack.h"
 #include "modbus_tcp.h"
 #include "motor.h"
+#include "tcp.h"
 
 Machine* m;
 MachineData* d;
@@ -46,8 +46,8 @@ ConfigData config_data;
 Config config;
 UsartData usart_data;
 Usart usart;
-StackData stack_data;
-Stack stack;
+TcpData tcp_data;
+Tcp tcp;
 Comm comm;
 ModbusTCP mb;
 
@@ -56,6 +56,6 @@ int main()
 	Boot();
 	while(1)
 	{
-		if(config.need_stack_poll)	stack.Poll();
+		if(config.need_stack_poll)	tcp.Poll();
 	}
 }
