@@ -86,20 +86,28 @@ void Dynabox::ENTRY_TestingElm()
 
 void Dynabox::EXIT_TestingElm()
 {
-
+	s.Push(ST_PREPARING_TO_MOVEMENT);
 }
 
 void Dynabox::ENTRY_PreparingToMovement()
 {
 	SetCommand(COMM_DOOR_GET_STATUS);
-//	AddToQueue(ST_SHOWING_ON_LED);
 }
 
 void Dynabox::EXIT_PreparingToMovement()
 {
-	SetCommand(0x80 + 0x05);
-	AddToQueue(ST_HOMING);
-	AddToQueue(ST_SHOWING_ON_LED);
+	s.Push(ST_SHOWING_ON_LED);
+	//SetCommand(COMM_LED_QUEUE + COMM_LED_GREEN_RED_BLINK);
+}
+
+void Dynabox::ENTRY_ShowingOnLed()
+{
+	SetCommand(COMM_LED_QUEUE + COMM_LED_GREEN_RED_BLINK);
+}
+
+void Dynabox::EXIT_ShowingOnLed()
+{
+
 }
 
 void Dynabox::ENTRY_Homing()

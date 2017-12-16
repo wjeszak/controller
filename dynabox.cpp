@@ -75,14 +75,12 @@ void Dynabox::SetFaults(uint8_t st, uint8_t reply)
 			if((reply_fault_set[i].reply == reply) && reply_fault_set[i].neg == false)
 			{
 				fault.SetGlobal(reply_fault_set[i].fault);
-				//fault.Set(F01_LED, current_address - 1);
 				mb.Write(current_address, reply_fault_set[i].fault << 8);
 				if(reply_fault_set[i].fp != NULL) (this->*reply_fault_set[i].fp)(NULL);
 			}
 			if((reply_fault_set[i].reply != reply) && reply_fault_set[i].neg == true)
 			{
 				fault.SetGlobal(reply_fault_set[i].fault);
-				//fault.Set(F01_LED, current_address - 1);
 				mb.Write(current_address, reply_fault_set[i].fault << 8);
 				if(reply_fault_set[i].fp != NULL) (this->*reply_fault_set[i].fp)(NULL);
 			}
@@ -99,7 +97,7 @@ void Dynabox::EV_Reply(MachineData* pdata)
 void Dynabox::EV_Timeout(MachineData* pdata)
 {
 	// led's fault
-	if(pdata->addr > LED_ADDRESS_OFFSET)
+	if(state_properties[GetState()].dest == Dest_Led)
 	{
 		fault.SetGlobal(F01_LED);
 		fault.Set(F01_LED, current_address - 1);

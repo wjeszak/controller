@@ -37,9 +37,8 @@
 #define COMM_LED_RED_3PULSES 						0x0B
 #define COMM_LED_GREEN_ON_FOR_TIME 					0x0C
 #define COMM_LED_DIAG								0x0D
+#define COMM_LED_QUEUE 								0x80
 #define COMM_LED_NEED_QUEUE_BIT						7
-
-//#define COMM_F05_ELM		 						0x01
 
 // faults
 #define NUMBER_OF_FAULTS 							17

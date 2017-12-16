@@ -28,10 +28,10 @@ void Comm::EV_Send(uint8_t addr, uint8_t command, bool need_timeout)
 	if(need_timeout) SLAVE_POLL_TIMEOUT_SET;
 }
 
-void Comm::EV_LedTrigger()
-{
-	EV_Send(LED_ADDRESS_TRIGGER, 0x00, false);
-}
+//void Comm::EV_LedTrigger()
+//{
+//	EV_Send(LED_ADDRESS_TRIGGER, 0x00, false);
+//}
 
 void Comm::EV_Reply()
 {

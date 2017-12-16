@@ -143,7 +143,9 @@ void FaultShow()
 void LedTrigger()
 {
 	timer.Disable(TIMER_LED_TRIGGER);
-	comm.EV_LedTrigger();
+	//comm.EV_LedTrigger();
+	comm.EV_Send(LED_ADDRESS_TRIGGER, 0x00, false);
+	SLAVE_POLL_STOP;
 }
 
 // TIMER_MOTOR_SPEED_MEAS

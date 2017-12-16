@@ -130,13 +130,12 @@ private:
 
 	StateProperties state_properties[ST_MAX_STATES] =
 	{
-//		dest 		tout 	entry 						exit
-		{Dest_Led,  true,  	NULL, 						&Dynabox::EXIT_TestingLed			},	// ST_TESTING_LED
-		{Dest_Door, true,  	&Dynabox::ENTRY_TestingElm, &Dynabox::EXIT_TestingElm			},	// ST_TESTING_ELM
-		{Dest_Door, true,  	NULL, 						&Dynabox::EXIT_PreparingToMovement	},	// ST_PREPARING_TO_MOVEMENT
-		{Dest_Led,  false, 	NULL, 						&Dynabox::EV_LedTrigger				},	// ST_SHOWING_ON_LED
-		{Dest_Door, true,  &Dynabox::ENTRY_Homing, 		NULL								},	// ST_HOMING
-//		{Dest_Door, true,  NULL, NULL}
+//		dest 		tout 	entry 									exit
+		{Dest_Led,  true,  	NULL, 									&Dynabox::EXIT_TestingLed			},	// ST_TESTING_LED
+		{Dest_Door, true,  	&Dynabox::ENTRY_TestingElm, 			&Dynabox::EXIT_TestingElm			},	// ST_TESTING_ELM
+		{Dest_Door, true,  	&Dynabox::ENTRY_PreparingToMovement, 	&Dynabox::EXIT_PreparingToMovement	},	// ST_PREPARING_TO_MOVEMENT
+		{Dest_Led,  false, 	NULL, 									&Dynabox::EV_LedTrigger				},	// ST_SHOWING_ON_LED
+		{Dest_Door, true,  &Dynabox::ENTRY_Homing, 					NULL								},	// ST_HOMING
 	};
 
 	struct StateFault
