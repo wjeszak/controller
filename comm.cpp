@@ -40,7 +40,7 @@ void Comm::EV_Reply()
 	{
 		d->addr = usart_data.frame[0];
 		d->data = usart_data.frame[1];
-		m->EV_ReplyOK(d);
+		m->EV_Reply(d);
 	}
 }
 

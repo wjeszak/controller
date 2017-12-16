@@ -26,6 +26,7 @@
 #include "modbus_tcp.h"
 #include "motor.h"
 #include "tcp.h"
+#include "stack.h"
 
 Machine* m;
 MachineData* d;
@@ -50,6 +51,7 @@ TcpData tcp_data;
 Tcp tcp;
 Comm comm;
 ModbusTCP mb;
+Stack s;
 
 int main()
 {

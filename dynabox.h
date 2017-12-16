@@ -41,7 +41,7 @@ public:
 	void EV_UserAction(MachineData* pdata);
 	void EV_PositionAchieved(DynaboxData* pdata);
 	void EV_LedTrigger();
-	void EV_ReplyOK(MachineData* pdata);
+	void EV_Reply(MachineData* pdata);
 	void EV_Timeout(MachineData* pdata);
 	void EV_OnF8(DynaboxData* pdata);
 private:
@@ -130,12 +130,12 @@ private:
 
 	StateProperties state_properties[ST_MAX_STATES] =
 	{
-//		dest 		tout 	entry 					exit
-		{Dest_Led,  true,  	NULL, 					&Dynabox::EXIT_TestingLed			},	// ST_TESTING_LED
-		{Dest_Door, true,  	NULL, 					&Dynabox::EXIT_TestingElm			},	// ST_TESTING_ELM
-		{Dest_Door, true,  	NULL, 					&Dynabox::EXIT_PreparingToMovement	},	// ST_PREPARING_TO_MOVEMENT
-		{Dest_Led,  false, 	NULL, 					&Dynabox::EV_LedTrigger			},	// ST_SHOWING_ON_LED
-		{Dest_Door, true,  &Dynabox::ENTRY_Homing, 	NULL							},	// ST_HOMING
+//		dest 		tout 	entry 						exit
+		{Dest_Led,  true,  	NULL, 						&Dynabox::EXIT_TestingLed			},	// ST_TESTING_LED
+		{Dest_Door, true,  	&Dynabox::ENTRY_TestingElm, &Dynabox::EXIT_TestingElm			},	// ST_TESTING_ELM
+		{Dest_Door, true,  	NULL, 						&Dynabox::EXIT_PreparingToMovement	},	// ST_PREPARING_TO_MOVEMENT
+		{Dest_Led,  false, 	NULL, 						&Dynabox::EV_LedTrigger				},	// ST_SHOWING_ON_LED
+		{Dest_Door, true,  &Dynabox::ENTRY_Homing, 		NULL								},	// ST_HOMING
 //		{Dest_Door, true,  NULL, NULL}
 	};
 
@@ -149,15 +149,15 @@ private:
 	};
 	StateFault reply_fault_set[10] =
 	{
-//		state 						reply fp 					fault						negation
-		{ST_TESTING_ELM, 			0x01, NULL, 				F05_ELECTROMAGNET, 			false},
-		{ST_PREPARING_TO_MOVEMENT, 	0xC0, NULL, 				F06_CLOSE_THE_DOOR, 		true },
-		{ST_HOMING, 				0xC0, &Dynabox::EV_OnF8, 	F08_ILLEGAL_OPENING, 		true }
+//		state 						reply 						fp 					fault						negation
+		{ST_TESTING_ELM, 			COMM_DOOR_REPLY_ELM_FAULT,	NULL, 				F05_ELM, 					false},
+		{ST_PREPARING_TO_MOVEMENT, 	COMM_DOOR_REPLY_CLOSED, 	NULL, 				F06_CLOSE_THE_DOOR, 		true },
+		{ST_HOMING, 				COMM_DOOR_REPLY_CLOSED, 	&Dynabox::EV_OnF8, 	F08_ILLEGAL_OPENING, 		true }
 	};
 
 	StateFault reply_fault_clear[10] =
 	{
-		{ST_TESTING_ELM, 			0x01, NULL, 				F05_ELECTROMAGNET, 			false},
+		{ST_TESTING_ELM, 			0x01, NULL, 				F05_ELM,		 			false},
 		{ST_PREPARING_TO_MOVEMENT, 	0xC0, NULL, 				F06_CLOSE_THE_DOOR, 		true },
 		{ST_HOMING, 				0xC0, &Dynabox::EV_OnF8, 	F08_ILLEGAL_OPENING, 		true }
 	};

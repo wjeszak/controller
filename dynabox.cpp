@@ -12,6 +12,7 @@
 #include "fault.h"
 #include "modbus_tcp.h"
 #include "usart.h"
+#include "stack.h"
 
 Dynabox::Dynabox()
 {
@@ -30,10 +31,10 @@ void Dynabox::StateManager()
 	if(current_address == LastAddress() + 1)
 	{
 		SetDestAddr(1);
-		uint8_t new_state = GetFromQueue();
-		if(new_state != ST_EMPTY)
+		if(state_properties[state].on_exit != NULL) (this->*state_properties[state].on_exit)();
+		if(!s.IsEmpty())
 		{
-			if(state_properties[state].on_exit != NULL) (this->*state_properties[state].on_exit)();
+			uint8_t new_state = s.Pop();
 			ChangeState(new_state);
 			if(state_properties[new_state].on_entry != NULL) (this->*state_properties[new_state].on_entry)();
 		}
@@ -89,7 +90,7 @@ void Dynabox::SetFaults(uint8_t st, uint8_t reply)
 	}
 }
 
-void Dynabox::EV_ReplyOK(MachineData* pdata)
+void Dynabox::EV_Reply(MachineData* pdata)
 {
 	uint8_t state = GetState();
 	SetFaults(state, pdata->data);

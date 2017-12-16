@@ -15,6 +15,7 @@
 #include "fault.h"
 #include "display.h"
 #include "dynabox_commands_faults.h"
+#include "stack.h"
 
 // ---------------------------------- States ----------------------------------
 void Dynabox::ST0_TestingLed(DynaboxData* pdata)
@@ -71,14 +72,11 @@ void Dynabox::ST9_Config(DynaboxData* pdata)
 void Dynabox::ENTRY_TestingLed(DynaboxData* pdata)
 {
 	SetCommand(COMM_LED_DIAG);
-//	AddToQueue(ST_TESTING_ELM);
 }
 
 void Dynabox::EXIT_TestingLed()
 {
-//	SetCommand(COMM_DOOR_CHECK_ELM);
-	AddToQueue(ST_TESTING_ELM);
-	//AddToQueue(ST_PREPARING_TO_MOVEMENT);
+	s.Push(ST_TESTING_ELM);
 }
 
 void Dynabox::ENTRY_TestingElm()

@@ -15,6 +15,8 @@
 
 #define COMM_DOOR_GET_STATUS 						0x80
 #define COMM_DOOR_REPLY_TRANSOPT_FAULT 				0xF0
+#define COMM_DOOR_REPLY_CLOSED 						0xC0
+
 #define COMM_DOOR_SET_POSITION 						0xC0
 
 // led's commands
@@ -37,7 +39,7 @@
 #define COMM_LED_DIAG								0x0D
 #define COMM_LED_NEED_QUEUE_BIT						7
 
-#define COMM_F05_ELECTROMAGNET 						0x01
+//#define COMM_F05_ELM		 						0x01
 
 // faults
 #define NUMBER_OF_FAULTS 							17
@@ -46,7 +48,7 @@
 #define F02_DOOR									0x02
 #define F03_OPTICAL_SWITCHES						0x03
 #define F04_DOOR_OPENED_TOO_FAR						0x04
-#define F05_ELECTROMAGNET							0x05
+#define F05_ELM										0x05
 #define F06_CLOSE_THE_DOOR							0x06
 #define F07_DOOR_NOT_OPEN							0x07
 #define F08_ILLEGAL_OPENING							0x08

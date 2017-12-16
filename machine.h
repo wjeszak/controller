@@ -36,7 +36,7 @@ public:
 	virtual void Init() {}
 	virtual void EV_EnterToConfig() {}
 	virtual void StateManager() {}
-	virtual void EV_ReplyOK(MachineData* pdata) {}
+	virtual void EV_Reply(MachineData* pdata) {}
 	virtual void EV_Timeout(MachineData* pdata) {}
 	virtual void EV_UserAction(MachineData* pdata) {}
 	uint8_t current_address;
