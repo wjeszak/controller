@@ -172,3 +172,9 @@ void Debug()
 {
 	motor.Debug();
 }
+
+void Tmp()
+{
+	timer.Disable(TIMER_TMP);
+	dynabox.EV_HomingDone(&dynabox_data);
+}

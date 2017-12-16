@@ -64,6 +64,7 @@ void Dynabox::SetDoorCommand()
 {
 	for(uint8_t i = 0; i < MACHINE_MAX_NUMBER_OF_DOORS; i++)
 	{
+		if(desired_doors_position[i] != 0)
 		current_command[i] = SetPosition + desired_doors_position[i];
 	}
 }

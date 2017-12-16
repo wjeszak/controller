@@ -111,8 +111,7 @@ void Dynabox::EXIT_PreparingToMovement()
 
 void Dynabox::ENTRY_ShowingOnLed()
 {
-	//SetCommand();
-	//	SetCommand(COMM_LED_QUEUE + COMM_LED_GREEN_RED_BLINK);
+
 }
 
 void Dynabox::EXIT_ShowingOnLed()
@@ -127,11 +126,45 @@ void Dynabox::ENTRY_Homing()
 	motor.SetDirection(motor.Forward);
 	motor_data.max_pwm_val = MAX_PWM_HOMING;
 	motor.EV_Start(&motor_data);
+	timer.Assign(TIMER_TMP, TIMER_TMP_INTERVAL, Tmp);
+
 }
 
 void Dynabox::EXIT_Homing()
 {
 
+}
+
+void Dynabox::ENTRY_Ready()
+{
+
+}
+
+void Dynabox::EXIT_Ready()
+{
+
+}
+
+void Dynabox::ENTRY_Movement()
+{
+
+}
+
+void Dynabox::EXIT_Movement()
+{
+
+}
+
+void Dynabox::ENTRY_EndMovement()
+{
+	desired_doors_position[2] = 5;
+	desired_doors_position[5] = 9;
+	SetDoorCommand();
+}
+
+void Dynabox::EXIT_EndMovement()
+{
+	s.Push(ST_READY);
 }
 
 void Dynabox::ENTRY_NotReady()
@@ -157,8 +190,11 @@ void Dynabox::EV_EnterToConfig()
 
 void Dynabox::EV_HomingDone(DynaboxData* pdata)
 {
-//	SetCommand(0x00);
+	motor.EV_Stop(&motor_data);
 	mb.Write(IO_INFORMATIONS, (0 << 2) | (0 << 0) | (1 << 3));
+	s.Push(ST_END_MOVEMENT);
+	SetLedCommand(GreenRedOff, true);
+	s.Push(ST_SHOWING_ON_LED);
 }
 
 void Dynabox::EV_UserAction(MachineData* pdata)
