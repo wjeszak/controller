@@ -55,7 +55,9 @@ void Dynabox::ST6_Movement(DynaboxData* pdata)
 
 void Dynabox::ST7_EndMovement(DynaboxData* pdata)
 {
-
+	static uint8_t i;
+	if(desired_doors_position[i++] != 0)
+		comm.EV_Send(current_address + LED_ADDRESS_OFFSET, GreenOn, false);
 }
 
 void Dynabox::ST8_NotReady(DynaboxData* pdata)
