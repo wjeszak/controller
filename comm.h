@@ -20,7 +20,6 @@ public:
 	Comm();
 	// Events
 	void EV_Send(uint8_t addr, uint8_t command, bool need_timeout);
-//	void EV_LedTrigger();
 	void EV_Reply();
 	void EV_Timeout();
 private:

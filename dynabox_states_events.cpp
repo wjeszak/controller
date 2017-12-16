@@ -97,17 +97,17 @@ void Dynabox::ENTRY_PreparingToMovement()
 void Dynabox::EXIT_PreparingToMovement()
 {
 	s.Push(ST_SHOWING_ON_LED);
-	//SetCommand(COMM_LED_QUEUE + COMM_LED_GREEN_RED_BLINK);
 }
 
 void Dynabox::ENTRY_ShowingOnLed()
 {
-	SetCommand(COMM_LED_QUEUE + COMM_LED_GREEN_RED_BLINK);
+	SetCommand();
+	//	SetCommand(COMM_LED_QUEUE + COMM_LED_GREEN_RED_BLINK);
 }
 
 void Dynabox::EXIT_ShowingOnLed()
 {
-
+	EV_LedTrigger();
 }
 
 void Dynabox::ENTRY_Homing()
@@ -119,6 +119,10 @@ void Dynabox::ENTRY_Homing()
 	motor.EV_Start(&motor_data);
 }
 
+void Dynabox::EXIT_Homing()
+{
+
+}
 // ---------------------------------- Public events ---------------------------
 void Dynabox::EV_LedTrigger()
 {

@@ -92,6 +92,7 @@ private:
 	void SetDestAddr(uint8_t addr);
 	uint8_t GetDestAddr(uint8_t st);
 	void SetCommand(uint8_t command); 	// common command for all slaves
+	void SetCommand();
 	void SetFaults(uint8_t st, uint8_t reply);
 	uint8_t fault_to_led[NUMBER_OF_FAULTS + 1] =
 	{
@@ -134,8 +135,8 @@ private:
 		{Dest_Led,  true,  	NULL, 									&Dynabox::EXIT_TestingLed			},	// ST_TESTING_LED
 		{Dest_Door, true,  	&Dynabox::ENTRY_TestingElm, 			&Dynabox::EXIT_TestingElm			},	// ST_TESTING_ELM
 		{Dest_Door, true,  	&Dynabox::ENTRY_PreparingToMovement, 	&Dynabox::EXIT_PreparingToMovement	},	// ST_PREPARING_TO_MOVEMENT
-		{Dest_Led,  false, 	NULL, 									&Dynabox::EV_LedTrigger				},	// ST_SHOWING_ON_LED
-		{Dest_Door, true,  &Dynabox::ENTRY_Homing, 					NULL								},	// ST_HOMING
+		{Dest_Led,  false, 	&Dynabox::ENTRY_ShowingOnLed, 			&Dynabox::EXIT_ShowingOnLed			},	// ST_SHOWING_ON_LED
+		{Dest_Door, true, 	&Dynabox::ENTRY_Homing, 				&Dynabox::EXIT_Homing				},	// ST_HOMING
 	};
 
 	struct StateFault

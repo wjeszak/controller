@@ -66,9 +66,18 @@ void Dynabox::SetCommand(uint8_t command)
 		current_command[i] = command;
 }
 
+void Dynabox::SetCommand()
+{
+	for(uint8_t i = 0; i < MACHINE_MAX_NUMBER_OF_DOORS; i++)
+	{
+		uint8_t fault = mb.Read(i + 2) >> 8;
+		current_command[i] = fault_to_led[fault] + COMM_LED_QUEUE;
+	}
+}
+
 void Dynabox::SetFaults(uint8_t st, uint8_t reply)
 {
-	for(uint8_t i = 0; i < 3; i++)
+	for(uint8_t i = 0; i < ST_MAX_STATES; i++)
 	{
 		if(reply_fault_set[i].state == st)
 		{
