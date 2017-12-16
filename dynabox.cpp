@@ -60,18 +60,42 @@ uint8_t Dynabox::GetDestAddr(uint8_t st)
 	return current_address;
 }
 
-void Dynabox::SetCommand(uint8_t command)
+void Dynabox::SetDoorCommand()
 {
 	for(uint8_t i = 0; i < MACHINE_MAX_NUMBER_OF_DOORS; i++)
-		current_command[i] = command;
+	{
+		current_command[i] = SetPosition + desired_doors_position[i];
+	}
 }
 
-void Dynabox::SetCommand()
+void Dynabox::SetDoorCommand(DoorCommand command)
+{
+	for(uint8_t i = 0; i < MACHINE_MAX_NUMBER_OF_DOORS; i++)
+	{
+		current_command[i] = command;
+	}
+}
+
+void Dynabox::SetLedCommand(bool queued)
 {
 	for(uint8_t i = 0; i < MACHINE_MAX_NUMBER_OF_DOORS; i++)
 	{
 		uint8_t fault = mb.Read(i + 2) >> 8;
-		current_command[i] = fault_to_led[fault] + COMM_LED_QUEUE;
+		if(queued)
+			current_command[i] = fault_to_led[fault] + NeedQueue;
+		else
+			current_command[i] = fault_to_led[fault];
+	}
+}
+
+void Dynabox::SetLedCommand(LedCommand command, bool queued)
+{
+	for(uint8_t i = 0; i < MACHINE_MAX_NUMBER_OF_DOORS; i++)
+	{
+		if(queued)
+			current_command[i] = command + NeedQueue;
+		else
+			current_command[i] = command;
 	}
 }
 
@@ -108,15 +132,15 @@ void Dynabox::EV_Timeout(MachineData* pdata)
 	// led's fault
 	if(state_properties[GetState()].dest == Dest_Led)
 	{
-		fault.SetGlobal(F01_LED);
-		fault.Set(F01_LED, current_address - 1);
-		mb.Write(current_address, F01_LED << 8);
+		fault.SetGlobal(F01_Led);
+		fault.Set(F01_Led, current_address - 1);
+		mb.Write(current_address, F01_Led << 8);
 	}
 	// door's fault
 	else
 	{
-		fault.SetGlobal(F02_DOOR);
-		fault.Set(F02_DOOR, current_address - 1);
-		mb.Write(current_address, F02_DOOR << 8);
+		fault.SetGlobal(F02_Door);
+		fault.Set(F02_Door, current_address - 1);
+		mb.Write(current_address, F02_Door << 8);
 	}
 }

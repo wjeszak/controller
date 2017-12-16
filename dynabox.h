@@ -20,7 +20,20 @@
 #define IO_NORMAL_OPERATION 			5
 #define IO_SWITCH_DOOR 					6
 
-#define MAX_PWM_HOMING 					173
+#define MAX_PWM_HOMING 					25
+
+enum DoorCommand { CheckElm = 0x01, GetStatus = 0x80, SetPosition = 0xC0 };
+enum DoorReply 	 { ElmOk, ElmFault, TransoptFault = 0xF0, Closed = 0xC0 };
+
+enum LedCommand  { GreenRedOff, GreenOn, RedOn, GreenBlink, RedBlink, GreenRedBlink,
+				   Green1Pulse, Red1Pulse, Green2Pulses, Red2Pulses, Green3Pulses, Red3Pulses,
+				   GreenOnForTime, Diag, NeedQueue = 0x80 };
+
+enum Faults 	 { None, F01_Led, F02_Door, F03_Transoptors, F04_DoorOpenedSoFar, F05_Elm,
+				   F06_CloseDoor, F07_DoorNotOpen, F08_IllegalOpening,
+				   F10_MechanicalWarning = 0x0A, F11_MechanicalFault, F12_Positioning,
+				   F13_MainDoor, F14_HomingFailed, F15_IllegalRotation, F16_OrderRefused,
+				   F17_24VMissing };
 
 class DynaboxData : public MachineData
 {
@@ -91,29 +104,32 @@ private:
 // ---------------------------------------------------------------------------------
 	void SetDestAddr(uint8_t addr);
 	uint8_t GetDestAddr(uint8_t st);
-	void SetCommand(uint8_t command); 	// common command for all slaves
-	void SetCommand();
+	void SetDoorCommand();
+	void SetDoorCommand(DoorCommand command);
+	void SetLedCommand(bool queued);
+	void SetLedCommand(LedCommand command, bool queued);
 	void SetFaults(uint8_t st, uint8_t reply);
-	uint8_t fault_to_led[NUMBER_OF_FAULTS + 1] =
+
+	LedCommand fault_to_led[NUMBER_OF_FAULTS + 1] =
 	{
-		0,										// not used
-		0,										// F01, impossible
-		COMM_LED_RED_1PULSE,					// F02
-		COMM_LED_RED_2PULSES,					// F03
-		COMM_LED_RED_ON,						// F04
-		COMM_LED_RED_3PULSES,					// F05
-		COMM_LED_GREEN_RED_BLINK, 				// F06
-		COMM_LED_GREEN_RED_BLINK,				// F07
-		COMM_LED_GREEN_RED_BLINK,				// F08
-		0,										// not used
-		0, 										// F10, not used
-		COMM_LED_RED_BLINK,						// F11
-		COMM_LED_RED_BLINK, 					// F12
-		COMM_LED_RED_ON, 						// F13
-		COMM_LED_RED_BLINK, 					// F14
-		0,										// F15, not used
-		0, 										// F16, not used
-		COMM_LED_RED_BLINK	 					// F17
+		GreenRedOff,	// not used
+		GreenRedOff,	// F01, impossible
+		Red1Pulse,		// F02
+		Red2Pulses,		// F03
+		RedOn,			// F04
+		Red3Pulses,		// F05
+		GreenRedBlink, 	// F06
+		GreenRedBlink,	// F07
+		GreenRedBlink,	// F08
+		GreenRedOff,	// not used
+		GreenRedOff,	// F10, not used
+		RedBlink,		// F11
+		RedBlink, 		// F12
+		RedOn, 			// F13
+		RedBlink, 		// F14
+		GreenRedOff,	// F15, not used
+		GreenRedOff,		// F16, not used
+		RedBlink	 	// F17
 	};
 
 	enum Destination {Dest_Door, Dest_Led};
@@ -137,29 +153,30 @@ private:
 		{Dest_Door, true,  	&Dynabox::ENTRY_PreparingToMovement, 	&Dynabox::EXIT_PreparingToMovement	},	// ST_PREPARING_TO_MOVEMENT
 		{Dest_Led,  false, 	&Dynabox::ENTRY_ShowingOnLed, 			&Dynabox::EXIT_ShowingOnLed			},	// ST_SHOWING_ON_LED
 		{Dest_Door, true, 	&Dynabox::ENTRY_Homing, 				&Dynabox::EXIT_Homing				},	// ST_HOMING
+		{Dest_Door, true, 	&Dynabox::ENTRY_NotReady, 				&Dynabox::EXIT_NotReady 			},	// ST_NOT_READY
 	};
 
 	struct StateFault
 	{
 		States state;
-		uint8_t reply;
+		DoorReply reply;
 		void (Dynabox::*fp)(DynaboxData* pdata);
-		uint8_t fault;
+		Faults fault;
 		bool neg;
 	};
 	StateFault reply_fault_set[10] =
 	{
-//		state 						reply 						fp 					fault						negation
-		{ST_TESTING_ELM, 			COMM_DOOR_REPLY_ELM_FAULT,	NULL, 				F05_ELM, 					false},
-		{ST_PREPARING_TO_MOVEMENT, 	COMM_DOOR_REPLY_CLOSED, 	NULL, 				F06_CLOSE_THE_DOOR, 		true },
-		{ST_HOMING, 				COMM_DOOR_REPLY_CLOSED, 	&Dynabox::EV_OnF8, 	F08_ILLEGAL_OPENING, 		true }
+//		state 						reply 			fp 					fault						negation
+		{ST_TESTING_ELM, 			ElmFault,		NULL, 				F05_Elm, 					false},
+		{ST_PREPARING_TO_MOVEMENT, 	Closed, 		NULL, 				F06_CloseDoor, 				true },
+		{ST_HOMING, 				Closed, 		&Dynabox::EV_OnF8, 	F08_IllegalOpening, 		true }
 	};
 
 	StateFault reply_fault_clear[10] =
 	{
-		{ST_TESTING_ELM, 			0x01, NULL, 				F05_ELM,		 			false},
-		{ST_PREPARING_TO_MOVEMENT, 	0xC0, NULL, 				F06_CLOSE_THE_DOOR, 		true },
-		{ST_HOMING, 				0xC0, &Dynabox::EV_OnF8, 	F08_ILLEGAL_OPENING, 		true }
+		{ST_TESTING_ELM, 			ElmOk, 			NULL, 				F05_Elm,		 			false},
+		{ST_PREPARING_TO_MOVEMENT, 	ElmOk, 			NULL, 				F06_CloseDoor, 				true },
+		{ST_HOMING, 				ElmOk, 			&Dynabox::EV_OnF8, 	F08_IllegalOpening, 		true }
 	};
 };
 

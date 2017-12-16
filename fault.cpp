@@ -5,6 +5,7 @@
  *      Author: tomek
  */
 
+#include "dynabox_commands_faults.h"
 #include "fault.h"
 #include "modbus_tcp.h"
 #include "display.h"
@@ -35,9 +36,9 @@ void Fault::ShowGlobal()
 {
 	static uint8_t i = 1;
 	if(global_faults == 0) { display.Write(TNoFault, 0); return; }
-	while(i <= 18)
+	while(i <= NUMBER_OF_FAULTS + 1)
 	{
-		if(i == 18) i = 1;
+		if(i == NUMBER_OF_FAULTS + 1) i = 1;
 		if(global_faults & (1ULL << i))
 		{
 			display.Write(TFault, i);

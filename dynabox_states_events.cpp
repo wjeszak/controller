@@ -25,7 +25,7 @@ void Dynabox::ST0_TestingLed(DynaboxData* pdata)
 
 void Dynabox::ST1_TestingElm(DynaboxData* pdata)
 {
-	comm.EV_Send(current_address + LED_ADDRESS_OFFSET, COMM_LED_GREEN_ON_FOR_TIME, false);
+	comm.EV_Send(current_address + LED_ADDRESS_OFFSET, GreenOnForTime, false);
 }
 
 void Dynabox::ST2_PreparingToMovement(DynaboxData* pdata)
@@ -71,7 +71,7 @@ void Dynabox::ST9_Config(DynaboxData* pdata)
 // ---------------------------------- Entry, exit ----------------------------------
 void Dynabox::ENTRY_TestingLed(DynaboxData* pdata)
 {
-	SetCommand(COMM_LED_DIAG);
+	SetLedCommand(Diag, false);
 }
 
 void Dynabox::EXIT_TestingLed()
@@ -81,7 +81,7 @@ void Dynabox::EXIT_TestingLed()
 
 void Dynabox::ENTRY_TestingElm()
 {
-	SetCommand(COMM_DOOR_CHECK_ELM);
+	SetDoorCommand(CheckElm);
 }
 
 void Dynabox::EXIT_TestingElm()
@@ -91,17 +91,27 @@ void Dynabox::EXIT_TestingElm()
 
 void Dynabox::ENTRY_PreparingToMovement()
 {
-	SetCommand(COMM_DOOR_GET_STATUS);
+	SetDoorCommand(GetStatus);
 }
 
 void Dynabox::EXIT_PreparingToMovement()
 {
+	if(fault.CheckGlobal(F02_Door))
+	{
+		s.Push(ST_NOT_READY);
+		SetLedCommand(true);
+	}
+	else
+	{
+		s.Push(ST_HOMING);
+		SetLedCommand(GreenRedBlink, true);
+	}
 	s.Push(ST_SHOWING_ON_LED);
 }
 
 void Dynabox::ENTRY_ShowingOnLed()
 {
-	SetCommand();
+	//SetCommand();
 	//	SetCommand(COMM_LED_QUEUE + COMM_LED_GREEN_RED_BLINK);
 }
 
@@ -112,7 +122,7 @@ void Dynabox::EXIT_ShowingOnLed()
 
 void Dynabox::ENTRY_Homing()
 {
-	SetCommand(COMM_DOOR_GET_STATUS);
+	SetDoorCommand(GetStatus);
 	mb.Write(IO_INFORMATIONS, (1 << 2) | (1 << 0));
 	motor.SetDirection(motor.Forward);
 	motor_data.max_pwm_val = MAX_PWM_HOMING;
@@ -120,6 +130,16 @@ void Dynabox::ENTRY_Homing()
 }
 
 void Dynabox::EXIT_Homing()
+{
+
+}
+
+void Dynabox::ENTRY_NotReady()
+{
+	SetDoorCommand(GetStatus);
+}
+
+void Dynabox::EXIT_NotReady()
 {
 
 }
@@ -137,10 +157,8 @@ void Dynabox::EV_EnterToConfig()
 
 void Dynabox::EV_HomingDone(DynaboxData* pdata)
 {
-	SetCommand(0x00);
+//	SetCommand(0x00);
 	mb.Write(IO_INFORMATIONS, (0 << 2) | (0 << 0) | (1 << 3));
-	AddToQueue(ST_SHOWING_ON_LED);
-	//AddToQueue(ST_READY);
 }
 
 void Dynabox::EV_UserAction(MachineData* pdata)
