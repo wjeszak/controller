@@ -22,7 +22,7 @@ void Boot()
 	sei();
 	timer.Assign(TIMER_DISPLAY_REFRESH, 4, DisplayRefresh);
 	timer.Assign(TIMER_ENCODER_POLL, 1, EncoderPoll);
-	timer.Assign(TIMER_FAULT_SHOW, 1000, FaultShow);
+//	timer.Assign(TIMER_FAULT_SHOW, 1000, FaultShow);
 	timer.Assign(TIMER_MOTOR_SPEED_MEAS, MOTOR_SPEED_MEAS_INTERVAL, MotorSpeedMeas);
 //	timer.Assign(TIMER_DEBUG, DEBUG_INTERVAL, Debug);
 }

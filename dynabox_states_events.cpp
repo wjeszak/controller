@@ -55,9 +55,8 @@ void Dynabox::ST6_Movement(DynaboxData* pdata)
 
 void Dynabox::ST7_EndMovement(DynaboxData* pdata)
 {
-	static uint8_t i;
-	if(desired_doors_position[i++] != 0)
-		comm.EV_Send(current_address + LED_ADDRESS_OFFSET, GreenOn, false);
+	if(desired_doors_position[current_address - 1] != 0)
+		comm.EV_Send(current_address + LED_ADDRESS_OFFSET, GreenOn, true);
 }
 
 void Dynabox::ST8_NotReady(DynaboxData* pdata)
@@ -105,8 +104,16 @@ void Dynabox::EXIT_PreparingToMovement()
 	}
 	else
 	{
-		s.Push(ST_HOMING);
-		SetLedCommand(GreenRedBlink, true);
+		if(!home_ok)
+		{
+			s.Push(ST_HOMING);
+			SetLedCommand(GreenRedBlink, true);
+		}
+		else
+		{
+			s.Push(ST_MOVEMENT);
+			SetLedCommand(GreenBlink);
+		}
 	}
 	s.Push(ST_SHOWING_ON_LED);
 }
@@ -139,7 +146,7 @@ void Dynabox::EXIT_Homing()
 
 void Dynabox::ENTRY_Ready()
 {
-
+	SetDoorCommand(GetStatus);
 }
 
 void Dynabox::EXIT_Ready()
@@ -149,7 +156,7 @@ void Dynabox::EXIT_Ready()
 
 void Dynabox::ENTRY_Movement()
 {
-
+	SetDoorCommand(GetStatus);
 }
 
 void Dynabox::EXIT_Movement()
@@ -159,8 +166,6 @@ void Dynabox::EXIT_Movement()
 
 void Dynabox::ENTRY_EndMovement()
 {
-	desired_doors_position[2] = 5;
-	desired_doors_position[5] = 9;
 	SetDoorCommand();
 }
 
@@ -194,9 +199,10 @@ void Dynabox::EV_HomingDone(DynaboxData* pdata)
 {
 	motor.EV_Stop(&motor_data);
 	mb.Write(IO_INFORMATIONS, (0 << 2) | (0 << 0) | (1 << 3));
-	s.Push(ST_END_MOVEMENT);
+	s.Push(ST_READY);
 	SetLedCommand(GreenRedOff, true);
 	s.Push(ST_SHOWING_ON_LED);
+	home_ok = true;
 }
 
 void Dynabox::EV_UserAction(MachineData* pdata)
@@ -209,6 +215,15 @@ void Dynabox::EV_UserAction(MachineData* pdata)
 		motor.ComputeMaxPwm();
 		motor.EV_Start(&motor_data);
 		mb.Write(LOCATIONS_NUMBER, 0);
+		for(uint8_t i = 0; i < MACHINE_MAX_NUMBER_OF_DOORS; i++)
+		{
+			desired_doors_position[i] = mb.Read(LOCATIONS_NUMBER + 1 + i);
+		}
+		s.Push(ST_MOVEMENT);
+		SetLedCommand(GreenBlink, true);
+		s.Push(ST_SHOWING_ON_LED);
+		timer.Assign(TIMER_TMP1, TIMER_TMP1_INTERVAL, Tmp1);
+
 	}
 //	if(mb.Read((uint8_t)ORDER_STATUS) == 1) display.Write(7843);
 	//	BEGIN_TRANSITION_MAP								// current state
@@ -223,6 +238,10 @@ void Dynabox::EV_PositionAchieved(DynaboxData* pdata)
 {
 	mb.Write(ORDER_STATUS, ORDER_STATUS_END_OF_MOVEMENT);
 	mb.Write(IO_INFORMATIONS, (0 << 0) | (1 << 3));
+	motor.EV_Stop(&motor_data);
+	s.Push(ST_END_MOVEMENT);
+	SetLedCommand(GreenRedOff, true);
+	s.Push(ST_SHOWING_ON_LED);
 }
 
 void Dynabox::EV_OnF8(DynaboxData* pdata)

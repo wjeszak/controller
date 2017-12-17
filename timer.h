@@ -16,7 +16,7 @@
 #include <avr/io.h>
 
 #define MAIN_TIMER_PRESCALER 				36
-#define NUMBER_OF_TIMERS 					13
+#define NUMBER_OF_TIMERS 					14
 
 #define TIMER_DISPLAY_REFRESH 				0
 #define TIMER_BUTTON_POLL					1
@@ -31,10 +31,12 @@
 #define TIMER_BEFORE_DIRECTION_CHANGE		10
 #define TIMER_DEBUG							11
 #define TIMER_TMP							12
+#define TIMER_TMP1 							13
 
 #define TIMER_TMP_INTERVAL 					5000
+#define TIMER_TMP1_INTERVAL					3000
 
-#define SLAVE_POLL_INTERVAL 				1000
+#define SLAVE_POLL_INTERVAL 				100
 #define SLAVE_TIMEOUT_INTERVAL 				20
 #define MOTOR_SPEED_MEAS_INTERVAL 			40
 #define BEFORE_DIRECTION_CHANGE_INTERVAL 	1000
@@ -92,5 +94,6 @@ extern void MotorSpeedMeas();
 extern void BeforeDirectionChange();
 extern void Debug();
 extern void Tmp();
+extern void Tmp1();
 
 #endif /* TIMER_H_ */

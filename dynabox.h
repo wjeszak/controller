@@ -109,7 +109,7 @@ private:
 	void SetLedCommand(bool queued);
 	void SetLedCommand(LedCommand command, bool queued);
 	void SetFaults(uint8_t st, uint8_t reply);
-
+	bool home_ok;
 	LedCommand fault_to_led[NUMBER_OF_FAULTS + 1] =
 	{
 		GreenRedOff,	// not used
@@ -154,9 +154,9 @@ private:
 		{Dest_Led,  false, 	&Dynabox::ENTRY_ShowingOnLed, 			&Dynabox::EXIT_ShowingOnLed			},	// ST_SHOWING_ON_LED
 		{Dest_Door, true, 	&Dynabox::ENTRY_Homing, 				&Dynabox::EXIT_Homing				},	// ST_HOMING
 		{Dest_Door, true, 	&Dynabox::ENTRY_Ready, 					&Dynabox::EXIT_Ready 				},	// ST_READY
-		{Dest_Door, true, 	&Dynabox::ENTRY_Movement,				&Dynabox::EXIT_Movement				},
-		{Dest_Door, true, 	&Dynabox::ENTRY_EndMovement,			&Dynabox::EXIT_EndMovement			},
-		{Dest_Door, true, 	&Dynabox::ENTRY_NotReady,				&Dynabox::EXIT_NotReady				},
+		{Dest_Door, true, 	&Dynabox::ENTRY_Movement,				&Dynabox::EXIT_Movement				},	// ST_MOVEMENT
+		{Dest_Door, true, 	&Dynabox::ENTRY_EndMovement,			&Dynabox::EXIT_EndMovement			},	// ST_END_MOVEMENT
+		{Dest_Door, true, 	&Dynabox::ENTRY_NotReady,				&Dynabox::EXIT_NotReady				},	// ST_NOT_READY
 	};
 
 	struct StateFault
@@ -172,7 +172,8 @@ private:
 //		state 						reply 			fp 					fault						negation
 		{ST_TESTING_ELM, 			ElmFault,		NULL, 				F05_Elm, 					false},
 		{ST_PREPARING_TO_MOVEMENT, 	Closed, 		NULL, 				F06_CloseDoor, 				true },
-		{ST_HOMING, 				Closed, 		&Dynabox::EV_OnF8, 	F08_IllegalOpening, 		true }
+		{ST_HOMING, 				Closed, 		&Dynabox::EV_OnF8, 	F08_IllegalOpening, 		true },
+
 	};
 
 	StateFault reply_fault_clear[10] =

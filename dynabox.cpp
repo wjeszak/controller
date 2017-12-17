@@ -13,10 +13,11 @@
 #include "modbus_tcp.h"
 #include "usart.h"
 #include "stack.h"
+#include "display.h"
 
 Dynabox::Dynabox()
 {
-
+	home_ok = false;
 }
 
 void Dynabox::Init()
@@ -28,6 +29,7 @@ void Dynabox::Init()
 void Dynabox::StateManager()
 {
 	uint8_t state = GetState();
+	display.Write(state);
 	if(current_address == LastAddress() + 1)
 	{
 		SetDestAddr(1);
