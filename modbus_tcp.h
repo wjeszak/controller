@@ -50,27 +50,31 @@
 #define MODBUS_TCP_ERROR_ILL_DATA_ADDR 			2
 #define MODBUS_TCP_ERROR_ILL_DATA_VAL 			3
 // ------------------------------------------------
-/*
-
-	#define ORDER_STATUS_READY					0x0000
-	#define ORDER_STATUS_GO_ACK 				0x0001
-	#define ORDER_STATUS_PROCESSING 			0x0002
-	#define ORDER_STATUS_END_OF_MOVEMENT 		0x0003
-	#define ORDER_STATUS_NOT_READY 				0xFFFF
-*/
+// Modbus TCP registers names
 #define ORDER_STATUS		 					0
 #define GENERAL_ERROR_STATUS		 			1
 #define ACTUAL_SPEED		 					44
 #define TYPE_OF_MACHINE			 				45
 	#define TYPE_OF_MACHINE_NOT_DEFINED 		0
 	#define TYPE_OF_MACHINE_LOCKERBOX			1
-
 #define SERIAL_NUMBER		 					46
 #define IO_INFORMATIONS							47
 #define ENCODER_CURRENT_VALUE			 		49
-
 #define FIRST_DOOR_NUMBER 						50
 #define LOCATIONS_NUMBER 						51
+
+#define ILLEGAL_ROTATION_DISTANCE 				88
+#define OFFSET_FOR_ENCODER 						89
+#define SPEED_MANUAL 							90
+#define SPEED_NORMAL 							91
+#define ACCELERATION_PULSES 					92
+#define DECELERATION_PULSES 					93
+#define MAX_ELM_ON 								94
+#define TIME_FOR_ELM_ON 						95
+#define POS_FAULT_DISTANCE 						96
+#define LED_BRIGHTNESS 							97
+#define TIME_FOR_MECH_WARNING 					98
+#define TIME_FOR_MECH_FAULT 					99
 
 class ModbusTCP
 {

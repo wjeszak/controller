@@ -26,5 +26,3 @@ void Boot()
 	timer.Assign(TIMER_MOTOR_SPEED_MEAS, MOTOR_SPEED_MEAS_INTERVAL, MotorSpeedMeas);
 //	timer.Assign(TIMER_DEBUG, DEBUG_INTERVAL, Debug);
 }
-
-

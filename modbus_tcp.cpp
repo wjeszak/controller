@@ -152,14 +152,3 @@ void ModbusTCP::ErrorReply(uint8_t* frame, uint8_t error_code)
 	frame[MODBUS_RES_TCP_BYTE_COUNT] = error_code;
 	tcp_data.len = 9;
 }
-
-//void ModbusTCP::AnalizeMultipleRegisters()
-//{
-
-	//for(uint8_t i = 52; i < 65; i++)
-	//{
-//		if(Registers[52] > 0) comm.Prepare(TDoor, 1, Registers[52] + 0x80);
-	//}
-	//	if(Registers[0] > 0) m->SetFault(Registers[0]);
-	//	if(Registers[1] > 0) m->ClearFault(Registers[1]);
-//}

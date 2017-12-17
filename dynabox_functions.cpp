@@ -39,18 +39,18 @@ void Dynabox::LoadParameters()
 {
 	eeprom_read_block(&functions, &dynabox_eem_functions, FUNCTION_RECORD_SIZE * DYNABOX_NUMBER_OF_FUNCTIONS);
 	config.number_of_functions = DYNABOX_NUMBER_OF_FUNCTIONS;
+
 	mb.Write(TYPE_OF_MACHINE, (functions[1].param << 8 | 36));
 	mb.Write(SERIAL_NUMBER, functions[9].param);
-
 	mb.Write(FIRST_DOOR_NUMBER, 1);
-	mb.Write(88, 20);
-	mb.Write(90, 20);
-	mb.Write(91, 75);
-	mb.Write(92, 50);
-	mb.Write(93, 400);
-	mb.Write(94, 3);
-	mb.Write(98, 5);
-	mb.Write(99, 10);
+	mb.Write(ILLEGAL_ROTATION_DISTANCE, 20);
+	mb.Write(SPEED_MANUAL, 20);
+	mb.Write(SPEED_NORMAL, 75);
+	mb.Write(ACCELERATION_PULSES, 50);
+	mb.Write(DECELERATION_PULSES, 400);
+	mb.Write(MAX_ELM_ON, 3);
+	mb.Write(TIME_FOR_MECH_WARNING, 5);
+	mb.Write(TIME_FOR_MECH_FAULT, 10);
 }
 
 void Dynabox::SaveParameters()
