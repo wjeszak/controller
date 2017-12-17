@@ -29,7 +29,7 @@ void Dynabox::Init()
 void Dynabox::StateManager()
 {
 	uint8_t state = GetState();
-	display.Write(state);
+	//display.Write(state);
 	if(current_address == LastAddress() + 1)
 	{
 		SetDestAddr(1);
@@ -67,7 +67,9 @@ void Dynabox::SetDoorCommand()
 	for(uint8_t i = 0; i < MACHINE_MAX_NUMBER_OF_DOORS; i++)
 	{
 		if(desired_doors_position[i] != 0)
-		current_command[i] = SetPosition + desired_doors_position[i];
+			current_command[i] = SetPosition + desired_doors_position[i];
+		else
+			current_command[i] = GetStatus;
 	}
 }
 
