@@ -39,24 +39,25 @@ uint8_t Machine::LastAddress()
 {
 	return functions[1].param;
 }
-/*
-void Machine::SetOrderStatus(uint8_t status)
+
+void Machine::SetOrderStatus(OrderStatus status)
 {
 	mb.Write(ORDER_STATUS, status);
 }
 
-uint8_t Machine::GetOrderStatus()
+OrderStatus Machine::GetOrderStatus()
 {
-	return mb.Read((uint8_t)ORDER_STATUS);
+	uint8_t status = mb.Read((uint8_t)ORDER_STATUS);
+	return (OrderStatus)status;
 }
 
-void Machine::SetIOInfo(uint8_t info)
+void Machine::SetIOInfo(IO_InfoType info)
 {
 	mb.SetBit(IO_INFORMATIONS, info);
 }
 
-void Machine::ClearIOInfo(uint8_t info)
+void Machine::ClearIOInfo(IO_InfoType info)
 {
 	mb.ClearBit(IO_INFORMATIONS, info);
 }
-*/
+

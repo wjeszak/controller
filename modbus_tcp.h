@@ -50,13 +50,15 @@
 #define MODBUS_TCP_ERROR_ILL_DATA_ADDR 			2
 #define MODBUS_TCP_ERROR_ILL_DATA_VAL 			3
 // ------------------------------------------------
-#define ORDER_STATUS		 					0
+/*
+
 	#define ORDER_STATUS_READY					0x0000
 	#define ORDER_STATUS_GO_ACK 				0x0001
 	#define ORDER_STATUS_PROCESSING 			0x0002
 	#define ORDER_STATUS_END_OF_MOVEMENT 		0x0003
 	#define ORDER_STATUS_NOT_READY 				0xFFFF
-
+*/
+#define ORDER_STATUS		 					0
 #define GENERAL_ERROR_STATUS		 			1
 #define ACTUAL_SPEED		 					44
 #define TYPE_OF_MACHINE			 				45

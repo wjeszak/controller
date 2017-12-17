@@ -50,8 +50,6 @@ void Motor::ST_Acceleration(MotorData* pdata)
 	_maximum_pwm_val = pdata->max_pwm_val;
 	MOTOR_START;
 	timer.Assign(TIMER_MOTOR_ACCELERATE, _delta_time_accelerate, MotorAccelerate);
-	mb.Write(ORDER_STATUS, ORDER_STATUS_PROCESSING);
-	mb.Write(IO_INFORMATIONS, (1 << 0) | (1 << 3));
 }
 
 // from timer

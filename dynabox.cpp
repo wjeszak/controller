@@ -17,6 +17,7 @@
 
 Dynabox::Dynabox()
 {
+	SetOrderStatus(Ready);
 	home_ok = false;
 }
 
@@ -43,9 +44,6 @@ void Dynabox::StateManager()
 		return;
 	}
 	comm.EV_Send(GetDestAddr(state), current_command[current_address - 1] , state_properties[state].need_timeout);
-	// wyrzucic InternalEventEx() bo jest mylacy
-	// zamiast tego dodac wskaznik na funkcje wykonujaca sie ciagle
-	// wywolanie funkcji od biezacego stanu: ST_...
 	InternalEventEx(state, &dynabox_data);
 	current_address++;
 }

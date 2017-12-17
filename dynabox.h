@@ -12,15 +12,7 @@
 #include "machine.h"
 #include "motor.h"
 
-#define IO_MOVING 						0
-#define IO_MOVING_DIRECTION 			1
-#define IO_HOMING_IN_PROGRESS 			2
-#define IO_HOMING_DONE 					3
-#define IO_MANUAL_OPERATION 			4
-#define IO_NORMAL_OPERATION 			5
-#define IO_SWITCH_DOOR 					6
-
-#define MAX_PWM_HOMING 					25
+#define MAX_PWM_HOMING 						25
 
 enum DoorCommand { CheckElm = 0x01, GetStatus = 0x80, SetPosition = 0xC0 };
 enum DoorReply 	 { ElmOk, ElmFault, TransoptFault = 0xF0, Closed = 0xC0 };

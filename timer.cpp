@@ -155,8 +155,6 @@ void MotorSpeedMeas()
 void BeforeDirectionChange()
 {
 	timer.Disable(TIMER_BEFORE_DIRECTION_CHANGE);
-	mb.Write(ORDER_STATUS, ORDER_STATUS_PROCESSING);
-	mb.Write(IO_INFORMATIONS, (1 << 0) | (1 << 3));
 	motor.SetDirection(motor.Backward);
 // --------------------- ! UWAGA NA WARTOSC PWM ! ----------------------------------
 // motor_data.max_pwm_val = _minimum_pwm_val_backward + 1

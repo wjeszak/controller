@@ -15,6 +15,10 @@
 #define MACHINE_TYPE_LOCKERBOX 					1
 #define MACHINE_MAX_NUMBER_OF_DOORS				13
 
+enum OrderStatus { Ready, GoAck, Processing, EndOfMovement, NotReady = 0xFFFF };
+enum IO_InfoType { Moving, MovingDirection, HomingInProgress, HomingDone, ManualOperation,
+				   NormalOperation, SwitchDoor };
+
 class MachineData : public EventDataEx
 {
 public:
@@ -26,10 +30,10 @@ class Machine : public StateMachineEx
 {
 public:
 	Machine();
-//	void SetOrderStatus(uint8_t status);
-//	uint8_t GetOrderStatus();
-//	void SetIOInfo(uint8_t info);
-//	void ClearIOInfo(uint8_t info);
+	void SetOrderStatus(OrderStatus status);
+	OrderStatus GetOrderStatus();
+	void SetIOInfo(IO_InfoType info);
+	void ClearIOInfo(IO_InfoType info);
 	uint8_t LastAddress();
 	virtual void LoadParameters() {}
 	virtual void SaveParameters() {}

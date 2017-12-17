@@ -85,7 +85,6 @@ void ModbusTCP::Write(uint8_t* frame)
 		WriteReply(frame);
 		// ----------------------------- User action ----------------------------------
 		m->EV_UserAction(d);
-		//display.Write(5555);
 		// ----------------------------- User action ----------------------------------
 	}
 }
