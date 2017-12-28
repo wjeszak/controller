@@ -12,10 +12,10 @@
 #include "machine.h"
 #include "motor.h"
 
-#define MAX_PWM_HOMING 						25
+#define MAX_PWM_HOMING 						173
 
 enum DoorCommand { CheckElm = 0x01, GetStatus = 0x80, SetPosition = 0xC0 };
-enum DoorReply 	 { ElmOk, ElmFault, TransoptFault = 0xF0, Closed = 0xC0 };
+enum DoorReply 	 { ElmOk, ElmFault, TransoptFault = 0xF0, Closed = 0xC0, OnOff = 0xD0 };
 
 enum LedCommand  { GreenRedOff, GreenOn, RedOn, GreenBlink, RedBlink, GreenRedBlink,
 				   Green1Pulse, Red1Pulse, Green2Pulses, Red2Pulses, Green3Pulses, Red3Pulses,
@@ -100,7 +100,7 @@ private:
 	void SetDoorCommand(DoorCommand command);
 	void SetLedCommand(bool queued);
 	void SetLedCommand(LedCommand command, bool queued);
-	void SetFaults(uint8_t st, uint8_t reply);
+	void SetFaults(States st, DoorReply reply);
 	bool home_ok;
 	LedCommand fault_to_led[NUMBER_OF_FAULTS + 1] =
 	{
@@ -164,7 +164,9 @@ private:
 //		state 						reply 			fp 					fault						negation
 		{ST_TESTING_ELM, 			ElmFault,		NULL, 				F05_Elm, 					false},
 		{ST_PREPARING_TO_MOVEMENT, 	Closed, 		NULL, 				F06_CloseDoor, 				true },
+		//{ST_PREPARING_TO_MOVEMENT, 	OnOff,	 		NULL, 				F06_CloseDoor, 				true },
 		{ST_HOMING, 				Closed, 		&Dynabox::EV_OnF8, 	F08_IllegalOpening, 		true },
+		//{ST_MOVEMENT,				OnOff,			&Dynabox::EV_OnF8,	F08_IllegalOpening,			true },
 		{ST_MOVEMENT, 				Closed, 		NULL,				F08_IllegalOpening, 		true },
 	};
 

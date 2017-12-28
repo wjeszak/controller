@@ -173,12 +173,12 @@ void Debug()
 
 void Tmp()
 {
-	timer.Disable(TIMER_TMP);
+	//timer.Disable(TIMER_TMP);
 	dynabox.EV_HomingDone(&dynabox_data);
 }
 
 void Tmp1()
 {
-	timer.Disable(TIMER_TMP1);
+	//timer.Disable(TIMER_TMP1);
 	dynabox.EV_PositionAchieved(&dynabox_data);
 }

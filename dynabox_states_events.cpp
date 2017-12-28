@@ -135,7 +135,7 @@ void Dynabox::ENTRY_Homing()
 	motor.SetDirection(motor.Forward);
 	motor_data.max_pwm_val = MAX_PWM_HOMING;
 	motor.EV_Start(&motor_data);
-	timer.Assign(TIMER_TMP, TIMER_TMP_INTERVAL, Tmp);
+	//timer.Assign(TIMER_TMP, TIMER_TMP_INTERVAL, Tmp);
 	SetIOInfo(Moving);
 	SetIOInfo(MovingDirection);
 	SetIOInfo(HomingInProgress);
@@ -222,13 +222,12 @@ void Dynabox::EV_UserAction(MachineData* pdata)
 		motor.ComputeMaxPwm();
 		motor.EV_Start(&motor_data);
 		mb.Write(LOCATIONS_NUMBER, 0);
-
 		for(uint8_t i = 0; i < MACHINE_MAX_NUMBER_OF_DOORS; i++)
 		{
 			desired_doors_position[i] = (uint8_t)mb.Read(LOCATIONS_NUMBER + 1 + i);
 		}
 		s.Push(ST_PREPARING_TO_MOVEMENT);
-		timer.Assign(TIMER_TMP1, TIMER_TMP1_INTERVAL, Tmp1);
+		//timer.Assign(TIMER_TMP1, TIMER_TMP1_INTERVAL, Tmp1);
 	}
 	if(GetOrderStatus() == GoAck) display.Write(1234);
 }
