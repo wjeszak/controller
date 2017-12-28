@@ -102,7 +102,7 @@ void Dynabox::SetLedCommand(LedCommand command, bool queued)
 	}
 }
 
-void Dynabox::SetFaults(States st, DoorReply reply)
+void Dynabox::SetFaults(uint8_t st, uint8_t reply)
 {
 	for(uint8_t i = 0; i < ST_MAX_STATES; i++)
 	{
@@ -126,7 +126,8 @@ void Dynabox::SetFaults(States st, DoorReply reply)
 
 void Dynabox::EV_Reply(MachineData* pdata)
 {
-	States state = GetState();
+	uint8_t state = GetState();
+	mb.Write(current_address, d->data);
 	SetFaults(state, pdata->data);
 }
 

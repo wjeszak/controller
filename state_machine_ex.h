@@ -25,12 +25,12 @@ protected:
 	enum States {ST_EMPTY = 0xFE, ST_NOT_ALLOWED = 0xFF};
 public:
 	StateMachineEx(uint8_t max_states);
-	States GetState();
-	void ChangeState(States new_state);
-	void InternalEventEx(States new_state, EventDataEx* pdata = NULL);
-	void EventEx(States new_state, EventDataEx* pdata = NULL);
-	void AddToQueue(States state);
-	uint8_t GetFromQueue();
+	uint8_t GetState();
+	void ChangeState(uint8_t new_state);
+	void InternalEventEx(uint8_t new_state, EventDataEx* pdata = NULL);
+	void EventEx(uint8_t new_state, EventDataEx* pdata = NULL);
+	//void AddToQueue(States state);
+	//uint8_t GetFromQueue();
 private:
 	const uint8_t _max_states;
 	bool _event_generated;

@@ -40,13 +40,14 @@ void Dynabox::ST3_ShowingOnLed(DynaboxData* pdata)
 
 void Dynabox::ST4_Homing(DynaboxData* pdata)
 {
-	mb.Write(current_address, d->data);
+//	mb.Write(current_address, d->data);
+//	mb.Write(current_address + 1, d->data);
 }
 
 void Dynabox::ST5_Ready(DynaboxData* pdata)
 {
-	//mb.Write(current_address + 1, d->data);
-	mb.Write(current_address, d->data);
+//	mb.Write(current_address + 1, d->data);
+//	mb.Write(current_address, d->data);
 }
 
 void Dynabox::ST6_Movement(DynaboxData* pdata)
@@ -135,7 +136,8 @@ void Dynabox::ENTRY_Homing()
 	motor.SetDirection(motor.Forward);
 	motor_data.max_pwm_val = MAX_PWM_HOMING;
 	motor.EV_Start(&motor_data);
-	//timer.Assign(TIMER_TMP, TIMER_TMP_INTERVAL, Tmp);
+	// tymczasowo do testow
+	timer.Assign(TIMER_TMP, TIMER_TMP_INTERVAL, Tmp);
 	SetIOInfo(Moving);
 	SetIOInfo(MovingDirection);
 	SetIOInfo(HomingInProgress);
@@ -227,7 +229,7 @@ void Dynabox::EV_UserAction(MachineData* pdata)
 			desired_doors_position[i] = (uint8_t)mb.Read(LOCATIONS_NUMBER + 1 + i);
 		}
 		s.Push(ST_PREPARING_TO_MOVEMENT);
-		//timer.Assign(TIMER_TMP1, TIMER_TMP1_INTERVAL, Tmp1);
+		timer.Assign(TIMER_TMP1, TIMER_TMP1_INTERVAL, Tmp1);
 	}
 	if(GetOrderStatus() == GoAck) display.Write(1234);
 }

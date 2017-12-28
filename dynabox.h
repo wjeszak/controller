@@ -100,7 +100,7 @@ private:
 	void SetDoorCommand(DoorCommand command);
 	void SetLedCommand(bool queued);
 	void SetLedCommand(LedCommand command, bool queued);
-	void SetFaults(States st, DoorReply reply);
+	void SetFaults(uint8_t st, uint8_t reply);
 	bool home_ok;
 	LedCommand fault_to_led[NUMBER_OF_FAULTS + 1] =
 	{
@@ -153,8 +153,8 @@ private:
 
 	struct StateFault
 	{
-		States state;
-		DoorReply reply;
+		uint8_t state;
+		uint8_t reply;
 		void (Dynabox::*fp)(DynaboxData* pdata);
 		Faults fault;
 		bool neg;

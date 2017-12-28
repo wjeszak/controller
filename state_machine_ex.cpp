@@ -21,7 +21,7 @@ uint8_t StateMachineEx::GetState()
 {
 	return current_state;
 }
-
+/*
 void StateMachineEx::EventEx(uint8_t new_state, EventDataEx* pdata)
 {
 	if(new_state != ST_NOT_ALLOWED)
@@ -40,7 +40,7 @@ uint8_t StateMachineEx::GetFromQueue()
 	queued_state = ST_EMPTY;
     return tmp_st;
 }
-
+*/
 void StateMachineEx::InternalEventEx(uint8_t new_state, EventDataEx* pdata)
 {
 	_event_generated = true;
