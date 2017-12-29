@@ -160,7 +160,7 @@ private:
 		Faults fault;
 		bool neg;
 	};
-	StateFault reply_fault_set[10] =
+	StateFault reply_fault_set[ST_MAX_STATES] =
 	{
 //		state 						reply 			fp 					fault						negation
 		{ST_TESTING_ELM, 			ElmFault,		NULL, 				F05_Elm, 					false},
@@ -169,7 +169,7 @@ private:
 		{ST_MOVEMENT, 				Closed, 		NULL,				F08_IllegalOpening, 		true },
 	};
 
-	StateFault reply_fault_clear[10] =
+	StateFault reply_fault_clear[ST_MAX_STATES] =
 	{
 		{ST_TESTING_ELM, 			ElmOk, 			NULL, 				F05_Elm,		 			false},
 		{ST_PREPARING_TO_MOVEMENT, 	ElmOk, 			NULL, 				F06_CloseDoor, 				true },

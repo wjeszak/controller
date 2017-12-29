@@ -32,6 +32,14 @@ void Dynabox::StateManager()
 {
 	uint8_t state = GetState();
 	//display.Write(state);
+	static uint8_t fault_show_cnt = 0;
+	fault_show_cnt++;
+	if(fault_show_cnt == FAULT_SHOW_TICK)
+	{
+		fault.ShowGlobal();
+		fault_show_cnt = 0;
+	}
+
 	if(current_address == LastAddress() + 1)
 	{
 		SetDestAddr(1);
@@ -105,7 +113,7 @@ void Dynabox::SetLedCommand(LedCommand command, bool queued)
 
 void Dynabox::SetFaults(uint8_t st, uint8_t reply)
 {
-	for(uint8_t i = 0; i < ST_MAX_STATES; i++)
+	for(uint8_t i = 0; i < 4; i++)
 	{
 		if(reply_fault_set[i].state == st)
 		{

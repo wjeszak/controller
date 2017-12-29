@@ -7,7 +7,6 @@
 
 #include <avr/interrupt.h>
 #include "timer.h"
-#include "fault.h"
 #include "button.h"
 #include "comm.h"
 #include "config.h"
@@ -131,12 +130,6 @@ void MotorAccelerate()
 void MotorDecelerate()
 {
 	motor.Decelerate();
-}
-
-// TIMER_FAULT_SHOW
-void FaultShow()
-{
-	fault.ShowGlobal();
 }
 
 // TIMER_LED_TRIGGER
