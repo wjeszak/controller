@@ -29,8 +29,6 @@ public:
 	void ChangeState(uint8_t new_state);
 	void InternalEventEx(uint8_t new_state, EventDataEx* pdata = NULL);
 	void EventEx(uint8_t new_state, EventDataEx* pdata = NULL);
-	//void AddToQueue(States state);
-	//uint8_t GetFromQueue();
 private:
 	const uint8_t _max_states;
 	bool _event_generated;

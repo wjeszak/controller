@@ -164,9 +164,7 @@ private:
 //		state 						reply 			fp 					fault						negation
 		{ST_TESTING_ELM, 			ElmFault,		NULL, 				F05_Elm, 					false},
 		{ST_PREPARING_TO_MOVEMENT, 	Closed, 		NULL, 				F06_CloseDoor, 				true },
-		//{ST_PREPARING_TO_MOVEMENT, 	OnOff,	 		NULL, 				F06_CloseDoor, 				true },
 		{ST_HOMING, 				Closed, 		&Dynabox::EV_OnF8, 	F08_IllegalOpening, 		true },
-		//{ST_MOVEMENT,				OnOff,			&Dynabox::EV_OnF8,	F08_IllegalOpening,			true },
 		{ST_MOVEMENT, 				Closed, 		NULL,				F08_IllegalOpening, 		true },
 	};
 

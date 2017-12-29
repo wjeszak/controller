@@ -40,14 +40,12 @@ void Dynabox::ST3_ShowingOnLed(DynaboxData* pdata)
 
 void Dynabox::ST4_Homing(DynaboxData* pdata)
 {
-//	mb.Write(current_address, d->data);
-//	mb.Write(current_address + 1, d->data);
+
 }
 
 void Dynabox::ST5_Ready(DynaboxData* pdata)
 {
-//	mb.Write(current_address + 1, d->data);
-//	mb.Write(current_address, d->data);
+
 }
 
 void Dynabox::ST6_Movement(DynaboxData* pdata)
@@ -99,7 +97,7 @@ void Dynabox::ENTRY_PreparingToMovement()
 
 void Dynabox::EXIT_PreparingToMovement()
 {
-	if(fault.CheckGlobal(F02_Door))
+	if(fault.CheckGlobal())
 	{
 		s.Push(ST_NOT_READY);
 		SetLedCommand(true);
@@ -228,7 +226,9 @@ void Dynabox::EV_UserAction(MachineData* pdata)
 		{
 			desired_doors_position[i] = (uint8_t)mb.Read(LOCATIONS_NUMBER + 1 + i);
 		}
-		s.Push(ST_PREPARING_TO_MOVEMENT);
+		s.Push(ST_TESTING_ELM);
+		//s.Push(ST_PREPARING_TO_MOVEMENT);
+		// tymczasowo do testow
 		timer.Assign(TIMER_TMP1, TIMER_TMP1_INTERVAL, Tmp1);
 	}
 	if(GetOrderStatus() == GoAck) display.Write(1234);

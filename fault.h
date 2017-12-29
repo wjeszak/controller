@@ -18,6 +18,7 @@ public:
 	void SetGlobal(uint8_t fault);
 	void ClearGlobal(uint8_t fault);
 	bool CheckGlobal(uint8_t fault);
+	bool CheckGlobal();
 	void ShowGlobal();
 	void Set(uint8_t fault, uint8_t address);
 	void Clear(uint8_t fault, uint8_t address);

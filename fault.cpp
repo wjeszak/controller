@@ -32,6 +32,15 @@ bool Fault::CheckGlobal(uint8_t fault)
 	return false;
 }
 
+bool Fault::CheckGlobal()
+{
+	for(uint8_t i = 0; i < NUMBER_OF_FAULTS; i++)
+	{
+		if(global_faults & (1ULL << i)) return true;
+	}
+	return false;
+}
+
 void Fault::ShowGlobal()
 {
 	static uint8_t i = 1;
