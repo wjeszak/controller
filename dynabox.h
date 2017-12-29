@@ -49,6 +49,9 @@ public:
 	void EV_Reply(MachineData* pdata);
 	void EV_Timeout(MachineData* pdata);
 	void EV_OnF8(DynaboxData* pdata);
+
+	volatile uint8_t encoder_irq_flag;
+
 private:
 // ---------------------------------- States ----------------------------------
 	void ST0_TestingLed(DynaboxData* pdata);				// 0
@@ -103,6 +106,7 @@ private:
 	void SetFaults(uint8_t st, uint8_t reply);
 	bool home_ok;
 	uint8_t last_position;
+
 	LedCommand fault_to_led[NUMBER_OF_FAULTS + 1] =
 	{
 		GreenRedOff,	// not used

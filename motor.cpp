@@ -324,7 +324,8 @@ void Motor::EncoderIrq()
 
 ISR(PCINT1_vect)
 {
-	motor.EncoderIrq();
+	dynabox.encoder_irq_flag = 1;
+	//motor.EncoderIrq();
 }
 
 void Motor::Debug()

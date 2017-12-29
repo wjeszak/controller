@@ -59,5 +59,10 @@ int main()
 	while(1)
 	{
 		if(config.need_stack_poll)	tcp.Poll();
+		if(dynabox.encoder_irq_flag)
+		{
+			dynabox.encoder_irq_flag = 0;
+			motor.EncoderIrq();
+		}
 	}
 }

@@ -20,6 +20,7 @@ Dynabox::Dynabox()
 	SetOrderStatus(Ready);
 	home_ok = false;
 	last_position = 1;
+	encoder_irq_flag = 0;
 }
 
 void Dynabox::Init()
