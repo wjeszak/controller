@@ -220,25 +220,31 @@ void Dynabox::EV_HomingDone(DynaboxData* pdata)
 
 void Dynabox::EV_UserAction(MachineData* pdata)
 {
-	if(last_position != mb.Read(LOCATIONS_NUMBER) && mb.GetQuantity() > 1)
+	if(mb.GetQuantity() > 1)
 	{
 		for(uint8_t i = 0; i < MACHINE_MAX_NUMBER_OF_DOORS; i++)
 		{
 			desired_doors_position[i] = (uint8_t)mb.Read(LOCATIONS_NUMBER + 1 + i);
 		}
-		s.Push(ST_TESTING_ELM);
+
+		if(last_position != mb.Read(LOCATIONS_NUMBER))
+			s.Push(ST_TESTING_ELM);			// need movement
+		else
+			s.Push(ST_END_MOVEMENT);		// not need
+
+		last_position = mb.Read(LOCATIONS_NUMBER);
 	}
 	if(GetOrderStatus() == GoAck) display.Write(1234);
 }
 
 void Dynabox::EV_PositionAchieved(DynaboxData* pdata)
 {
-	SetOrderStatus(EndOfMovement);
 	motor.EV_Stop(&motor_data);
 	s.Push(ST_END_MOVEMENT);
 	SetLedCommand(GreenRedOff, true);
 	s.Push(ST_SHOWING_ON_LED);
 	ClearIOInfo(Moving);
+	SetOrderStatus(EndOfMovement);
 }
 
 void Dynabox::EV_OnF8(DynaboxData* pdata)
