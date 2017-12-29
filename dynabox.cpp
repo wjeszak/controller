@@ -46,7 +46,6 @@ void Dynabox::StateManager()
 	}
 	InternalEventEx(state, &dynabox_data);
 	comm.EV_Send(GetDestAddr(state), current_command[current_address - 1] , state_properties[state].need_timeout);
-
 	current_address++;
 }
 
@@ -129,7 +128,7 @@ void Dynabox::SetFaults(uint8_t st, uint8_t reply)
 void Dynabox::EV_Reply(MachineData* pdata)
 {
 	uint8_t state = GetState();
-	mb.Write(current_address, d->data);
+	mb.Write(current_address, pdata->data);
 	SetFaults(state, pdata->data);
 }
 

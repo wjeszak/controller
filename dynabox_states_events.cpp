@@ -45,7 +45,11 @@ void Dynabox::ST4_Homing(DynaboxData* pdata)
 
 void Dynabox::ST5_Ready(DynaboxData* pdata)
 {
-
+	if(desired_doors_position[current_address - 1] != 0 && mb.Read(current_address + 1) >= 0x40 && mb.Read(current_address + 1) <= 0x4F)
+	{
+		comm.EV_Send(current_address + LED_ADDRESS_OFFSET, GreenRedOff, false);
+		desired_doors_position[current_address - 1] = 0;
+	}
 }
 
 void Dynabox::ST6_Movement(DynaboxData* pdata)
