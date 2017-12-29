@@ -159,8 +159,14 @@ void Dynabox::EXIT_Ready()
 
 void Dynabox::ENTRY_Movement()
 {
-	SetIOInfo(Moving);
 	SetDoorCommand(GetStatus);
+	motor_data.pos = 400 * (mb.Read(LOCATIONS_NUMBER) - 1);
+	motor.ComputeDirection();
+	motor.ComputeMaxPwm();
+	motor.EV_Start(&motor_data);
+	SetOrderStatus(Processing);
+	SetIOInfo(Moving);
+	timer.Assign(TIMER_TMP1, TIMER_TMP1_INTERVAL, Tmp1);
 }
 
 void Dynabox::EXIT_Movement()
@@ -214,22 +220,13 @@ void Dynabox::EV_HomingDone(DynaboxData* pdata)
 
 void Dynabox::EV_UserAction(MachineData* pdata)
 {
-	if(mb.Read(LOCATIONS_NUMBER) > 0)
+	if(last_position != mb.Read(LOCATIONS_NUMBER) && mb.GetQuantity() > 1)
 	{
-		SetOrderStatus(Processing);
-		motor_data.pos = 400 * (mb.Read(LOCATIONS_NUMBER) - 1);
-		motor.ComputeDirection();
-		motor.ComputeMaxPwm();
-		motor.EV_Start(&motor_data);
-		mb.Write(LOCATIONS_NUMBER, 0);
 		for(uint8_t i = 0; i < MACHINE_MAX_NUMBER_OF_DOORS; i++)
 		{
 			desired_doors_position[i] = (uint8_t)mb.Read(LOCATIONS_NUMBER + 1 + i);
 		}
 		s.Push(ST_TESTING_ELM);
-		//s.Push(ST_PREPARING_TO_MOVEMENT);
-		// tymczasowo do testow
-		timer.Assign(TIMER_TMP1, TIMER_TMP1_INTERVAL, Tmp1);
 	}
 	if(GetOrderStatus() == GoAck) display.Write(1234);
 }

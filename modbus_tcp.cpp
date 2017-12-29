@@ -152,3 +152,8 @@ void ModbusTCP::ErrorReply(uint8_t* frame, uint8_t error_code)
 	frame[MODBUS_RES_TCP_BYTE_COUNT] = error_code;
 	tcp_data.len = 9;
 }
+
+uint16_t ModbusTCP::GetQuantity()
+{
+	return quantity;
+}

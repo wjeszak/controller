@@ -102,6 +102,7 @@ private:
 	void SetLedCommand(LedCommand command, bool queued);
 	void SetFaults(uint8_t st, uint8_t reply);
 	bool home_ok;
+	uint8_t last_position;
 	LedCommand fault_to_led[NUMBER_OF_FAULTS + 1] =
 	{
 		GreenRedOff,	// not used

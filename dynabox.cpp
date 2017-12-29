@@ -19,6 +19,7 @@ Dynabox::Dynabox()
 {
 	SetOrderStatus(Ready);
 	home_ok = false;
+	last_position = 0;
 }
 
 void Dynabox::Init()

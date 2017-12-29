@@ -87,6 +87,7 @@ public:
 	void ClearBit(uint8_t address, uint8_t bit);	// from controller
 	void Read(uint8_t* frame);						// from user
 	void Write(uint8_t* frame);						// from user
+	uint16_t GetQuantity();							// need by EV_UserAction()
 private:
 	void MakeMBAPHeader(uint8_t* frame);
 	void ReadReply(uint8_t* frame);
