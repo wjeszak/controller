@@ -55,8 +55,8 @@ void Dynabox::ST6_Movement(DynaboxData* pdata)
 
 void Dynabox::ST7_EndMovement(DynaboxData* pdata)
 {
-	//if(desired_doors_position[current_address] != 0)
-	//	comm.EV_Send(current_address + LED_ADDRESS_OFFSET, GreenOn, false);
+	if(desired_doors_position[current_address - 1] != 0)
+		comm.EV_Send(current_address + LED_ADDRESS_OFFSET, GreenOn, false);
 }
 
 void Dynabox::ST8_NotReady(DynaboxData* pdata)
@@ -234,7 +234,7 @@ void Dynabox::EV_UserAction(MachineData* pdata)
 
 		last_position = mb.Read(LOCATIONS_NUMBER);
 	}
-	if(GetOrderStatus() == GoAck) display.Write(1234);
+	if(GetOrderStatus() == GoAck) display.Write(1234);		// clear faults
 }
 
 void Dynabox::EV_PositionAchieved(DynaboxData* pdata)

@@ -44,8 +44,9 @@ void Dynabox::StateManager()
 		}
 		return;
 	}
-	comm.EV_Send(GetDestAddr(state), current_command[current_address - 1] , state_properties[state].need_timeout);
 	InternalEventEx(state, &dynabox_data);
+	comm.EV_Send(GetDestAddr(state), current_command[current_address - 1] , state_properties[state].need_timeout);
+
 	current_address++;
 }
 
