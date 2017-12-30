@@ -139,7 +139,7 @@ void Dynabox::ENTRY_Homing()
 	motor_data.max_pwm_val = MAX_PWM_HOMING;
 	motor.EV_Start(&motor_data);
 	// tymczasowo do testow
-	timer.Assign(TIMER_TMP, TIMER_TMP_INTERVAL, Tmp);
+	//timer.Assign(TIMER_TMP, TIMER_TMP_INTERVAL, Tmp);
 	SetIOInfo(Moving);
 	SetIOInfo(MovingDirection);
 	SetIOInfo(HomingInProgress);
@@ -170,7 +170,7 @@ void Dynabox::ENTRY_Movement()
 	motor.EV_Start(&motor_data);
 	SetOrderStatus(Processing);
 	SetIOInfo(Moving);
-	timer.Assign(TIMER_TMP1, TIMER_TMP1_INTERVAL, Tmp1);
+	//timer.Assign(TIMER_TMP1, TIMER_TMP1_INTERVAL, Tmp1);
 }
 
 void Dynabox::EXIT_Movement()
