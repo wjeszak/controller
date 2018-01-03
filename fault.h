@@ -23,6 +23,7 @@ public:
 	void Set(uint8_t fault, uint8_t address);
 	void Clear(uint8_t fault, uint8_t address);
 	bool Check(uint8_t fault, uint8_t address);
+	bool CheckAll(uint8_t address);
 private:
 	uint32_t global_faults;
 	uint8_t  doors_faults[MACHINE_MAX_NUMBER_OF_DOORS];

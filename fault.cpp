@@ -24,6 +24,7 @@ void Fault::SetGlobal(uint8_t fault)
 void Fault::ClearGlobal(uint8_t fault)
 {
 	global_faults &= ~(1ULL << fault);
+	mb.Write((uint8_t)GENERAL_ERROR_STATUS, 0 << 8);
 }
 
 bool Fault::CheckGlobal(uint8_t fault)
@@ -65,6 +66,7 @@ void Fault::Set(uint8_t fault, uint8_t address)
 
 void Fault::Clear(uint8_t fault, uint8_t address)
 {
+	mb.Write((uint8_t)address + 1, 0 << 8);
 	doors_faults[address - 1] &= ~(1 << (fault - 1));
 }
 
@@ -73,4 +75,12 @@ bool Fault::Check(uint8_t fault, uint8_t address)
 	if(doors_faults[address - 1] & (1 << (fault - 1)))
 		return true;
 	return false;
+}
+
+bool Fault::CheckAll(uint8_t address)
+{
+	if(doors_faults[address - 1] != 0)
+		return true;
+	return false;
+
 }

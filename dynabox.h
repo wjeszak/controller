@@ -8,6 +8,8 @@
 #ifndef DYNABOX_H_
 #define DYNABOX_H_
 
+//#define DEBUG
+
 #include "dynabox_commands_faults.h"
 #include "machine.h"
 #include "motor.h"

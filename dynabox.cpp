@@ -37,7 +37,7 @@ void Dynabox::StateManager()
 	fault_show_cnt++;
 	if(fault_show_cnt == FAULT_SHOW_TICK)
 	{
-		//fault.ShowGlobal();
+		fault.ShowGlobal();
 		fault_show_cnt = 0;
 	}
 
@@ -121,13 +121,17 @@ void Dynabox::SetFaults(uint8_t st, uint8_t reply)
 			if((reply_fault_set[i].reply == reply) && reply_fault_set[i].neg == false)
 			{
 				fault.SetGlobal(reply_fault_set[i].fault);
-				mb.Write(current_address, reply_fault_set[i].fault << 8);
+				fault.Set(reply_fault_set[i].fault, current_address - 1);
+				mb.Write(current_address, (reply_fault_set[i].fault << 8));
+				//mb.Write(current_address, reply_fault_set[i].fault);
 				if(reply_fault_set[i].fp != NULL) (this->*reply_fault_set[i].fp)(NULL);
 			}
 			if((reply_fault_set[i].reply != reply) && reply_fault_set[i].neg == true)
 			{
 				fault.SetGlobal(reply_fault_set[i].fault);
-				mb.Write(current_address, reply_fault_set[i].fault << 8);
+				fault.Set(reply_fault_set[i].fault, current_address - 1);
+				mb.Write(current_address, (reply_fault_set[i].fault << 8));
+				//mb.Write(current_address, reply_fault_set[i].fault);
 				if(reply_fault_set[i].fp != NULL) (this->*reply_fault_set[i].fp)(NULL);
 			}
 		}

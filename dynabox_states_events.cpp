@@ -65,13 +65,25 @@ void Dynabox::ST7_EndMovement(DynaboxData* pdata)
 
 void Dynabox::ST8_NotReady(DynaboxData* pdata)
 {
-	if(fault.Check(F06_CloseDoor, current_address + 1) && (((mb.Read(current_address + 1) & 0xFF) == 0xD0 || (mb.Read(current_address + 1) & 0xFF) == 0xC0)))
+	//if(pdata->addr == 7) display.Write(pdata->data);
+	//if((pdata->data == 0xD0 || pdata->data == 0xC0) && pdata->addr == 7)
+	if(fault.Check(F06_CloseDoor, current_address) && (((mb.Read((uint8_t)current_address + 1) & 0xFF) == 0xD0 || (mb.Read((uint8_t)current_address + 1) & 0xFF) == 0xC0)))
 	{
-		fault.ClearGlobal(F06_CloseDoor);
+		//fault.ClearGlobal(F06_CloseDoor);
 		fault.Clear(F06_CloseDoor, current_address);
 		comm.EV_Send(current_address + LED_ADDRESS_OFFSET, GreenRedOff, false);
-		s.Push(ST_MOVEMENT);
-		display.Write(1234);
+		//s.Push(ST_PREPARING_TO_MOVEMENT);
+		//display.Write(1234);
+		uint8_t f = 0;
+		for(uint8_t i = 0; i < MACHINE_MAX_NUMBER_OF_DOORS; i++)
+		{
+			if(fault.CheckAll(i))		// still fault
+			{
+				f = 1;
+				break;
+			}
+		}
+		if(f == 0) fault.ClearGlobal(F06_CloseDoor);
 	}
 }
 
@@ -145,11 +157,12 @@ void Dynabox::ENTRY_Homing()
 	motor.SetDirection(motor.Forward);
 	motor_data.max_pwm_val = MAX_PWM_HOMING;
 	motor.EV_Start(&motor_data);
-	// tymczasowo do testow
-	//timer.Assign(TIMER_TMP, TIMER_TMP_INTERVAL, Tmp);
 	SetIOInfo(Moving);
 	SetIOInfo(MovingDirection);
 	SetIOInfo(HomingInProgress);
+#ifdef DEBUG
+	timer.Assign(TIMER_TMP, TIMER_TMP_INTERVAL, Tmp);
+#endif
 }
 
 void Dynabox::EXIT_Homing()
@@ -177,7 +190,9 @@ void Dynabox::ENTRY_Movement()
 	motor.EV_Start(&motor_data);
 	SetOrderStatus(Processing);
 	SetIOInfo(Moving);
-	//timer.Assign(TIMER_TMP1, TIMER_TMP1_INTERVAL, Tmp1);
+#ifdef DEBUG
+	timer.Assign(TIMER_TMP1, TIMER_TMP1_INTERVAL, Tmp1);
+#endif
 }
 
 void Dynabox::EXIT_Movement()
