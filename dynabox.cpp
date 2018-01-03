@@ -21,7 +21,6 @@ Dynabox::Dynabox()
 	home_ok = false;
 	last_position = 1;
 	encoder_irq_flag = 0;
-	still_faults = 0;
 }
 
 void Dynabox::Init()
