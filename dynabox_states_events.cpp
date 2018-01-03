@@ -65,15 +65,10 @@ void Dynabox::ST7_EndMovement(DynaboxData* pdata)
 
 void Dynabox::ST8_NotReady(DynaboxData* pdata)
 {
-	//if(pdata->addr == 7) display.Write(pdata->data);
-	//if((pdata->data == 0xD0 || pdata->data == 0xC0) && pdata->addr == 7)
 	if(fault.Check(F06_CloseDoor, current_address) && (((mb.Read((uint8_t)current_address + 1) & 0xFF) == 0xD0 || (mb.Read((uint8_t)current_address + 1) & 0xFF) == 0xC0)))
 	{
-		//fault.ClearGlobal(F06_CloseDoor);
 		fault.Clear(F06_CloseDoor, current_address);
 		comm.EV_Send(current_address + LED_ADDRESS_OFFSET, GreenRedOff, false);
-		//s.Push(ST_PREPARING_TO_MOVEMENT);
-		//display.Write(1234);
 		uint8_t f = 0;
 		for(uint8_t i = 0; i < MACHINE_MAX_NUMBER_OF_DOORS; i++)
 		{
@@ -83,7 +78,11 @@ void Dynabox::ST8_NotReady(DynaboxData* pdata)
 				break;
 			}
 		}
-		if(f == 0) fault.ClearGlobal(F06_CloseDoor);
+		if(f == 0)
+		{
+			fault.ClearGlobal(F06_CloseDoor);
+			s.Push(ST_PREPARING_TO_MOVEMENT);
+		}
 	}
 }
 
