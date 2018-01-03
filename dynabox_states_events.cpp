@@ -70,9 +70,6 @@ void Dynabox::ST8_NotReady(DynaboxData* pdata)
 		fault.Clear(F06_CloseDoor, current_address);
 		comm.EV_Send(current_address + LED_ADDRESS_OFFSET, GreenRedOff, false);
 	}
-	//still_faults = 0;
-	//if(fault.CheckAll(current_address))
-	//	still_faults = 1;
 }
 
 void Dynabox::ST9_Config(DynaboxData* pdata)
