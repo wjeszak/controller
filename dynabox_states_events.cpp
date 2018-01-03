@@ -207,11 +207,8 @@ void Dynabox::EXIT_NotReady()
 	{
 		if(fault.CheckAll(i)) return;	// still fault
 	}
-	//if(still_faults == 0)
-	//{
 		fault.ClearGlobal(F06_CloseDoor);
 		s.Push(ST_PREPARING_TO_MOVEMENT);
-	//}
 }
 // ---------------------------------- Public events ---------------------------
 void Dynabox::EV_LedTrigger()
