@@ -177,7 +177,8 @@ private:
 	{
 		{ST_TESTING_ELM, 			ElmOk, 			NULL, 				F05_Elm,		 			false},
 		{ST_PREPARING_TO_MOVEMENT, 	ElmOk, 			NULL, 				F06_CloseDoor, 				true },
-		{ST_HOMING, 				ElmOk, 			&Dynabox::EV_OnF8, 	F08_IllegalOpening, 		true }
+		{ST_HOMING, 				ElmOk, 			&Dynabox::EV_OnF8, 	F08_IllegalOpening, 		true },
+		//{ST_NOT_READY, 				Closed,
 	};
 };
 

@@ -65,7 +65,14 @@ void Dynabox::ST7_EndMovement(DynaboxData* pdata)
 
 void Dynabox::ST8_NotReady(DynaboxData* pdata)
 {
-
+	if(fault.Check(F06_CloseDoor, current_address + 1) && (((mb.Read(current_address + 1) & 0xFF) == 0xD0 || (mb.Read(current_address + 1) & 0xFF) == 0xC0)))
+	{
+		fault.ClearGlobal(F06_CloseDoor);
+		fault.Clear(F06_CloseDoor, current_address);
+		comm.EV_Send(current_address + LED_ADDRESS_OFFSET, GreenRedOff, false);
+		s.Push(ST_MOVEMENT);
+		display.Write(1234);
+	}
 }
 
 void Dynabox::ST9_Config(DynaboxData* pdata)

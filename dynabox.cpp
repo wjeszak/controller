@@ -37,7 +37,7 @@ void Dynabox::StateManager()
 	fault_show_cnt++;
 	if(fault_show_cnt == FAULT_SHOW_TICK)
 	{
-		fault.ShowGlobal();
+		//fault.ShowGlobal();
 		fault_show_cnt = 0;
 	}
 
