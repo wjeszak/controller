@@ -70,11 +70,9 @@ void Dynabox::ST8_NotReady(DynaboxData* pdata)
 		fault.Clear(F06_CloseDoor, current_address);
 		comm.EV_Send(current_address + LED_ADDRESS_OFFSET, GreenRedOff, false);
 	}
-	still_faults = 0;
-	if(fault.CheckAll(current_address))
-		still_faults = 1;
-	//else
-
+	//still_faults = 0;
+	//if(fault.CheckAll(current_address))
+	//	still_faults = 1;
 }
 
 void Dynabox::ST9_Config(DynaboxData* pdata)
@@ -208,11 +206,15 @@ void Dynabox::ENTRY_NotReady()
 
 void Dynabox::EXIT_NotReady()
 {
-	if(still_faults == 0)
+	for(uint8_t i = 0; i < MACHINE_MAX_NUMBER_OF_DOORS; i++)
 	{
+		if(fault.CheckAll(i)) return;	// still fault
+	}
+	//if(still_faults == 0)
+	//{
 		fault.ClearGlobal(F06_CloseDoor);
 		s.Push(ST_PREPARING_TO_MOVEMENT);
-	}
+	//}
 }
 // ---------------------------------- Public events ---------------------------
 void Dynabox::EV_LedTrigger()
