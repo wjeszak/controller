@@ -100,7 +100,7 @@ void Dynabox::EXIT_TestingElm()
 
 void Dynabox::ENTRY_PreparingToMovement()
 {
-	SetDoorCommand(GetStatus);
+	SetDoorCommand(GetStatusBeforeMovement);
 }
 
 void Dynabox::EXIT_PreparingToMovement()

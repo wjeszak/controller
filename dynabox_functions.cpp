@@ -23,7 +23,7 @@ Function EEMEM dynabox_eem_functions[DYNABOX_NUMBER_OF_FUNCTIONS] =
 {
 //   No.of function, 	Default value,  Function pointer
 	{1, 				25, 			NULL},	// program address door or led
-	{2, 				7, 				NULL},	// max doors
+	{2, 				13, 			NULL},	// max doors
 	{4,					0, 				f12},	// test led
 	{5,					170,  			NULL},	// IP master
 	{6,					0,  			f12},	// test door

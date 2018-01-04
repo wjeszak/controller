@@ -8,7 +8,7 @@
 #ifndef DYNABOX_H_
 #define DYNABOX_H_
 
-//#define DEBUG
+#define DEBUG
 
 #include "dynabox_commands_faults.h"
 #include "machine.h"
@@ -16,7 +16,7 @@
 
 #define MAX_PWM_HOMING 						173
 
-enum DoorCommand { CheckElm = 0x01, GetStatus = 0x80, SetPosition = 0xC0 };
+enum DoorCommand { CheckElm = 0x01, GetStatusBeforeMovement = 0x02, GetStatus = 0x80, SetPosition = 0xC0 };
 enum DoorReply 	 { ElmOk, ElmFault, TransoptFault = 0xF0, Closed = 0xC0, OnOff = 0xD0 };
 
 enum LedCommand  { GreenRedOff, GreenOn, RedOn, GreenBlink, RedBlink, GreenRedBlink,
