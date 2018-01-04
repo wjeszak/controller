@@ -16,6 +16,7 @@
 #include "display.h"
 #include "dynabox_commands_faults.h"
 #include "stack.h"
+#include "queue.h"
 
 // ---------------------------------- States ----------------------------------
 void Dynabox::ST0_TestingLed(DynaboxData* pdata)
@@ -45,9 +46,14 @@ void Dynabox::ST4_Homing(DynaboxData* pdata)
 
 void Dynabox::ST5_Ready(DynaboxData* pdata)
 {
+	// elm off
 	if(desired_doors_position[current_address - 1] != 0 && mb.Read(current_address + 1) >= 0x40 && mb.Read(current_address + 1) <= 0x4F)
 	{
 		comm.EV_Send(current_address + LED_ADDRESS_OFFSET, GreenRedOff, false);
+		uint8_t addr = q.Get();
+		// to jest lipa :/
+		current_command[addr] = SetPosition + desired_doors_position[addr];
+		//comm.EV_Send(addr + 1, SetPosition + desired_doors_position[addr], true);
 		desired_doors_position[current_address - 1] = 0;
 	}
 }
@@ -59,7 +65,8 @@ void Dynabox::ST6_Movement(DynaboxData* pdata)
 
 void Dynabox::ST7_EndMovement(DynaboxData* pdata)
 {
-	if(desired_doors_position[current_address - 1] != 0)
+	if(current_command[current_address - 1] > SetPosition)
+	//if(desired_doors_position[current_address - 1] != 0)
 		comm.EV_Send(current_address + LED_ADDRESS_OFFSET, GreenOn, false);
 }
 
@@ -187,7 +194,19 @@ void Dynabox::EXIT_Movement()
 
 void Dynabox::ENTRY_EndMovement()
 {
-	SetDoorCommand();
+	uint8_t n = q.GetNumberOfElements();
+	//display.Write(n);
+	if(n > 3) n = 3;
+
+	for(uint8_t i = 0; i < n; i++)
+	{
+		//if(desired_doors_position[i] != 0)
+		uint8_t el = q.Get();
+		current_command[el] = SetPosition + desired_doors_position[el];
+		//else
+		//	current_command[i] = GetStatus;
+	}
+	//SetDoorCommand();
 }
 
 void Dynabox::EXIT_EndMovement()
@@ -241,6 +260,7 @@ void Dynabox::EV_UserAction(MachineData* pdata)
 		for(uint8_t i = 0; i < MACHINE_MAX_NUMBER_OF_DOORS; i++)
 		{
 			desired_doors_position[i] = (uint8_t)mb.Read(LOCATIONS_NUMBER + 1 + i);
+			if(desired_doors_position[i] != 0) q.Add(i);
 		}
 
 		if(last_position != mb.Read(LOCATIONS_NUMBER))

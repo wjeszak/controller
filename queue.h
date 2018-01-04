@@ -11,7 +11,7 @@
 #include <inttypes.h>
 #include "machine.h"
 
-#define QUEUE_LENGTH 	MACHINE_MAX_NUMBER_OF_DOORS - 1
+#define QUEUE_LENGTH 	15
 
 class Queue
 {

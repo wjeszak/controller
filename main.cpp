@@ -27,6 +27,7 @@
 #include "motor.h"
 #include "tcp.h"
 #include "stack.h"
+#include "queue.h"
 
 Machine* m;
 MachineData* d;
@@ -52,6 +53,7 @@ Tcp tcp;
 Comm comm;
 ModbusTCP mb;
 Stack s;
+Queue q;
 
 int main()
 {

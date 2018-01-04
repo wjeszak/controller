@@ -15,8 +15,7 @@ Queue::Queue()
 
 void Queue::Add(uint8_t el)
 {
-    uint8_t tmp_head;
-    tmp_head = (head + 1) & (QUEUE_LENGTH);
+    uint8_t tmp_head = (head + 1) & QUEUE_LENGTH;
     if (tmp_head == tail)
     {
         // overwrite
@@ -31,7 +30,7 @@ uint8_t Queue::Get()
     if(head != tail)
     {
         // something in queue
-        tail = (tail + 1) & (QUEUE_LENGTH);
+        tail = (tail + 1) & QUEUE_LENGTH;
         return elements[tail];
     }
     // empty
@@ -40,5 +39,5 @@ uint8_t Queue::Get()
 
 uint8_t Queue::GetNumberOfElements()
 {
-	return (head - tail) & (QUEUE_LENGTH);
+	return (head - tail) & QUEUE_LENGTH;
 }
