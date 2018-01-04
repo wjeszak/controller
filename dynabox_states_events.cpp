@@ -52,6 +52,7 @@ void Dynabox::ST5_Ready(DynaboxData* pdata)
 		comm.EV_Send(current_address + LED_ADDRESS_OFFSET, GreenRedOff, false);
 		uint8_t addr = q.Get();
 		// to jest lipa :/
+		comm.EV_Send(addr + 1 + LED_ADDRESS_OFFSET, GreenOn, false);
 		current_command[addr] = SetPosition + desired_doors_position[addr];
 		//comm.EV_Send(addr + 1, SetPosition + desired_doors_position[addr], true);
 		desired_doors_position[current_address - 1] = 0;
