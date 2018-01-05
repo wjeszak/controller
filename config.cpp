@@ -23,6 +23,8 @@ void test()
 Config::Config() : StateMachine(ST_MAX_STATES)
 {
 	need_stack_poll = true;
+	number_of_functions = 0; 		// overwrite by LoadParameters()
+	index = 0;
 }
 
 void Config::EV_ButtonClick(ConfigData* pdata)
@@ -32,7 +34,7 @@ void Config::EV_ButtonClick(ConfigData* pdata)
 	{
 		// exit from configuration
 		m->SaveParameters();
-	//	timer.Assign(TIMER_FAULT_SHOW, 1000, FaultShow);
+		SLAVE_POLL_START;
 	}
 	BEGIN_TRANSITION_MAP								// current state
         TRANSITION_MAP_ENTRY(ST_CHOOSING_FUNCTION)		// ST_IDLE

@@ -239,7 +239,6 @@ void Dynabox::EV_LedTrigger()
 void Dynabox::EV_EnterToConfig()
 {
 	SLAVE_POLL_STOP;
-//	timer.Disable(TIMER_FAULT_SHOW);
 }
 
 void Dynabox::EV_HomingDone(DynaboxData* pdata)

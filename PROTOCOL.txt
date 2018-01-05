@@ -6,16 +6,16 @@ Door must reply on every request.
 Request: | ADDRESS | COMMAND | CRC | 0x0A |
 
 * Commands:
-1. COMM_CHECK_ELECTROMAGNET 				0x01  
-2. COMM_CHECK_TRANSOPTORS_GET_SET_STATUS:
-	a) get position: 0x80 (set 7 bit)
-	b) set position: 0xC0 (set 7, 6 bit) + desired position  
+1. COMM_CHECK_ELECTROMAGNET 				0x01
+2. COMM_GET_STATUS_BEFORE_MOVEMENT 			0x02  
+3. COMM_GET_STATUS 					command & (1 << 7)				// 0x80
+4. COMM_GET_SET_STATUS 					(command & (1 << 7)) && (command & (1 << 6))	// 0xC0 
 
 Reply: | ADDRESS | RESULT | CRC | 0x0A |
 
 * Results:
 1. Electromagnet OK: 0x00, Electromagnet FAIL: 0x01
-2. See door's state table, Transoptor FAIL:  0xF0
+2. See door's state table, Transoptor FAIL:    0xF0
 
 -> Led
 Led reply only on diagnostic request (COMM_LED_DIAG)

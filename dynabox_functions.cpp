@@ -10,8 +10,6 @@
 #include "dynabox.h"
 #include "modbus_tcp.h"
 
-#define DYNABOX_NUMBER_OF_FUNCTIONS 		11
-
 // Functions
 void f12()
 {
@@ -23,16 +21,17 @@ Function EEMEM dynabox_eem_functions[DYNABOX_NUMBER_OF_FUNCTIONS] =
 {
 //   No.of function, 	Default value,  Function pointer
 	{1, 				25, 			NULL},	// program address door or led
-	{2, 				13, 			NULL},	// max doors
-	{4,					0, 				f12},	// test led
-	{5,					170,  			NULL},	// IP master
-	{6,					0,  			f12},	// test door
-	{7,					0,  			f12},	// test led
-	{8,					0,  			NULL},	// offset
-	{9,					0,  			f12},	// load defaults
-	{10,				25,  			NULL},	// led brightness
-	{12,				1,				NULL},	// serial number
+	{2, 				7, 				NULL},	// max doors
+	{3,					0, 				f12},	// test led
+	{4,					170,  			NULL},	// IP master
+	{5,					0,  			f12},	// test door
+	{6,					0,  			f12},	// test led
+	{7,					0,  			NULL},	// offset
+	{8,					0,  			f12},	// load defaults
+	{9,					25,  			NULL},	// led brightness
+	{10,				1,				NULL},	// serial number
 	{28, 				0,				NULL},	// type of machine
+
 };
 
 void Dynabox::LoadParameters()
