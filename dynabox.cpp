@@ -141,12 +141,13 @@ void Dynabox::SetFaults(uint8_t st, uint8_t reply)
 void Dynabox::EV_Reply(MachineData* pdata)
 {
 	uint8_t state = GetState();
-	SetFaults(state, pdata->data);
 	mb.Write(current_address, pdata->data);
+	SetFaults(state, pdata->data);
 }
 
 void Dynabox::EV_Timeout(MachineData* pdata)
 {
+	// it's not possible to clear these faults
 	// led's fault
 	if(state_properties[GetState()].dest == Dest_Led)
 	{

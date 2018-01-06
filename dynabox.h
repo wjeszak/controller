@@ -158,7 +158,7 @@ private:
 		{Dest_Door, true, 	&Dynabox::ENTRY_EndMovement,			&Dynabox::EXIT_EndMovement			},	// ST_END_MOVEMENT
 		{Dest_Door, true, 	&Dynabox::ENTRY_NotReady,				&Dynabox::EXIT_NotReady				},	// ST_NOT_READY
 	};
-
+// -----------------------------need by SetFaults() --------------------------------
 	struct StateFault
 	{
 		uint8_t state;
@@ -173,7 +173,7 @@ private:
 		{ST_TESTING_ELM, 			ElmFault,		NULL, 				F05_Elm, 					false},
 		{ST_PREPARING_TO_MOVEMENT, 	Closed, 		NULL, 				F06_CloseDoor, 				true },
 		{ST_HOMING, 				Closed, 		&Dynabox::EV_OnF8, 	F08_IllegalOpening, 		true },
-		{ST_MOVEMENT, 				Closed, 		NULL,				F08_IllegalOpening, 		true },
+		{ST_MOVEMENT, 				Closed, 		&Dynabox::EV_OnF8,	F08_IllegalOpening, 		true },
 	};
 
 	StateFault reply_fault_clear[ST_MAX_STATES] =

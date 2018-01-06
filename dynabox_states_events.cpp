@@ -285,5 +285,5 @@ void Dynabox::EV_PositionAchieved(DynaboxData* pdata)
 
 void Dynabox::EV_OnF8(DynaboxData* pdata)
 {
-//	motor.Stop();
+	motor.EV_Stop(&motor_data);
 }
