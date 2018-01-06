@@ -1,0 +1,2 @@
+1. Po flashowaniu EEPROM nie wczytuje siê domyœlna wartoœæ parametru P39 (max elm)
+2. Coœ mi siê te¿ nie podoba wartoœæ DYNABOX_NUMBER_OF_FUNCTIONS dlatego, ¿eby poprawnie dzia³a³o musi byæ o 2 wiêksza ni¿ faktyczna iloœæ funkcji.
