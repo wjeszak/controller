@@ -14,7 +14,7 @@
 #include "machine.h"
 #include "motor.h"
 
-#define DYNABOX_NUMBER_OF_FUNCTIONS 		14
+#define DYNABOX_NUMBER_OF_FUNCTIONS 		15//14
 #define MAX_PWM_HOMING 						173
 
 enum DoorCommand { CheckElm = 0x01, GetStatusBeforeMovement = 0x02, GetStatus = 0x80, SetPosition = 0xC0 };
@@ -139,7 +139,7 @@ private:
 
 	uint8_t current_command[MACHINE_MAX_NUMBER_OF_DOORS];
 	uint8_t desired_doors_position[MACHINE_MAX_NUMBER_OF_DOORS];
-	uint8_t open_timeout[MACHINE_MAX_NUMBER_OF_DOORS];
+	uint8_t door_open_timeout[MACHINE_MAX_NUMBER_OF_DOORS];
 
 	struct StateProperties
 	{

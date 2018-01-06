@@ -43,10 +43,9 @@ void Dynabox::ST4_Homing(DynaboxData* pdata)
 {
 
 }
-
+// ---------------------------------- Ready ----------------------------------
 void Dynabox::ST5_Ready(DynaboxData* pdata)
 {
-
 	if(DoorPositionAchieved())
 	{
 		// turn off previous led
@@ -60,6 +59,14 @@ void Dynabox::ST5_Ready(DynaboxData* pdata)
 			current_command[addr] = SetPosition + desired_doors_position[addr];
 		}
 	}
+
+	if(door_open_timeout[current_address - 1] == 30)
+	{
+		door_open_timeout[current_address - 1] = 0xFF;
+		comm.EV_Send(current_address + LED_ADDRESS_OFFSET, GreenRedBlink, false);
+		//current_command[current_address - 1] = SetPosition + desired_doors_position[current_address - 1];
+	}
+
 }
 
 void Dynabox::ST6_Movement(DynaboxData* pdata)
@@ -259,7 +266,11 @@ void Dynabox::EV_UserAction(MachineData* pdata)
 		for(uint8_t i = 0; i < MACHINE_MAX_NUMBER_OF_DOORS; i++)
 		{
 			desired_doors_position[i] = (uint8_t)mb.Read(LOCATIONS_NUMBER + 1 + i);
-			if(desired_doors_position[i] != 0) q.Add(i);
+			if(desired_doors_position[i] != 0)
+			{
+				door_open_timeout[i] = 0;
+				q.Add(i);
+			}
 		}
 
 		if(last_position != mb.Read(LOCATIONS_NUMBER))
