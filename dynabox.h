@@ -17,7 +17,7 @@
 #define MAX_PWM_HOMING 						173
 
 enum DoorCommand { CheckElm = 0x01, GetStatusBeforeMovement = 0x02, GetStatus = 0x80, SetPosition = 0xC0 };
-enum DoorReply 	 { ElmOk, ElmFault, TransoptFault = 0xF0, Closed = 0xC0, OnOff = 0xD0 };
+enum DoorReply 	 { ElmOk, ElmFault, TransoptFault = 0xF0, OpenedElmOff = 0x40, Opened15StopsElmOff = 0x4F, Closed = 0xC0, OnOff = 0xD0 };
 
 enum LedCommand  { GreenRedOff, GreenOn, RedOn, GreenBlink, RedBlink, GreenRedBlink,
 				   Green1Pulse, Red1Pulse, Green2Pulses, Red2Pulses, Green3Pulses, Red3Pulses,
@@ -55,6 +55,7 @@ public:
 	volatile uint8_t encoder_irq_flag;
 
 private:
+
 // ---------------------------------- States ----------------------------------
 	void ST0_TestingLed(DynaboxData* pdata);				// 0
 	void ST1_TestingElm(DynaboxData* pdata);				// 1
@@ -66,6 +67,7 @@ private:
 	void ST7_EndMovement(DynaboxData* pdata);				// 7
 	void ST8_NotReady(DynaboxData* pdata);					// 8
 	void ST9_Config(DynaboxData* pdata);					// 9
+
 	enum States {ST_TESTING_LED, ST_TESTING_ELM, ST_PREPARING_TO_MOVEMENT, ST_SHOWING_ON_LED, ST_HOMING, ST_READY, ST_MOVEMENT, ST_END_MOVEMENT, ST_NOT_READY, ST_MAX_STATES};
 	BEGIN_STATE_MAP_EX
 		STATE_MAP_ENTRY_EX(&Dynabox::ST0_TestingLed)
@@ -105,6 +107,7 @@ private:
 	void SetDoorCommand(DoorCommand command);
 	void SetLedCommand(bool queued);
 	void SetLedCommand(LedCommand command, bool queued);
+	bool DoorPositionAchieved();
 	void SetFaults(uint8_t st, uint8_t reply);
 	bool home_ok;
 	uint8_t last_position;

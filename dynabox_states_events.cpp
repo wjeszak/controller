@@ -46,16 +46,17 @@ void Dynabox::ST4_Homing(DynaboxData* pdata)
 
 void Dynabox::ST5_Ready(DynaboxData* pdata)
 {
-	// elm off
-	if(desired_doors_position[current_address - 1] != 0 && mb.Read(current_address + 1) >= 0x40 && mb.Read(current_address + 1) <= 0x4F)
+
+	if(DoorPositionAchieved())
 	{
 		comm.EV_Send(current_address + LED_ADDRESS_OFFSET, GreenRedOff, false);
+
+		// open next door from queue
 		uint8_t addr = q.Get();
-		// to jest lipa :/
 		comm.EV_Send(addr + 1 + LED_ADDRESS_OFFSET, GreenOn, false);
 		current_command[addr] = SetPosition + desired_doors_position[addr];
 		//comm.EV_Send(addr + 1, SetPosition + desired_doors_position[addr], true);
-		desired_doors_position[current_address - 1] = 0;
+		//desired_doors_position[current_address - 1] = 0;
 	}
 }
 
@@ -171,7 +172,7 @@ void Dynabox::ENTRY_Ready()
 
 void Dynabox::EXIT_Ready()
 {
-
+	SetDoorCommand(GetStatus);
 }
 
 void Dynabox::ENTRY_Movement()
@@ -281,6 +282,18 @@ void Dynabox::EV_PositionAchieved(DynaboxData* pdata)
 	s.Push(ST_SHOWING_ON_LED);
 	ClearIOInfo(Moving);
 	SetOrderStatus(EndOfMovement);
+}
+
+bool Dynabox::DoorPositionAchieved()
+{
+	uint16_t status = mb.Read(current_address + 1);
+	if(desired_doors_position[current_address - 1] != 0 && status >= OpenedElmOff && status <= Opened15StopsElmOff)
+	{
+		desired_doors_position[current_address - 1] = 0;
+		return true;
+	}
+	else
+		return false;
 }
 
 void Dynabox::EV_OnF8(DynaboxData* pdata)
