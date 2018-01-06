@@ -141,8 +141,8 @@ void Dynabox::SetFaults(uint8_t st, uint8_t reply)
 void Dynabox::EV_Reply(MachineData* pdata)
 {
 	uint8_t state = GetState();
-	mb.Write(current_address, pdata->data);
 	SetFaults(state, pdata->data);
+	mb.Write(current_address, pdata->data);
 }
 
 void Dynabox::EV_Timeout(MachineData* pdata)
