@@ -49,14 +49,16 @@ void Dynabox::ST5_Ready(DynaboxData* pdata)
 
 	if(DoorPositionAchieved())
 	{
+		// turn off previous led
 		comm.EV_Send(current_address + LED_ADDRESS_OFFSET, GreenRedOff, false);
 
 		// open next door from queue
-		uint8_t addr = q.Get();
-		comm.EV_Send(addr + 1 + LED_ADDRESS_OFFSET, GreenOn, false);
-		current_command[addr] = SetPosition + desired_doors_position[addr];
-		//comm.EV_Send(addr + 1, SetPosition + desired_doors_position[addr], true);
-		//desired_doors_position[current_address - 1] = 0;
+		if(q.GetNumberOfElements() > 0)
+		{
+			uint8_t addr = q.Get();
+			comm.EV_Send(addr + 1 + LED_ADDRESS_OFFSET, GreenOn, false);
+			current_command[addr] = SetPosition + desired_doors_position[addr];
+		}
 	}
 }
 
@@ -68,7 +70,6 @@ void Dynabox::ST6_Movement(DynaboxData* pdata)
 void Dynabox::ST7_EndMovement(DynaboxData* pdata)
 {
 	if(current_command[current_address - 1] > SetPosition)
-	//if(desired_doors_position[current_address - 1] != 0)
 		comm.EV_Send(current_address + LED_ADDRESS_OFFSET, GreenOn, false);
 }
 
@@ -196,19 +197,16 @@ void Dynabox::EXIT_Movement()
 
 void Dynabox::ENTRY_EndMovement()
 {
+	// for sure...
+	SetDoorCommand(GetStatus);
 	uint8_t n = q.GetNumberOfElements();
-	//display.Write(n);
-	if(n > 3) n = 3;
+	if(n > functions[11].param) n = functions[11].param;
 
 	for(uint8_t i = 0; i < n; i++)
 	{
-		//if(desired_doors_position[i] != 0)
 		uint8_t el = q.Get();
 		current_command[el] = SetPosition + desired_doors_position[el];
-		//else
-		//	current_command[i] = GetStatus;
 	}
-	//SetDoorCommand();
 }
 
 void Dynabox::EXIT_EndMovement()

@@ -13,7 +13,8 @@
 #include "dynabox_commands_faults.h"
 #include "machine.h"
 #include "motor.h"
-#define DYNABOX_NUMBER_OF_FUNCTIONS 		13
+
+#define DYNABOX_NUMBER_OF_FUNCTIONS 		14
 #define MAX_PWM_HOMING 						173
 
 enum DoorCommand { CheckElm = 0x01, GetStatusBeforeMovement = 0x02, GetStatus = 0x80, SetPosition = 0xC0 };
