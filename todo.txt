@@ -1,3 +1,7 @@
 1. Po flashowaniu EEPROM nie wczytuje siê domyœlna wartoœæ parametru P39 (max elm)
 2. Coœ mi siê te¿ nie podoba wartoœæ DYNABOX_NUMBER_OF_FUNCTIONS dlatego, ¿eby poprawnie dzia³a³o musi byæ o 2 wiêksza ni¿ faktyczna iloœæ funkcji.
 3. Po zmianie parametrów i wyjœciu z konfiguracji dziej¹ siê dziwne rzeczy, ale czy na razie sobie tym g³owê zawracac ?
+4. Przeniesc uruchamianie timera od drzwi do stanu EndMovement!!
+5. Zmienic sekwencje led dla F06, F08 bo siê pokrywaj¹ z homingiem
+6. Wysylac rozkaz trigger po wystapieniu bledu F07, aby równomiernie mruga³y ledy
+7. Kasowanie b³êdów, uruchomienie jazdy po wyst¹pieniu F08

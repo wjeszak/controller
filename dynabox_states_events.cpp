@@ -64,7 +64,7 @@ void Dynabox::ST5_Ready(DynaboxData* pdata)
 	{
 		door_open_timeout[current_address - 1] = 0xFF;
 		comm.EV_Send(current_address + LED_ADDRESS_OFFSET, GreenRedBlink, false);
-		//current_command[current_address - 1] = SetPosition + desired_doors_position[current_address - 1];
+		current_command[current_address - 1] = ElmOff;
 	}
 
 }

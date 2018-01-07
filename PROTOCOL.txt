@@ -7,9 +7,10 @@ Request: | ADDRESS | COMMAND | CRC | 0x0A |
 
 * Commands:
 1. COMM_CHECK_ELECTROMAGNET 				0x01
-2. COMM_GET_STATUS_BEFORE_MOVEMENT 			0x02  
-3. COMM_GET_STATUS 					command & (1 << 7)				// 0x80
-4. COMM_GET_SET_STATUS 					(command & (1 << 7)) && (command & (1 << 6))	// 0xC0 
+2. COMM_GET_STATUS_BEFORE_MOVEMENT 			0x02
+3. COMM_ELM_OFF			 					0x03  
+4. COMM_GET_STATUS 							command & (1 << 7)								// 0x80
+5. COMM_GET_SET_STATUS 						(command & (1 << 7)) && (command & (1 << 6))	// 0xC0 
 
 Reply: | ADDRESS | RESULT | CRC | 0x0A |
 

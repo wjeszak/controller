@@ -17,7 +17,7 @@
 #define DYNABOX_NUMBER_OF_FUNCTIONS 		15//14
 #define MAX_PWM_HOMING 						173
 
-enum DoorCommand { CheckElm = 0x01, GetStatusBeforeMovement = 0x02, GetStatus = 0x80, SetPosition = 0xC0 };
+enum DoorCommand { CheckElm = 0x01, GetStatusBeforeMovement = 0x02, ElmOff = 0x03, GetStatus = 0x80, SetPosition = 0xC0 };
 enum DoorReply 	 { ElmOk, ElmFault, TransoptFault = 0xF0, OpenedElmOff = 0x40, Opened15StopsElmOff = 0x4F, Closed = 0xC0, OnOff = 0xD0 };
 
 enum LedCommand  { GreenRedOff, GreenOn, RedOn, GreenBlink, RedBlink, GreenRedBlink,
