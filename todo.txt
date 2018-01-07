@@ -5,3 +5,4 @@
 5. Zmienic sekwencje led dla F06, F08 bo siê pokrywaj¹ z homingiem
 6. Wysylac rozkaz trigger po wystapieniu bledu F07, aby równomiernie mruga³y ledy
 7. Kasowanie b³êdów, uruchomienie jazdy po wyst¹pieniu F08
+8. Parametr P40 wprowadzic, bêdzie na gotowo
