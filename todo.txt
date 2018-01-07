@@ -6,3 +6,4 @@
 6. Wysylac rozkaz trigger po wystapieniu bledu F07, aby równomiernie mruga³y ledy
 7. Kasowanie b³êdów, uruchomienie jazdy po wyst¹pieniu F08
 8. Parametr P40 wprowadzic, bêdzie na gotowo
+9. Uwaga na czasy klikania bo s¹ zale¿ne od iloœci drzwi -> bez sensu, trzeba zmienic.

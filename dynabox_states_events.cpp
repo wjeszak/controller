@@ -64,19 +64,6 @@ void Dynabox::ST5_Ready(DynaboxData* pdata)
 	}
 
 	DoorOpenTimeoutManager();
-/*
-	if(door_open_timeout[current_address - 1] == 10 || door_open_timeout[current_address - 1] == 20)
-	{
-		current_command[current_address - 1] = ElmOffOn;
-	}
-
-	if(door_open_timeout[current_address - 1] == 30)
-	{
-		door_open_timeout[current_address - 1] = 0xFF;
-		comm.EV_Send(current_address + LED_ADDRESS_OFFSET, GreenRedBlink, false);
-		current_command[current_address - 1] = ElmOff;
-	}
-*/
 }
 
 void Dynabox::ST6_Movement(DynaboxData* pdata)
