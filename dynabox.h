@@ -8,7 +8,7 @@
 #ifndef DYNABOX_H_
 #define DYNABOX_H_
 
-#define DEBUG
+//#define DEBUG
 
 #include "dynabox_commands_faults.h"
 #include "machine.h"
