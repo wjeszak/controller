@@ -50,6 +50,8 @@ void Dynabox::ST5_Ready(DynaboxData* pdata)
 	{
 		// turn off previous led
 		comm.EV_Send(current_address + LED_ADDRESS_OFFSET, GreenRedOff, false);
+		// stop timeout timer
+		door_open_timeout[current_address - 1] = 0xFF;
 
 		// open next door from queue
 		if(q.GetNumberOfElements() > 0)
@@ -57,6 +59,7 @@ void Dynabox::ST5_Ready(DynaboxData* pdata)
 			uint8_t addr = q.Get();
 			comm.EV_Send(addr + 1 + LED_ADDRESS_OFFSET, GreenOn, false);
 			current_command[addr] = SetPosition + desired_doors_position[addr];
+			door_open_timeout[addr] = 0;
 		}
 	}
 
