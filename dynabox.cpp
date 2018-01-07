@@ -38,23 +38,23 @@ void Dynabox::StateManager()
 	fault_show_cnt++;
 	if(fault_show_cnt == FAULT_SHOW_TICK)
 	{
-		fault.ShowGlobal();
+		//fault.ShowGlobal();
 		fault_show_cnt = 0;
 	}
 
-	static uint8_t door_open_timeout_cnt = 0;
-	door_open_timeout_cnt++;
-	if(door_open_timeout_cnt == DOOR_OPEN_TIMEOUT_TICK)
-	{
-		door_open_timeout_cnt = 0;
-		for(uint8_t i = 0; i < MACHINE_MAX_NUMBER_OF_DOORS; i++)
-		{
-			if(door_open_timeout[i] != 0xFF)
-			{
-				door_open_timeout[i]++;
-			}
-		}
-	}
+	//static uint8_t door_open_timeout_cnt = 0;
+	//door_open_timeout_cnt++;
+	//if(door_open_timeout_cnt == DOOR_OPEN_TIMEOUT_TICK)
+	//{
+	//	door_open_timeout_cnt = 0;
+	//	for(uint8_t i = 0; i < MACHINE_MAX_NUMBER_OF_DOORS; i++)
+	//	{
+	//		if(door_open_timeout[i] != 0xFF)
+	//		{
+	//			door_open_timeout[i]++;
+	//		}
+	//	}
+	//}
 
 	if(current_address == LastAddress() + 1)
 	{
@@ -71,6 +71,37 @@ void Dynabox::StateManager()
 	InternalEventEx(state, &dynabox_data);
 	comm.EV_Send(GetDestAddr(state), current_command[current_address - 1] , state_properties[state].need_timeout);
 	current_address++;
+}
+
+void Dynabox::DoorOpenTimeoutManager()
+{
+	//static uint8_t door_open_timeout_cnt = 0;
+	//door_open_timeout_cnt++;
+
+	//if(door_open_timeout_cnt == DOOR_OPEN_TIMEOUT_TICK)
+	//{
+		//door_open_timeout_cnt = 0;
+		//for(uint8_t i = 0; i < MACHINE_MAX_NUMBER_OF_DOORS; i++)
+		//{
+			if(door_open_timeout[current_address - 1] != 0xFF)
+			{
+				door_open_timeout[current_address - 1]++;
+			}
+		//}
+		//display.Write(door_open_timeout[current_address -1]);
+
+		if(door_open_timeout[current_address - 1] == 28 || door_open_timeout[current_address - 1] == 56)
+		{
+			current_command[current_address - 1] = ElmOffOn;
+		}
+
+		if(door_open_timeout[current_address - 1] == 85)
+		{
+			door_open_timeout[current_address - 1] = 0xFF;
+			comm.EV_Send(current_address + LED_ADDRESS_OFFSET, GreenRedBlink, false);
+			current_command[current_address - 1] = ElmOff;
+		}
+	//}
 }
 
 void Dynabox::SetDestAddr(uint8_t addr)

@@ -159,6 +159,17 @@ void BeforeDirectionChange()
 	motor.EV_MinPwmAchieved(&motor_data);
 }
 
+/*void DoorOpenTimeout()
+{
+	for(uint8_t i = 0; i < MACHINE_MAX_NUMBER_OF_DOORS; i++)
+	{
+		if(door_open_timeout[i] != 0xFF)
+		{
+			door_open_timeout[i]++;
+		}
+	}
+}
+*/
 void Debug()
 {
 	motor.Debug();
