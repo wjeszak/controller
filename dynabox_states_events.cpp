@@ -108,7 +108,6 @@ void Dynabox::EV_HomingDone(DynaboxData* pdata)
 	s.Push(ST_READY);
 	SetLedCommand(GreenRedOff, true);
 	s.Push(ST_SHOWING_ON_LED);
-	home_ok = true;
 	ClearIOInfo(Moving);
 	ClearIOInfo(HomingInProgress);
 	SetIOInfo(HomingDone);

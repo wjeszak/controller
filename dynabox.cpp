@@ -18,7 +18,10 @@
 Dynabox::Dynabox()
 {
 	SetOrderStatus(Ready);
-	home_ok = false;
+	ClearIOInfo(Moving);
+	ClearIOInfo(HomingDone);
+	ClearIOInfo(HomingInProgress);
+	//home_ok = false;
 	last_position = 1;
 	encoder_irq_flag = 0;
 	for(uint8_t i = 0; i < MACHINE_MAX_NUMBER_OF_DOORS; i++) door_open_timeout[i] = 0xFF;

@@ -8,7 +8,7 @@
 #ifndef DYNABOX_H_
 #define DYNABOX_H_
 
-//#define DEBUG
+#define DEBUG
 
 #include "dynabox_commands_faults.h"
 #include "machine.h"
@@ -111,7 +111,6 @@ private:
 	bool DoorPositionAchieved();
 	void DoorOpenTimeoutManager();
 	void SetFaults(uint8_t st, uint8_t reply);
-	bool home_ok;
 	uint8_t last_position;
 
 	LedCommand fault_to_led[NUMBER_OF_FAULTS + 1] =

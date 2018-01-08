@@ -34,6 +34,7 @@ public:
 	OrderStatus GetOrderStatus();
 	void SetIOInfo(IO_InfoType info);
 	void ClearIOInfo(IO_InfoType info);
+	bool GetIOInfo(IO_InfoType info);
 	uint8_t LastAddress();
 	virtual void LoadParameters() {}
 	virtual void SaveParameters() {}

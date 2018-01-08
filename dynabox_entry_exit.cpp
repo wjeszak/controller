@@ -47,7 +47,7 @@ void Dynabox::EXIT_PreparingToMovement()
 	}
 	else
 	{
-		if(!home_ok)
+		if(!GetIOInfo(HomingDone))
 		{
 			s.Push(ST_HOMING);
 			SetLedCommand(GreenRedBlink, true);

@@ -61,3 +61,11 @@ void Machine::ClearIOInfo(IO_InfoType info)
 	mb.ClearBit(IO_INFORMATIONS, info);
 }
 
+bool Machine::GetIOInfo(IO_InfoType info)
+{
+	uint16_t io_info = mb.Read((uint8_t)IO_INFORMATIONS);
+	if(io_info & (1 << info))
+		return true;
+	else
+		return false;
+}
