@@ -63,7 +63,7 @@ void Dynabox::ST5_Ready(DynaboxData* pdata)
 		}
 	}
 
-	DoorOpenTimeoutManager();
+	//DoorOpenTimeoutManager();
 }
 
 void Dynabox::ST6_Movement(DynaboxData* pdata)

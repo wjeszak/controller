@@ -9,6 +9,7 @@
 #include "config.h"
 #include "dynabox.h"
 #include "modbus_tcp.h"
+#include "timer.h"
 
 // Functions
 void f12()
@@ -32,7 +33,7 @@ Function EEMEM dynabox_eem_functions[DYNABOX_NUMBER_OF_FUNCTIONS] =
 	{10,				1,				NULL},	// serial number
 	{28, 				0,				NULL},	// type of machine
 	{39, 				3, 				NULL},	// max of electromagnets
-
+	{40, 				1, 				NULL}, 	// time for elm on
 };
 
 void Dynabox::LoadParameters()
@@ -51,6 +52,7 @@ void Dynabox::LoadParameters()
 	mb.Write(DECELERATION_PULSES, 400);
 	mb.Write(TIME_FOR_MECH_WARNING, 5);
 	mb.Write(TIME_FOR_MECH_FAULT, 10);
+	door_open_timeout_val = functions[12].param * 10 * 1000 / SLAVE_POLL_INTERVAL / (functions[1].param & 0xFF);
 }
 
 void Dynabox::SaveParameters()

@@ -7,3 +7,4 @@
 7. Kasowanie b³êdów, uruchomienie jazdy po wyst¹pieniu F08
 8. Parametr P40 wprowadzic, bêdzie na gotowo
 9. Uwaga na czasy klikania bo s¹ zale¿ne od iloœci drzwi -> bez sensu, trzeba zmienic.
+Pozosta³o tak na razie: uwa¿ac interwa³em odpytywania, ¿eby siê zmienna nie przepe³ni³a: door_open_timeout_val = functions[12].param * 10 * 1000 / SLAVE_POLL_INTERVAL / (functions[1].param & 0xFF);

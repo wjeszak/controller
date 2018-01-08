@@ -14,6 +14,7 @@
 #include "usart.h"
 #include "stack.h"
 #include "display.h"
+#include "config.h"
 
 Dynabox::Dynabox()
 {
@@ -21,7 +22,6 @@ Dynabox::Dynabox()
 	ClearIOInfo(Moving);
 	ClearIOInfo(HomingDone);
 	ClearIOInfo(HomingInProgress);
-	//home_ok = false;
 	last_position = 1;
 	encoder_irq_flag = 0;
 	for(uint8_t i = 0; i < MACHINE_MAX_NUMBER_OF_DOORS; i++) door_open_timeout[i] = 0xFF;
@@ -57,6 +57,9 @@ void Dynabox::StateManager()
 		}
 		return;
 	}
+
+	DoorOpenTimeoutManager();
+
 	InternalEventEx(state, &dynabox_data);
 	comm.EV_Send(GetDestAddr(state), current_command[current_address - 1] , state_properties[state].need_timeout);
 	current_address++;
@@ -68,15 +71,19 @@ void Dynabox::DoorOpenTimeoutManager()
 	{
 		door_open_timeout[current_address - 1]++;
 	}
-	if(door_open_timeout[current_address - 1] == 28 || door_open_timeout[current_address - 1] == 56)
+	if(door_open_timeout[current_address - 1] == door_open_timeout_val || door_open_timeout[current_address - 1] == door_open_timeout_val * 2)
 	{
 		current_command[current_address - 1] = ElmOffOn;
+		//door_open_timeout[current_address - 1]++;
 	}
-	if(door_open_timeout[current_address - 1] == 85)
+	if(door_open_timeout[current_address - 1] == door_open_timeout_val * 3)
 	{
+		//door_open_timeout[current_address - 1]++;
 		door_open_timeout[current_address - 1] = 0xFF;
 		comm.EV_Send(current_address + LED_ADDRESS_OFFSET, GreenRedBlink, false);
 		current_command[current_address - 1] = ElmOff;
+		fault.SetGlobal(F07_DoorNotOpen);
+		fault.Set(F07_DoorNotOpen, current_address - 1);
 	}
 }
 

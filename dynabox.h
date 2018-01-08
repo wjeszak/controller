@@ -14,7 +14,7 @@
 #include "machine.h"
 #include "motor.h"
 
-#define DYNABOX_NUMBER_OF_FUNCTIONS 		15//14
+#define DYNABOX_NUMBER_OF_FUNCTIONS 		16//14
 #define MAX_PWM_HOMING 						173
 
 enum DoorCommand { CheckElm = 0x01, GetStatusBeforeMovement = 0x02, ElmOff = 0x03, ElmOffOn = 0x04, GetStatus = 0x80, SetPosition = 0xC0 };
@@ -112,6 +112,7 @@ private:
 	void DoorOpenTimeoutManager();
 	void SetFaults(uint8_t st, uint8_t reply);
 	uint8_t last_position;
+	uint8_t door_open_timeout_val;
 
 	LedCommand fault_to_led[NUMBER_OF_FAULTS + 1] =
 	{
