@@ -28,6 +28,7 @@
 #include "tcp.h"
 #include "stack.h"
 #include "queue.h"
+#include "flags.h"
 
 Machine* m;
 MachineData* d;
@@ -54,12 +55,14 @@ Comm comm;
 ModbusTCP mb;
 Stack s;
 Queue q;
+Flags f;
 
 int main()
 {
 	Boot();
 	while(1)
 	{
+		// m->Maintenance();
 		if(config.need_stack_poll)	tcp.Poll();
 		if(dynabox.encoder_irq_flag)
 		{

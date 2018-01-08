@@ -14,7 +14,7 @@
 #include "machine.h"
 #include "motor.h"
 
-#define DYNABOX_NUMBER_OF_FUNCTIONS 		16//14
+#define DYNABOX_NUMBER_OF_FUNCTIONS 		16
 #define MAX_PWM_HOMING 						173
 
 enum DoorCommand { CheckElm = 0x01, GetStatusBeforeMovement = 0x02, ElmOff = 0x03, ElmOffOn = 0x04, GetStatus = 0x80, SetPosition = 0xC0 };
@@ -47,6 +47,8 @@ public:
 	void EV_EnterToConfig();
 	void EV_HomingDone(DynaboxData* pdata);
 	void EV_UserAction(MachineData* pdata);
+	void EV_UserActionGo(MachineData* pdata);
+	void EV_UserActionClearFaults(MachineData* pdata);
 	void EV_PositionAchieved(DynaboxData* pdata);
 	void EV_LedTrigger();
 	void EV_Reply(MachineData* pdata);

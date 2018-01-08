@@ -15,6 +15,7 @@
 #include "stack.h"
 #include "display.h"
 #include "config.h"
+#include "flags.h"
 
 Dynabox::Dynabox()
 {
@@ -41,8 +42,14 @@ void Dynabox::StateManager()
 	fault_show_cnt++;
 	if(fault_show_cnt == FAULT_SHOW_TICK)
 	{
-		fault.ShowGlobal();
 		fault_show_cnt = 0;
+		if(f.Get(NeedFaultsClear))
+		{
+			f.Clear(NeedFaultsClear);
+			if(fault.CheckGlobal(F07_DoorNotOpen)) fault.ClearGlobal(F07_DoorNotOpen);
+			//fault.ClearGlobal(F07_DoorNotOpen);
+		}
+		fault.ShowGlobal();
 	}
 
 	if(current_address == LastAddress() + 1)
@@ -74,17 +81,16 @@ void Dynabox::DoorOpenTimeoutManager()
 	if(door_open_timeout[current_address - 1] == door_open_timeout_val || door_open_timeout[current_address - 1] == door_open_timeout_val * 2)
 	{
 		current_command[current_address - 1] = ElmOffOn;
-		//door_open_timeout[current_address - 1]++;
 	}
 	if(door_open_timeout[current_address - 1] == door_open_timeout_val * 3)
 	{
-		//door_open_timeout[current_address - 1]++;
 		door_open_timeout[current_address - 1] = 0xFF;
 		comm.EV_Send(current_address + LED_ADDRESS_OFFSET, GreenRedBlink, false);
 		current_command[current_address - 1] = ElmOff;
 		fault.SetGlobal(F07_DoorNotOpen);
 		fault.Set(F07_DoorNotOpen, current_address - 1);
 	}
+// tutaj bylo kasowanie
 }
 
 void Dynabox::SetDestAddr(uint8_t addr)

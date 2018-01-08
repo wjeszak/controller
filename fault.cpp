@@ -17,27 +17,28 @@ Fault::Fault()
 
 void Fault::SetGlobal(uint8_t fault)
 {
-	global_faults |= (1ULL << fault);
+	global_faults |= (1 << fault);
 	mb.Write(GENERAL_ERROR_STATUS, fault);
 }
 
 void Fault::ClearGlobal(uint8_t fault)
 {
-	global_faults &= ~(1ULL << fault);
+	global_faults &= ~(1 << fault);
 	mb.Write((uint8_t)GENERAL_ERROR_STATUS, 0 << 8);
 }
 
 bool Fault::CheckGlobal(uint8_t fault)
 {
-	if(global_faults & (1ULL << fault)) return true;
+	if(global_faults & (1 << fault))
+		return true;
 	return false;
 }
 
 bool Fault::CheckGlobal()
 {
-	for(uint8_t i = 0; i < NUMBER_OF_FAULTS; i++)
+	for(uint8_t i = 0; i < 8; i++)
 	{
-		if(global_faults & (1ULL << i)) return true;
+		if(global_faults & (1 << i)) return true;
 	}
 	return false;
 }
@@ -46,10 +47,10 @@ void Fault::ShowGlobal()
 {
 	static uint8_t i = 1;
 	if(global_faults == 0) { display.Write(TNoFault, 0); return; }
-	while(i <= NUMBER_OF_FAULTS + 1)
+	while(i <= 7 + 1)
 	{
-		if(i == NUMBER_OF_FAULTS + 1) i = 1;
-		if(global_faults & (1ULL << i))
+		if(i == 7 + 1) i = 1;
+		if(global_faults & (1 << i))
 		{
 			display.Write(TFault, i);
 			i++;

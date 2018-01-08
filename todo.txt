@@ -5,6 +5,8 @@
 5. Zmienic sekwencje led dla F06, F08 bo siê pokrywaj¹ z homingiem
 6. Wysylac rozkaz trigger po wystapieniu bledu F07, aby równomiernie mruga³y ledy
 7. Kasowanie b³êdów, uruchomienie jazdy po wyst¹pieniu F08
-8. Parametr P40 wprowadzic, bêdzie na gotowo
 9. Uwaga na czasy klikania bo s¹ zale¿ne od iloœci drzwi -> bez sensu, trzeba zmienic.
 Pozosta³o tak na razie: uwa¿ac interwa³em odpytywania, ¿eby siê zmienna nie przepe³ni³a: door_open_timeout_val = functions[12].param * 10 * 1000 / SLAVE_POLL_INTERVAL / (functions[1].param & 0xFF);
+10. W petli glownej dodac funkcje m->costam(), tam bedzie np. odczyt flag i instrukcje zalezne od typu maszyny
+11. klasa helper_flags i w niej uint8_t ustawianie, kasowanie bitow...
+12. sprawdzanie zadania kasowania bledow w StateManager(), bo na zywca sie program wywala.

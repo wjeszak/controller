@@ -17,6 +17,7 @@
 #include "dynabox_commands_faults.h"
 #include "stack.h"
 #include "queue.h"
+#include "flags.h"
 
 // ---------------------------------- States ----------------------------------
 void Dynabox::ST0_TestingLed(DynaboxData* pdata)
@@ -112,28 +113,44 @@ void Dynabox::EV_HomingDone(DynaboxData* pdata)
 	ClearIOInfo(HomingInProgress);
 	SetIOInfo(HomingDone);
 }
-
+// ------------------------------ User events ------------------------------
 void Dynabox::EV_UserAction(MachineData* pdata)
 {
 	if(mb.GetQuantity() > 1)
 	{
-		for(uint8_t i = 0; i < MACHINE_MAX_NUMBER_OF_DOORS; i++)
-		{
-			desired_doors_position[i] = (uint8_t)mb.Read(LOCATIONS_NUMBER + 1 + i);
-			if(desired_doors_position[i] != 0)
-			{
-				q.Add(i);
-			}
-		}
-
-		if(last_position != mb.Read(LOCATIONS_NUMBER))
-			s.Push(ST_TESTING_ELM);			// need movement
-		else
-			s.Push(ST_END_MOVEMENT);		// not need
-
-		last_position = mb.Read(LOCATIONS_NUMBER);
+		EV_UserActionGo(&dynabox_data);
 	}
-	if(GetOrderStatus() == GoAck) display.Write(1234);		// clear faults
+
+	if(mb.GetQuantity() == 1)
+	//if(GetOrderStatus() == GoAck)
+	{
+		//SetOrderStatus(Ready);
+		EV_UserActionClearFaults(&dynabox_data);
+	}
+}
+
+void Dynabox::EV_UserActionGo(MachineData* pdata)
+{
+	for(uint8_t i = 0; i < MACHINE_MAX_NUMBER_OF_DOORS; i++)
+	{
+		desired_doors_position[i] = (uint8_t)mb.Read(LOCATIONS_NUMBER + 1 + i);
+		if(desired_doors_position[i] != 0)
+		{
+			q.Add(i);
+		}
+	}
+
+	if(last_position != mb.Read(LOCATIONS_NUMBER))
+		s.Push(ST_TESTING_ELM);			// need movement
+	else
+		s.Push(ST_END_MOVEMENT);		// not need
+
+	last_position = mb.Read(LOCATIONS_NUMBER);
+}
+
+void Dynabox::EV_UserActionClearFaults(MachineData* pdata)
+{
+	f.Set(NeedFaultsClear);
 }
 
 void Dynabox::EV_PositionAchieved(DynaboxData* pdata)
