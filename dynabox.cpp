@@ -25,7 +25,6 @@ Dynabox::Dynabox()
 	ClearIOInfo(HomingInProgress);
 	last_position = 1;
 	encoder_irq_flag = 0;
-	//door_open_timeout_val = 0;
 	for(uint8_t i = 0; i < MACHINE_MAX_NUMBER_OF_DOORS; i++) door_open_timeout[i] = 0xFF;
 }
 
@@ -44,14 +43,12 @@ void Dynabox::StateManager()
 	if(fault_show_cnt == FAULT_SHOW_TICK)
 	{
 		fault_show_cnt = 0;
-		fault.Show();
 		if(f.Get(NeedFaultsClear))
 		{
 			f.Clear(NeedFaultsClear);
 			if(fault.IsGlobal(F07_DoorNotOpen)) fault.ClearGlobal(F07_DoorNotOpen);
-			//fault.ClearGlobal(F07_DoorNotOpen);
 		}
-
+		fault.Show();
 	}
 
 	if(current_address == LastAddress() + 1)

@@ -15,18 +15,18 @@
 
 Fault::Fault()
 {
-	global_faults = 0;
+	global_faults = 0x00000000;
 }
 
 void Fault::SetGlobal(FaultType fault)
 {
-	global_faults |= (1ULL << fault);
+	global_faults |= (1UL << fault);
 	mb.Write((uint8_t)GENERAL_ERROR_STATUS, fault);
 }
 
 void Fault::ClearGlobal(FaultType fault)
 {
-	global_faults &= ~(1ULL << fault);
+	global_faults &= ~(1UL << fault);
 	// tutaj dopisac "rekalkulacje" bledow, jesli jeden zniknie to
 	// nie jest powiedziane, ze wiecej nie bedzie
 	mb.Write((uint8_t)GENERAL_ERROR_STATUS, 0);
@@ -34,7 +34,7 @@ void Fault::ClearGlobal(FaultType fault)
 
 bool Fault::IsGlobal(FaultType fault)
 {
-	if(global_faults & (1ULL << fault))
+	if(global_faults & (1UL << fault))
 		return true;
 	else
 		return false;
@@ -42,7 +42,7 @@ bool Fault::IsGlobal(FaultType fault)
 
 bool Fault::IsGlobal()
 {
-	if(global_faults == 0)
+	if(global_faults != 0UL)
 		return true;
 	else
 		return false;
@@ -54,12 +54,13 @@ void Fault::Show()
 	if(!IsGlobal())
 	{
 		display.Write(TNoFault, 0);
+		i = 1;
 		return;
 	}
 	while(i <= NUMBER_OF_FAULTS + 1)
 	{
 		if(i == NUMBER_OF_FAULTS + 1) i = 1;
-		if(global_faults & (1ULL << i))
+		if(global_faults & (1UL << i))
 		{
 			display.Write(TFault, i);
 			i++;
@@ -68,6 +69,24 @@ void Fault::Show()
 		i++;
 	}
 }
+
+/*
+void Fault::Show()
+{
+	static uint8_t i = 1;
+	if(!IsGlobal()) { display.Write(TNoFault, 0); return; }
+	if(i == NUMBER_OF_FAULTS) i = 1;
+	for(uint8_t fault = i; fault <= NUMBER_OF_FAULTS; fault++)
+	{
+		if(global_faults & (1ULL << fault))
+		{
+			display.Write(TFault, fault);
+			break;
+		}
+	}
+	i++;
+}
+*/
 // -------------------------- door's faults --------------------------
 void Fault::SetLocal(uint8_t address, FaultType fault)
 {
