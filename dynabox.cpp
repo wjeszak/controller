@@ -25,6 +25,7 @@ Dynabox::Dynabox()
 	ClearIOInfo(HomingInProgress);
 	last_position = 1;
 	encoder_irq_flag = 0;
+	//door_open_timeout_val = 0;
 	for(uint8_t i = 0; i < MACHINE_MAX_NUMBER_OF_DOORS; i++) door_open_timeout[i] = 0xFF;
 }
 
@@ -43,13 +44,14 @@ void Dynabox::StateManager()
 	if(fault_show_cnt == FAULT_SHOW_TICK)
 	{
 		fault_show_cnt = 0;
+		fault.Show();
 		if(f.Get(NeedFaultsClear))
 		{
 			f.Clear(NeedFaultsClear);
-			if(fault.CheckGlobal(F07_DoorNotOpen)) fault.ClearGlobal(F07_DoorNotOpen);
+			if(fault.IsGlobal(F07_DoorNotOpen)) fault.ClearGlobal(F07_DoorNotOpen);
 			//fault.ClearGlobal(F07_DoorNotOpen);
 		}
-		fault.ShowGlobal();
+
 	}
 
 	if(current_address == LastAddress() + 1)
@@ -88,7 +90,8 @@ void Dynabox::DoorOpenTimeoutManager()
 		comm.EV_Send(current_address + LED_ADDRESS_OFFSET, GreenRedBlink, false);
 		current_command[current_address - 1] = ElmOff;
 		fault.SetGlobal(F07_DoorNotOpen);
-		fault.Set(F07_DoorNotOpen, current_address - 1);
+		fault.SetLocal(current_address - 1, F07_DoorNotOpen);
+		//door_open_timeout_val = 0;
 	}
 // tutaj bylo kasowanie
 }
@@ -156,7 +159,7 @@ void Dynabox::SetFaults(uint8_t st, uint8_t reply)
 			if((reply_fault_set[i].reply == reply) && reply_fault_set[i].neg == false)
 			{
 				fault.SetGlobal(reply_fault_set[i].fault);
-				fault.Set(reply_fault_set[i].fault, current_address - 1);
+				fault.SetLocal(current_address - 1, reply_fault_set[i].fault);
 				mb.Write(current_address, (reply_fault_set[i].fault << 8));
 				//mb.Write(current_address, reply_fault_set[i].fault);
 				if(reply_fault_set[i].fp != NULL) (this->*reply_fault_set[i].fp)(NULL);
@@ -164,7 +167,7 @@ void Dynabox::SetFaults(uint8_t st, uint8_t reply)
 			if((reply_fault_set[i].reply != reply) && reply_fault_set[i].neg == true)
 			{
 				fault.SetGlobal(reply_fault_set[i].fault);
-				fault.Set(reply_fault_set[i].fault, current_address - 1);
+				fault.SetLocal(current_address - 1, reply_fault_set[i].fault);
 				mb.Write(current_address, (reply_fault_set[i].fault << 8));
 				//mb.Write(current_address, reply_fault_set[i].fault);
 				if(reply_fault_set[i].fp != NULL) (this->*reply_fault_set[i].fp)(NULL);
@@ -187,14 +190,14 @@ void Dynabox::EV_Timeout(MachineData* pdata)
 	if(state_properties[GetState()].dest == Dest_Led)
 	{
 		fault.SetGlobal(F01_Led);
-		fault.Set(F01_Led, current_address - 1);
+		fault.SetLocal(current_address - 1, F01_Led);
 		mb.Write(current_address, F01_Led << 8);
 	}
 	// door's fault
 	else
 	{
 		fault.SetGlobal(F02_Door);
-		fault.Set(F02_Door, current_address - 1);
+		fault.SetLocal(current_address - 1, F02_Door);
 		mb.Write(current_address, F02_Door << 8);
 	}
 }

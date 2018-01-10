@@ -13,6 +13,7 @@
 #include "dynabox_commands_faults.h"
 #include "machine.h"
 #include "motor.h"
+#include "fault.h"
 
 #define DYNABOX_NUMBER_OF_FUNCTIONS 		16
 #define MAX_PWM_HOMING 						173
@@ -23,12 +24,6 @@ enum DoorReply 	 { ElmOk, ElmFault, TransoptFault = 0xF0, OpenedElmOff = 0x40, O
 enum LedCommand  { GreenRedOff, GreenOn, RedOn, GreenBlink, RedBlink, GreenRedBlink,
 				   Green1Pulse, Red1Pulse, Green2Pulses, Red2Pulses, Green3Pulses, Red3Pulses,
 				   GreenOnForTime, Diag, NeedQueue = 0x80 };
-
-enum Faults 	 { None, F01_Led, F02_Door, F03_Transoptors, F04_DoorOpenedSoFar, F05_Elm,
-				   F06_CloseDoor, F07_DoorNotOpen, F08_IllegalOpening,
-				   F10_MechanicalWarning = 0x0A, F11_MechanicalFault, F12_Positioning,
-				   F13_MainDoor, F14_HomingFailed, F15_IllegalRotation, F16_OrderRefused,
-				   F17_24VMissing };
 
 class DynaboxData : public MachineData
 {
@@ -171,7 +166,7 @@ private:
 		uint8_t state;
 		uint8_t reply;
 		void (Dynabox::*fp)(DynaboxData* pdata);
-		Faults fault;
+		FaultType fault;
 		bool neg;
 	};
 	StateFault reply_fault_set[ST_MAX_STATES] =

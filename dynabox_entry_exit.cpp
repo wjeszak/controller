@@ -40,7 +40,7 @@ void Dynabox::ENTRY_PreparingToMovement()
 
 void Dynabox::EXIT_PreparingToMovement()
 {
-	if(fault.CheckGlobal())
+	if(fault.IsGlobal())
 	{
 		s.Push(ST_NOT_READY);
 		SetLedCommand(true);
@@ -150,7 +150,7 @@ void Dynabox::EXIT_NotReady()
 {
 	for(uint8_t i = 0; i < MACHINE_MAX_NUMBER_OF_DOORS; i++)
 	{
-		if(fault.CheckAll(i)) return;	// still fault
+		if(fault.IsLocal(i)) return;	// still fault
 	}
 	fault.ClearGlobal(F06_CloseDoor);
 	s.Push(ST_PREPARING_TO_MOVEMENT);

@@ -13,7 +13,7 @@
 
 #define MACHINE_TYPE_DYNABOX 					0
 #define MACHINE_TYPE_LOCKERBOX 					1
-#define MACHINE_MAX_NUMBER_OF_DOORS				13
+#define MACHINE_MAX_NUMBER_OF_DOORS				60
 
 enum OrderStatus { Ready, GoAck, Processing, EndOfMovement, NotReady = 0xFFFF };
 enum IO_InfoType { Moving, MovingDirection, HomingInProgress, HomingDone, ManualOperation,
