@@ -25,26 +25,27 @@ public:
 	void SaveParameters();
 	void Init();
 	void Maintenance();
+	void StateManager();
 // ---------------------------------- Public events ---------------------------
 //	void EV_EnterToConfig();
 //	void EV_UserAction(MachineData* pdata);
 //	void EV_UserActionGo(MachineData* pdata);
 //	void EV_UserActionClearFaults(MachineData* pdata);
-//	void EV_Reply(MachineData* pdata);
-//	void EV_Timeout(MachineData* pdata);
+	void EV_Reply(MachineData* pdata);
+	void EV_Timeout(MachineData* pdata);
 private:
-//	void ST0_TestingElm(LockerboxData* pdata);				// 0
-//	void ST1_Ready(LockerboxData* pdata);					// 1
-//	void ST2_NotReady(LockerboxData* pdata);				// 2
+	void ST0_TestingElm(LockerboxData* pdata);				// 0
+	void ST1_Ready(LockerboxData* pdata);					// 1
+	void ST2_NotReady(LockerboxData* pdata);				// 2
 
-	enum States {ST_INIT = 0, ST_MAX_STATES};
-//	BEGIN_STATE_MAP_EX
-//		STATE_MAP_ENTRY_EX(&Lockerbox::ST0_TestingElm)
-//		STATE_MAP_ENTRY_EX(&Lockerbox::ST1_Ready)
-//		STATE_MAP_ENTRY_EX(&Lockerbox::ST2_NotReady)
-//	END_STATE_MAP_EX
+	enum States {ST_TESTING_ELM, ST_READY, ST_NOT_READY, ST_MAX_STATES};
+	BEGIN_STATE_MAP_EX
+		STATE_MAP_ENTRY_EX(&Lockerbox::ST0_TestingElm)
+		STATE_MAP_ENTRY_EX(&Lockerbox::ST1_Ready)
+		STATE_MAP_ENTRY_EX(&Lockerbox::ST2_NotReady)
+	END_STATE_MAP_EX
 // ---------------------------------- Entry, exit ----------------------------------
-	void ENTRY_TestingElm();
+	void ENTRY_TestingElm(LockerboxData* pdata);
 	void EXIT_TestingElm();
 	void ENTRY_Ready();
 	void EXIT_Ready();
@@ -52,8 +53,25 @@ private:
 	void EXIT_NotReady();
 // ---------------------------------------------------------------------------------
 	uint8_t GetDestAddr(uint8_t st);
+	void SetDestAddr(uint8_t addr);
 	void SetDoorCommand();
-	void SetFaults(uint8_t st, uint8_t reply);
+	void SetDoorCommand(DoorCommand command);
+//	void SetFaults(uint8_t st, uint8_t reply);
+
+	struct StateProperties
+	{
+		void (Lockerbox::*on_entry)();
+		void (Lockerbox::*on_exit)();
+	};
+
+	StateProperties state_properties[ST_MAX_STATES] =
+	{
+//		entry 									exit
+		{NULL, 									&Lockerbox::EXIT_TestingElm	},	// ST_TESTING_ELM
+		{&Lockerbox::ENTRY_Ready,	 			&Lockerbox::EXIT_Ready		},	// ST_READY
+		{&Lockerbox::ENTRY_NotReady, 			&Lockerbox::EXIT_NotReady	},	// ST_NOT_READY
+
+	};
 };
 
 extern Lockerbox lockerbox;

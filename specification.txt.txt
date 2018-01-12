@@ -6,12 +6,16 @@ Door must reply on every request.
 Request: | ADDRESS | COMMAND | CRC | 0x0A |
 
 * Commands:
+a) Dynabox
 1. COMM_CHECK_ELECTROMAGNET 				0x01
 2. COMM_GET_STATUS_BEFORE_MOVEMENT 			0x02
-3. COMM_ELM_OFF			 					0x03  
-4. COMM_GET_STATUS 							command & (1 << 7)								// 0x80
-5. COMM_GET_SET_STATUS 						(command & (1 << 7)) && (command & (1 << 6))	// 0xC0 
+3. COMM_ELM_OFF			 					0x03
+4. COMM_ELM_OFF_ON 							0x04  
+5. COMM_GET_STATUS 							command & (1 << 7)								// 0x80
+6. COMM_GET_SET_STATUS 						(command & (1 << 7)) && (command & (1 << 6))	// 0xC0 
 
+b) Lockerbox
+7. COMM_CHECK_ELM_GET_STATUS 				0x05
 Reply: | ADDRESS | RESULT | CRC | 0x0A |
 
 * Results:

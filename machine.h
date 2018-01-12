@@ -19,6 +19,8 @@ enum OrderStatus { Ready, GoAck, Processing, EndOfMovement, NotReady = 0xFFFF };
 enum IO_InfoType { Moving, MovingDirection, HomingInProgress, HomingDone, ManualOperation,
 				   NormalOperation, SwitchDoor };
 
+enum DoorCommand { CheckElm = 0x01, GetStatusBeforeMovement = 0x02, ElmOff = 0x03, ElmOffOn = 0x04, CheckElmGetStatus = 0x05, GetStatus = 0x80, SetPosition = 0xC0 };
+
 class MachineData : public EventDataEx
 {
 public:
@@ -45,6 +47,7 @@ public:
 	virtual void EV_Reply(MachineData* pdata) {}
 	virtual void EV_Timeout(MachineData* pdata) {}
 	virtual void EV_UserAction(MachineData* pdata) {}
+	uint8_t current_command[MACHINE_MAX_NUMBER_OF_DOORS];
 	uint8_t current_address;
 private:
 	enum States {ST_MAX_STATES};
