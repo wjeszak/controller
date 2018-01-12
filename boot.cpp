@@ -12,11 +12,12 @@
 #include "config.h"
 
 // default value in EEPROM
-uint8_t machine_type EEMEM = MACHINE_TYPE_DYNABOX;
+uint8_t ee_machine_type EEMEM = MACHINE_TYPE_DYNABOX;
+uint8_t machine_type;
 
 void Boot()
 {
-	uint8_t mt = eeprom_read_byte(&machine_type);
+	uint8_t mt = eeprom_read_byte(&ee_machine_type);
 	GetPointerTypeOfMachine(mt);
 	m->Init();
 	m->LoadParameters();

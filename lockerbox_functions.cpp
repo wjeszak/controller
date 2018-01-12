@@ -6,6 +6,7 @@
  */
 
 #include <avr/eeprom.h>
+#include "boot.h"
 #include "config.h"
 #include "lockerbox.h"
 #include "modbus_tcp.h"
@@ -17,13 +18,14 @@
 Function EEMEM lockerbox_eem_functions[LOCKERBOX_NUMBER_OF_FUNCTIONS] =
 {
 //   No.of function, 	Default value,  Function pointer
-	{1, 				25, 			NULL},	// type of machine
+	{1, 				1,	 			NULL},	// type of machine
 	{2, 				7, 				NULL},	// max doors
 	{4,					170,  			NULL},	// IP master
 	{10,				1,				NULL},	// serial number
 	{28, 				0,				NULL},	// type of machine
 	{40, 				1, 				NULL}, 	// time for elm on
 };
+
 void Lockerbox::LoadParameters()
 {
 	eeprom_read_block(&functions, &lockerbox_eem_functions, FUNCTION_RECORD_SIZE * LOCKERBOX_NUMBER_OF_FUNCTIONS);
@@ -44,7 +46,9 @@ void Lockerbox::LoadParameters()
 
 void Lockerbox::SaveParameters()
 {
+	eeprom_update_byte(&ee_machine_type, functions[0].param);
 	eeprom_update_block(&functions, &lockerbox_eem_functions, FUNCTION_RECORD_SIZE * LOCKERBOX_NUMBER_OF_FUNCTIONS);
+	eeprom_update_word(&lockerbox_eem_functions[0].param, (uint8_t)MACHINE_TYPE_LOCKERBOX);
 	mb.Write(TYPE_OF_MACHINE, (functions[1].param << 8 | 1));
 	mb.Write(SERIAL_NUMBER, functions[9].param);
 	mb.Write(MAX_ELM_ON, functions[11].param);

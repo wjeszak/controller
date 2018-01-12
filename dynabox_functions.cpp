@@ -6,6 +6,7 @@
  */
 
 #include <avr/eeprom.h>
+#include "boot.h"
 #include "config.h"
 #include "dynabox.h"
 #include "modbus_tcp.h"
@@ -21,7 +22,7 @@ void f12()
 Function EEMEM dynabox_eem_functions[DYNABOX_NUMBER_OF_FUNCTIONS] =
 {
 //   No.of function, 	Default value,  Function pointer
-	{1, 				25, 			NULL},	// program address door or led
+	{1, 				0, 				NULL},	// type of machine
 	{2, 				7, 				NULL},	// max doors
 	{3,					0, 				f12},	// test led
 	{4,					170,  			NULL},	// IP master
@@ -57,7 +58,9 @@ void Dynabox::LoadParameters()
 
 void Dynabox::SaveParameters()
 {
+	eeprom_update_byte(&ee_machine_type, functions[0].param);
 	eeprom_update_block(&functions, &dynabox_eem_functions, FUNCTION_RECORD_SIZE * DYNABOX_NUMBER_OF_FUNCTIONS);
+	eeprom_update_word(&dynabox_eem_functions[0].param, (uint8_t)MACHINE_TYPE_DYNABOX);
 	mb.Write(TYPE_OF_MACHINE, (functions[1].param << 8 | 36));
 	mb.Write(SERIAL_NUMBER, functions[9].param);
 	mb.Write(MAX_ELM_ON, functions[11].param);

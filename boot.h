@@ -7,6 +7,10 @@
 
 #ifndef BOOT_H_
 #define BOOT_H_
+#include <avr/eeprom.h>
+
+extern uint8_t ee_machine_type EEMEM;
+//extern uint8_t machine_type;
 
 extern void Boot();
 
