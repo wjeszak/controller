@@ -29,7 +29,11 @@ Config::Config() : StateMachine(ST_MAX_STATES)
 
 void Config::EV_ButtonClick(ConfigData* pdata)
 {
-	if(current_state == ST_IDLE) m->EV_EnterToConfig();
+	if(current_state == ST_IDLE)
+	{
+		//display.Write(TFunction, 1);
+		m->EV_EnterToConfig();
+	}
 	if(current_state == ST_CHOOSING_FUNCTION)
 	{
 		// exit from configuration
