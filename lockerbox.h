@@ -27,7 +27,7 @@ public:
 	void Maintenance();
 	void StateManager();
 // ---------------------------------- Public events ---------------------------
-//	void EV_EnterToConfig();
+	void EV_EnterToConfig();
 //	void EV_UserAction(MachineData* pdata);
 //	void EV_UserActionGo(MachineData* pdata);
 //	void EV_UserActionClearFaults(MachineData* pdata);

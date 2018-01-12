@@ -6,6 +6,7 @@
  */
 
 #include "lockerbox.h"
+#include "timer.h"
 
 // ---------------------------------- States ----------------------------------
 void Lockerbox::ST0_TestingElm(LockerboxData* pdata)
@@ -21,4 +22,9 @@ void Lockerbox::ST1_Ready(LockerboxData* pdata)
 void Lockerbox::ST2_NotReady(LockerboxData* pdata)
 {
 
+}
+
+void Lockerbox::EV_EnterToConfig()
+{
+	SLAVE_POLL_STOP;
 }
