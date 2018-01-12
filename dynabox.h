@@ -10,10 +10,10 @@
 
 #define DEBUG
 
-#include "dynabox_commands_faults.h"
 #include "machine.h"
 #include "motor.h"
 #include "fault.h"
+#include "dynabox_commands_faults.h"
 
 #define DYNABOX_NUMBER_OF_FUNCTIONS 		16
 #define MAX_PWM_HOMING 						173
