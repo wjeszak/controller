@@ -9,6 +9,7 @@
 #include <avr/eeprom.h>
 #include "machine.h"
 #include "timer.h"
+#include "config.h"
 
 // default value in EEPROM
 uint8_t machine_type EEMEM = MACHINE_TYPE_DYNABOX;
