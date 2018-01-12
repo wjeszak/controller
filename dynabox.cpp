@@ -34,6 +34,15 @@ void Dynabox::Init()
 	SLAVE_POLL_START;
 }
 
+void Dynabox::Maintenance()
+{
+	if(encoder_irq_flag)
+	{
+		encoder_irq_flag = 0;
+		motor.EncoderIrq();
+	}
+}
+
 void Dynabox::StateManager()
 {
 	uint8_t state = GetState();

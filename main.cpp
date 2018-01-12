@@ -62,12 +62,7 @@ int main()
 	Boot();
 	while(1)
 	{
-		// m->Maintenance();
-		if(config.need_stack_poll)	tcp.Poll();
-		if(dynabox.encoder_irq_flag)
-		{
-			dynabox.encoder_irq_flag = 0;
-			motor.EncoderIrq();
-		}
+		m->Maintenance();
+		tcp.Poll();
 	}
 }

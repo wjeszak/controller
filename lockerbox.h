@@ -24,6 +24,7 @@ public:
 	void LoadParameters();
 	void SaveParameters();
 	void Init();
+	void Maintenance();
 // ---------------------------------- Public events ---------------------------
 //	void EV_EnterToConfig();
 //	void EV_UserAction(MachineData* pdata);

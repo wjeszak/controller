@@ -39,6 +39,7 @@ public:
 	virtual void LoadParameters() {}
 	virtual void SaveParameters() {}
 	virtual void Init() {}
+	virtual void Maintenance() {}
 	virtual void EV_EnterToConfig() {}
 	virtual void StateManager() {}
 	virtual void EV_Reply(MachineData* pdata) {}

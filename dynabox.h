@@ -37,6 +37,7 @@ public:
 	void LoadParameters();
 	void SaveParameters();
 	void Init();
+	void Maintenance();
 	void StateManager();
 // ---------------------------------- Public events ---------------------------
 	void EV_EnterToConfig();

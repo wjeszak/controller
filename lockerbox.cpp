@@ -20,3 +20,8 @@ void Lockerbox::Init()
 	//SLAVE_POLL_START;
 	display.Write(6667);
 }
+
+void Lockerbox::Maintenance()
+{
+
+}
