@@ -41,3 +41,11 @@ Led address offset: 100d
 
 Need enqueue command: 0x80 (set 7 bit) + command
 Led trigger frame: | 0xFF | 0x00 | CRC | 0x0A |
+
+---------------------------------------------------------------------------------------------
+Parameters:
+1. Type of machine (common for all machines) -> 0: Dynabox, 1: Lockerbox
+2. Max doors (common for all machines)
+3. Max columns 		(Dynabox)
+4. Max of elm ON 	(Dynabox)
+5. Time for elm ON	(Dynabox)
