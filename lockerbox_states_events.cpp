@@ -55,7 +55,7 @@ void Lockerbox::EV_UserAction(MachineData* pdata)
 
 void Lockerbox::EV_UserActionGo(MachineData* pdata)
 {
-	display.Write(1234);
+	//display.Write(1234);
 	s.Push(ST_PROCESSING);
 }
 

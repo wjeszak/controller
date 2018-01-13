@@ -33,18 +33,18 @@ void Lockerbox::Maintenance()
 void Lockerbox::StateManager()
 {
 	uint8_t state = GetState();
-	display.Write(state);
+	//display.Write(state);
 	static uint8_t fault_show_cnt = 0;
 	fault_show_cnt++;
 	if(fault_show_cnt == FAULT_SHOW_TICK)
 	{
 		fault_show_cnt = 0;
-	//	if(f.Get(NeedFaultsClear))
-	//	{
+		if(f.Get(NeedFaultsClear))
+		{
 	//		f.Clear(NeedFaultsClear);
 	//		if(fault.IsGlobal(F07_DoorNotOpen)) fault.ClearGlobal(F07_DoorNotOpen);
-	//	}
-		//fault.Show();
+		}
+		fault.Show();
 	}
 
 	if(current_address == LastAddress() + 1)
@@ -69,10 +69,11 @@ void Lockerbox::StateManager()
 
 void Lockerbox::SetDoorCommand()
 {
+	// tutaj jest na pewno zly indeks
 	for(uint8_t i = 0; i < MACHINE_MAX_NUMBER_OF_DOORS; i++)
 	{
 		if((uint8_t)mb.Read(LOCATIONS_NUMBER + 1 + i) != 0)
-			current_command[i] = OpenLockerbox + 3;
+			current_command[i] = OpenLockerbox + 1;
 		else
 			current_command[i] = GetStatusLockerbox;
 	}

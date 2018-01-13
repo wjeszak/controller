@@ -19,7 +19,7 @@ Function EEMEM lockerbox_eem_functions[LOCKERBOX_NUMBER_OF_FUNCTIONS] =
 {
 //   No.of function, 	Default value,  Function pointer
 	{1, 				1,	 			NULL},	// type of machine
-	{2, 				12,				NULL},	// max doors
+	{2, 				7,				NULL},	// max doors
 	{4,					170,  			NULL},	// IP master
 	{10,				1,				NULL},	// serial number
 	{28, 				0,				NULL},	// type of machine
