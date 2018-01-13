@@ -16,13 +16,13 @@
 Lockerbox::Lockerbox()
 {
 	SetOrderStatus(Ready);
+	door_need_open = 0;
 }
 
 void Lockerbox::Init()
 {
 	ENTRY_TestingElm(&lockerbox_data);
 	SLAVE_POLL_START;
-	//display.Write(6667);
 }
 
 void Lockerbox::Maintenance()
@@ -57,6 +57,7 @@ void Lockerbox::StateManager()
 			ChangeState(new_state);
 			if(state_properties[new_state].on_entry != NULL) (this->*state_properties[new_state].on_entry)();
 		}
+		//SLAVE_POLL_STOP;
 		return;
 	}
 

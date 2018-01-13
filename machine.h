@@ -19,7 +19,9 @@ enum OrderStatus { Ready, GoAck, Processing, EndOfMovement, NotReady = 0xFFFF };
 enum IO_InfoType { Moving, MovingDirection, HomingInProgress, HomingDone, ManualOperation,
 				   NormalOperation, SwitchDoor };
 
-enum DoorCommand { CheckElm = 0x01, GetStatusBeforeMovement = 0x02, ElmOff = 0x03, ElmOffOn = 0x04, CheckElmGetStatus = 0x05, GetStatus = 0x80, SetPosition = 0xC0 };
+enum DoorCommand { CheckElm = 0x01, GetStatusBeforeMovement = 0x02, ElmOff = 0x03,
+				   ElmOffOn = 0x04, CheckElmGetStatusLockerbox = 0x05,
+				   GetStatusLockerbox = 0x06, GetStatus = 0x80, SetPosition = 0xC0, OpenLockerbox = 0xE0 };
 
 class MachineData : public EventDataEx
 {
