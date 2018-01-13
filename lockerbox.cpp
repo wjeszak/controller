@@ -33,18 +33,18 @@ void Lockerbox::Maintenance()
 void Lockerbox::StateManager()
 {
 	uint8_t state = GetState();
-	//display.Write(state);
+	display.Write(state);
 	static uint8_t fault_show_cnt = 0;
 	fault_show_cnt++;
 	if(fault_show_cnt == FAULT_SHOW_TICK)
 	{
 		fault_show_cnt = 0;
-		if(f.Get(NeedFaultsClear))
-		{
-			f.Clear(NeedFaultsClear);
-			if(fault.IsGlobal(F07_DoorNotOpen)) fault.ClearGlobal(F07_DoorNotOpen);
-		}
-		fault.Show();
+	//	if(f.Get(NeedFaultsClear))
+	//	{
+	//		f.Clear(NeedFaultsClear);
+	//		if(fault.IsGlobal(F07_DoorNotOpen)) fault.ClearGlobal(F07_DoorNotOpen);
+	//	}
+		//fault.Show();
 	}
 
 	if(current_address == LastAddress() + 1)
@@ -57,7 +57,6 @@ void Lockerbox::StateManager()
 			ChangeState(new_state);
 			if(state_properties[new_state].on_entry != NULL) (this->*state_properties[new_state].on_entry)();
 		}
-		//SLAVE_POLL_STOP;
 		return;
 	}
 
@@ -72,10 +71,10 @@ void Lockerbox::SetDoorCommand()
 {
 	for(uint8_t i = 0; i < MACHINE_MAX_NUMBER_OF_DOORS; i++)
 	{
-//		if(desired_doors_position[i] != 0)
-//			current_command[i] = SetPosition + desired_doors_position[i];
-//		else
-//			current_command[i] = GetStatus;
+		if((uint8_t)mb.Read(LOCATIONS_NUMBER + 1 + i) != 0)
+			current_command[i] = OpenLockerbox + 3;
+		else
+			current_command[i] = GetStatusLockerbox;
 	}
 }
 

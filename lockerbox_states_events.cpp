@@ -6,8 +6,11 @@
  */
 
 #include "lockerbox.h"
+#include "machine.h"
 #include "timer.h"
 #include "modbus_tcp.h"
+#include "stack.h"
+#include "display.h"
 
 // ---------------------------------- States ----------------------------------
 void Lockerbox::ST0_TestingElm(LockerboxData* pdata)
@@ -17,12 +20,12 @@ void Lockerbox::ST0_TestingElm(LockerboxData* pdata)
 
 void Lockerbox::ST1_Ready(LockerboxData* pdata)
 {
-	//comm.EV_Send(current_address, , true);
+
 }
 
 void Lockerbox::ST2_Processing(LockerboxData* pdata)
 {
-	//comm.EV_Send(current_address, , true);
+
 }
 
 void Lockerbox::ST3_NotReady(LockerboxData* pdata)
@@ -52,13 +55,8 @@ void Lockerbox::EV_UserAction(MachineData* pdata)
 
 void Lockerbox::EV_UserActionGo(MachineData* pdata)
 {
-	for(uint8_t i = 0; i < MACHINE_MAX_NUMBER_OF_DOORS; i++)
-	{
-		if((uint8_t)mb.Read(LOCATIONS_NUMBER + 1 + i) != 0)
-		{
-			door_need_open |= (1ULL << i);
-		}
-	}
+	display.Write(1234);
+	s.Push(ST_PROCESSING);
 }
 
 void Lockerbox::EV_UserActionClearFaults(MachineData* pdata)

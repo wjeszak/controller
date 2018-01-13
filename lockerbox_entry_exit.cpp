@@ -8,6 +8,7 @@
 #include "machine.h"
 #include "lockerbox.h"
 #include "stack.h"
+#include "modbus_tcp.h"
 
 void Lockerbox::ENTRY_TestingElm(LockerboxData* pdata)
 {
@@ -26,25 +27,29 @@ void Lockerbox::ENTRY_Ready()
 
 void Lockerbox::EXIT_Ready()
 {
-	//s.Push(ST_TESTING_ELM);
+
 }
 
 void Lockerbox::ENTRY_Processing()
 {
-
+	SetDoorCommand();
 }
 
 void Lockerbox::EXIT_Processing()
 {
-
+	for(uint8_t i = 0; i < 36; i++)		// see 02 Registers -> Registers[187]
+	{
+		mb.Write(LOCATIONS_NUMBER + 1 + i, 0);
+	}
+	s.Push(ST_READY);
 }
 
 void Lockerbox::ENTRY_NotReady()
 {
-//	SetDoorCommand();
+
 }
 
 void Lockerbox::EXIT_NotReady()
 {
-	//s.Push(ST_TESTING_ELM);
+
 }
