@@ -29,6 +29,7 @@ public:
 	void ClearLocal(uint8_t address, FaultType fault);
 	bool IsLocal(uint8_t address, FaultType fault);
 	bool IsLocal(uint8_t address);
+//	void ShowNoFaults();
 	void Show();
 private:
 	uint32_t global_faults;

@@ -25,7 +25,7 @@ void Dynabox::LAST_TestingLed()
 
 void Dynabox::EXIT_TestingLed()
 {
-//	s.Push(ST_TESTING_ELM);
+
 }
 // -------------------------------------------------------------------
 void Dynabox::ENTRY_TestingElm()
@@ -40,7 +40,7 @@ void Dynabox::LAST_TestingElm()
 
 void Dynabox::EXIT_TestingElm()
 {
-//	s.Push(ST_PREPARING_TO_MOVEMENT);
+
 }
 // -------------------------------------------------------------------
 void Dynabox::ENTRY_PreparingToMovement()
@@ -73,26 +73,7 @@ void Dynabox::LAST_PreparingToMovement()
 
 void Dynabox::EXIT_PreparingToMovement()
 {
-/*	if(fault.IsGlobal())
-	{
-		s.Push(ST_NOT_READY);
-		SetLedCommand(true);
-	}
-	else
-	{
-		if(!GetIOInfo(HomingDone))
-		{
-			s.Push(ST_HOMING);
-			SetLedCommand(GreenRedBlink, true);
-		}
-		else
-		{
-			s.Push(ST_MOVEMENT);
-			SetLedCommand(GreenBlink, true);
-		}
-	}
-	s.Push(ST_SHOWING_ON_LED);
-*/
+
 }
 // -------------------------------------------------------------------
 void Dynabox::ENTRY_ShowingOnLed()
@@ -107,7 +88,7 @@ void Dynabox::LAST_ShowingOnLed()
 
 void Dynabox::EXIT_ShowingOnLed()
 {
-//	EV_LedTrigger();
+
 }
 // -------------------------------------------------------------------
 void Dynabox::ENTRY_Homing()
@@ -147,7 +128,7 @@ void Dynabox::LAST_Ready()
 
 void Dynabox::EXIT_Ready()
 {
-//	SetDoorCommand(GetStatus);
+
 }
 // -------------------------------------------------------------------
 void Dynabox::ENTRY_Movement()
@@ -196,7 +177,7 @@ void Dynabox::LAST_EndMovement()
 
 void Dynabox::EXIT_EndMovement()
 {
-//	s.Push(ST_READY);
+
 }
 // -------------------------------------------------------------------
 void Dynabox::ENTRY_NotReady()
@@ -207,21 +188,15 @@ void Dynabox::ENTRY_NotReady()
 
 void Dynabox::LAST_NotReady()
 {
-	for(uint8_t i = 0; i < MACHINE_MAX_NUMBER_OF_DOORS; i++)
-	{
-		if(fault.IsLocal(i)) return;	// still fault
-	}
-	fault.ClearGlobal(F06_CloseDoor);
-	s.Push(ST_PREPARING_TO_MOVEMENT);
+//	for(uint8_t i = 0; i < MACHINE_MAX_NUMBER_OF_DOORS; i++)
+//	{
+//		if(fault.IsLocal(i)) return;	// still fault
+//	}
+//	fault.ClearGlobal(F06_CloseDoor);
+//	s.Push(ST_PREPARING_TO_MOVEMENT);
 }
 
 void Dynabox::EXIT_NotReady()
 {
-/*	for(uint8_t i = 0; i < MACHINE_MAX_NUMBER_OF_DOORS; i++)
-	{
-		if(fault.IsLocal(i)) return;	// still fault
-	}
-	fault.ClearGlobal(F06_CloseDoor);
-	s.Push(ST_PREPARING_TO_MOVEMENT);
-	*/
+	//fault.ShowNoFaults();
 }

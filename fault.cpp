@@ -42,51 +42,37 @@ bool Fault::IsGlobal(FaultType fault)
 
 bool Fault::IsGlobal()
 {
-	if(global_faults != 0UL)
-		return true;
-	else
-		return false;
+	for(uint8_t fault = 1; fault <= NUMBER_OF_FAULTS; fault++)
+	{
+		if(global_faults & (1UL << fault))
+			return true;
+	}
+	return false;
 }
 
 void Fault::Show()
 {
-	static uint8_t i = 1;
+	static uint8_t fault = 1;
+
 	if(!IsGlobal())
 	{
 		display.Write(TNoFault, 0);
-		i = 1;
 		return;
 	}
-	while(i <= NUMBER_OF_FAULTS + 1)
+
+	while(fault <= NUMBER_OF_FAULTS + 1)
 	{
-		if(i == NUMBER_OF_FAULTS + 1) i = 1;
-		if(global_faults & (1UL << i))
+		if(fault == NUMBER_OF_FAULTS + 1) fault = 1;
+		if(global_faults & (1UL << fault))
 		{
-			display.Write(TFault, i);
-			i++;
+			display.Write(TFault, fault);
+			fault++;
 			break;
 		}
-		i++;
+		fault++;
 	}
 }
 
-/*
-void Fault::Show()
-{
-	static uint8_t i = 1;
-	if(!IsGlobal()) { display.Write(TNoFault, 0); return; }
-	if(i == NUMBER_OF_FAULTS) i = 1;
-	for(uint8_t fault = i; fault <= NUMBER_OF_FAULTS; fault++)
-	{
-		if(global_faults & (1ULL << fault))
-		{
-			display.Write(TFault, fault);
-			break;
-		}
-	}
-	i++;
-}
-*/
 // -------------------------- door's faults --------------------------
 void Fault::SetLocal(uint8_t address, FaultType fault)
 {

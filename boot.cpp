@@ -10,6 +10,7 @@
 #include "machine.h"
 #include "timer.h"
 #include "config.h"
+#include "fault.h"
 
 // default value in EEPROM
 uint8_t ee_machine_type EEMEM = MACHINE_TYPE_DYNABOX;
@@ -27,4 +28,5 @@ void Boot()
 	// przeniesc do funkcji ktory sie wykonuje tylko przy Dynaboxie
 	timer.Assign(TIMER_MOTOR_SPEED_MEAS, MOTOR_SPEED_MEAS_INTERVAL, MotorSpeedMeas);
 //	timer.Assign(TIMER_DEBUG, DEBUG_INTERVAL, Debug);
+//	fault.ShowNoFaults();
 }
