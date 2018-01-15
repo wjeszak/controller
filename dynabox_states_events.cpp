@@ -93,7 +93,7 @@ void Dynabox::ST9_Config(DynaboxData* pdata)
 // ---------------------------------- Public events ---------------------------
 void Dynabox::EV_LedTrigger()
 {
-	timer.Assign(TLedTrigger, 10, LedTrigger);
+	timer.Assign(TLedTrigger, LED_TRIGGER_INTERVAL, LedTrigger);
 }
 
 void Dynabox::EV_EnterToConfig()

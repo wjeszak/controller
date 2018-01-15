@@ -198,5 +198,5 @@ void Dynabox::LAST_NotReady()
 
 void Dynabox::EXIT_NotReady()
 {
-	//fault.ShowNoFaults();
+
 }
