@@ -18,7 +18,6 @@
 #define DYNABOX_NUMBER_OF_FUNCTIONS 		16
 #define MAX_PWM_HOMING 						173
 
-//enum DoorCommand { CheckElm = 0x01, GetStatusBeforeMovement = 0x02, ElmOff = 0x03, ElmOffOn = 0x04, GetStatus = 0x80, SetPosition = 0xC0 };
 enum DoorReply 	 { ElmOk, ElmFault, TransoptFault = 0xF0, OpenedElmOff = 0x40, Opened15StopsElmOff = 0x4F, Closed = 0xC0, OnOff = 0xD0 };
 
 enum LedCommand  { GreenRedOff, GreenOn, RedOn, GreenBlink, RedBlink, GreenRedBlink,
@@ -82,22 +81,31 @@ private:
 	END_STATE_MAP_EX
 // ---------------------------------- Entry, exit ----------------------------------
 	void ENTRY_TestingLed(DynaboxData* pdata); 	// call from Dynabox::Init() (dynabox.cpp)
+	void LAST_TestingLed();
 	void EXIT_TestingLed();
 	void ENTRY_TestingElm();
+	void LAST_TestingElm();
 	void EXIT_TestingElm();
 	void ENTRY_PreparingToMovement();
+	void LAST_PreparingToMovement();
 	void EXIT_PreparingToMovement();
 	void ENTRY_ShowingOnLed();
+	void LAST_ShowingOnLed();
 	void EXIT_ShowingOnLed();
 	void ENTRY_Homing();
+	void LAST_Homing();
 	void EXIT_Homing();
 	void ENTRY_Ready();
+	void LAST_Ready();
 	void EXIT_Ready();
 	void ENTRY_Movement();
+	void LAST_Movement();
 	void EXIT_Movement();
 	void ENTRY_EndMovement();
+	void LAST_EndMovement();
 	void EXIT_EndMovement();
 	void ENTRY_NotReady();
+	void LAST_NotReady();
 	void EXIT_NotReady();
 // ---------------------------------------------------------------------------------
 	void SetDestAddr(uint8_t addr);
@@ -145,21 +153,22 @@ private:
 		Destination dest;
 		bool need_timeout;
 		void (Dynabox::*on_entry)();
+		void (Dynabox::*on_last_address)();
 		void (Dynabox::*on_exit)();
 	};
 
 	StateProperties state_properties[ST_MAX_STATES] =
 	{
-//		dest 		tout 	entry 									exit
-		{Dest_Led,  true,  	NULL, 									&Dynabox::EXIT_TestingLed			},	// ST_TESTING_LED
-		{Dest_Door, true,  	&Dynabox::ENTRY_TestingElm, 			&Dynabox::EXIT_TestingElm			},	// ST_TESTING_ELM
-		{Dest_Door, true,  	&Dynabox::ENTRY_PreparingToMovement, 	&Dynabox::EXIT_PreparingToMovement	},	// ST_PREPARING_TO_MOVEMENT
-		{Dest_Led,  false, 	&Dynabox::ENTRY_ShowingOnLed, 			&Dynabox::EXIT_ShowingOnLed			},	// ST_SHOWING_ON_LED
-		{Dest_Door, true, 	&Dynabox::ENTRY_Homing, 				&Dynabox::EXIT_Homing				},	// ST_HOMING
-		{Dest_Door, true, 	&Dynabox::ENTRY_Ready, 					&Dynabox::EXIT_Ready 				},	// ST_READY
-		{Dest_Door, true, 	&Dynabox::ENTRY_Movement,				&Dynabox::EXIT_Movement				},	// ST_MOVEMENT
-		{Dest_Door, true, 	&Dynabox::ENTRY_EndMovement,			&Dynabox::EXIT_EndMovement			},	// ST_END_MOVEMENT
-		{Dest_Door, true, 	&Dynabox::ENTRY_NotReady,				&Dynabox::EXIT_NotReady				},	// ST_NOT_READY
+//		dest 		tout 	entry 									last_address	 					exit
+		{Dest_Led,  true,  	NULL, 									&Dynabox::LAST_TestingLed,			&Dynabox::EXIT_TestingLed			},	// ST_TESTING_LED
+		{Dest_Door, true,  	&Dynabox::ENTRY_TestingElm, 			&Dynabox::LAST_TestingElm,			&Dynabox::EXIT_TestingElm			},	// ST_TESTING_ELM
+		{Dest_Door, true,  	&Dynabox::ENTRY_PreparingToMovement, 	&Dynabox::LAST_PreparingToMovement,	&Dynabox::EXIT_PreparingToMovement	},	// ST_PREPARING_TO_MOVEMENT
+		{Dest_Led,  false, 	&Dynabox::ENTRY_ShowingOnLed, 			&Dynabox::LAST_ShowingOnLed,		&Dynabox::EXIT_ShowingOnLed			},	// ST_SHOWING_ON_LED
+		{Dest_Door, true, 	&Dynabox::ENTRY_Homing, 				&Dynabox::LAST_Homing,				&Dynabox::EXIT_Homing				},	// ST_HOMING
+		{Dest_Door, true, 	&Dynabox::ENTRY_Ready, 					&Dynabox::LAST_Ready,				&Dynabox::EXIT_Ready 				},	// ST_READY
+		{Dest_Door, true, 	&Dynabox::ENTRY_Movement,				&Dynabox::LAST_Movement,			&Dynabox::EXIT_Movement				},	// ST_MOVEMENT
+		{Dest_Door, true, 	&Dynabox::ENTRY_EndMovement,			&Dynabox::LAST_EndMovement,			&Dynabox::EXIT_EndMovement			},	// ST_END_MOVEMENT
+		{Dest_Door, true, 	&Dynabox::ENTRY_NotReady,				&Dynabox::LAST_NotReady,			&Dynabox::EXIT_NotReady				},	// ST_NOT_READY
 	};
 // -----------------------------need by SetFaults() --------------------------------
 	struct StateFault

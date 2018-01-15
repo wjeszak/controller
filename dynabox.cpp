@@ -63,9 +63,10 @@ void Dynabox::StateManager()
 	if(current_address == LastAddress() + 1)
 	{
 		SetDestAddr(1);
-		if(state_properties[state].on_exit != NULL) (this->*state_properties[state].on_exit)();
+		if(state_properties[state].on_last_address != NULL) (this->*state_properties[state].on_last_address)();
 		if(!s.IsEmpty())
 		{
+			if(state_properties[state].on_exit != NULL) (this->*state_properties[state].on_exit)();
 			uint8_t new_state = s.Pop();
 			ChangeState(new_state);
 			if(state_properties[new_state].on_entry != NULL) (this->*state_properties[new_state].on_entry)();

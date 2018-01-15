@@ -12,33 +12,43 @@
 #include "config.h"
 #include "stack.h"
 #include "queue.h"
-
+// -------------------------------------------------------------------
 void Dynabox::ENTRY_TestingLed(DynaboxData* pdata)
 {
 	SetLedCommand(Diag, false);
 }
 
-void Dynabox::EXIT_TestingLed()
+void Dynabox::LAST_TestingLed()
 {
 	s.Push(ST_TESTING_ELM);
 }
 
+void Dynabox::EXIT_TestingLed()
+{
+//	s.Push(ST_TESTING_ELM);
+}
+// -------------------------------------------------------------------
 void Dynabox::ENTRY_TestingElm()
 {
 	SetDoorCommand(CheckElm);
 }
 
-void Dynabox::EXIT_TestingElm()
+void Dynabox::LAST_TestingElm()
 {
 	s.Push(ST_PREPARING_TO_MOVEMENT);
 }
 
+void Dynabox::EXIT_TestingElm()
+{
+//	s.Push(ST_PREPARING_TO_MOVEMENT);
+}
+// -------------------------------------------------------------------
 void Dynabox::ENTRY_PreparingToMovement()
 {
 	SetDoorCommand(GetStatusBeforeMovement);
 }
 
-void Dynabox::EXIT_PreparingToMovement()
+void Dynabox::LAST_PreparingToMovement()
 {
 	if(fault.IsGlobal())
 	{
@@ -61,16 +71,45 @@ void Dynabox::EXIT_PreparingToMovement()
 	s.Push(ST_SHOWING_ON_LED);
 }
 
+void Dynabox::EXIT_PreparingToMovement()
+{
+/*	if(fault.IsGlobal())
+	{
+		s.Push(ST_NOT_READY);
+		SetLedCommand(true);
+	}
+	else
+	{
+		if(!GetIOInfo(HomingDone))
+		{
+			s.Push(ST_HOMING);
+			SetLedCommand(GreenRedBlink, true);
+		}
+		else
+		{
+			s.Push(ST_MOVEMENT);
+			SetLedCommand(GreenBlink, true);
+		}
+	}
+	s.Push(ST_SHOWING_ON_LED);
+*/
+}
+// -------------------------------------------------------------------
 void Dynabox::ENTRY_ShowingOnLed()
 {
 
 }
 
-void Dynabox::EXIT_ShowingOnLed()
+void Dynabox::LAST_ShowingOnLed()
 {
 	EV_LedTrigger();
 }
 
+void Dynabox::EXIT_ShowingOnLed()
+{
+//	EV_LedTrigger();
+}
+// -------------------------------------------------------------------
 void Dynabox::ENTRY_Homing()
 {
 	SetDoorCommand(GetStatus);
@@ -85,22 +124,32 @@ void Dynabox::ENTRY_Homing()
 #endif
 }
 
-void Dynabox::EXIT_Homing()
+void Dynabox::LAST_Homing()
 {
 
 }
 
+void Dynabox::EXIT_Homing()
+{
+
+}
+// -------------------------------------------------------------------
 void Dynabox::ENTRY_Ready()
 {
 	SetOrderStatus(Ready);
 	SetDoorCommand(GetStatus);
 }
 
-void Dynabox::EXIT_Ready()
+void Dynabox::LAST_Ready()
 {
 	SetDoorCommand(GetStatus);
 }
 
+void Dynabox::EXIT_Ready()
+{
+//	SetDoorCommand(GetStatus);
+}
+// -------------------------------------------------------------------
 void Dynabox::ENTRY_Movement()
 {
 	SetDoorCommand(GetStatus);
@@ -115,11 +164,16 @@ void Dynabox::ENTRY_Movement()
 #endif
 }
 
-void Dynabox::EXIT_Movement()
+void Dynabox::LAST_Movement()
 {
 
 }
 
+void Dynabox::EXIT_Movement()
+{
+
+}
+// -------------------------------------------------------------------
 void Dynabox::ENTRY_EndMovement()
 {
 	// for sure...
@@ -135,18 +189,23 @@ void Dynabox::ENTRY_EndMovement()
 	}
 }
 
-void Dynabox::EXIT_EndMovement()
+void Dynabox::LAST_EndMovement()
 {
 	s.Push(ST_READY);
 }
 
+void Dynabox::EXIT_EndMovement()
+{
+//	s.Push(ST_READY);
+}
+// -------------------------------------------------------------------
 void Dynabox::ENTRY_NotReady()
 {
 	SetOrderStatus(NotReady);
 	SetDoorCommand(GetStatus);
 }
 
-void Dynabox::EXIT_NotReady()
+void Dynabox::LAST_NotReady()
 {
 	for(uint8_t i = 0; i < MACHINE_MAX_NUMBER_OF_DOORS; i++)
 	{
@@ -154,4 +213,15 @@ void Dynabox::EXIT_NotReady()
 	}
 	fault.ClearGlobal(F06_CloseDoor);
 	s.Push(ST_PREPARING_TO_MOVEMENT);
+}
+
+void Dynabox::EXIT_NotReady()
+{
+/*	for(uint8_t i = 0; i < MACHINE_MAX_NUMBER_OF_DOORS; i++)
+	{
+		if(fault.IsLocal(i)) return;	// still fault
+	}
+	fault.ClearGlobal(F06_CloseDoor);
+	s.Push(ST_PREPARING_TO_MOVEMENT);
+	*/
 }

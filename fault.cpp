@@ -15,7 +15,7 @@
 
 Fault::Fault()
 {
-	global_faults = 0x00000000;
+	global_faults = 0;
 }
 
 void Fault::SetGlobal(FaultType fault)
