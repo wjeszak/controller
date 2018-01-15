@@ -15,27 +15,20 @@
 
 #include <avr/io.h>
 
-#define MAIN_TIMER_PRESCALER 				36
-#define NUMBER_OF_TIMERS 					14
+enum TimerId
+{
+	TDisplayRefresh, TFaultShow, TButtonPoll, TEncoderPoll, TSlavePoll, TSlaveTimeout, TMotorAccelerate,
+	TLedTrigger, TMotorDecelerate, TMotorSpeedMeas, TBeforeDirectionChange, TDoorOpenTimeout,
+	TDebug, TTmp, TTmp1, TNumberOfTimers
+};
 
-#define TIMER_DISPLAY_REFRESH 				0
-#define TIMER_BUTTON_POLL					1
-#define TIMER_ENCODER_POLL			 		2
-#define TIMER_SLAVE_POLL 					3
-#define TIMER_SLAVE_TIMEOUT 				4
-#define TIMER_MOTOR_ACCELERATE 				5
-#define TIMER_LED_TRIGGER 		 			6
-#define TIMER_MOTOR_DECELERATE 				7
-#define TIMER_MOTOR_SPEED_MEAS 				8
-#define TIMER_BEFORE_DIRECTION_CHANGE		9
-#define TIMER_DOOR_OPEN_TIMEOUT 			10
-#define TIMER_DEBUG							11
-#define TIMER_TMP							12
-#define TIMER_TMP1 							13
+#define MAIN_TIMER_PRESCALER 				36
 
 #define TIMER_TMP_INTERVAL 					5000
 #define TIMER_TMP1_INTERVAL					10000
 
+#define DISPLAY_REFRESH_INTERVAL 			4
+#define ENCODER_POLL_INTERVAL 				1
 #define SLAVE_POLL_INTERVAL 				50
 #define FAULT_SHOW_INTERVAL 				1000
 #define DOOR_OPEN_TIMEOUT_INTERVAL 			1000
@@ -46,11 +39,12 @@
 #define BEFORE_DIRECTION_CHANGE_INTERVAL 	1000
 
 #define DEBUG_INTERVAL						100
-
-#define SLAVE_POLL_START 				timer.Assign(TIMER_SLAVE_POLL, SLAVE_POLL_INTERVAL, SlavePollGeneral)
-#define SLAVE_POLL_STOP					timer.Disable(TIMER_SLAVE_POLL);
-#define SLAVE_POLL_TIMEOUT_SET			timer.Assign(TIMER_SLAVE_TIMEOUT, SLAVE_TIMEOUT_INTERVAL, SlaveTimeoutGeneral);
-#define SLAVE_POLL_TIMEOUT_OFF			timer.Disable(TIMER_SLAVE_TIMEOUT);
+#define FAULT_SHOW_START 					timer.Assign(TFaultShow, FAULT_SHOW_INTERVAL, FaultShow)
+#define FAULT_SHOW_STOP 					timer.Disable(TFaultShow)
+#define SLAVE_POLL_START 					timer.Assign(TSlavePoll, SLAVE_POLL_INTERVAL, SlavePollGeneral)
+#define SLAVE_POLL_STOP						timer.Disable(TSlavePoll);
+#define SLAVE_POLL_TIMEOUT_SET				timer.Assign(TSlaveTimeout, SLAVE_TIMEOUT_INTERVAL, SlaveTimeoutGeneral);
+#define SLAVE_POLL_TIMEOUT_OFF				timer.Disable(TSlaveTimeout);
 
 enum T2Prescallers
 {
@@ -69,9 +63,9 @@ class Timer
 public:
 	Timer(T2Prescallers prescaller);
 	void Irq();
-	void Assign(uint8_t handler_id, uint16_t interval, void(*fp)());
-	void Enable (uint8_t handler_id);
-	void Disable (uint8_t handler_id);
+	void Assign(TimerId handler_id, uint16_t interval, void(*fp)());
+	void Enable (TimerId handler_id);
+	void Disable (TimerId handler_id);
 private:
 	struct TimerHandler
 	{
@@ -80,13 +74,14 @@ private:
 		uint16_t interval;
 		uint16_t counter;
 	};
-	TimerHandler timer_handlers[NUMBER_OF_TIMERS];
+	TimerHandler timer_handlers[TNumberOfTimers];
 	uint8_t main_timer_prescaler;
 };
 
 extern Timer timer;
 // --------------------------------------------------------------------
 extern void DisplayRefresh();
+extern void FaultShow();
 extern void ButtonPoll();
 extern void EncoderPoll();
 extern void SlavePollGeneral();
@@ -96,7 +91,6 @@ extern void MotorDecelerate();
 extern void LedTrigger();
 extern void MotorSpeedMeas();
 extern void BeforeDirectionChange();
-//extern void DoorOpenTimeout();
 extern void Debug();
 extern void Tmp();
 extern void Tmp1();

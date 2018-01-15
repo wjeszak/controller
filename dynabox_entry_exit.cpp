@@ -101,7 +101,7 @@ void Dynabox::ENTRY_Homing()
 	SetIOInfo(MovingDirection);
 	SetIOInfo(HomingInProgress);
 #ifdef DEBUG
-	timer.Assign(TIMER_TMP, TIMER_TMP_INTERVAL, Tmp);
+	timer.Assign(TTmp, TIMER_TMP_INTERVAL, Tmp);
 #endif
 }
 
@@ -141,7 +141,7 @@ void Dynabox::ENTRY_Movement()
 	SetOrderStatus(Processing);
 	SetIOInfo(Moving);
 #ifdef DEBUG
-	timer.Assign(TIMER_TMP1, TIMER_TMP1_INTERVAL, Tmp1);
+	timer.Assign(TTmp1, TIMER_TMP1_INTERVAL, Tmp1);
 #endif
 }
 

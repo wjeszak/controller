@@ -22,7 +22,7 @@ Button::Button(volatile uint8_t *ddr, volatile uint8_t *port, volatile uint8_t *
 	*_ddr &= ~(1 << _pin_number);
 	*_port |= (1 << _pin_number);
 
-	timer.Assign(TIMER_BUTTON_POLL, 100, ButtonPoll);
+	timer.Assign(TButtonPoll, 100, ButtonPoll);
 	ST_Idle(&button_data);
 }
 

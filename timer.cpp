@@ -19,7 +19,7 @@
 
 Timer::Timer(T2Prescallers prescaller)
 {
-	for(uint8_t n = 0; n < NUMBER_OF_TIMERS; n++)
+	for(uint8_t n = 0; n < TNumberOfTimers; n++)
 	{
 		timer_handlers[n].active = false;
 		timer_handlers[n].counter = 0;
@@ -40,7 +40,7 @@ void Timer::Irq()
 	if(main_timer_prescaler == MAIN_TIMER_PRESCALER)
 	{
 		main_timer_prescaler = 0;
-		for(uint8_t n = 0; n < NUMBER_OF_TIMERS; n++)
+		for(uint8_t n = 0; n < TNumberOfTimers; n++)
 		{
 			if ((timer_handlers[n].active) && (timer_handlers[n].fp != NULL))
 			{
@@ -58,7 +58,7 @@ void Timer::Irq()
 	}
 }
 
-void Timer::Assign(uint8_t handler_id, uint16_t interval, void(*fp)())
+void Timer::Assign(TimerId handler_id, uint16_t interval, void(*fp)())
 {
 	timer_handlers[handler_id].interval = interval;
 	timer_handlers[handler_id].counter = 0;
@@ -66,13 +66,13 @@ void Timer::Assign(uint8_t handler_id, uint16_t interval, void(*fp)())
 	timer_handlers[handler_id].fp = fp;
 }
 
-void Timer::Enable(uint8_t handler_id)
+void Timer::Enable(TimerId handler_id)
 {
 	timer_handlers[handler_id].active = true;
 	timer_handlers[handler_id].counter = 0;
 }
 
-void Timer::Disable(uint8_t handler_id)
+void Timer::Disable(TimerId handler_id)
 {
 	timer_handlers[handler_id].active = false;
 }
@@ -82,13 +82,17 @@ ISR(TIMER2_COMPB_vect)
 	timer.Irq();
 }
 // ----------------------------------------------------------------------------------
-// TIMER_DISPLAY_REFRESH
+
 void DisplayRefresh()
 {
 	display.Refresh();
 }
 
-// TIMER_BUTTON_POLL
+void FaultShow()
+{
+	fault.Show();
+}
+
 void ButtonPoll()
 {
 	if(button_enter_config.Pressed())
@@ -102,44 +106,37 @@ void ButtonPoll()
 		button_encoder_sw.EV_Released(&button_data);
 }
 
-// TIMER_ENCODER_POLL
 void EncoderPoll()
 {
 	encoder.Poll();
 }
 
-// TIMER_SLAVE_POLL
 void SlavePollGeneral()
 {
 	m->StateManager();
 }
 
-// TIMER_SLAVE_TIMEOUT
 void SlaveTimeoutGeneral()
 {
 	comm.EV_Timeout();
 }
 
-// TIMER_MOTOR_ACCELERATE
 void MotorAccelerate()
 {
 	motor.Accelerate();
 }
 
-// TIMER_MOTOR_DECELERATE
 void MotorDecelerate()
 {
 	motor.Decelerate();
 }
 
-// TIMER_LED_TRIGGER
 void LedTrigger()
 {
-	timer.Disable(TIMER_LED_TRIGGER);
+	timer.Disable(TLedTrigger);
 	comm.EV_Send(LED_ADDRESS_TRIGGER, 0x00, false);
 }
 
-// TIMER_MOTOR_SPEED_MEAS
 void MotorSpeedMeas()
 {
 	motor.SpeedMeasure();
@@ -147,7 +144,7 @@ void MotorSpeedMeas()
 
 void BeforeDirectionChange()
 {
-	timer.Disable(TIMER_BEFORE_DIRECTION_CHANGE);
+	timer.Disable(TBeforeDirectionChange);
 	motor.SetDirection(motor.Backward);
 // --------------------- ! UWAGA NA WARTOSC PWM ! ----------------------------------
 // motor_data.max_pwm_val = _minimum_pwm_val_backward + 1
@@ -159,17 +156,6 @@ void BeforeDirectionChange()
 	motor.EV_MinPwmAchieved(&motor_data);
 }
 
-/*void DoorOpenTimeout()
-{
-	for(uint8_t i = 0; i < MACHINE_MAX_NUMBER_OF_DOORS; i++)
-	{
-		if(door_open_timeout[i] != 0xFF)
-		{
-			door_open_timeout[i]++;
-		}
-	}
-}
-*/
 void Debug()
 {
 	motor.Debug();
@@ -177,12 +163,12 @@ void Debug()
 
 void Tmp()
 {
-	timer.Disable(TIMER_TMP);
+	timer.Disable(TTmp);
 	dynabox.EV_HomingDone(&dynabox_data);
 }
 
 void Tmp1()
 {
-	timer.Disable(TIMER_TMP1);
+	timer.Disable(TTmp1);
 	dynabox.EV_PositionAchieved(&dynabox_data);
 }

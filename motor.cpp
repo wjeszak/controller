@@ -49,7 +49,7 @@ void Motor::ST_Acceleration(MotorData* pdata)
 	_actual_pwm_val = _minimum_pwm_val;
 	_maximum_pwm_val = pdata->max_pwm_val;
 	MOTOR_START;
-	timer.Assign(TIMER_MOTOR_ACCELERATE, _delta_time_accelerate, MotorAccelerate);
+	timer.Assign(TMotorAccelerate, _delta_time_accelerate, MotorAccelerate);
 }
 
 // from timer
@@ -64,18 +64,18 @@ void Motor::Accelerate()
 
 void Motor::ST_Running(MotorData* pdata)
 {
-	timer.Disable(TIMER_MOTOR_ACCELERATE);
+	timer.Disable(TMotorAccelerate);
 }
 
 void Motor::ST_Deceleration(MotorData* pdata)
 {
-	timer.Disable(TIMER_MOTOR_ACCELERATE);			// if accelerating
-	timer.Assign(TIMER_MOTOR_DECELERATE, _delta_time_decelerate, MotorDecelerate);
+	timer.Disable(TMotorAccelerate);			// if accelerating
+	timer.Assign(TMotorDecelerate, _delta_time_decelerate, MotorDecelerate);
 }
 
 void Motor::ST_RunningMinPwm(MotorData* pdata)
 {
-	timer.Disable(TIMER_MOTOR_DECELERATE);
+	timer.Disable(TMotorDecelerate);
 }
 // ------------------------------------- Public events -------------------------------------
 void Motor::EV_Start(MotorData* pdata)
@@ -142,9 +142,9 @@ void Motor::Decelerate()
 		if(delta > 0 && _actual_pwm_val > 0) {}
 		else
 		{
-			timer.Disable(TIMER_MOTOR_DECELERATE);
+			timer.Disable(TMotorDecelerate);
 			Event(ST_NOT_RUNNING);
-			timer.Assign(TIMER_BEFORE_DIRECTION_CHANGE, BEFORE_DIRECTION_CHANGE_INTERVAL, BeforeDirectionChange);
+			timer.Assign(TBeforeDirectionChange, BEFORE_DIRECTION_CHANGE_INTERVAL, BeforeDirectionChange);
 		}
 	}
 	if(!homing && _actual_pwm_val == _minimum_pwm_val)

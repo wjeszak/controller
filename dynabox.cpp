@@ -47,17 +47,10 @@ void Dynabox::StateManager()
 {
 	uint8_t state = GetState();
 	//display.Write(state);
-	static uint8_t fault_show_cnt = 0;
-	fault_show_cnt++;
-	if(fault_show_cnt == FAULT_SHOW_TICK)
+	if(f.Get(NeedFaultsClear))
 	{
-		fault_show_cnt = 0;
-		if(f.Get(NeedFaultsClear))
-		{
-			f.Clear(NeedFaultsClear);
-			if(fault.IsGlobal(F07_DoorNotOpen)) fault.ClearGlobal(F07_DoorNotOpen);
-		}
-		fault.Show();
+		f.Clear(NeedFaultsClear);
+		if(fault.IsGlobal(F07_DoorNotOpen)) fault.ClearGlobal(F07_DoorNotOpen);
 	}
 
 	if(current_address == LastAddress() + 1)
