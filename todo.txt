@@ -14,3 +14,4 @@ Pozosta³o tak na razie: uwa¿ac interwa³em odpytywania, ¿eby siê zmienna nie prze
 15. Zmienne typu current_command itp wrzucic do osobnej klasy Common, zaoszczedzi sie stosu, bo nie bedzie
 tworzyl kopii tych zmiennych
 16. Rozne czasy odpytywania i timeout dla poszczegolnych klas maszyn
+17. Dodac funkcjê SetDoorCommand(addr, command)
