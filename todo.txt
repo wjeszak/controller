@@ -15,3 +15,4 @@ Pozosta³o tak na razie: uwa¿ac interwa³em odpytywania, ¿eby siê zmienna nie prze
 tworzyl kopii tych zmiennych
 16. Rozne czasy odpytywania i timeout dla poszczegolnych klas maszyn
 17. Dodac funkcjê SetDoorCommand(addr, command)
+18. Pozmieniac domyslne wartosci parametrow w eeprom ze wzgledu na zmiany w klasie Config.

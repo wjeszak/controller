@@ -11,19 +11,25 @@
 #include "lockerbox.h"
 #include "modbus_tcp.h"
 #include "timer.h"
+#include "comm.h"
 
 // Functions
+void TestDoor(uint8_t value)
+{
+	comm.EV_Send(100+value, 0x09, false);
+}
 
 // Default values in EEPROM
 Function EEMEM lockerbox_eem_functions[LOCKERBOX_NUMBER_OF_FUNCTIONS] =
 {
 //   No.of function, 	Default value,  Function pointer
-	{1, 				1,	 			NULL},	// type of machine
-	{2, 				7,				NULL},	// max doors
-	{4,					170,  			NULL},	// IP master
-	{10,				1,				NULL},	// serial number
-	{28, 				0,				NULL},	// type of machine
-	{40, 				1, 				NULL}, 	// time for elm on
+	{1, 				1,	 			NULL	},			// type of machine
+	{2, 				7,				NULL	},			// max doors
+	{4,					170,  			NULL	},			// IP master
+	{6,					1, 				TestDoor},			// test door
+	{10,				1,				NULL	},			// serial number
+	{28, 				0,				NULL	},			// type of machine
+	{40, 				1, 				NULL	}, 			// time for elm on
 };
 
 void Lockerbox::LoadParameters()

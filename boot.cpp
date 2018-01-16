@@ -13,7 +13,7 @@
 #include "fault.h"
 
 // default value in EEPROM
-uint8_t ee_machine_type EEMEM = MACHINE_TYPE_DYNABOX;
+uint8_t ee_machine_type EEMEM = MACHINE_TYPE_LOCKERBOX;
 uint8_t machine_type;
 
 void Boot()

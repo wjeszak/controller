@@ -35,6 +35,7 @@ void Lockerbox::ST3_NotReady(LockerboxData* pdata)
 
 void Lockerbox::EV_EnterToConfig()
 {
+	FAULT_SHOW_STOP;
 	SLAVE_POLL_STOP;
 }
 

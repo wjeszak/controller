@@ -39,7 +39,7 @@ void Config::EV_ButtonClick(ConfigData* pdata)
 		// exit from configuration
 		m->SaveParameters();
 		FAULT_SHOW_START;
-		//SLAVE_POLL_START;
+		SLAVE_POLL_START;
 	}
 	BEGIN_TRANSITION_MAP								// current state
         TRANSITION_MAP_ENTRY(ST_CHOOSING_FUNCTION)		// ST_IDLE
@@ -73,6 +73,9 @@ void Config::EV_EncoderClick(ConfigData* pdata)
 			encoder.SetCounter(index_cache);
 			pdata->val = index_cache;
 			timer.Assign(TEncoderPoll, 1, EncoderPoll);
+
+			if(functions[index].param != 0xFFF && functions[index].f)
+				functions[index].f(functions[index].param);
 		}
 		BEGIN_TRANSITION_MAP								// current state
         	TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_IDLE
@@ -106,12 +109,13 @@ void Config::ST_ChoosingFunction(ConfigData* pdata)
 
 void Config::ST_ExecutingFunction(ConfigData* pdata)
 {
-	if(functions[index].f)
+	// only call function
+	if(functions[index].param == 0xFFFF && functions[index].f != NULL)
 	{
 		timer.Disable(TEncoderPoll);
-		functions[index].f();
+		functions[index].f(NULL);
 	}
-	else
+	if(functions[index].param != 0xFFFF)
 	{
 		display.Write(TParameterValue, pdata->val);
 		functions[index].param = pdata->val;

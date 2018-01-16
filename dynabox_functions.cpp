@@ -13,7 +13,7 @@
 #include "timer.h"
 
 // Functions
-void f12()
+void f12(uint8_t value)
 {
 	//display.Write(5555);
 }

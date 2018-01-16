@@ -10,7 +10,7 @@
 
 #include "machine.h"
 
-#define LOCKERBOX_NUMBER_OF_FUNCTIONS 		6
+#define LOCKERBOX_NUMBER_OF_FUNCTIONS 		7
 
 class LockerboxData : public MachineData
 {
