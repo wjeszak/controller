@@ -7,6 +7,7 @@
 
 #include <avr/eeprom.h>
 #include "boot.h"
+#include "machine.h"
 #include "config.h"
 #include "lockerbox.h"
 #include "modbus_tcp.h"
@@ -16,7 +17,7 @@
 // Functions
 void TestDoor(uint8_t value)
 {
-	comm.EV_Send(100+value, 0x09, false);
+	comm.EV_Send(value, OpenLockerbox + 3, false);
 }
 
 // Default values in EEPROM
