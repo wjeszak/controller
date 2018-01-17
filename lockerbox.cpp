@@ -116,6 +116,19 @@ void Lockerbox::EV_Reply(MachineData* pdata)
 	uint8_t state = GetState();
 	mb.Write(current_address - 1, pdata->data);
 	SetFaults(state, pdata->data);
+	//if(state == ST_PROCESSING)
+	//{
+	//	InternalEventEx(ST_WAITING_TO_OPEN, pdata);
+	//	SLAVE_POLL_STOP;
+	//}
+	//if(state == ST_WAITING_TO_OPEN)
+	//{
+	//	if(pdata->data == 0x40)
+	//	{
+	//		InternalEventEx(ST_PROCESSING, pdata);
+	//		SLAVE_POLL_START;
+	//	}
+	//}
 }
 
 void Lockerbox::EV_Timeout(MachineData* pdata)
