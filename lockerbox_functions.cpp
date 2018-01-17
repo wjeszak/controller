@@ -17,7 +17,7 @@
 // Functions
 void TestDoor(uint8_t value)
 {
-	comm.EV_Send(value, OpenLockerbox + 3, false);
+	comm.EV_Send(value, OpenLockerbox + 30, false);
 }
 
 // Default values in EEPROM
