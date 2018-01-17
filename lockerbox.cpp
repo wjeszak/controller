@@ -34,18 +34,6 @@ void Lockerbox::StateManager()
 {
 	uint8_t state = GetState();
 	//display.Write(state);
-//	static uint8_t fault_show_cnt = 0;
-//	fault_show_cnt++;
-//	if(fault_show_cnt == FAULT_SHOW_TICK)
-	//{
-	//	fault_show_cnt = 0;
-		if(f.Get(NeedFaultsClear))
-		{
-	//		f.Clear(NeedFaultsClear);
-	//		if(fault.IsGlobal(F07_DoorNotOpen)) fault.ClearGlobal(F07_DoorNotOpen);
-		}
-	//	fault.Show();
-	//}
 
 	if(current_address == LastAddress() + 1)
 	{
@@ -63,7 +51,7 @@ void Lockerbox::StateManager()
 	//DoorOpenTimeoutManager();
 
 	InternalEventEx(state, &lockerbox_data);
-	comm.EV_Send(GetDestAddr(state), current_command[current_address - 1] , true);
+	comm.EV_Send(current_address, current_command[current_address - 1], true);
 	current_address++;
 }
 
@@ -97,11 +85,37 @@ uint8_t Lockerbox::GetDestAddr(uint8_t st)
 	return current_address;
 }
 
+void Lockerbox::SetFaults(uint8_t st, uint8_t reply)
+{
+	for(uint8_t i = 0; i < 4; i++)
+	{
+		if(reply_fault_set[i].state == st)
+		{
+			if((reply_fault_set[i].reply == reply) && reply_fault_set[i].neg == false)
+			{
+				fault.SetGlobal(reply_fault_set[i].fault);
+				fault.SetLocal(current_address - 1, reply_fault_set[i].fault);
+				mb.Write(current_address, (reply_fault_set[i].fault << 8));
+				//mb.Write(current_address, reply_fault_set[i].fault);
+				if(reply_fault_set[i].fp != NULL) (this->*reply_fault_set[i].fp)(NULL);
+			}
+			if((reply_fault_set[i].reply != reply) && reply_fault_set[i].neg == true)
+			{
+				fault.SetGlobal(reply_fault_set[i].fault);
+				fault.SetLocal(current_address - 1, reply_fault_set[i].fault);
+				mb.Write(current_address, (reply_fault_set[i].fault << 8));
+				//mb.Write(current_address, reply_fault_set[i].fault);
+				if(reply_fault_set[i].fp != NULL) (this->*reply_fault_set[i].fp)(NULL);
+			}
+		}
+	}
+}
+
 void Lockerbox::EV_Reply(MachineData* pdata)
 {
 	uint8_t state = GetState();
-	mb.Write(current_address, pdata->data);
-//	SetFaults(state, pdata->data);
+	mb.Write(current_address - 1, pdata->data);
+	SetFaults(state, pdata->data);
 }
 
 void Lockerbox::EV_Timeout(MachineData* pdata)

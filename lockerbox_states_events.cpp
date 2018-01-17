@@ -28,7 +28,12 @@ void Lockerbox::ST2_Processing(LockerboxData* pdata)
 
 }
 
-void Lockerbox::ST3_NotReady(LockerboxData* pdata)
+void Lockerbox::ST3_WaitingToOpen(LockerboxData* pdata)
+{
+
+}
+
+void Lockerbox::ST4_NotReady(LockerboxData* pdata)
 {
 
 }

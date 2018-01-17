@@ -9,6 +9,7 @@
 #define LOCKERBOX_H_
 
 #include "machine.h"
+#include "fault.h"
 
 #define LOCKERBOX_NUMBER_OF_FUNCTIONS 		7
 
@@ -37,14 +38,16 @@ private:
 	void ST0_TestingElm(LockerboxData* pdata);				// 0
 	void ST1_Ready(LockerboxData* pdata);					// 1
 	void ST2_Processing(LockerboxData* pdata);				// 2
-	void ST3_NotReady(LockerboxData* pdata);				// 3
+	void ST3_WaitingToOpen(LockerboxData* pdata);			// 3
+	void ST4_NotReady(LockerboxData* pdata);				// 4
 
-	enum States {ST_TESTING_ELM, ST_READY, ST_PROCESSING, ST_NOT_READY, ST_MAX_STATES};
+	enum States {ST_TESTING_ELM, ST_READY, ST_PROCESSING, ST_WAITING_TO_OPEN, ST_NOT_READY, ST_MAX_STATES};
 	BEGIN_STATE_MAP_EX
 		STATE_MAP_ENTRY_EX(&Lockerbox::ST0_TestingElm)
 		STATE_MAP_ENTRY_EX(&Lockerbox::ST1_Ready)
 		STATE_MAP_ENTRY_EX(&Lockerbox::ST2_Processing)
-		STATE_MAP_ENTRY_EX(&Lockerbox::ST3_NotReady)
+		STATE_MAP_ENTRY_EX(&Lockerbox::ST3_WaitingToOpen)
+		STATE_MAP_ENTRY_EX(&Lockerbox::ST4_NotReady)
 	END_STATE_MAP_EX
 // ---------------------------------- Entry, exit ----------------------------------
 	void ENTRY_TestingElm(LockerboxData* pdata);
@@ -60,7 +63,7 @@ private:
 	void SetDestAddr(uint8_t addr);
 	void SetDoorCommand();
 	void SetDoorCommand(DoorCommand command);
-//	void SetFaults(uint8_t st, uint8_t reply);
+	void SetFaults(uint8_t st, uint8_t reply);
 
 	uint64_t door_need_open;
 	struct StateProperties
@@ -77,6 +80,21 @@ private:
 		{&Lockerbox::ENTRY_Processing, 			&Lockerbox::EXIT_Processing	},	// ST_PROCESSING
 		{&Lockerbox::ENTRY_NotReady, 			&Lockerbox::EXIT_NotReady	},	// ST_NOT_READY
 
+	};
+
+	struct StateFault
+	{
+		uint8_t state;
+		uint8_t reply;
+		void (Lockerbox::*fp)(LockerboxData* pdata);
+		FaultType fault;
+		bool neg;
+	};
+	StateFault reply_fault_set[ST_MAX_STATES] =
+	{
+//		state 						reply 			fp 					fault						negation
+		{ST_TESTING_ELM, 			0x01,			NULL, 				F05_Elm, 					false},
+		{ST_WAITING_TO_OPEN, 		0x07, 			NULL, 				F07_DoorNotOpen, 			false},
 	};
 };
 
