@@ -13,6 +13,8 @@ Pozosta³o tak na razie: uwa¿ac interwa³em odpytywania, ¿eby siê zmienna nie prze
 14. Nie potrzeba zapisywania '-' na display co 1 s skoro nie ma bledow.
 15. Zmienne typu current_command itp wrzucic do osobnej klasy Common, zaoszczedzi sie stosu, bo nie bedzie
 tworzyl kopii tych zmiennych
-16. Rozne czasy odpytywania i timeout dla poszczegolnych klas maszyn
+16. Rozne czasy odpytywania dla poszczegolnych klas maszyn: Lockerbox: 20 ms, Dynabox: 50 ms
 17. Dodac funkcjê SetDoorCommand(addr, command)
-18. Pozmieniac domyslne wartosci parametrow w eeprom ze wzgledu na zmiany w klasie Config.
+18. Pozmieniac domyslne wartosci parametrow (0xFFFF) w eeprom ze wzgledu na zmiany w klasie Config.
+19. Wy³¹czyc wifi podczas korzystania z Testbox, moze pakiety bladza ?
+20. Poprawic wchodzenie do parametrow, zeby sie pokazywalo od razu, a nie po puszczeniu
