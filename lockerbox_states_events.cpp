@@ -63,4 +63,9 @@ void Lockerbox::EV_UserActionGo(MachineData* pdata)
 void Lockerbox::EV_UserActionClearFaults(MachineData* pdata)
 {
 	//f.Set(NeedFaultsClear);
+	if(fault.IsGlobal(F07_DoorNotOpen))
+	{
+		fault.ClearGlobal(F07_DoorNotOpen);
+		// kasowanie bledow w drzwiach
+	}
 }
