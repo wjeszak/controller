@@ -32,6 +32,7 @@ void Lockerbox::EXIT_Ready()
 
 void Lockerbox::ENTRY_Processing()
 {
+	SetOrderStatus(Processing);
 	SetDoorCommand();
 }
 
@@ -41,6 +42,7 @@ void Lockerbox::EXIT_Processing()
 	{
 		mb.Write(LOCATIONS_NUMBER + 1 + i, 0);
 	}
+	SetOrderStatus(Ready);
 	s.Push(ST_READY);
 }
 
