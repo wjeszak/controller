@@ -22,6 +22,11 @@ enum TimerId
 	TDebug, TTmp, TTmp1, TNumberOfTimers
 };
 
+// -------------------------------------------------------
+#define SLAVE_POLL_INTERVAL 				20
+#define SLAVE_TIMEOUT_INTERVAL 				15
+// -------------------------------------------------------
+
 #define MAIN_TIMER_PRESCALER 				36
 
 #define TIMER_TMP_INTERVAL 					5000
@@ -31,8 +36,7 @@ enum TimerId
 #define FAULT_SHOW_INTERVAL 				1000
 
 #define ENCODER_POLL_INTERVAL 				1
-#define SLAVE_POLL_INTERVAL 				1000
-#define SLAVE_TIMEOUT_INTERVAL 				15
+
 #define LED_TRIGGER_INTERVAL 				10
 
 #define DOOR_OPEN_TIMEOUT_INTERVAL 			1000

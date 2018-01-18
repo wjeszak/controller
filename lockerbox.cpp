@@ -61,7 +61,7 @@ void Lockerbox::SetDoorCommand()
 	for(uint8_t i = 0; i < MACHINE_MAX_NUMBER_OF_DOORS; i++)
 	{
 		if((uint8_t)mb.Read(LOCATIONS_NUMBER + 1 + i) != 0)
-			current_command[i] = OpenLockerbox + 1;
+			current_command[i] = OpenLockerbox;
 		else
 			current_command[i] = GetStatusLockerbox;
 	}
@@ -114,21 +114,28 @@ void Lockerbox::SetFaults(uint8_t st, uint8_t reply)
 void Lockerbox::EV_Reply(MachineData* pdata)
 {
 	uint8_t state = GetState();
-	mb.Write(current_address - 1, pdata->data);
+	mb.Write(current_address, pdata->data);
 	SetFaults(state, pdata->data);
-	//if(state == ST_PROCESSING)
-	//{
-	//	InternalEventEx(ST_WAITING_TO_OPEN, pdata);
-	//	SLAVE_POLL_STOP;
-	//}
-	//if(state == ST_WAITING_TO_OPEN)
-	//{
-	//	if(pdata->data == 0x40)
-	//	{
-	//		InternalEventEx(ST_PROCESSING, pdata);
-	//		SLAVE_POLL_START;
-	//	}
-	//}
+
+	static bool waiting_to_open = false;
+	if(state == ST_PROCESSING && !waiting_to_open && current_command[current_address - 2] != GetStatusLockerbox)
+	{
+		waiting_to_open = true;
+		SLAVE_POLL_STOP;
+		return;
+	}
+	if(state == ST_PROCESSING && waiting_to_open && current_command[current_address - 2] != GetStatusLockerbox)
+	{
+		if(pdata->data == 0x40)
+			mb.Write(current_address, 0x40);
+		if(pdata->data == 0x07)
+		{
+			fault.SetGlobal(F07_DoorNotOpen);
+			mb.Write(current_address, F07_DoorNotOpen << 8);
+		}
+		waiting_to_open = false;
+		SLAVE_POLL_START;
+	}
 }
 
 void Lockerbox::EV_Timeout(MachineData* pdata)

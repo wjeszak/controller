@@ -38,16 +38,14 @@ private:
 	void ST0_TestingElm(LockerboxData* pdata);				// 0
 	void ST1_Ready(LockerboxData* pdata);					// 1
 	void ST2_Processing(LockerboxData* pdata);				// 2
-	void ST3_WaitingToOpen(LockerboxData* pdata);			// 3
-	void ST4_NotReady(LockerboxData* pdata);				// 4
+	void ST3_NotReady(LockerboxData* pdata);				// 3
 
-	enum States {ST_TESTING_ELM, ST_READY, ST_PROCESSING, ST_WAITING_TO_OPEN, ST_NOT_READY, ST_MAX_STATES};
+	enum States {ST_TESTING_ELM, ST_READY, ST_PROCESSING, ST_NOT_READY, ST_MAX_STATES};
 	BEGIN_STATE_MAP_EX
 		STATE_MAP_ENTRY_EX(&Lockerbox::ST0_TestingElm)
 		STATE_MAP_ENTRY_EX(&Lockerbox::ST1_Ready)
 		STATE_MAP_ENTRY_EX(&Lockerbox::ST2_Processing)
-		STATE_MAP_ENTRY_EX(&Lockerbox::ST3_WaitingToOpen)
-		STATE_MAP_ENTRY_EX(&Lockerbox::ST4_NotReady)
+		STATE_MAP_ENTRY_EX(&Lockerbox::ST3_NotReady)
 	END_STATE_MAP_EX
 // ---------------------------------- Entry, exit ----------------------------------
 	void ENTRY_TestingElm(LockerboxData* pdata);
@@ -94,7 +92,6 @@ private:
 	{
 //		state 						reply 			fp 					fault						negation
 		{ST_TESTING_ELM, 			0x01,			NULL, 				F05_Elm, 					false},
-		{ST_WAITING_TO_OPEN, 		0x07, 			NULL, 				F07_DoorNotOpen, 			false},
 	};
 };
 
