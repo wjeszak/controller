@@ -126,8 +126,8 @@ void Lockerbox::EV_Reply(MachineData* pdata)
 	}
 	if(state == ST_PROCESSING && waiting_to_open && current_command[current_address - 2] != GetStatusLockerbox)
 	{
-		if(pdata->data == 0x40)
-			mb.Write(current_address, 0x40);
+		if(pdata->data == 0x41)
+			mb.Write(current_address, 0x41);
 		if(pdata->data == 0x07)
 		{
 			fault.SetGlobal(F07_DoorNotOpen);

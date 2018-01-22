@@ -21,3 +21,5 @@ tworzyl kopii tych zmiennych
 21. Zastapic w door ify switchami
 22. Wprowadzic do rozkazow w door enumy.
 23. W controller dyrektywa preprocesora do sprawdzenia czy POLL < TIMEOUT
+24. Dlaczego jest p³ytka led, a nie ledy wmontowane w drzwi ?
+25. Uporz¹dkowaæ w door, led komendy: zrobiæ if(...) funkcja_do_obs³ugi komendy(); return; itp, switch nie mo¿e byæ bo on sprawdza dok³adn¹ wartoœæ i ciê¿ko by by³o to zrobiæ jeœli wy¿sze bity s¹ ustawione i jakieœ parametry w tej komendzie przekazywane.
