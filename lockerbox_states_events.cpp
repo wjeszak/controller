@@ -57,6 +57,7 @@ void Lockerbox::EV_UserAction(MachineData* pdata)
 void Lockerbox::EV_UserActionGo(MachineData* pdata)
 {
 	//display.Write(1234);
+	// przeleciec w petli po indeksach i sprawdzic czy jest wiecej "1" niz dozwolona ilosc
 	s.Push(ST_PROCESSING);
 }
 

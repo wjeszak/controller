@@ -82,7 +82,7 @@ void Tcp::ST_Request(TcpData* pdata)
 {
 	uint16_t len = GetTcpDataLen(buf);
 	MakeTcpAckFromAny(buf, len, 0);
-	// Requeast from user
+	// Request from user
 	mb.Process(&buf[TCP_OPTIONS_P]);		// no options -> beginning of modbusTCP frame
 	buf[TCP_FLAGS_P] =  TCP_FLAGS_ACK_V | TCP_FLAGS_PUSH_V; //| TCP_FLAGS_FIN_V;
 	MakeTcpAckWithDataNoFlags(buf, tcp_data.len);
