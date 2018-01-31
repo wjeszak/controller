@@ -11,6 +11,8 @@
 #include "modbus_tcp.h"
 #include "stack.h"
 #include "display.h"
+#include "common.h"
+#include "config.h"
 
 // ---------------------------------- States ----------------------------------
 void Lockerbox::ST0_TestingElm(LockerboxData* pdata)
@@ -56,9 +58,23 @@ void Lockerbox::EV_UserAction(MachineData* pdata)
 
 void Lockerbox::EV_UserActionGo(MachineData* pdata)
 {
-	//display.Write(1234);
-	// przeleciec w petli po indeksach i sprawdzic czy jest wiecej "1" niz dozwolona ilosc
-	s.Push(ST_PROCESSING);
+	uint8_t door_id = 0;
+
+	for(uint8_t i = 0; i <= 29; i++)
+	{
+		uint16_t reg = mb.Read(FIRST_DOOR_CONTROL + i);
+		uint8_t reg_hi = reg >> 8;
+		uint8_t reg_lo = reg & 0xFF;
+		//if((reg_lo) != 0)
+		//	door_id = i + 1;
+
+		if((reg) > 512)
+			door_id = i + 1 + 30;
+	}
+	if(door_id > 37)
+		fault.SetGlobal(F16_OrderRefused);
+	else
+		s.Push(ST_PROCESSING);
 }
 
 void Lockerbox::EV_UserActionClearFaults(MachineData* pdata)
@@ -69,4 +85,10 @@ void Lockerbox::EV_UserActionClearFaults(MachineData* pdata)
 		fault.ClearGlobal(F07_DoorNotOpen);
 		// kasowanie bledow w drzwiach
 	}
+
+//if(fault.IsGlobal(F16_OrderRefused))
+	//{
+	//	fault.ClearGlobal(F16_OrderRefused);
+	//	// kasowanie bledow w drzwiach
+	//}
 }

@@ -62,6 +62,7 @@
 #define ENCODER_CURRENT_VALUE			 		49
 #define FIRST_DOOR_NUMBER 						50
 #define LOCATIONS_NUMBER 						51
+#define FIRST_DOOR_CONTROL 						52
 
 #define ILLEGAL_ROTATION_DISTANCE 				88
 #define OFFSET_FOR_ENCODER 						89
@@ -83,6 +84,7 @@ public:
 	void Process(uint8_t* frame);
 	uint16_t Read(uint8_t address);					// from controller
 	void Write(uint8_t address, uint16_t value);	// from controller
+	void WriteHiLo(uint8_t address, uint8_t value_hi, uint8_t value_lo); 	// from controller
 	void SetBit(uint8_t address, uint8_t bit);		// from controller
 	void ClearBit(uint8_t address, uint8_t bit);	// from controller
 	void Read(uint8_t* frame);						// from user

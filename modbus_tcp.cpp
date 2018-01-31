@@ -52,6 +52,11 @@ void ModbusTCP::Write(uint8_t address, uint16_t value)
 	Registers[address] = value;
 }
 
+void ModbusTCP::WriteHiLo(uint8_t address, uint8_t value_hi, uint8_t value_lo)
+{
+	Registers[address] = (value_hi << 8) | value_lo;
+}
+
 void ModbusTCP::Read(uint8_t* frame)
 {
 	uint8_t error_code = 0;
@@ -117,6 +122,12 @@ void ModbusTCP::ReadReply(uint8_t* frame)
 	frame[MODBUS_TCP_FUNCTION]  = function_code;
 	frame[MODBUS_RES_TCP_BYTE_COUNT] = lo(quantity * 2);
 
+	for(uint8_t j = 2; j <= 31; j++)
+	{
+		Registers[j] = 0;
+		Registers[j] |= 0xD0;
+		Registers[j] |= 0xC9 << 8;
+	}
 	for(uint8_t i = 0; i < quantity; i++)
 	{
 		frame[MODBUS_RES_TCP_DATA + 2 * i]       = hi(Registers[starting_address - MODBUS_TCP_ADDR_OFFSET + i]);
@@ -125,7 +136,7 @@ void ModbusTCP::ReadReply(uint8_t* frame)
 	tcp_data.len = MBAP_FUNCTION_BYTE_COUNT_LEN + (quantity * 2);
 }
 
-void ModbusTCP::WriteReply(uint8_t *frame)
+void ModbusTCP::WriteReply(uint8_t* frame)
 {
 	MakeMBAPHeader(frame);
 	frame[MODBUS_TCP_LENGTH_HI] = 0;

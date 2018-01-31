@@ -37,8 +37,8 @@ void Lockerbox::LoadParameters()
 {
 	eeprom_read_block(&functions, &lockerbox_eem_functions, FUNCTION_RECORD_SIZE * LOCKERBOX_NUMBER_OF_FUNCTIONS);
 	config.number_of_functions = LOCKERBOX_NUMBER_OF_FUNCTIONS;
-
-	mb.Write(TYPE_OF_MACHINE, (functions[1].param << 8 | 1));
+	mb.WriteHiLo(TYPE_OF_MACHINE, functions[1].param, 1);
+	//mb.Write(TYPE_OF_MACHINE, (((functions[1].param & 0xFF) << 8) | 1));
 	mb.Write(SERIAL_NUMBER, functions[9].param);
 	mb.Write(MAX_ELM_ON, functions[11].param);
 	mb.Write(FIRST_DOOR_NUMBER, 1);
@@ -56,7 +56,8 @@ void Lockerbox::SaveParameters()
 	eeprom_update_byte(&ee_machine_type, functions[0].param);
 	eeprom_update_block(&functions, &lockerbox_eem_functions, FUNCTION_RECORD_SIZE * LOCKERBOX_NUMBER_OF_FUNCTIONS);
 	eeprom_update_word(&lockerbox_eem_functions[0].param, (uint8_t)MACHINE_TYPE_LOCKERBOX);
-	mb.Write(TYPE_OF_MACHINE, (functions[1].param << 8 | 1));
+	//mb.Write(TYPE_OF_MACHINE, (((functions[1].param & 0xFF) << 8) | 1));
+	mb.WriteHiLo(TYPE_OF_MACHINE, functions[1].param, 1);
 	mb.Write(SERIAL_NUMBER, functions[9].param);
 	mb.Write(MAX_ELM_ON, functions[11].param);
 }
