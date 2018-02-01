@@ -57,16 +57,6 @@ void Lockerbox::StateManager()
 
 void Lockerbox::SetDoorCommand()
 {
-/*
-	// tutaj jest na pewno zly indeks
-	for(uint8_t i = 0; i < MACHINE_MAX_NUMBER_OF_DOORS; i++)
-	{
-		if((uint8_t)mb.Read(LOCATIONS_NUMBER + 1 + i) != 0)
-			current_command[i] = OpenLockerbox;
-		else
-			current_command[i] = GetStatusLockerbox;
-	}
-*/
 	for(uint8_t i = 0; i <= 29; i++)
 	{
 		uint16_t reg = mb.Read(FIRST_DOOR_CONTROL + i);
@@ -76,10 +66,12 @@ void Lockerbox::SetDoorCommand()
 		else
 			current_command[i] = GetStatusLockerbox;
 
-		if((reg >> 8) != 0)
-			current_command[i + 30] = OpenLockerbox;
-		else
-			current_command[i + 30] = GetStatusLockerbox;
+		//current_command[39] = OpenLockerbox;
+		//uint16_t reg_hi = reg;
+		//if(reg_hi != 0)
+		//	current_command[45] = OpenLockerbox;
+		//else
+		//	current_command[i + 30] = GetStatusLockerbox;
 	}
 }
 
