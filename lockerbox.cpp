@@ -63,8 +63,10 @@ void Lockerbox::SetDoorCommand()
 
 		if((reg & 0xFF) != 0)
 			current_command[i] = OpenLockerbox;
-		else
-			current_command[i] = GetStatusLockerbox;
+		if((reg >> 8) != 0)
+			current_command[i + 31] = OpenLockerbox;
+		//else
+		//	current_command[i] = GetStatusLockerbox;
 
 		//current_command[39] = OpenLockerbox;
 		//uint16_t reg_hi = reg;
