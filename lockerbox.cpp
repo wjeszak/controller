@@ -114,8 +114,22 @@ void Lockerbox::SetFaults(uint8_t st, uint8_t reply)
 void Lockerbox::EV_Reply(MachineData* pdata)
 {
 	uint8_t state = GetState();
-	mb.Write(current_address, pdata->data);
-	SetFaults(state, pdata->data);
+	//mb.Write(current_address, pdata->data);
+	//SetFaults(state, pdata->data);
+	if(current_address <= 31)
+	{
+		if(pdata->data == 0x07)
+		{
+			fault.SetGlobal(F07_DoorNotOpen);
+			mb.SetBit(current_address, 5);
+			mb.WriteLo(current_address, F07_DoorNotOpen);
+		}
+		else
+			mb.WriteLo(current_address, pdata->data);
+	}
+
+	if(current_address > 31)
+		mb.WriteHi(current_address - 30, pdata->data);
 
 	static bool waiting_to_open = false;
 	if(state == ST_PROCESSING && !waiting_to_open && current_command[current_address - 2] != GetStatusLockerbox)
@@ -133,10 +147,8 @@ void Lockerbox::EV_Reply(MachineData* pdata)
 		//	fault.SetGlobal(F07_DoorNotOpen);
 		//	mb.Write(current_address, F07_DoorNotOpen << 8);
 		//}
-		if(current_address <= 30)
-			mb.WriteLo(current_address, pdata->data);
-		else
-			mb.WriteHi(current_address - 30, pdata->data);
+
+
 		waiting_to_open = false;
 		SLAVE_POLL_START;
 	}
@@ -148,13 +160,13 @@ void Lockerbox::EV_Timeout(MachineData* pdata)
 	fault.SetLocal(current_address - 1, F02_Door);
 	if(current_address <= 31)
 	{
-		mb.SetBit(current_address, 5);
 		mb.WriteLo(current_address, F02_Door);
+		mb.SetBit(current_address, 5);
 	}
-	//else
-	//{
-	//	mb.SetBit(current_address - 30, 13);
-	//	mb.WriteHi(current_address - 30, F02_Door);
-	//mb.Write(current_address, F02_Door << 8);
-	//}
+
+	if(current_address > 31)
+	{
+		mb.WriteHi(current_address - 30, F02_Door);
+		mb.SetBit(current_address - 30, 13);
+	}
 }

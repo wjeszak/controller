@@ -58,7 +58,7 @@ void Lockerbox::EV_UserAction(MachineData* pdata)
 
 void Lockerbox::EV_UserActionGo(MachineData* pdata)
 {
-	uint8_t door_id = 0;
+/*	uint8_t door_id = 0;
 
 	for(uint8_t i = 0; i <= 29; i++)
 	{
@@ -75,6 +75,7 @@ void Lockerbox::EV_UserActionGo(MachineData* pdata)
 		fault.SetGlobal(F16_OrderRefused);
 	else
 		s.Push(ST_PROCESSING);
+*/
 }
 
 void Lockerbox::EV_UserActionClearFaults(MachineData* pdata)
