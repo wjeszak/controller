@@ -24,7 +24,7 @@ void Boot()
 	m->LoadParameters();
 	sei();
 	timer.Assign(TDisplayRefresh, DISPLAY_REFRESH_INTERVAL, DisplayRefresh);
-	//timer.Assign(TFaultShow, FAULT_SHOW_INTERVAL, FaultShow);
+	timer.Assign(TFaultShow, FAULT_SHOW_INTERVAL, FaultShow);
 	timer.Assign(TEncoderPoll, ENCODER_POLL_INTERVAL, EncoderPoll);
 	// przeniesc do funkcji ktory sie wykonuje tylko przy Dynaboxie
 	timer.Assign(TMotorSpeedMeas, MOTOR_SPEED_MEAS_INTERVAL, MotorSpeedMeas);

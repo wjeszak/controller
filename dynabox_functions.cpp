@@ -17,7 +17,7 @@ void f12(uint8_t value)
 {
 	//display.Write(5555);
 }
-/*
+
 // Default values in EEPROM
 Function EEMEM dynabox_eem_functions[DYNABOX_NUMBER_OF_FUNCTIONS] =
 {
@@ -36,13 +36,13 @@ Function EEMEM dynabox_eem_functions[DYNABOX_NUMBER_OF_FUNCTIONS] =
 	{39, 				3, 				NULL},	// max of electromagnets
 	{40, 				1, 				NULL}, 	// time for elm on
 };
-*/
+
 void Dynabox::LoadParameters()
 {
-	//eeprom_read_block(&functions, &dynabox_eem_functions, sizeof(dynabox_eem_functions));
 	config.number_of_functions = DYNABOX_NUMBER_OF_FUNCTIONS;
 
-	mb.Write(TYPE_OF_MACHINE, (functions[1].param << 8 | 36));
+	eeprom_read_block(&functions, &dynabox_eem_functions, sizeof(dynabox_eem_functions));
+	mb.WriteHiLo(TYPE_OF_MACHINE, functions[1].param, 36);
 	mb.Write(SERIAL_NUMBER, functions[9].param);
 	mb.Write(MAX_ELM_ON, functions[11].param);
 	mb.Write(FIRST_DOOR_NUMBER, 1);
@@ -59,9 +59,9 @@ void Dynabox::LoadParameters()
 void Dynabox::SaveParameters()
 {
 	eeprom_update_byte(&ee_machine_type, functions[0].param);
-	//eeprom_update_block(&functions, &dynabox_eem_functions, sizeof(dynabox_eem_functions));
-	//eeprom_update_byte(&dynabox_eem_functions[0].param, MACHINE_TYPE_DYNABOX);
-	mb.Write(TYPE_OF_MACHINE, (functions[1].param << 8 | 36));
+	eeprom_update_block(&functions, &dynabox_eem_functions, sizeof(dynabox_eem_functions));
+	eeprom_update_word(&dynabox_eem_functions[0].param, MACHINE_TYPE_DYNABOX);
+	mb.WriteHiLo(TYPE_OF_MACHINE, functions[1].param, 36);
 	mb.Write(SERIAL_NUMBER, functions[9].param);
 	mb.Write(MAX_ELM_ON, functions[11].param);
 }

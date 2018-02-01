@@ -144,7 +144,17 @@ void Lockerbox::EV_Reply(MachineData* pdata)
 
 void Lockerbox::EV_Timeout(MachineData* pdata)
 {
-	//fault.SetGlobal(F02_Door);
-	//fault.SetLocal(current_address - 1, F02_Door);
+	fault.SetGlobal(F02_Door);
+	fault.SetLocal(current_address - 1, F02_Door);
+	if(current_address <= 31)
+	{
+		mb.SetBit(current_address, 5);
+		mb.WriteLo(current_address, F02_Door);
+	}
+	//else
+	//{
+	//	mb.SetBit(current_address - 30, 13);
+	//	mb.WriteHi(current_address - 30, F02_Door);
 	//mb.Write(current_address, F02_Door << 8);
+	//}
 }

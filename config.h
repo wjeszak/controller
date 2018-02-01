@@ -13,14 +13,13 @@
 #include "encoder.h"
 
 #define MAX_NUMBER_OF_FUNCTIONS 			28
-//#define FUNCTION_RECORD_SIZE 				4
 
 typedef void (*fp)(uint8_t value);
 
 struct Function
 {
 	uint8_t id;
-	uint8_t param;
+	uint16_t param;
 	fp f;
 };
 
