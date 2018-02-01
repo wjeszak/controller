@@ -1,12 +1,12 @@
-1. Po flashowaniu EEPROM nie wczytuje siÍ domyúlna wartoúÊ parametru P39 (max elm)
-2. Coú mi siÍ teø nie podoba wartoúÊ DYNABOX_NUMBER_OF_FUNCTIONS dlatego, øeby poprawnie dzia≥a≥o musi byÊ o 2 wiÍksza niø faktyczna iloúÊ funkcji.
-3. Po zmianie parametrÛw i wyjúciu z konfiguracji dziejπ siÍ dziwne rzeczy, ale czy na razie sobie tym g≥owÍ zawracac ?
+1. Po flashowaniu EEPROM nie wczytuje siƒô domy≈õlna warto≈õƒá parametru P39 (max elm)
+2. Co≈õ mi siƒô te≈º nie podoba warto≈õƒá DYNABOX_NUMBER_OF_FUNCTIONS dlatego, ≈ºeby poprawnie dzia≈Ça≈Ço musi byƒá o 2 wiƒôksza ni≈º faktyczna ilo≈õƒá funkcji.
+3. Po zmianie parametr√≥w i wyj≈õciu z konfiguracji dziejƒÖ siƒô dziwne rzeczy, ale czy na razie sobie tym g≈Çowƒô zawracac ?
 4. Przeniesc uruchamianie timera od drzwi do stanu EndMovement!!
-5. Zmienic sekwencje led dla F06, F08 bo siÍ pokrywajπ z homingiem
-6. Wysylac rozkaz trigger po wystapieniu bledu F07, aby rÛwnomiernie mruga≥y ledy
-7. Kasowanie b≥ÍdÛw, uruchomienie jazdy po wystπpieniu F08
-9. Uwaga na czasy klikania bo sπ zaleøne od iloúci drzwi -> bez sensu, trzeba zmienic.
-Pozosta≥o tak na razie: uwaøac interwa≥em odpytywania, øeby siÍ zmienna nie przepe≥ni≥a: door_open_timeout_val = functions[12].param * 10 * 1000 / SLAVE_POLL_INTERVAL / (functions[1].param & 0xFF);
+5. Zmienic sekwencje led dla F06, F08 bo siƒô pokrywajƒÖ z homingiem
+6. Wysylac rozkaz trigger po wystapieniu bledu F07, aby r√≥wnomiernie mruga≈Çy ledy
+7. Kasowanie b≈Çƒôd√≥w, uruchomienie jazdy po wystƒÖpieniu F08
+9. Uwaga na czasy klikania bo sƒÖ zale≈ºne od ilo≈õci drzwi -> bez sensu, trzeba zmienic.
+Pozosta≈Ço tak na razie: uwa≈ºac interwa≈Çem odpytywania, ≈ºeby siƒô zmienna nie przepe≈Çni≈Ça: door_open_timeout_val = functions[12].param * 10 * 1000 / SLAVE_POLL_INTERVAL / (functions[1].param & 0xFF);
 11. klasa helper_flags i w niej uint8_t ustawianie, kasowanie bitow...
 12. sprawdzanie zadania kasowania bledow w StateManager(), bo na zywca sie program wywala.
 13. Funkcja FaultManager() ustawiajaca, rozkazujaca ktore bledy wyswietlic na ledach, kasujaca
@@ -14,12 +14,149 @@ Pozosta≥o tak na razie: uwaøac interwa≥em odpytywania, øeby siÍ zmienna nie prze
 15. Zmienne typu current_command itp wrzucic do osobnej klasy Common, zaoszczedzi sie stosu, bo nie bedzie
 tworzyl kopii tych zmiennych
 16. Rozne czasy odpytywania dla poszczegolnych klas maszyn: Lockerbox: 20 ms, Dynabox: 50 ms
-17. Dodac funkcjÍ SetDoorCommand(addr, command)
+17. Dodac funkcjƒô SetDoorCommand(addr, command)
 18. Pozmieniac domyslne wartosci parametrow (0xFFFF) w eeprom ze wzgledu na zmiany w klasie Config.
-19. Wy≥πczyc wifi podczas korzystania z Testbox, moze pakiety bladza ?
+19. Wy≈ÇƒÖczyc wifi podczas korzystania z Testbox, moze pakiety bladza ?
 20. Poprawic wchodzenie do parametrow, zeby sie pokazywalo od razu, a nie po puszczeniu
 21. Zastapic w door ify switchami
 22. Wprowadzic do rozkazow w door enumy.
 23. W controller dyrektywa preprocesora do sprawdzenia czy POLL < TIMEOUT
-24. Dlaczego jest p≥ytka led, a nie ledy wmontowane w drzwi ?
-25. UporzπdkowaÊ w door, led komendy: zrobiÊ if(...) funkcja_do_obs≥ugi komendy(); return; itp, switch nie moøe byÊ bo on sprawdza dok≥adnπ wartoúÊ i ciÍøko by by≥o to zrobiÊ jeúli wyøsze bity sπ ustawione i jakieú parametry w tej komendzie przekazywane.
+24. Dlaczego jest p≈Çytka led, a nie ledy wmontowane w drzwi ?
+25. UporzƒÖdkowaƒá w door, led komendy: zrobiƒá if(...) funkcja_do_obs≈Çugi komendy(); return; itp, switch nie mo≈ºe byƒá bo on sprawdza dok≈ÇadnƒÖ warto≈õƒá i ciƒô≈ºko by by≈Ço to zrobiƒá je≈õli wy≈ºsze bity sƒÖ ustawione i jakie≈õ parametry w tej komendzie przekazywane.
+26. Nowe funkcje:
+//#define LOCKERBOX_CONTROL_DOOR_START 		52
+//#define LOCKERBOX_CONTROL_DOOR_STOP 		81
+#define LOCKERBOX_CONTROL_FIRST_DOOR 		52
+
+uint64_t status_opened_closed = 0;
+// po ka≈ºdym rozkazie zerowanie ca≈Çej zmiennej
+// poni≈ºej w funkcji ModbusTCP::ReadReply(...)
+for(uint8_t i = 0; i < functions[1].param; i++)
+{
+	if(i <= 30)
+	{
+		if(IsD0ReadByClient(i) && mb.BitIsSet(i + 2, 4))
+		{
+			mb.ClearBit(i + 2, 4);
+		}
+	}
+	if(i > 30)
+	{
+		if(IsD0ReadByClient(i) && mb.BitIsSet(i + 2 - 30, 12))
+		{
+			mb.ClearBit(i + 2 - 30, 12);
+		}
+	}
+}
+
+// po odczycie rejestr√≥w
+// ...
+for(uint8_t i = 0; i < functions[1].param; i++)
+{
+	if(i <= 30)
+	{
+		if(!IsD0ReadByClient(i) && mb.BitIsSet(i + 2, 4))
+			SetD0ReadByClient(i);
+	}
+	if(i > 30)
+	{
+		if(!IsD0ReadByClient(i) && mb.BitIsSet(i + 2, 12))
+			SetD0ReadByClient(i);
+	}
+}
+
+void SetD0ReadByClient(uint8_t address)
+{
+	status_opened_closed |= (1UL << address);
+}
+
+bool IsD0ReadByClient(uint8_t address)
+{
+	if((status_opened_closed & (1UL << address)))
+		return true;
+	else
+		return false;
+}
+
+ModbusTCP::WriteHi(uint8_t address, uint8_t value)
+{
+	Registers[address] |= (value << 8);
+}
+
+ModbusTCP::WriteLo(uint8_t address, uint8_t value)
+{
+	Registers[address] |= value;
+}
+
+ModbusTCP::BitIsSet(uint8_t address, uint8_t bit)
+{
+	if(Registers[address] & (1 << bit))
+		return true;
+	else
+		return false;
+}
+
+void Lockerbox::SetDoorCommand()
+{
+	for(uint8_t i = 0; i <= 29; i++)
+	{
+		uint16_t reg = mb.Read(LOCKERBOX_CONTROL_FIRST_DOOR + i);
+		
+		if(lo(reg) != 0)
+			current_command[i] = OpenLockerbox;
+		else
+			current_command[i] = GetStatusLockerbox;
+		
+		if(hi(reg) != 0)
+			current_command[i + 30] = OpenLockerbox;
+			else
+			current_command[i + 30] = GetStatusLockerbox;
+	}
+}
+
+void Lockerbox::EV_UserActionGo(MachineData* pdata)
+{
+	uint8_t door_cnt = 0;
+	
+	for(uint8_t i = 0; i <= 29; i++)
+	{
+		uint16_t reg = mb.Read(LOCKERBOX_CONTROL_FIRST_DOOR + i);
+		
+		if(lo(reg) != 0)
+			door_cnt++;
+		
+		if(hi(reg) != 0)
+			door_cnt++;
+		
+		if(door_cnt == functions[1].param) 
+		{
+			fault.SetGlobal(F16_OrderRefused);
+			return;
+		}
+	}
+	s.Push(ST_PROCESSING);
+}
+
+void Lockerbox::EV_Reply(MachineData* pdata)
+{
+	uint8_t state = GetState();
+	if(current_address <= 30)
+		mb.WriteLo(current_address, pdata->data);
+	else
+		mb.WriteHi(current_address - 30, pdata->data);
+		
+	SetFaults(state, pdata->data);
+	// ...
+	static uint8_t door_elm_fault;
+	
+	if(state == ST_TESTING_ELM && pdata->data == 0x01)
+	{
+		door_elm_fault++;
+		if(door_elm_fault == functions[1].param)
+		{
+			fault.SetGlobal(F17_24VMissing);
+			door_elm_fault = 0;
+		}
+	}
+}
+		
