@@ -57,6 +57,7 @@ void Lockerbox::StateManager()
 
 void Lockerbox::SetDoorCommand()
 {
+/*
 	// tutaj jest na pewno zly indeks
 	for(uint8_t i = 0; i < MACHINE_MAX_NUMBER_OF_DOORS; i++)
 	{
@@ -64,6 +65,21 @@ void Lockerbox::SetDoorCommand()
 			current_command[i] = OpenLockerbox;
 		else
 			current_command[i] = GetStatusLockerbox;
+	}
+*/
+	for(uint8_t i = 0; i <= 29; i++)
+	{
+		uint16_t reg = mb.Read(FIRST_DOOR_CONTROL + i);
+
+		if((reg & 0xFF) != 0)
+			current_command[i] = OpenLockerbox;
+		else
+			current_command[i] = GetStatusLockerbox;
+
+		if((reg >> 8) != 0)
+			current_command[i + 30] = OpenLockerbox;
+		else
+			current_command[i + 30] = GetStatusLockerbox;
 	}
 }
 
@@ -121,15 +137,24 @@ void Lockerbox::EV_Reply(MachineData* pdata)
 		if(pdata->data == 0x07)
 		{
 			fault.SetGlobal(F07_DoorNotOpen);
-			mb.SetBit(current_address, 5);
 			mb.WriteLo(current_address, F07_DoorNotOpen);
+			mb.SetBit(current_address, 5);
 		}
 		else
 			mb.WriteLo(current_address, pdata->data);
 	}
 
 	if(current_address > 31)
-		mb.WriteHi(current_address - 30, pdata->data);
+	{
+		if(pdata->data == 0x07)
+		{
+			fault.SetGlobal(F07_DoorNotOpen);
+			mb.WriteHi(current_address, F07_DoorNotOpen);
+			mb.SetBit(current_address - 30, 13);
+		}
+		else
+			mb.WriteHi(current_address - 30, pdata->data);
+	}
 
 	static bool waiting_to_open = false;
 	if(state == ST_PROCESSING && !waiting_to_open && current_command[current_address - 2] != GetStatusLockerbox)

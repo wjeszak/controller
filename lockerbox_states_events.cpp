@@ -58,24 +58,23 @@ void Lockerbox::EV_UserAction(MachineData* pdata)
 
 void Lockerbox::EV_UserActionGo(MachineData* pdata)
 {
-/*	uint8_t door_id = 0;
-
-	for(uint8_t i = 0; i <= 29; i++)
-	{
-		uint16_t reg = mb.Read(FIRST_DOOR_CONTROL + i);
-		uint8_t reg_hi = reg >> 8;
-		uint8_t reg_lo = reg & 0xFF;
+//	uint8_t door_id = 0;
+//
+//	for(uint8_t i = 0; i <= 29; i++)
+//	{
+//		uint16_t reg = mb.Read(FIRST_DOOR_CONTROL + i);
+//		uint8_t reg_hi = reg >> 8;
+//		uint8_t reg_lo = reg;
 		//if((reg_lo) != 0)
 		//	door_id = i + 1;
 
-		if((reg) > 512)
-			door_id = i + 1 + 30;
-	}
-	if(door_id > 37)
-		fault.SetGlobal(F16_OrderRefused);
-	else
+//		if((reg) > 512)
+//			door_id = i + 1 + 30;
+//	}
+//	if(door_id > 37)
+//		fault.SetGlobal(F16_OrderRefused);
+//	else
 		s.Push(ST_PROCESSING);
-*/
 }
 
 void Lockerbox::EV_UserActionClearFaults(MachineData* pdata)
