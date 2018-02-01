@@ -173,3 +173,4 @@ void Lockerbox::EV_Reply(MachineData* pdata)
 // 6. Z komendy COMM_DYNABOX_GET_STATUS, COMM_LOCKERBOX_OPEN  wyrzucić ustawianie bitów w poleceniu, zrobić to normalnie.
 // 7. Koszmarne flagi z Lockerbox usunąć, zrobić to ładnie
 // 8. Dokładnie rozkminić P35, First Door
+30. W klasie Config błędna wartość rozmiaru struktury, ponieważ wskaźnik na funkcję ma 2 bajty !
