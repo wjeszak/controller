@@ -57,6 +57,16 @@ void ModbusTCP::WriteHiLo(uint8_t address, uint8_t value_hi, uint8_t value_lo)
 	Registers[address] = (value_hi << 8) | value_lo;
 }
 
+void ModbusTCP::WriteHi(uint8_t address, uint8_t value)
+{
+	Registers[address] |= (value << 8);
+}
+
+void ModbusTCP::WriteLo(uint8_t address, uint8_t value)
+{
+	Registers[address] |= value;
+}
+
 void ModbusTCP::Read(uint8_t* frame)
 {
 	uint8_t error_code = 0;

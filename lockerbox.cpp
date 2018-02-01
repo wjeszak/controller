@@ -126,13 +126,17 @@ void Lockerbox::EV_Reply(MachineData* pdata)
 	}
 	if(state == ST_PROCESSING && waiting_to_open && current_command[current_address - 2] != GetStatusLockerbox)
 	{
-		if(pdata->data == 0x41)
-			mb.Write(current_address, 0x41);
-		if(pdata->data == 0x07)
-		{
-			fault.SetGlobal(F07_DoorNotOpen);
-			mb.Write(current_address, F07_DoorNotOpen << 8);
-		}
+		//if(pdata->data == 0x41)
+		//	mb.Write(current_address, 0x41);
+		//if(pdata->data == 0x07)
+		//{
+		//	fault.SetGlobal(F07_DoorNotOpen);
+		//	mb.Write(current_address, F07_DoorNotOpen << 8);
+		//}
+		if(current_address <= 30)
+			mb.WriteLo(current_address, pdata->data);
+		else
+			mb.WriteHi(current_address - 30, pdata->data);
 		waiting_to_open = false;
 		SLAVE_POLL_START;
 	}
@@ -140,7 +144,7 @@ void Lockerbox::EV_Reply(MachineData* pdata)
 
 void Lockerbox::EV_Timeout(MachineData* pdata)
 {
-	fault.SetGlobal(F02_Door);
-	fault.SetLocal(current_address - 1, F02_Door);
-	mb.Write(current_address, F02_Door << 8);
+	//fault.SetGlobal(F02_Door);
+	//fault.SetLocal(current_address - 1, F02_Door);
+	//mb.Write(current_address, F02_Door << 8);
 }

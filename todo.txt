@@ -77,7 +77,7 @@ bool IsD0ReadByClient(uint8_t address)
 	else
 		return false;
 }
-
+/*
 ModbusTCP::WriteHi(uint8_t address, uint8_t value)
 {
 	Registers[address] |= (value << 8);
@@ -87,7 +87,7 @@ ModbusTCP::WriteLo(uint8_t address, uint8_t value)
 {
 	Registers[address] |= value;
 }
-
+*/
 ModbusTCP::BitIsSet(uint8_t address, uint8_t bit)
 {
 	if(Registers[address] & (1 << bit))

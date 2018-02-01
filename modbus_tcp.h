@@ -85,6 +85,8 @@ public:
 	uint16_t Read(uint8_t address);					// from controller
 	void Write(uint8_t address, uint16_t value);	// from controller
 	void WriteHiLo(uint8_t address, uint8_t value_hi, uint8_t value_lo); 	// from controller
+	void WriteHi(uint8_t address, uint8_t value);
+	void WriteLo(uint8_t address, uint8_t value);
 	void SetBit(uint8_t address, uint8_t bit);		// from controller
 	void ClearBit(uint8_t address, uint8_t bit);	// from controller
 	void Read(uint8_t* frame);						// from user
