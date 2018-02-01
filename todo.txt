@@ -159,4 +159,17 @@ void Lockerbox::EV_Reply(MachineData* pdata)
 		}
 	}
 }
-		
+27. Po wysłaniu rozkazu z Testobox wyświetlić na display wartość MSB Registers
+28. Dlaczego błędnie jest zapisywana wartość ilości drzwi w EEPROM ?
+29. // bootloader: https://forum.pololu.com/t/super-simple-bootloader/525/2
+// http://www.nongnu.org/avr-libc/user-manual/group__avr__boot.html
+// http://www.precma.it/download/intelhex.pdf
+// 0. Zmienić comm_prot -> comm
+// 1. Przerzucić funkcje timera do tego samego pliku, będzie lepiej widać -> nowy plik comm_functions.cpp
+// 2. Wprowadzić enum do statusów (porównać z controller)
+// 3. Wprowadzić jednolite nazewnictwo dla funkcji z timera
+// 4. Wyrzucić debugging z drzwi bo zaciemnia obraz, albo po porządkach jakoś sprytniej go wprowadzić
+// 5. W led to zrobić enum command
+// 6. Z komendy COMM_DYNABOX_GET_STATUS, COMM_LOCKERBOX_OPEN  wyrzucić ustawianie bitów w poleceniu, zrobić to normalnie.
+// 7. Koszmarne flagi z Lockerbox usunąć, zrobić to ładnie
+// 8. Dokładnie rozkminić P35, First Door
