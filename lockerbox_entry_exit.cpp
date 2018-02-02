@@ -42,7 +42,7 @@ void Lockerbox::ENTRY_Processing()
 
 void Lockerbox::EXIT_Processing()
 {
-	for(uint8_t i = 0; i <= 29; i++)		// see 02 Registers -> Registers[187]
+	for(uint8_t i = 0; i <= 29; i++)		// see 02 Registers -> Registers[181]
 	{
 		mb.Write(FIRST_DOOR_CONTROL + i, 0);
 	}

@@ -60,12 +60,18 @@ void Lockerbox::SetDoorCommand()
 	for(uint8_t i = 0; i <= 29; i++)
 	{
 		if(mb.ReadLo(FIRST_DOOR_CONTROL + i) != 0)
+		{
 			current_command[i] = OpenLockerbox;
+			door_need_open |= (1UL << i);
+		}
 		else
 			current_command[i] = GetStatusLockerbox;
 
 		if(mb.ReadHi(FIRST_DOOR_CONTROL + i) != 0)
+		{
 			current_command[i + 30] = OpenLockerbox;
+			door_need_open |= (1UL << (i + 30));
+		}
 		else
 			current_command[i + 30] = GetStatusLockerbox;
 	}
@@ -146,7 +152,7 @@ void Lockerbox::EV_Reply(MachineData* pdata)
 	if(state == ST_TESTING_ELM && pdata->data == 0x01)
 	{
 		number_of_elm_faults++;
-		//fault.SetGlobal(F05_Elm);
+		fault.SetGlobal(F05_Elm);
 		if(current_address <= 31)
 		{
 			mb.WriteLo(current_address, F05_Elm);
@@ -168,15 +174,6 @@ void Lockerbox::EV_Reply(MachineData* pdata)
 	}
 	if(state == ST_PROCESSING && waiting_to_open && current_command[current_address - 2] != GetStatusLockerbox)
 	{
-		//if(pdata->data == 0x41)
-		//	mb.Write(current_address, 0x41);
-		//if(pdata->data == 0x07)
-		//{
-		//	fault.SetGlobal(F07_DoorNotOpen);
-		//	mb.Write(current_address, F07_DoorNotOpen << 8);
-		//}
-
-
 		waiting_to_open = false;
 		SLAVE_POLL_START;
 	}

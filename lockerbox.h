@@ -63,7 +63,7 @@ private:
 	void SetDoorCommand(DoorCommand command);
 	void SetFaults(uint8_t st, uint8_t reply);
 	uint8_t number_of_elm_faults;
-	uint64_t door_need_open;
+
 	struct StateProperties
 	{
 		void (Lockerbox::*on_entry)();
