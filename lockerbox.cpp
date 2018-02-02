@@ -61,21 +61,11 @@ void Lockerbox::SetDoorCommand()
 	{
 		if(mb.ReadLo(FIRST_DOOR_CONTROL + i) != 0)
 			current_command[i] = OpenLockerbox;
-		//if(mb.ReadHi(61) != 0)
-		//{
-			//current_command[i + 30] = OpenLockerbox;
-			display.Write(mb.ReadHi(61));
-		//}
+		if(mb.ReadHi(FIRST_DOOR_CONTROL + i) != 0)
+			current_command[i + 30] = OpenLockerbox;
+	}
 		//else
 		//	current_command[i] = GetStatusLockerbox;
-
-		//current_command[39] = OpenLockerbox;
-		//uint16_t reg_hi = reg;
-		//if(reg_hi != 0)
-		//	current_command[45] = OpenLockerbox;
-		//else
-		//	current_command[i + 30] = GetStatusLockerbox;
-	//}
 }
 
 void Lockerbox::SetDoorCommand(DoorCommand command)
