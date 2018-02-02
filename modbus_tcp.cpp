@@ -145,23 +145,45 @@ void ModbusTCP::ReadReply(uint8_t* frame)
 	frame[MODBUS_TCP_LENGTH_LO] = lo(length);
 	frame[MODBUS_TCP_FUNCTION]  = function_code;
 	frame[MODBUS_RES_TCP_BYTE_COUNT] = lo(quantity * 2);
-
-	//for(uint8_t i = 0; i <= 29; i++)
-	//{
-		if((m->door_need_open & (1 << 3)) && (ReadLo(5) == 0xC0))
+// ----------------------------------- 0xD0 -> 0xC0 -----------------------------------
+	for(uint8_t i = 0; i <= 29; i++)
+	{
+		if((ReadLo(2 + i) == 0xC0) && (m->door_need_open & (1 << i)))
 		{
-			m->door_need_open &= ~(1 << 3);
-			SetBit(5, 4);
+			m->door_need_open &= ~(1 << i);
+			SetBit(2 + i, 4);
 		}
-	//}
+	}
 
+	for(uint8_t i = 0; i <= 29; i++)
+	{
+		if((ReadHi(2 + i) == 0xC0) && (m->door_need_open & (1 << (i + 30))))
+		{
+			m->door_need_open &= ~(1 << (i + 30));
+			SetBit(2 + i, 13);
+		}
+	}
+// ----------------------------------- 0xD0 -> 0xC0 -----------------------------------
 	for(uint8_t i = 0; i < quantity; i++)
 	{
 		frame[MODBUS_RES_TCP_DATA + 2 * i]       = hi(Registers[starting_address - MODBUS_TCP_ADDR_OFFSET + i]);
 		frame[MODBUS_RES_TCP_DATA + (2 * i) + 1] = lo(Registers[starting_address - MODBUS_TCP_ADDR_OFFSET + i]);
 	}
 	tcp_data.len = MBAP_FUNCTION_BYTE_COUNT_LEN + (quantity * 2);
-	if(ReadLo(5) == 0xD0) ClearBit(5, 4);
+// ----------------------------------- 0xD0 -> 0xC0 -----------------------------------
+	for(uint8_t i = 0; i <= 29; i++)
+	{
+		if(ReadLo(2 + i) == 0xD0)
+			ClearBit(5, 4);
+	}
+
+	for(uint8_t i = 0; i <= 29; i++)
+	{
+		if(ReadHi(2 + i) == 0xD0)
+			ClearBit(5, 13);
+	}
+// ----------------------------------- 0xD0 -> 0xC0 -----------------------------------
+	//if(ReadLo(5) == 0xD0) ClearBit(5, 4);
 }
 
 void ModbusTCP::WriteReply(uint8_t* frame)
