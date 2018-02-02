@@ -23,6 +23,7 @@ public:
 	Fault();
 	void SetGlobal(FaultType fault);
 	void ClearGlobal(FaultType fault);
+	void UpdateGlobal();
 	bool IsGlobal(FaultType fault);
 	bool IsGlobal();
 	void SetLocal(uint8_t address, FaultType fault);

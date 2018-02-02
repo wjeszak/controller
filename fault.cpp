@@ -27,9 +27,20 @@ void Fault::SetGlobal(FaultType fault)
 void Fault::ClearGlobal(FaultType fault)
 {
 	global_faults &= ~(1UL << fault);
-	// tutaj dopisac "rekalkulacje" bledow, jesli jeden zniknie to
-	// nie jest powiedziane, ze wiecej nie bedzie
-	mb.Write((uint8_t)GENERAL_ERROR_STATUS, 0);
+	UpdateGlobal();
+}
+
+void Fault::UpdateGlobal()
+{
+	for(uint8_t fault = 1; fault <= NUMBER_OF_FAULTS; fault++)
+	{
+		if(global_faults & (1UL << fault))
+		{
+			mb.Write((uint8_t)GENERAL_ERROR_STATUS, fault);
+			break;	// priority ?
+		}
+		mb.Write((uint8_t)GENERAL_ERROR_STATUS, 0);
+	}
 }
 
 bool Fault::IsGlobal(FaultType fault)

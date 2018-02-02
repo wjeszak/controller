@@ -45,50 +45,47 @@ void Lockerbox::EV_UserAction(MachineData* pdata)
 {
 	if(mb.GetQuantity() > 1)
 	{
+		EV_UserActionClearFaults(&lockerbox_data);
 		EV_UserActionGo(&lockerbox_data);
 	}
-
-	if(mb.GetQuantity() == 1)
-	//if(GetOrderStatus() == GoAck)
+	// ignore second command from Testbox reg. 150
+	// clear faults command
+	if(mb.Read((uint8_t)0) == 1)
 	{
-		//SetOrderStatus(Ready);
 		EV_UserActionClearFaults(&lockerbox_data);
 	}
 }
 
 void Lockerbox::EV_UserActionGo(MachineData* pdata)
 {
-//	uint8_t door_id = 0;
-//
-//	for(uint8_t i = 0; i <= 29; i++)
-//	{
-//		uint16_t reg = mb.Read(FIRST_DOOR_CONTROL + i);
-//		uint8_t reg_hi = reg >> 8;
-//		uint8_t reg_lo = reg;
-		//if((reg_lo) != 0)
-		//	door_id = i + 1;
+	uint8_t door_id = 0;
+	uint8_t i;
 
-//		if((reg) > 512)
-//			door_id = i + 1 + 30;
-//	}
-//	if(door_id > 37)
-//		fault.SetGlobal(F16_OrderRefused);
-//	else
-		s.Push(ST_PROCESSING);
+	for(i = 0; i <= 29; i++)
+	{
+		if(mb.ReadLo(FIRST_DOOR_CONTROL + i) != 0)
+			door_id = i + 1;
+	}
+
+	for(i = 0; i <= 29; i++)
+	{
+		if(mb.ReadHi(FIRST_DOOR_CONTROL + i) != 0)
+			door_id = i + 1 + 30;
+	}
+
+	if(door_id > functions[1].param)
+	{
+		fault.SetGlobal(F16_OrderRefused);
+		return;
+	}
+	s.Push(ST_PROCESSING);
 }
 
 void Lockerbox::EV_UserActionClearFaults(MachineData* pdata)
 {
-	//f.Set(NeedFaultsClear);
 	if(fault.IsGlobal(F07_DoorNotOpen))
-	{
 		fault.ClearGlobal(F07_DoorNotOpen);
-		// kasowanie bledow w drzwiach
-	}
 
-//if(fault.IsGlobal(F16_OrderRefused))
-	//{
-	//	fault.ClearGlobal(F16_OrderRefused);
-	//	// kasowanie bledow w drzwiach
-	//}
+	if(fault.IsGlobal(F16_OrderRefused))
+		fault.ClearGlobal(F16_OrderRefused);
 }

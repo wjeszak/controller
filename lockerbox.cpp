@@ -61,11 +61,14 @@ void Lockerbox::SetDoorCommand()
 	{
 		if(mb.ReadLo(FIRST_DOOR_CONTROL + i) != 0)
 			current_command[i] = OpenLockerbox;
+		else
+			current_command[i] = GetStatusLockerbox;
+
 		if(mb.ReadHi(FIRST_DOOR_CONTROL + i) != 0)
 			current_command[i + 30] = OpenLockerbox;
+		else
+			current_command[i + 30] = GetStatusLockerbox;
 	}
-		//else
-		//	current_command[i] = GetStatusLockerbox;
 }
 
 void Lockerbox::SetDoorCommand(DoorCommand command)
@@ -85,7 +88,7 @@ uint8_t Lockerbox::GetDestAddr(uint8_t st)
 {
 	return current_address;
 }
-
+/*
 void Lockerbox::SetFaults(uint8_t st, uint8_t reply)
 {
 	for(uint8_t i = 0; i < 4; i++)
@@ -111,12 +114,11 @@ void Lockerbox::SetFaults(uint8_t st, uint8_t reply)
 		}
 	}
 }
-
+*/
 void Lockerbox::EV_Reply(MachineData* pdata)
 {
 	uint8_t state = GetState();
-	//mb.Write(current_address, pdata->data);
-	//SetFaults(state, pdata->data);
+
 	if(current_address <= 31)
 	{
 		if(pdata->data == 0x07)
@@ -139,6 +141,22 @@ void Lockerbox::EV_Reply(MachineData* pdata)
 		}
 		else
 			mb.WriteHi(current_address - 30, pdata->data);
+	}
+
+	if(state == ST_TESTING_ELM && pdata->data == 0x01)
+	{
+		number_of_elm_faults++;
+		//fault.SetGlobal(F05_Elm);
+		if(current_address <= 31)
+		{
+			mb.WriteLo(current_address, F05_Elm);
+			mb.SetBit(current_address, 5);
+		}
+		if(current_address > 31)
+		{
+			mb.WriteHi(current_address - 30, F05_Elm);
+			mb.SetBit(current_address - 30, 13);
+		}
 	}
 
 	static bool waiting_to_open = false;

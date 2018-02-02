@@ -9,15 +9,19 @@
 #include "lockerbox.h"
 #include "stack.h"
 #include "modbus_tcp.h"
+#include "config.h"
 
 void Lockerbox::ENTRY_TestingElm(LockerboxData* pdata)
 {
+	number_of_elm_faults = 0;
 	SetDoorCommand(CheckElmGetStatusLockerbox);
 }
 
 void Lockerbox::EXIT_TestingElm()
 {
 	s.Push(ST_READY);
+	if(number_of_elm_faults == functions[1].param)
+		fault.SetGlobal(F17_24VMissing);
 }
 
 void Lockerbox::ENTRY_Ready()
@@ -38,9 +42,9 @@ void Lockerbox::ENTRY_Processing()
 
 void Lockerbox::EXIT_Processing()
 {
-	for(uint8_t i = 0; i < 36; i++)		// see 02 Registers -> Registers[187]
+	for(uint8_t i = 0; i <= 29; i++)		// see 02 Registers -> Registers[187]
 	{
-		mb.Write(LOCATIONS_NUMBER + 1 + i, 0);
+		mb.Write(FIRST_DOOR_CONTROL + i, 0);
 	}
 	SetOrderStatus(Ready);
 	s.Push(ST_READY);
