@@ -174,3 +174,4 @@ void Lockerbox::EV_Reply(MachineData* pdata)
 // 7. Koszmarne flagi z Lockerbox usunąć, zrobić to ładnie
 // 8. Dokładnie rozkminić P35, First Door
 30. W klasie Config błędna wartość rozmiaru struktury, ponieważ wskaźnik na funkcję ma 2 bajty !
+31. Uwaga na statusy drzwi 0xD0 -> 0xC0 przy Dynaboxie!!
