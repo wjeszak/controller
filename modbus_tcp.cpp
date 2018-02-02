@@ -148,19 +148,19 @@ void ModbusTCP::ReadReply(uint8_t* frame)
 // ----------------------------------- 0xD0 -> 0xC0 -----------------------------------
 	for(uint8_t i = 0; i <= 29; i++)
 	{
-		if((ReadLo(2 + i) == 0xC0) && (m->door_need_open & (1 << i)))
+		if((ReadLo(2 + i) == 0xC0) && (m->door_need_open & (1UL << i)))
 		{
-			m->door_need_open &= ~(1 << i);
+			m->door_need_open &= ~(1UL << i);
 			SetBit(2 + i, 4);
 		}
 	}
 
 	for(uint8_t i = 0; i <= 29; i++)
 	{
-		if((ReadHi(2 + i) == 0xC0) && (m->door_need_open & (1 << (i + 30))))
+		if((ReadHi(2 + i) == 0xC0) && (m->door_need_open & (1UL << (i + 30))))
 		{
-			m->door_need_open &= ~(1 << (i + 30));
-			SetBit(2 + i, 13);
+			m->door_need_open &= ~(1UL << (i + 30));
+			SetBit(2 + i, 12);
 		}
 	}
 // ----------------------------------- 0xD0 -> 0xC0 -----------------------------------
@@ -174,13 +174,13 @@ void ModbusTCP::ReadReply(uint8_t* frame)
 	for(uint8_t i = 0; i <= 29; i++)
 	{
 		if(ReadLo(2 + i) == 0xD0)
-			ClearBit(5, 4);
+			ClearBit(2 + i, 4);
 	}
 
 	for(uint8_t i = 0; i <= 29; i++)
 	{
 		if(ReadHi(2 + i) == 0xD0)
-			ClearBit(5, 13);
+			ClearBit(2 + i, 12);
 	}
 // ----------------------------------- 0xD0 -> 0xC0 -----------------------------------
 	//if(ReadLo(5) == 0xD0) ClearBit(5, 4);
