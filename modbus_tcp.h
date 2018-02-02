@@ -83,6 +83,8 @@ public:
 	ModbusTCP();
 	void Process(uint8_t* frame);
 	uint16_t Read(uint8_t address);					// from controller
+	uint8_t ReadHi(uint8_t addres);
+	uint8_t ReadLo(uint8_t address);
 	void Write(uint8_t address, uint16_t value);	// from controller
 	void WriteHiLo(uint8_t address, uint8_t value_hi, uint8_t value_lo); 	// from controller
 	void WriteHi(uint8_t address, uint8_t value);

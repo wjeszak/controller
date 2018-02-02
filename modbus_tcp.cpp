@@ -47,6 +47,16 @@ uint16_t ModbusTCP::Read(uint8_t address)
 	return Registers[address];
 }
 
+uint8_t ModbusTCP::ReadHi(uint8_t address)
+{
+	return Registers[address] >> 8;
+}
+
+uint8_t ModbusTCP::ReadLo(uint8_t address)
+{
+	return Registers[address] & 0xFF;
+}
+
 void ModbusTCP::Write(uint8_t address, uint16_t value)
 {
 	Registers[address] = value;
@@ -162,7 +172,7 @@ void ModbusTCP::WriteReply(uint8_t* frame)
 
 	for(uint8_t i = 0; i < quantity; i++)
 	{
-		Registers[starting_address - MODBUS_TCP_ADDR_OFFSET + i] = (hi(frame[MODBUS_REQ_TCP_REG_VAL_HI + 2 * i])) | (lo(frame[MODBUS_REQ_TCP_REG_VAL_LO + 2 * i]));
+		Registers[starting_address - MODBUS_TCP_ADDR_OFFSET + i] = (frame[MODBUS_REQ_TCP_REG_VAL_HI + 2 * i] << 8) | frame[MODBUS_REQ_TCP_REG_VAL_LO + 2 * i];
 	}
 	tcp_data.len = 12;
 }
