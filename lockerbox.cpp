@@ -16,7 +16,7 @@
 Lockerbox::Lockerbox()
 {
 	SetOrderStatus(Ready);
-	door_need_open = 0;
+	has_been_readD0 = 0;
 }
 
 void Lockerbox::Init()
@@ -62,7 +62,7 @@ void Lockerbox::SetDoorCommand()
 		if(mb.ReadLo(FIRST_DOOR_CONTROL + i) != 0)
 		{
 			current_command[i] = OpenLockerbox;
-			door_need_open |= (1UL << i);
+			//door_need_open |= (1UL << i);
 		}
 		else
 			current_command[i] = GetStatusLockerbox;
@@ -70,7 +70,7 @@ void Lockerbox::SetDoorCommand()
 		if(mb.ReadHi(FIRST_DOOR_CONTROL + i) != 0)
 		{
 			current_command[i + 30] = OpenLockerbox;
-			door_need_open |= (1UL << (i + 30));
+			//door_need_open |= (1UL << (i + 30));
 		}
 		else
 			current_command[i + 30] = GetStatusLockerbox;

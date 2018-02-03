@@ -8,6 +8,7 @@
 #include "usart.h"
 #include "modbus_tcp.h"
 #include "tcp.h"
+#include "machine.h"
 
 Enc28j60 enc28j60;
 
@@ -83,9 +84,38 @@ void Tcp::ST_Request(TcpData* pdata)
 	uint16_t len = GetTcpDataLen(buf);
 	MakeTcpAckFromAny(buf, len, 0);
 	// Request from user
+
+	for(uint8_t i = 0; i <= 29; i++)
+	{
+		if((mb.ReadLo(2 + i) == 0xD0) && (m->has_been_readD0 & (1UL << i)))
+		{
+			mb.ClearBit(2 + i, 4);
+		}
+		if((mb.ReadHi(2 + i) == 0xD0) && (m->has_been_readD0 & (1UL << (i + 30))))
+		{
+			mb.ClearBit(2 + i, 12);
+		}
+	}
+
 	mb.Process(&buf[TCP_OPTIONS_P]);		// no options -> beginning of modbusTCP frame
 	buf[TCP_FLAGS_P] =  TCP_FLAGS_ACK_V | TCP_FLAGS_PUSH_V; //| TCP_FLAGS_FIN_V;
+
 	MakeTcpAckWithDataNoFlags(buf, tcp_data.len);
+
+	if(mb.starting_address == 100)
+	{
+		for(uint8_t i = 0; i <= 29; i++)
+		{
+			if((mb.ReadLo(2 + i) == 0xD0) && (!(m->has_been_readD0 & (1UL << i))))
+			{
+				m->has_been_readD0 |= (1UL << i);
+			}
+			if((mb.ReadHi(2 + i) == 0xD0) && (!(m->has_been_readD0 & (1UL << (i + 30)))))
+			{
+				m->has_been_readD0 |= (1UL << (i + 30));
+			}
+		}
+	}
 }
 
 void Tcp::EV_Syn(TcpData* pdata)

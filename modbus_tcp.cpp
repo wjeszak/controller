@@ -146,23 +146,21 @@ void ModbusTCP::ReadReply(uint8_t* frame)
 	frame[MODBUS_TCP_FUNCTION]  = function_code;
 	frame[MODBUS_RES_TCP_BYTE_COUNT] = lo(quantity * 2);
 // ----------------------------------- 0xD0 -> 0xC0 -----------------------------------
-	for(uint8_t i = 0; i <= 29; i++)
-	{
-		if((ReadLo(2 + i) == 0xC0) && (m->door_need_open & (1UL << i)))
-		{
-			m->door_need_open &= ~(1UL << i);
-			SetBit(2 + i, 4);
-		}
-	}
+//	for(uint8_t i = 0; i <= 29; i++)
+//	{
+//		if((ReadLo(2 + i) == 0xD0) && (m->has_been_readD0 & (1UL << i)))
+//		{
+//			ClearBit(2 + i, 4);
+//		}
+//	}
 
-	for(uint8_t i = 0; i <= 29; i++)
-	{
-		if((ReadHi(2 + i) == 0xC0) && (m->door_need_open & (1UL << (i + 30))))
-		{
-			m->door_need_open &= ~(1UL << (i + 30));
-			SetBit(2 + i, 12);
-		}
-	}
+	//for(uint8_t i = 0; i <= 29; i++)
+	//{
+	//	if((ReadHi(2 + i) == 0xD0) && (m->has_been_readD0 & (1UL << (i + 30))))
+	//	{
+	//		ClearBit(2 + i, 12);
+	//	}
+	//}
 // ----------------------------------- 0xD0 -> 0xC0 -----------------------------------
 	for(uint8_t i = 0; i < quantity; i++)
 	{
@@ -171,17 +169,17 @@ void ModbusTCP::ReadReply(uint8_t* frame)
 	}
 	tcp_data.len = MBAP_FUNCTION_BYTE_COUNT_LEN + (quantity * 2);
 // ----------------------------------- 0xD0 -> 0xC0 -----------------------------------
-	for(uint8_t i = 0; i <= 29; i++)
-	{
-		if(ReadLo(2 + i) == 0xD0)
-			ClearBit(2 + i, 4);
-	}
+//	for(uint8_t i = 0; i <= 29; i++)
+//	{
+//		if((ReadLo(2 + i) == 0xD0))
+//			m->has_been_readD0 |= (1UL << i);
+//	}
 
-	for(uint8_t i = 0; i <= 29; i++)
-	{
-		if(ReadHi(2 + i) == 0xD0)
-			ClearBit(2 + i, 12);
-	}
+	//for(uint8_t i = 0; i <= 29; i++)
+	//{
+	//	if(ReadHi(2 + i) == 0xD0)
+	//		m->has_been_readD0 |= (1UL << (i + 30));
+	//}
 // ----------------------------------- 0xD0 -> 0xC0 -----------------------------------
 	//if(ReadLo(5) == 0xD0) ClearBit(5, 4);
 }

@@ -60,7 +60,7 @@ void Lockerbox::EV_UserActionGo(MachineData* pdata)
 {
 	uint8_t door_id = 0;
 	uint8_t i;
-
+	has_been_readD0 = 0;
 	for(i = 0; i <= 29; i++)
 	{
 		if(mb.ReadLo(FIRST_DOOR_CONTROL + i) != 0)

@@ -94,6 +94,7 @@ public:
 	void Read(uint8_t* frame);						// from user
 	void Write(uint8_t* frame);						// from user
 	uint16_t GetQuantity();							// need by EV_UserAction()
+	uint16_t starting_address;
 private:
 	void MakeMBAPHeader(uint8_t* frame);
 	void ReadReply(uint8_t* frame);
@@ -103,7 +104,7 @@ private:
 	uint16_t prot_id;
 	uint8_t  unit_id;
 	uint8_t  function_code;
-	uint16_t starting_address;
+
 	uint16_t quantity;
 	uint16_t Registers[MODBUS_TCP_NUMBER_OF_REG];
 };
