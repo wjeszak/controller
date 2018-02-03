@@ -162,6 +162,22 @@ void ModbusTCP::ReadReply(uint8_t* frame)
 	//	}
 	//}
 // ----------------------------------- 0xD0 -> 0xC0 -----------------------------------
+	if(mb.starting_address == 100)
+		{
+			for(uint8_t i = 0; i <= 29; i++)
+			{
+				if((mb.ReadLo(2 + i) == 0xC0) && (m->door_need_open & (1ULL << i)))
+				{
+					mb.SetBit(2 + i, 4);
+					m->door_need_open &= ~(1ULL << i);
+				}
+				if((mb.ReadHi(2 + i) == 0xC0) && (m->door_need_open & (1ULL << (i + 30))))
+				{
+					mb.SetBit(2 + i, 12);
+					m->door_need_open &= ~(1ULL << (i + 30));
+				}
+			}
+		}
 	for(uint8_t i = 0; i < quantity; i++)
 	{
 		frame[MODBUS_RES_TCP_DATA + 2 * i]       = hi(Registers[starting_address - MODBUS_TCP_ADDR_OFFSET + i]);

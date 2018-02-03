@@ -177,3 +177,4 @@ void Lockerbox::EV_Reply(MachineData* pdata)
 31. Uwaga na statusy drzwi 0xD0 -> 0xC0 przy Dynaboxie!!
 32. Ledy w Lockerboxie
 33. P20 kierunek enkodera nastawczego.
+34. Dobrze dzia³a Dynabox z odpytywaniem 20 ms :D

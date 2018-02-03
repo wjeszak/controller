@@ -51,6 +51,7 @@ public:
 	virtual void EV_UserAction(MachineData* pdata) {}
 	uint8_t current_command[MACHINE_MAX_NUMBER_OF_DOORS];
 	uint8_t current_address;
+	uint64_t door_need_open;
 	uint64_t has_been_readD0;
 private:
 	enum States {ST_MAX_STATES};

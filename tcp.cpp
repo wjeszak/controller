@@ -85,7 +85,7 @@ void Tcp::ST_Request(TcpData* pdata)
 	MakeTcpAckFromAny(buf, len, 0);
 	// Request from user
 
-	for(uint8_t i = 0; i <= 29; i++)
+	/*for(uint8_t i = 0; i <= 29; i++)
 	{
 		if((mb.ReadLo(2 + i) == 0xD0) && (m->has_been_readD0 & (1UL << i)))
 		{
@@ -96,6 +96,7 @@ void Tcp::ST_Request(TcpData* pdata)
 			mb.ClearBit(2 + i, 12);
 		}
 	}
+*/
 
 	mb.Process(&buf[TCP_OPTIONS_P]);		// no options -> beginning of modbusTCP frame
 	buf[TCP_FLAGS_P] =  TCP_FLAGS_ACK_V | TCP_FLAGS_PUSH_V; //| TCP_FLAGS_FIN_V;
@@ -106,16 +107,17 @@ void Tcp::ST_Request(TcpData* pdata)
 	{
 		for(uint8_t i = 0; i <= 29; i++)
 		{
-			if((mb.ReadLo(2 + i) == 0xD0) && (!(m->has_been_readD0 & (1UL << i))))
+			if((mb.ReadLo(2 + i) == 0xD0))
 			{
-				m->has_been_readD0 |= (1UL << i);
+				mb.ClearBit(2 + i, 4);
 			}
-			if((mb.ReadHi(2 + i) == 0xD0) && (!(m->has_been_readD0 & (1UL << (i + 30)))))
+			if((mb.ReadHi(2 + i) == 0xD0))
 			{
-				m->has_been_readD0 |= (1UL << (i + 30));
+				mb.ClearBit(2 + i, 12);
 			}
 		}
 	}
+
 }
 
 void Tcp::EV_Syn(TcpData* pdata)
