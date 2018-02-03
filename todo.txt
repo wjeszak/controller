@@ -176,3 +176,4 @@ void Lockerbox::EV_Reply(MachineData* pdata)
 30. W klasie Config błędna wartość rozmiaru struktury, ponieważ wskaźnik na funkcję ma 2 bajty !
 31. Uwaga na statusy drzwi 0xD0 -> 0xC0 przy Dynaboxie!!
 32. Ledy w Lockerboxie
+33. P20 kierunek enkodera nastawczego.
